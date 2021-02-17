@@ -19,7 +19,7 @@ namespace testing
 
         private void button1_Click(object sender, EventArgs e)
         {
-            textBox1.Text = "Test";
+            outputBox.Text = inputBox.Text;
         }
     }
 }
