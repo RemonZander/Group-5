@@ -9,7 +9,7 @@
         <Point X="19.625" Y="8.5" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.167" Y="3.792" />
+        <Position X="0.084" Y="4.625" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
@@ -32,7 +32,7 @@
         <Point X="19.312" Y="8.5" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.181" Y="1.318" />
+        <Position X="0.066" Y="1.318" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
@@ -113,7 +113,7 @@
     <Position X="21.5" Y="8.5" Width="1.5" />
     <AssociationLine Name="gerechten" Type="restaurant_mockup.Gerecht">
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.135" Y="0.564" />
+        <Position X="-0.032" Y="0.522" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
@@ -135,7 +135,7 @@
     <Position X="18.5" Y="10.25" Width="1.5" />
     <AssociationLine Name="address" Type="restaurant_mockup.Address">
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.151" Y="0.437" />
+        <Position X="0.047" Y="0.427" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
@@ -161,6 +161,9 @@
         <Point X="16.375" Y="10.865" />
         <Point X="18.5" Y="10.865" />
       </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.11" Y="0.081" />
+      </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAIAAQAAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
