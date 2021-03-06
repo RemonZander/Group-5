@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="restaurant_mockup.Login">
+    <Position X="12" Y="3.5" Width="1.5" />
+    <AssociationLine Name="database" Type="restaurant_mockup.Database" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="13.5" Y="3.594" />
+        <Point X="19.625" Y="3.594" />
+        <Point X="19.625" Y="8.5" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.167" Y="3.792" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQCAAAABAAACAAIACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="user_menu" />
+      <Field Name="medewerkers_menu" />
+      <Field Name="eigenaars_menu" />
+      <Field Name="database" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="restaurant_mockup.User_menu">
+    <Position X="17" Y="3.75" Width="1.5" />
+    <AssociationLine Name="database" Type="restaurant_mockup.Database" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="18.5" Y="5.062" />
+        <Point X="19.312" Y="5.062" />
+        <Point X="19.312" Y="8.5" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.181" Y="1.318" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAABAAACAAAACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>User menu.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="database" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="restaurant_mockup.Medewerkers_menu">
+    <Position X="7.5" Y="3.5" Width="1.5" />
+    <AssociationLine Name="database" Type="restaurant_mockup.Database">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="1.297" Y="0.541" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAABAAACAAAACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Medewerkers menu.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="database" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="restaurant_mockup.Eigenaars_menu">
+    <Position X="12" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAACAAAACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Eigenaars menu.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="restaurant_mockup.IO">
+    <Position X="20.5" Y="4.25" Width="1.5" />
+    <AssociationLine Name="database" Type="restaurant_mockup.Database" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="21.25" Y="5.118" />
+        <Point X="21.25" Y="8.625" />
+        <Point X="19.75" Y="8.625" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="1.615" Y="2.386" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IO.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="database" />
+    </ShowAsAssociation>
+  </Class>
+  <Struct Name="restaurant_mockup.Database">
+    <Position X="18.25" Y="8.5" Width="1.5" />
+    <AssociationLine Name="menukaart" Type="restaurant_mockup.Menukaart">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.528" Y="0.109" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="klantgegevens" Type="restaurant_mockup.Klantgegevens">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.073" Y="0.392" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAIAAAAAAAAAIAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>Database.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="menukaart" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="klantgegevens" />
+      <Property Name="reservaties" />
+    </ShowAsCollectionAssociation>
+  </Struct>
+  <Struct Name="restaurant_mockup.Menukaart">
+    <Position X="21.5" Y="8.5" Width="1.5" />
+    <AssociationLine Name="gerechten" Type="restaurant_mockup.Gerecht">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.135" Y="0.564" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Menukaart.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="gerechten" />
+    </ShowAsCollectionAssociation>
+  </Struct>
+  <Struct Name="restaurant_mockup.Gerecht">
+    <Position X="21.5" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAAAAAAAAAAAIgAAAAAAIAAAAAA=</HashCode>
+      <FileName>Gerecht.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="restaurant_mockup.Klantgegevens">
+    <Position X="18.5" Y="10.25" Width="1.5" />
+    <AssociationLine Name="address" Type="restaurant_mockup.Address">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.151" Y="0.437" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>BCAAAAAAACBICAAAAAAAAAAAAAIAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>Klantgegevens.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="address" />
+    </ShowAsAssociation>
+  </Struct>
+  <Struct Name="restaurant_mockup.Address">
+    <Position X="18.5" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAgAAACAAAAAAAAAAAAIAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>Address.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="restaurant_mockup.Reservaties">
+    <Position X="15.25" Y="8.5" Width="1.5" />
+    <AssociationLine Name="klantgegevens" Type="restaurant_mockup.Klantgegevens" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="16.375" Y="9.796" />
+        <Point X="16.375" Y="10.865" />
+        <Point X="18.5" Y="10.865" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAIAAQAAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Reservaties.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="klantgegevens" />
+    </ShowAsAssociation>
+  </Struct>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
