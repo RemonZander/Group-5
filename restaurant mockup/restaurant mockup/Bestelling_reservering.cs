@@ -5,9 +5,15 @@ using System.Text;
 
 namespace restaurant_mockup
 {
-    public struct Database
+    public class Bestelling_reservering : type_BTW_prijs
     {
-        public Menukaart menukaart
+        public Bestelling_reservering(string Type)
+        {
+            this.Type = Type;
+            is_uitgave = false;
+        }
+
+        public Klantgegevens Klantgegevens
         {
             get => default;
             set
@@ -15,7 +21,7 @@ namespace restaurant_mockup
             }
         }
 
-        public Klantgegevens[] klantgegevens
+        public double Fooi
         {
             get => default;
             set
@@ -23,23 +29,7 @@ namespace restaurant_mockup
             }
         }
 
-        public Reserveringen[] reservaties
-        {
-            get => default;
-            set
-            {
-            }
-        }
-
-        public Uitgaven Uitgaven
-        {
-            get => default;
-            set
-            {
-            }
-        }
-
-        public Inkomsten Inkomsten
+        public int Korting
         {
             get => default;
             set

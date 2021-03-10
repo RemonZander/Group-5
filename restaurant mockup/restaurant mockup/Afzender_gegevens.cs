@@ -5,9 +5,9 @@ using System.Text;
 
 namespace restaurant_mockup
 {
-    public struct Database
+    public struct Afzender_gegevens
     {
-        public Menukaart menukaart
+        public string Naam
         {
             get => default;
             set
@@ -15,7 +15,7 @@ namespace restaurant_mockup
             }
         }
 
-        public Klantgegevens[] klantgegevens
+        public Adres Adres
         {
             get => default;
             set
@@ -23,23 +23,7 @@ namespace restaurant_mockup
             }
         }
 
-        public Reserveringen[] reservaties
-        {
-            get => default;
-            set
-            {
-            }
-        }
-
-        public Uitgaven Uitgaven
-        {
-            get => default;
-            set
-            {
-            }
-        }
-
-        public Inkomsten Inkomsten
+        public long Telefoonnummer
         {
             get => default;
             set

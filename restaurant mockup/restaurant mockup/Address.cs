@@ -5,7 +5,7 @@ using System.Text;
 
 namespace restaurant_mockup
 {
-    public struct Address
+    public struct Adres
     {
         public string land
         {

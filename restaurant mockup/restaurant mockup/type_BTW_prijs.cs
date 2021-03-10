@@ -5,9 +5,9 @@ using System.Text;
 
 namespace restaurant_mockup
 {
-    public struct Klantgegevens
+    public abstract class type_BTW_prijs
     {
-        public string voornaam
+        public string Type
         {
             get => default;
             set
@@ -15,7 +15,7 @@ namespace restaurant_mockup
             }
         }
 
-        public String Achternaam
+        public double BTW
         {
             get => default;
             set
@@ -23,7 +23,7 @@ namespace restaurant_mockup
             }
         }
 
-        public Adres adres
+        public double Prijs
         {
             get => default;
             set
@@ -31,7 +31,7 @@ namespace restaurant_mockup
             }
         }
 
-        public long[] telefoonnummer
+        public bool is_uitgave
         {
             get => default;
             set
@@ -39,31 +39,7 @@ namespace restaurant_mockup
             }
         }
 
-        public int klantnummer
-        {
-            get => default;
-            set
-            {
-            }
-        }
-
-        public string Email
-        {
-            get => default;
-            set
-            {
-            }
-        }
-
-        public string Password
-        {
-            get => default;
-            set
-            {
-            }
-        }
-
-        public int Leeftijd
+        public int ID
         {
             get => default;
             set

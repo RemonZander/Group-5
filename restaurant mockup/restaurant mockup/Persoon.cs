@@ -5,9 +5,33 @@ using System.Text;
 
 namespace restaurant_mockup
 {
-    public struct Klantgegevens
+    public abstract class Persoon : type_BTW_prijs
     {
-        public string voornaam
+        public double Salaris
+        {
+            get
+            {
+                return Prijs;
+            }
+            set
+            {
+                Prijs = value;
+            }
+        }
+
+        public double Inkomstenbelasting
+        {
+            get
+            {
+                return BTW;
+            }
+            set
+            {
+                BTW = value;
+            }
+        }
+
+        public double Vakantiegeld
         {
             get => default;
             set
@@ -15,7 +39,7 @@ namespace restaurant_mockup
             }
         }
 
-        public String Achternaam
+        public double Salaris_13e_maand
         {
             get => default;
             set
@@ -23,7 +47,7 @@ namespace restaurant_mockup
             }
         }
 
-        public Adres adres
+        public double Onkostenvergoeding
         {
             get => default;
             set
@@ -31,7 +55,7 @@ namespace restaurant_mockup
             }
         }
 
-        public long[] telefoonnummer
+        public double Werkkleding
         {
             get => default;
             set
@@ -39,7 +63,7 @@ namespace restaurant_mockup
             }
         }
 
-        public int klantnummer
+        public double Prestatiebeloning
         {
             get => default;
             set
@@ -47,7 +71,7 @@ namespace restaurant_mockup
             }
         }
 
-        public string Email
+        public double Lease_auto
         {
             get => default;
             set
@@ -55,7 +79,7 @@ namespace restaurant_mockup
             }
         }
 
-        public string Password
+        public double Ziektekostenverzekering
         {
             get => default;
             set
@@ -63,7 +87,7 @@ namespace restaurant_mockup
             }
         }
 
-        public int Leeftijd
+        public double Pentioenpremie
         {
             get => default;
             set
