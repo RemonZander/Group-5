@@ -5,7 +5,7 @@ using System.Text;
 
 namespace restaurant_mockup
 {
-    public struct Reservaties
+    public struct Reserveringen
     {
         public Klantgegevens klantgegevens
         {

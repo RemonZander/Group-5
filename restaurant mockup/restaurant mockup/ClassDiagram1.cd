@@ -153,11 +153,11 @@
       <FileName>Address.cs</FileName>
     </TypeIdentifier>
   </Struct>
-  <Struct Name="restaurant_mockup.Reservaties">
+  <Struct Name="restaurant_mockup.Reserveringen">
     <Position X="15.25" Y="8.5" Width="1.5" />
     <AssociationLine Name="klantgegevens" Type="restaurant_mockup.Klantgegevens" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="16.375" Y="9.796" />
+        <Point X="16.375" Y="9.988" />
         <Point X="16.375" Y="10.865" />
         <Point X="18.5" Y="10.865" />
       </Path>

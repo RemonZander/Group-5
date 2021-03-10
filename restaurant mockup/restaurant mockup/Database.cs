@@ -23,7 +23,7 @@ namespace restaurant_mockup
             }
         }
 
-        public Reservaties[] reservaties
+        public Reserveringen[] reservaties
         {
             get => default;
             set
