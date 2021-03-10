@@ -20,7 +20,6 @@ namespace restaurant_mockup
         public Login()
         {
             InitializeComponent();
-
         }
 
     }
