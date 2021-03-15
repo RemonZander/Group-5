@@ -10,15 +10,17 @@
     <AssociationLine Name="database" Type="restaurant_mockup.Database" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="13.5" Y="3.594" />
+        <Point X="18.948" Y="3.594" Type="JumpStart" />
+        <Point X="19.114" Y="3.594" Type="JumpEnd" />
         <Point X="19.625" Y="3.594" />
         <Point X="19.625" Y="8.5" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.084" Y="4.625" />
+        <Position X="-0.403" Y="5.039" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAQCAAAABAAACAAIACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAQCAAAABAAACAAIACIAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Form1.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -26,6 +28,7 @@
       <Field Name="medewerkers_menu" />
       <Field Name="eigenaars_menu" />
       <Field Name="database" />
+      <Field Name="code" />
     </ShowAsAssociation>
   </Class>
   <Class Name="restaurant_mockup.User_menu">
@@ -33,6 +36,8 @@
     <AssociationLine Name="database" Type="restaurant_mockup.Database" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="18.5" Y="5.062" />
+        <Point X="18.948" Y="5.062" Type="JumpStart" />
+        <Point X="19.114" Y="5.062" Type="JumpEnd" />
         <Point X="19.312" Y="5.062" />
         <Point X="19.312" Y="8.5" />
       </Path>
@@ -41,11 +46,13 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACAAAABAAACAAAACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAGAAAABAAACAAAACIAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>User menu.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="database" />
+      <Field Name="code" />
+      <Field Name="IO" />
     </ShowAsAssociation>
   </Class>
   <Class Name="restaurant_mockup.Medewerkers_menu">
@@ -61,20 +68,50 @@
         <Position X="1.297" Y="0.541" />
       </MemberNameLabel>
     </AssociationLine>
+    <AssociationLine Name="IO" Type="restaurant_mockup.IO" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="7.75" Y="3.5" />
+        <Point X="7.75" Y="0.256" />
+        <Point X="21.688" Y="0.256" />
+        <Point X="21.688" Y="4.25" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.159" Y="2.887" />
+      </MemberNameLabel>
+    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACAAAABAAACAAAACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAGAAAABAAACAAAACIAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Medewerkers menu.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="database" />
+      <Field Name="code" />
+      <Field Name="IO" />
     </ShowAsAssociation>
   </Class>
   <Class Name="restaurant_mockup.Eigenaars_menu">
     <Position X="12" Y="0.5" Width="1.5" />
+    <AssociationLine Name="database" Type="restaurant_mockup.Database">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.561" Y="0.109" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="IO" Type="restaurant_mockup.IO" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="13.5" Y="1.875" />
+        <Point X="21.25" Y="1.875" />
+        <Point X="21.25" Y="4.25" />
+      </Path>
+    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACAAAAAAAACAAAACAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAGAAAABAAACAAAACIAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Eigenaars menu.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="code" />
+      <Field Name="database" />
+      <Field Name="IO" />
+    </ShowAsAssociation>
   </Class>
   <Class Name="restaurant_mockup.IO">
     <Position X="20.5" Y="4.25" Width="1.5" />
@@ -132,7 +169,7 @@
         <Point X="25.375" Y="13.875" />
         <Point X="25.375" Y="17.875" />
         <Point X="22.599" Y="17.875" Type="JumpStart" />
-        <Point X="22.432" Y="17.875" Type="JumpEnd" />
+        <Point X="22.433" Y="17.875" Type="JumpEnd" />
         <Point X="20" Y="17.875" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
@@ -180,7 +217,7 @@
         <Point X="23.583" Y="12.25" Type="JumpStart" />
         <Point X="23.417" Y="12.25" Type="JumpEnd" />
         <Point X="22.599" Y="12.25" Type="JumpStart" />
-        <Point X="22.432" Y="12.25" Type="JumpEnd" />
+        <Point X="22.433" Y="12.25" Type="JumpEnd" />
         <Point X="20" Y="12.25" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
@@ -194,6 +231,34 @@
     <ShowAsAssociation>
       <Property Name="Klantgegevens" />
     </ShowAsAssociation>
+  </Class>
+  <Class Name="restaurant_mockup.Login_code">
+    <Position X="12" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Login_code.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="restaurant_mockup.Medewerkers_code">
+    <Position X="4.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Medewerkers_code.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="restaurant_mockup.User_code">
+    <Position X="16.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>User_code.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="restaurant_mockup.Eigenaars_code">
+    <Position X="9.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Eigenaars_code.cs</FileName>
+    </TypeIdentifier>
   </Class>
   <Struct Name="restaurant_mockup.Database">
     <Position X="18.25" Y="8.5" Width="1.5" />
@@ -290,17 +355,17 @@
     <Position X="15.25" Y="8.5" Width="1.5" />
     <AssociationLine Name="klantgegevens" Type="restaurant_mockup.Klantgegevens" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="16.375" Y="9.988" />
-        <Point X="16.375" Y="10.865" />
-        <Point X="18.5" Y="10.865" />
+        <Point X="16.062" Y="9.796" />
+        <Point X="16.062" Y="11.312" />
+        <Point X="18.5" Y="11.312" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.11" Y="0.081" />
+        <Position X="0.081" Y="0.11" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAIAAQAAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Reservaties.cs</FileName>
+      <FileName>Reserveringen.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="klantgegevens" />
@@ -327,17 +392,14 @@
   </Struct>
   <Struct Name="restaurant_mockup.Uitgaven">
     <Position X="22.25" Y="9.75" Width="1.5" />
-    <AssociationLine Name="Ingredienten" Type="restaurant_mockup.Ingredienten" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="Eigenaar" Type="restaurant_mockup.Eigenaar" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="23.75" Y="10.312" />
-        <Point X="24.125" Y="10.312" />
-        <Point X="24.125" Y="12.875" />
-        <Point X="26.812" Y="12.875" />
-        <Point X="26.812" Y="13.25" />
+        <Point X="23.75" Y="10.375" />
+        <Point X="29.573" Y="10.375" Type="JumpStart" />
+        <Point X="29.74" Y="10.375" Type="JumpEnd" />
+        <Point X="36" Y="10.375" />
+        <Point X="36" Y="15" />
       </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.547" Y="0.505" />
-      </MemberNameLabel>
     </AssociationLine>
     <AssociationLine Name="Medewerker" Type="restaurant_mockup.Medewerker" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
@@ -350,15 +412,27 @@
         <Position X="0.152" Y="0.886" />
       </MemberNameLabel>
     </AssociationLine>
+    <AssociationLine Name="Ingredienten" Type="restaurant_mockup.Ingredienten" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="23.75" Y="10.688" />
+        <Point X="24.125" Y="10.688" />
+        <Point X="24.125" Y="12.875" />
+        <Point X="26.812" Y="12.875" />
+        <Point X="26.812" Y="13.25" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.547" Y="0.505" />
+      </MemberNameLabel>
+    </AssociationLine>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAACAAAAAAAAAAAACEAAAAAEAAAAABAAAAAA=</HashCode>
       <FileName>Uitgaven.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="Eigenaar" />
+      <Property Name="Medewerker" />
       <Property Name="Inboedel" />
       <Property Name="Ingredienten" />
-      <Property Name="Medewerker" />
     </ShowAsAssociation>
   </Struct>
   <Struct Name="restaurant_mockup.Inkomsten">

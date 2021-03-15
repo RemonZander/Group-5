@@ -13,6 +13,8 @@ namespace restaurant_mockup
     public partial class Medewerkers_menu : Form
     {
         private Database database;
+        private Medewerkers_code code;
+        private IO IO;
 
         public Medewerkers_menu()
         {

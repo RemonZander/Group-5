@@ -13,6 +13,8 @@ namespace restaurant_mockup
     public partial class User_menu : Form
     {
         private Database database;
+        private User_code code;
+        private IO IO;
 
         public User_menu()
         {

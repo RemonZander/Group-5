@@ -16,6 +16,7 @@ namespace restaurant_mockup
         private Medewerkers_menu medewerkers_menu;
         private Eigenaars_menu eigenaars_menu;
         private Database database;
+        private Login_code code;
 
         public Login()
         {

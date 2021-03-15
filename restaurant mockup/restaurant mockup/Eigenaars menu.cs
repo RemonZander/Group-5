@@ -12,6 +12,10 @@ namespace restaurant_mockup
 {
     public partial class Eigenaars_menu : Form
     {
+        private Eigenaars_code code;
+        private Database database;
+        private IO IO;
+
         public Eigenaars_menu()
         {
             InitializeComponent();
