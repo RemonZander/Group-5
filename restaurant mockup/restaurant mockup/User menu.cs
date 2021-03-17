@@ -20,5 +20,21 @@ namespace restaurant_mockup
         {
             InitializeComponent();
         }
+
+        /*
+        private void test()
+        {
+            Database data = new Database();
+
+            data.Uitgaven.Inboedel[0].Afzender_gegevens.Adres.land = "nl";
+
+            for (int a = 0; a < 10; a++)
+            {
+                data.klantgegevens[a].login_gegevens.Password = "";
+                data.klantgegevens[a].adres.land = "NL";
+                data.klantgegevens[a].Achternaam = "";
+            }
+        }
+        */
     }
 }

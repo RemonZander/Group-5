@@ -21,7 +21,13 @@ namespace restaurant_mockup
         public Login()
         {
             InitializeComponent();
+
         }
 
+        private void Login_Load(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+            this.ShowInTaskbar = false;
+        }
     }
 }

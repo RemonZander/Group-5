@@ -5,7 +5,7 @@ using System.Text;
 
 namespace restaurant_mockup
 {
-    public struct Klantgegevens
+    public class Klantgegevens
     {
         public string voornaam
         {
@@ -23,13 +23,7 @@ namespace restaurant_mockup
             }
         }
 
-        public Adres adres
-        {
-            get => default;
-            set
-            {
-            }
-        }
+        public Adres adres { get; set; }
 
         public long[] telefoonnummer
         {
@@ -47,23 +41,15 @@ namespace restaurant_mockup
             }
         }
 
-        public string Email
-        {
-            get => default;
-            set
-            {
-            }
-        }
-
-        public string Password
-        {
-            get => default;
-            set
-            {
-            }
-        }
-
         public int Leeftijd
+        {
+            get => default;
+            set
+            {
+            }
+        }
+
+        public Login_gegevens login_gegevens
         {
             get => default;
             set

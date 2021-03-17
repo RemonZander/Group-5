@@ -5,7 +5,7 @@ using System.Text;
 
 namespace restaurant_mockup
 {
-    public struct Database
+    public class Database
     {
         public Menukaart menukaart
         {
@@ -15,13 +15,7 @@ namespace restaurant_mockup
             }
         }
 
-        public Klantgegevens[] klantgegevens
-        {
-            get => default;
-            set
-            {
-            }
-        }
+        public Klantgegevens[] klantgegevens { get; set; }
 
         public Reserveringen[] reservaties
         {
