@@ -10,22 +10,16 @@ using System.Windows.Forms;
 
 namespace restaurant
 {
-    public partial class Login : Form
+    public partial class Menu_Gebruiker : Form
     {
-        private Code_Login_menu Code;
-        private Menu_eigenaar Menu_eigenaar;
-
-        private restaurant.Menu_Medewerker Menu_medewerker;
-        private Menu_Gebruiker Menu_gebruiker;
+        private restaurant.Code_Gebruiker_menu Code;
 
         private IO IO;
 
         private Database database;
-
-        public Login()
+        public Menu_Gebruiker()
         {
             InitializeComponent();
         }
-
     }
 }
