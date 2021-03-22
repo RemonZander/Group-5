@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace restaurant
 {
@@ -16,7 +17,10 @@ namespace restaurant
                 FileSystem.CreateDirectory(@"..\database\");
             }
 
+            
             string output = JsonConvert.SerializeObject(database, Formatting.Indented);
+            // @ neemt tekst letterlijk, geen \n bijv.
+            File.WriteAllText(@"..\database\database.Json", output);
         }
     }
 }
