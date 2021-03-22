@@ -22,11 +22,11 @@
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="Code" />
-      <Field Name="database" />
-      <Field Name="IO" />
       <Field Name="Menu_eigenaar" />
-      <Field Name="Menu_gebruiker" />
       <Field Name="Menu_medewerker" />
+      <Field Name="Menu_gebruiker" />
+      <Field Name="IO" />
+      <Field Name="database" />
     </ShowAsAssociation>
   </Class>
   <Class Name="restaurant.Code_Console">
@@ -44,15 +44,7 @@
   </Class>
   <Class Name="restaurant.Code_Login_menu">
     <Position X="4.25" Y="8.25" Width="1.5" />
-    <AssociationLine Name="IO" Type="restaurant.IO" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="4.938" Y="9.118" />
-        <Point X="4.938" Y="10.618" />
-        <Point X="12.417" Y="10.618" Type="JumpStart" />
-        <Point X="12.583" Y="10.618" Type="JumpEnd" />
-        <Point X="17.188" Y="10.618" />
-        <Point X="17.188" Y="7.368" />
-      </Path>
+    <AssociationLine Name="IO" Type="restaurant.IO">
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="0.279" Y="2.921" />
       </MemberNameLabel>
@@ -63,8 +55,8 @@
         <Point X="4.562" Y="11.455" />
         <Point X="12.417" Y="11.455" Type="JumpStart" />
         <Point X="12.583" Y="11.455" Type="JumpEnd" />
-        <Point X="17.417" Y="11.455" Type="JumpStart" />
-        <Point X="17.583" Y="11.455" Type="JumpEnd" />
+        <Point X="16.76" Y="11.455" Type="JumpStart" />
+        <Point X="16.927" Y="11.455" Type="JumpEnd" />
         <Point X="19.979" Y="11.455" />
         <Point X="19.979" Y="7.368" />
       </Path>
@@ -83,12 +75,7 @@
   </Class>
   <Class Name="restaurant.Menu_eigenaar">
     <Position X="11.75" Y="13.5" Width="1.5" />
-    <AssociationLine Name="IO" Type="restaurant.IO" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="13.25" Y="14.535" />
-        <Point X="17.5" Y="14.535" />
-        <Point X="17.5" Y="7.368" />
-      </Path>
+    <AssociationLine Name="IO" Type="restaurant.IO">
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="-0.623" Y="0.957" />
       </MemberNameLabel>
@@ -116,7 +103,7 @@
   <Class Name="restaurant.Code_Eigenaar_menu">
     <Position X="8.5" Y="14" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAABAAAAAQAQAAAIAAAAAAAAAAAABAAA=</HashCode>
       <FileName>Code_Eigenaar_menu.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -192,7 +179,7 @@
   <Class Name="restaurant.IO">
     <Position X="16.5" Y="6.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IO.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -255,7 +242,7 @@
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>BCAAAAkAAABAAAAAAAgAAAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
+      <HashCode>BCAAAAkAAABAAAAAAAAAQAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
       <FileName>Klantgegevens.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -392,8 +379,8 @@
     <Position X="23.5" Y="5.25" Width="1.5" />
     <AssociationLine Name="klantgegevens" Type="restaurant.Klantgegevens" ManuallyRouted="true">
       <Path>
-        <Point X="23.5" Y="5.802" />
-        <Point X="22.69" Y="5.802" />
+        <Point X="23.5" Y="5.898" />
+        <Point X="22.69" Y="5.898" />
         <Point X="22.69" Y="1.858" />
         <Point X="23.5" Y="1.858" />
       </Path>
@@ -402,7 +389,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAgAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAgAAIAAAAAAAAAAAAAAAAAgAAAAAAAAA=</HashCode>
       <FileName>Reserveringen.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>

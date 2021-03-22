@@ -7,8 +7,10 @@ namespace restaurant
 {
     public struct Reserveringen
     {
-        public Klantgegevens[] klantgegevens { get; set; }
+        public int ID { get; set; }
 
         public DateTime datum { get; set; }
+
+        public Klantgegevens[] klantgegevens { get; set; }
     }
 }
