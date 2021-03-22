@@ -5,6 +5,10 @@ using System.Text;
 
 namespace restaurant
 {
+    /*
+    * This class is in charge of displaying the content of the application to the user.
+    * Every input that the user has goes through here.
+    */
     public class Code_Console
     {
         private Code_Login_menu Code_login;
