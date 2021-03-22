@@ -29,7 +29,7 @@ namespace restaurant
                         woonplaats = "Oostvoorne"
                     },
                     klantnummer = 0948619 - i,
-                    geb_datum = new DateTime(2000 + i*i, 10, 20),
+                    geb_datum = new DateTime(2000 + i, 10, 20),
                     telefoonnummer = telefoonnummer,
                 };
 
@@ -47,7 +47,7 @@ namespace restaurant
                         woonplaats = "Dordrecht"
                     },
                     klantnummer = 1013007 - i,
-                    geb_datum = new DateTime(2000 + i * i, 10, 20),
+                    geb_datum = new DateTime(2000 + i, 10, 20),
                     telefoonnummer = telefoonnummer,
                 };
                 remon[i].klantgegevens = klantgegevens;
