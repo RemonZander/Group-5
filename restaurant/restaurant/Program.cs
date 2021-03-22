@@ -25,14 +25,11 @@ namespace restaurant
             {
                 Code_Console code = new Code_Console();
                 NativeMethods.AllocConsole();
-                //Console.WriteLine(code.print());
-                //Application.Run(new Login());
-                //Application.Run();
-                //NativeMethods.FreeConsole();
-
+                //Application.Run(new Login()); If we want to start working with forms this should be uncommented
                 do
                 {
-                    //Console.WriteLine(code.print());
+                    // Here we incorporate our visualization of the application
+                    // If the user asks for input the thread should be paused
                     Thread.Sleep(100);
                 } while (true);
             }
