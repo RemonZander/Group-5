@@ -7,18 +7,18 @@ namespace restaurant
 {
     public class Klantgegevens
     {
+        public string voornaam { get; set; }
+
         public string achternaam { get; set; }
 
         public adres adres { get; set; }
 
         public int klantnummer { get; set; }
 
-        public int leeftijd { get; set; }
+        public DateTime geb_datum { get; set; }
 
         public Login_gegevens login_gegevens { get; set; }
 
         public long[] telefoonnummer { get; set; }
-
-        public string voornaam { get; set; }
     }
 }
