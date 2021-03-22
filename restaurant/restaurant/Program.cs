@@ -26,6 +26,13 @@ namespace restaurant
                 Code_Console code = new Code_Console();
                 NativeMethods.AllocConsole();
                 //Application.Run(new Login()); If we want to start working with forms this should be uncommented
+                string input = Console.ReadLine();
+
+                if (input == "1")
+                {
+                    Code_Eigenaar_menu eigenaar = new Code_Eigenaar_menu();
+                    eigenaar.fillReservations();
+                }
                 do
                 {
                     // Here we incorporate our visualization of the application
