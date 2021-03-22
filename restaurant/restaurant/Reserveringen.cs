@@ -9,6 +9,6 @@ namespace restaurant
     {
         public Klantgegevens[] klantgegevens { get; set; }
 
-        public DateTime Datum { get; set; }
+        public DateTime datum { get; set; }
     }
 }
