@@ -7,5 +7,6 @@ namespace restaurant
 {
     public class Code_Eigenaar_menu
     {
+        private Database database = new Database();
     }
 }
