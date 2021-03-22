@@ -13,8 +13,10 @@ namespace restaurant
         {
             for (int i = 0; i < 100; i++)
             {
-                remon[i].datum = new DateTime(2000, 1, 14);
-            }   
+                remon[i].datum = new DateTime(2000-i, 1, 14);
+            }
+
+            database.reserveringen = remon;
         }
         public string sayHello()
         {
