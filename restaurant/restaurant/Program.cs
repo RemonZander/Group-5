@@ -26,18 +26,21 @@ namespace restaurant
                 Code_Console code = new Code_Console();
                 NativeMethods.AllocConsole();
                 //Application.Run(new Login()); If we want to start working with forms this should be uncommented
-                string input = Console.ReadLine();
+/*                string input = Console.ReadLine();
 
                 if (input == "1")
                 {
                     Code_Eigenaar_menu eigenaar = new Code_Eigenaar_menu();
                     eigenaar.fillReservations();
-                }
+                }*/
                 do
                 {
                     // Here we incorporate our visualization of the application
+                    // The code in the do while loop will be called every 100ms so every visualization should be refreshed
                     // If the user asks for input the thread should be paused
+                    code.Display();
                     Thread.Sleep(100);
+                    code.Refresh();
                 } while (true);
             }
         }
