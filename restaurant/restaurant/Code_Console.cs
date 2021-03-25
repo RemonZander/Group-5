@@ -7,7 +7,8 @@ namespace restaurant
     * This class is in charge of displaying the content of the application to the user.
     * Every input that the user has goes through here.
     * 
-    * NOTE: 0 should be reserved for going back
+    * NOTE: Screens could be defined in JSON
+    * NOTE: Code in FirstInit if condition can be copied into a constructor
     * 
     * Screens:
     *   id: int
@@ -26,7 +27,7 @@ namespace restaurant
 
         private Dictionary<string, dynamic> currentScreen;
 
-        private List<Dictionary<string, dynamic>> screens = new List<Dictionary<string, dynamic>>();
+        private readonly List<Dictionary<string, dynamic>> screens = new List<Dictionary<string, dynamic>>();
 
         private string input = "0";
 
