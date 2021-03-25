@@ -7,13 +7,13 @@ namespace restaurant
 {
     public struct Uitgaven
     {
-        public restaurant.Inboedel[] inboedel { get; set; }
+        public List<Inboedel> inboedel { get; set; }
 
-        public restaurant.Eigenaar[] eigenaar { get; set; }
+        public List<Eigenaar> eigenaar { get; set; }
 
-        public restaurant.Ingredienten[] ingredienten { get; set; }
+        public List<Ingredienten> ingredienten { get; set; }
 
-        public restaurant.Werknemer[] werknemer { get; set; }
+        public List<Werknemer> werknemer { get; set; }
 
         public int[,] overig { get; set; }
     }

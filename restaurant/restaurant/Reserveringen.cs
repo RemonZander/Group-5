@@ -11,6 +11,6 @@ namespace restaurant
 
         public DateTime datum { get; set; }
 
-        public Klantgegevens[] klantgegevens { get; set; }
+        public List<Klantgegevens> klantgegevens { get; set; }
     }
 }

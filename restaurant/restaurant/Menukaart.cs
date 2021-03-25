@@ -7,6 +7,6 @@ namespace restaurant
 {
     public struct Menukaart
     {
-        public Gerechten[] gerechten { get; set; }
+        public List<Gerechten> gerechten { get; set; }
     }
 }

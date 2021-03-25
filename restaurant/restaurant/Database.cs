@@ -9,9 +9,9 @@ namespace restaurant
     {
         public Menukaart menukaart { get; set; }
 
-        public restaurant.Reserveringen[] reserveringen { get; set; }
+        public List<Reserveringen> reserveringen { get; set; }
 
-        public Klantgegevens[] klantgegevens { get; set; }
+        public List<Klantgegevens> klantgegevens { get; set; }
 
         public restaurant.Uitgaven uitgaven { get; set; }
 

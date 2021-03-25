@@ -9,6 +9,6 @@ namespace restaurant
     {
         public int[,] overig { get; set; }
 
-        public Bestelling_reservering[] bestelling_reservering { get; set; }
+        public List<Bestelling_reservering> bestelling_reservering { get; set; }
     }
 }

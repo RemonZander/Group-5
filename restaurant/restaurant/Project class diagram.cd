@@ -43,7 +43,7 @@
   <Class Name="restaurant.Code_Console">
     <Position X="1.5" Y="8.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAABAAAAAAAEAAAAAAAAAAACIAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAACBBAAAAEAEAAIQAAAAIAhDIBAAAgAAAAAAA=</HashCode>
       <FileName>Code_Console.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -216,8 +216,8 @@
     <AssociationLine Name="uitgaven" Type="restaurant.Uitgaven" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="21.5" Y="7.368" />
-        <Point X="21.5" Y="8.312" />
-        <Point X="23.5" Y="8.312" />
+        <Point X="21.5" Y="8.41" />
+        <Point X="23.5" Y="8.41" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="0.432" Y="0.138" />
@@ -317,6 +317,8 @@
         <Point X="37.562" Y="8.943" />
         <Point X="28.279" Y="8.943" />
         <Point X="28.279" Y="2.748" />
+        <Point X="28.004" Y="2.748" Type="JumpStart" />
+        <Point X="27.837" Y="2.748" Type="JumpEnd" />
         <Point X="24.25" Y="2.748" />
         <Point X="24.25" Y="2.373" />
       </Path>
@@ -418,7 +420,7 @@
       <Path>
         <Point X="24.562" Y="7.75" />
         <Point X="24.562" Y="6.938" />
-        <Point X="28.195" Y="6.938" Type="JumpStart" />
+        <Point X="28.196" Y="6.938" Type="JumpStart" />
         <Point X="28.362" Y="6.938" Type="JumpEnd" />
         <Point X="30.25" Y="6.938" />
       </Path>
@@ -428,34 +430,23 @@
     </AssociationLine>
     <AssociationLine Name="eigenaar" Type="restaurant.Eigenaar" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="25" Y="8.125" />
-        <Point X="28.195" Y="8.125" Type="JumpStart" />
-        <Point X="28.362" Y="8.125" Type="JumpEnd" />
-        <Point X="37.917" Y="8.125" Type="JumpStart" />
-        <Point X="38.083" Y="8.125" Type="JumpEnd" />
-        <Point X="41.5" Y="8.125" />
+        <Point X="25" Y="8.19" />
+        <Point X="28.196" Y="8.19" Type="JumpStart" />
+        <Point X="28.362" Y="8.19" Type="JumpEnd" />
+        <Point X="37.917" Y="8.19" Type="JumpStart" />
+        <Point X="38.083" Y="8.19" Type="JumpEnd" />
+        <Point X="41.5" Y="8.19" />
         <Point X="41.5" Y="7.497" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="ingredienten" Type="restaurant.Ingredienten" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="25" Y="7.938" />
-        <Point X="28.195" Y="7.938" Type="JumpStart" />
-        <Point X="28.362" Y="7.938" Type="JumpEnd" />
-        <Point X="33.75" Y="7.938" />
-        <Point X="33.75" Y="4.872" />
-        <Point X="34.375" Y="4.872" />
-        <Point X="34.375" Y="4.497" />
       </Path>
     </AssociationLine>
     <AssociationLine Name="werknemer" Type="restaurant.Werknemer" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="25" Y="8.375" />
-        <Point X="28.195" Y="8.375" Type="JumpStart" />
-        <Point X="28.362" Y="8.375" Type="JumpEnd" />
-        <Point X="37.917" Y="8.375" Type="JumpStart" />
-        <Point X="38.083" Y="8.375" Type="JumpEnd" />
-        <Point X="41.5" Y="8.375" />
+        <Point X="25" Y="8.484" />
+        <Point X="28.196" Y="8.484" Type="JumpStart" />
+        <Point X="28.362" Y="8.484" Type="JumpEnd" />
+        <Point X="37.917" Y="8.484" Type="JumpStart" />
+        <Point X="38.083" Y="8.484" Type="JumpEnd" />
+        <Point X="41.5" Y="8.484" />
         <Point X="41.5" Y="8.75" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
@@ -469,7 +460,6 @@
     <ShowAsCollectionAssociation>
       <Property Name="inboedel" />
       <Property Name="eigenaar" />
-      <Property Name="ingredienten" />
       <Property Name="werknemer" />
     </ShowAsCollectionAssociation>
   </Struct>
