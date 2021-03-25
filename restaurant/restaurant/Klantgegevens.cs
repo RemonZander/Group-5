@@ -19,6 +19,6 @@ namespace restaurant
 
         public Login_gegevens login_gegevens { get; set; }
 
-        public long[] telefoonnummer { get; set; }
+        public List<long> telefoonnummer { get; set; }
     }
 }
