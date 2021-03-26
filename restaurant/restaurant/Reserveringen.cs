@@ -16,5 +16,7 @@ namespace restaurant
 
         //positie 1 is ID en positie 2 is aantal zetels per tafel
         public List<Tafels> tafels { get; set; }
+
+        public List<Gerechten> gerechten { get; set; }
     }
 }

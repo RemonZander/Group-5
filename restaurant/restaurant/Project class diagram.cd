@@ -16,6 +16,17 @@
   </Class>
   <Class Name="restaurant.Login">
     <Position X="11.75" Y="6.5" Width="1.5" />
+    <AssociationLine Name="database" Type="restaurant.Database" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="13.25" Y="8.214" />
+        <Point X="16.76" Y="8.214" Type="JumpStart" />
+        <Point X="16.927" Y="8.214" Type="JumpEnd" />
+        <Point X="17.167" Y="8.214" Type="JumpStart" />
+        <Point X="17.333" Y="8.214" Type="JumpEnd" />
+        <Point X="19.812" Y="8.214" />
+        <Point X="19.812" Y="7.603" />
+      </Path>
+    </AssociationLine>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAGAAAABAAACgAAACAABAAAAIAAAgAAAAAAA=</HashCode>
       <FileName>Form1.cs</FileName>
@@ -46,10 +57,21 @@
     <Position X="4.25" Y="8.25" Width="1.5" />
     <AssociationLine Name="IO" Type="restaurant.IO">
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.279" Y="2.921" />
+        <Position X="1.383" Y="1.233" />
       </MemberNameLabel>
     </AssociationLine>
-    <AssociationLine Name="database" Type="restaurant.Database">
+    <AssociationLine Name="database" Type="restaurant.Database" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="5.75" Y="8.722" />
+        <Point X="12.417" Y="8.722" Type="JumpStart" />
+        <Point X="12.583" Y="8.722" Type="JumpEnd" />
+        <Point X="16.76" Y="8.722" Type="JumpStart" />
+        <Point X="16.927" Y="8.722" Type="JumpEnd" />
+        <Point X="17.167" Y="8.722" Type="JumpStart" />
+        <Point X="17.333" Y="8.722" Type="JumpEnd" />
+        <Point X="20.25" Y="8.722" />
+        <Point X="20.25" Y="7.603" />
+      </Path>
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="0.188" Y="3.744" />
       </MemberNameLabel>
@@ -67,7 +89,7 @@
     <Position X="11.75" Y="13.5" Width="1.5" />
     <AssociationLine Name="IO" Type="restaurant.IO">
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-0.623" Y="0.957" />
+        <Position X="-0.592" Y="1.395" />
       </MemberNameLabel>
     </AssociationLine>
     <AssociationLine Name="database" Type="restaurant.Database">
@@ -195,6 +217,11 @@
     <AssociationLine Name="inkomsten" Type="restaurant.Inkomsten">
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="0.372" Y="0.088" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="tafels" Type="restaurant.Tafels">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.141" Y="0.352" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
@@ -372,12 +399,13 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAgAAYAAAAAAAAAAAAAAAAAgAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAgAAYAAAAAACAAAAAAAAAAgAAAAAAAAA=</HashCode>
       <FileName>Reserveringen.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
       <Property Name="klantgegevens" />
       <Property Name="tafels" />
+      <Property Name="gerechten" />
     </ShowAsCollectionAssociation>
   </Struct>
   <Struct Name="restaurant.Uitgaven">
