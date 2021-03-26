@@ -12,5 +12,8 @@ namespace restaurant
         public DateTime datum { get; set; }
 
         public List<Klantgegevens> klantgegevens { get; set; }
+
+        //positie 1 is ID en positie 2 is aantal zetels per tafel
+        public int[,] Tafels { get; set; }
     }
 }
