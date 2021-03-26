@@ -10,11 +10,20 @@ namespace restaurant
         public Database()
         {
             //tafels defineren, hier worden alle zetels toegewezen
+            List<Tafels> temp = new List<Tafels>();
             for (int i = 0; i < 100; i++)
             {
-                Tafels[i, 0] = i;
-                Tafels[i, 1] = 4;
+                Tafels tafel = new Tafels
+                {
+                    ID = i,
+                    Zetels = 4
+                };
+
+                if (i % 2 != 0) tafel.isRaam = true;
+
+                temp.Add(tafel);
             }
+            tafels = temp;
         }
 
         public Menukaart menukaart { get; set; }
@@ -26,8 +35,6 @@ namespace restaurant
         public restaurant.Uitgaven uitgaven { get; set; }
 
         public restaurant.Inkomsten inkomsten { get; set; }
-
-        //positie 1 is ID en positie 2 is aantal zetels per tafel
-        public int[,] Tafels = new int[100,2];
+        public List<Tafels> tafels { get; set; }
     }
 }

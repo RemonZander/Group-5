@@ -5,6 +5,7 @@ using System.Text;
 
 namespace restaurant
 {
+    //reserveringen moeten gesorteerd zijn op datum
     public struct Reserveringen
     {
         public int ID { get; set; }
@@ -14,6 +15,6 @@ namespace restaurant
         public List<Klantgegevens> klantgegevens { get; set; }
 
         //positie 1 is ID en positie 2 is aantal zetels per tafel
-        public int[,] Tafels { get; set; }
+        public List<Tafels> tafels { get; set; }
     }
 }

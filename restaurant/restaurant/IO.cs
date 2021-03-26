@@ -22,5 +22,16 @@ namespace restaurant
             // @ neemt tekst letterlijk, geen \n bijv.
             File.WriteAllText(@"..\database\database.Json", output);
         }
+
+        public Database Getdatabase()
+        {
+            Database database = new Database();
+            
+            if (!File.Exists(@"..\database\database.Json")) return database;
+            string output = File.ReadAllText(@"..\database\database.Json");
+            database = JsonConvert.DeserializeObject<Database>(output);
+
+            return database;
+        }
     }
 }
