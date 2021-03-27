@@ -9,6 +9,12 @@ namespace restaurant
     {
         Database database = new Database();
         IO io = new IO();
+        
+        public void debug()
+        {
+
+        }
+        
         public Code_Gebruiker_menu()
         {
             database = io.Getdatabase();
