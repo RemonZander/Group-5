@@ -120,7 +120,7 @@ Welkom bij de menu van GrandFusion!
 
             input = Console.ReadLine();
 
-            if (input != null)
+            if (input != null && int.TryParse(input, out _))
             {
                 int inputAsInteger = Convert.ToInt32(input);
 
