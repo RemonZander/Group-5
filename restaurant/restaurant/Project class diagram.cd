@@ -110,7 +110,7 @@
   <Class Name="restaurant.Code_Eigenaar_menu">
     <Position X="8.5" Y="14" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAABAAAAAQAQAAAIAAAAAAAAAAAABAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAABAAAAAQAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
       <FileName>Code_Eigenaar_menu.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -206,7 +206,7 @@
     </AssociationLine>
     <AssociationLine Name="reserveringen" Type="restaurant.Reserveringen">
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.33" Y="0.61" />
+        <Position X="0.507" Y="0.839" />
       </MemberNameLabel>
     </AssociationLine>
     <AssociationLine Name="uitgaven" Type="restaurant.Uitgaven">
