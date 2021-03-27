@@ -321,8 +321,6 @@
         <Point X="37.562" Y="8.943" />
         <Point X="28.279" Y="8.943" />
         <Point X="28.279" Y="2.748" />
-        <Point X="28.004" Y="2.748" Type="JumpStart" />
-        <Point X="27.837" Y="2.748" Type="JumpEnd" />
         <Point X="24.25" Y="2.748" />
         <Point X="24.25" Y="2.373" />
       </Path>
@@ -414,8 +412,8 @@
       <Path>
         <Point X="25" Y="5.647" />
         <Point X="25.375" Y="5.647" />
-        <Point X="25.375" Y="4.437" />
-        <Point X="26" Y="4.437" />
+        <Point X="25.375" Y="4.733" />
+        <Point X="26" Y="4.733" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="0.737" Y="-0.421" />
@@ -500,7 +498,7 @@
   <Struct Name="restaurant.Gerechten">
     <Position X="26" Y="3" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>IAAAAIAAAAAAAAAAAAAAAAAgAAAAAgAAAAAAIAAAAAA=</HashCode>
+      <HashCode>IAAAAIAAAAAAgAAAAAAAAAAgAAQAAgAAAAAAIAAAAAA=</HashCode>
       <FileName>Gerechten.cs</FileName>
     </TypeIdentifier>
   </Struct>
