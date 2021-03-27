@@ -17,13 +17,13 @@ namespace restaurant
     */
     public class Code_Console
     {
-        private Code_Login_menu Code_login;
+        private readonly Code_Login_menu Code_login = new Code_Login_menu();
 
-        private restaurant.Code_Eigenaar_menu Code_Eigenaar;
+        private readonly restaurant.Code_Eigenaar_menu Code_Eigenaar = new Code_Eigenaar_menu();
 
-        private restaurant.Code_Medewerker_menu Code_Medewerker;
+        private readonly restaurant.Code_Medewerker_menu Code_Medewerker = new Code_Medewerker_menu();
 
-        private restaurant.Code_Gebruiker_menu Code_Gebruiker;
+        private readonly restaurant.Code_Gebruiker_menu Code_Gebruiker = new Code_Gebruiker_menu();
 
         private Dictionary<string, dynamic> currentScreen;
 
@@ -124,7 +124,23 @@ Welkom bij de menu van GrandFusion!
             {
                 int inputAsInteger = Convert.ToInt32(input);
 
-                if (!(inputAsInteger < currentScreen["choices"].Capacity - 1))
+                if (inputAsInteger == 100)
+                {
+                    Code_Gebruiker.Debug();
+                }
+                else if (inputAsInteger == 101)
+                {
+                    Code_Eigenaar.Debug();
+                }
+                else if (inputAsInteger == 102)
+                {
+                    // Code_login.Debug();
+                }
+                else if (inputAsInteger == 103)
+                {
+                    // Code_Medewerker.Debug();
+                }
+                else if (inputAsInteger > currentScreen["choices"].Count || inputAsInteger < 1)
                 {
                     Console.WriteLine("Please write a valid choice");
                 }
