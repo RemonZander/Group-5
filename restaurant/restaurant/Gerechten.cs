@@ -15,6 +15,6 @@ namespace restaurant
 
         public bool special { get; set; }
 
-        public bool is_gearvigeerd { get; set; }
+        public bool is_gearchiveerd { get; set; }
     }
 }

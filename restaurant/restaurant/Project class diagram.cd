@@ -414,8 +414,8 @@
       <Path>
         <Point X="25" Y="5.647" />
         <Point X="25.375" Y="5.647" />
-        <Point X="25.375" Y="4.438" />
-        <Point X="26" Y="4.438" />
+        <Point X="25.375" Y="4.437" />
+        <Point X="26" Y="4.437" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="0.737" Y="-0.421" />
@@ -500,7 +500,7 @@
   <Struct Name="restaurant.Gerechten">
     <Position X="26" Y="3" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>IAAAAAAAAAAAAAAAAQAAAAAgAAAAAgAAAAAAIAAAAAA=</HashCode>
+      <HashCode>IAAAAIAAAAAAAAAAAAAAAAAgAAAAAgAAAAAAIAAAAAA=</HashCode>
       <FileName>Gerechten.cs</FileName>
     </TypeIdentifier>
   </Struct>
