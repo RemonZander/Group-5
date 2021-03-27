@@ -15,6 +15,11 @@ namespace restaurant
             database = io.Getdatabase();
         }
 
+        public void Debug()
+        {
+
+        }
+
         public List<Tuple<Gerechten, int>> GetUserOrderInfo(DateTime beginDate, DateTime endDate)
         {
             List<Tuple<Gerechten, int>> populaireGerechten = new List<Tuple<Gerechten, int>>();
