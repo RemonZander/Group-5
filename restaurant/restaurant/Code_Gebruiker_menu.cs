@@ -20,7 +20,7 @@ namespace restaurant
             database = io.Getdatabase();
         }
         //tijden beschikbaar, kan tafel bij raam,
-        public List<Tuple<DateTime, List<Tafels>>> Reservatie_beschikbaarheid(int dagen) 
+        public List<Tuple<DateTime, List<Tafels>>> Reservering_beschikbaarheid(int dagen) 
         {
             //maakt een lijst met tuples die beheert alle beschikbare plekken op int aantal dagen
             List<Tuple<DateTime, List<Tafels>>> beschikbaar = new List<Tuple<DateTime, List<Tafels>>>();
