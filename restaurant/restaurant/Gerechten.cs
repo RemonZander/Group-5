@@ -14,5 +14,7 @@ namespace restaurant
         public double prijs { get; set; }
 
         public bool special { get; set; }
+
+        public bool is_gearvigeerd { get; set; }
     }
 }
