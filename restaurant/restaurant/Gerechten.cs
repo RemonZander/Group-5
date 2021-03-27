@@ -7,7 +7,7 @@ namespace restaurant
 {
     public struct Gerechten
     {
-        public string[] ingredienten { get; set; }
+        public List<string> ingredienten { get; set; }
 
         public bool is_populair { get; set; }
 
