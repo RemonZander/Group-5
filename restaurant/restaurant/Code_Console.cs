@@ -185,6 +185,8 @@ Here you will see an example of the details of a single meal from a menu.
                     // Proceed
                     ScreenManager(inputAsInteger);
                 }
+            } else {
+                invalidInput = true;
             }
         }
 
