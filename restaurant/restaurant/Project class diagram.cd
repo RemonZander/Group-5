@@ -94,10 +94,8 @@
     </AssociationLine>
     <AssociationLine Name="database" Type="restaurant.Database" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="13.25" Y="13.986" />
-        <Point X="16.76" Y="13.986" Type="JumpStart" />
-        <Point X="16.927" Y="13.986" Type="JumpEnd" />
-        <Point X="20.625" Y="13.986" />
+        <Point X="13.25" Y="15.25" />
+        <Point X="20.625" Y="15.25" />
         <Point X="20.625" Y="7.603" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
@@ -141,7 +139,7 @@
         <Point X="19.25" Y="7.375" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="1.733" Y="0.208" />
+        <Position X="1.014" Y="4.425" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
