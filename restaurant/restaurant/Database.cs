@@ -35,6 +35,11 @@ namespace restaurant
         public restaurant.Uitgaven uitgaven { get; set; }
 
         public restaurant.Inkomsten inkomsten { get; set; }
+
         public List<Tafels> tafels { get; set; }
+
+        public List<Review> reviews { get; set; }
+
+        public List<Feedback> feedback { get; set; }
     }
 }
