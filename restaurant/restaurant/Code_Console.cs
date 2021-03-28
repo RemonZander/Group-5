@@ -29,11 +29,20 @@ namespace restaurant
 
         private readonly List<Dictionary<string, dynamic>> screens = new List<Dictionary<string, dynamic>>();
 
+        private bool invalidInput = false;
+
         private string input = "0";
 
-        private bool firstInit = true;
-
         private int screenIds = 0;
+
+        public Code_Console()
+        {
+            screens.Add(StartMenu());
+            screens.Add(TestScreen());
+            screens.Add(HelloScreen());
+
+            currentScreen = screens[0];
+        }
 
         /*
          * Creates a dict with string keys and different type of values.
@@ -56,8 +65,7 @@ namespace restaurant
         private Dictionary<string, dynamic> StartMenu()
         {
             var dict = CreateScreen();
-            dict["output"] = @"
- _____                     _  ______         _             
+            dict["output"] = @" _____                     _  ______         _             
 |  __ \                   | | |  ___|       (_)            
 | |  \/_ __ __ _ _ __   __| | | |_ _   _ ___ _  ___  _ __  
 | | __| '__/ _` | '_ \ / _` | |  _| | | / __| |/ _ \| '_ \ 
@@ -65,7 +73,7 @@ namespace restaurant
  \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|
 
 Welkom bij de menu van GrandFusion!
-[1] Test
+[1] Mockup single meal
 [2] Say Hello!";
             dict["choices"].Add(2);
             dict["choices"].Add(3);
@@ -75,7 +83,31 @@ Welkom bij de menu van GrandFusion!
         private Dictionary<string, dynamic> TestScreen()
         {
             var dict = CreateScreen();
-            dict["output"] = "Hello! You are now at the test screen... it's pretty empty here.\n[1] Go back";
+            dict["output"] = @"Hello! You are now at the test screen.
+Here you will see an example of the details of a single meal from a menu.
+#############################
+# Sushi Pizza               #
+# 4.5 / 5.0 Stars           #
+#                           #
+# Ingredients:              #
+# Fish                      #
+# Rice                      #
+# Dough                     #
+# Tomato                    #
+# Cheese                    #
+#                           #
+# Allergies:                #
+# Lorem                     #
+# Ipsum                     #
+# Lorem                     #
+# Dorem                     #
+# Bipsum                    #
+#                           #
+# Extra options:            #
+# Wasabi on pizza (HOT)     #
+# Soy Sauce on the side     #
+#############################
+[1] Go back";
             dict["choices"].Add(1);
             return dict;
         }
@@ -84,6 +116,14 @@ Welkom bij de menu van GrandFusion!
         {
             var dict = CreateScreen();
             dict["output"] = "Hello!\n[1] Go back";
+            dict["choices"].Add(1);
+            return dict;
+        }
+
+        private Dictionary<string, dynamic> InvalidInputScreen()
+        {
+            var dict = CreateScreen();
+            dict["output"] = "Please write a valid choice.\nValid choices are the ones marked with -> [] with a number inside it.\nDon't type your choice with the brackets (These things -> [])\n[1] Go back";
             dict["choices"].Add(1);
             return dict;
         }
@@ -106,14 +146,10 @@ Welkom bij de menu van GrandFusion!
 
         public void Display()
         {
-            if (firstInit)
+            if (invalidInput)
             {
-                screens.Add(StartMenu());
-                screens.Add(TestScreen());
-                screens.Add(HelloScreen());
-
-                currentScreen = screens[0];
-                firstInit = false;
+                currentScreen = InvalidInputScreen();
+                invalidInput = false;
             }
 
             Console.WriteLine(currentScreen["output"]);
@@ -142,7 +178,7 @@ Welkom bij de menu van GrandFusion!
                 }
                 else if (inputAsInteger > currentScreen["choices"].Count || inputAsInteger < 1)
                 {
-                    Console.WriteLine("Please write a valid choice");
+                    invalidInput = true;
                 }
                 else
                 {
