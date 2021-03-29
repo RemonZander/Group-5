@@ -30,7 +30,7 @@ namespace restaurant
 
         public List<Reserveringen> reserveringen { get; set; }
 
-        public List<Klantgegevens> klantgegevens { get; set; }
+        public List<Login_gegevens> login_gegevens { get; set; }
 
         public restaurant.Uitgaven uitgaven { get; set; }
 

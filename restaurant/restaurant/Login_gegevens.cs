@@ -12,5 +12,7 @@ namespace restaurant
         public string password { get; set; }
 
         public string type { get; set; }
+
+        public Klantgegevens klantgegevens { get; set; }
     }
 }

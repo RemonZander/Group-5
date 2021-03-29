@@ -216,18 +216,6 @@
         <Position X="0.507" Y="0.839" />
       </MemberNameLabel>
     </AssociationLine>
-    <AssociationLine Name="klantgegevens" Type="restaurant.Klantgegevens" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="20.562" Y="6.5" />
-        <Point X="20.562" Y="2.218" />
-        <Point X="22.607" Y="2.218" Type="JumpStart" />
-        <Point X="22.773" Y="2.218" Type="JumpEnd" />
-        <Point X="23.5" Y="2.218" />
-      </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="1.183" Y="0.112" />
-      </MemberNameLabel>
-    </AssociationLine>
     <AssociationLine Name="uitgaven" Type="restaurant.Uitgaven">
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="0.432" Y="0.138" />
@@ -265,7 +253,7 @@
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>QAAAAAAAAAACAAIcAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <HashCode>QAAAAAEAAAACAAIUAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
       <FileName>Database.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -275,29 +263,20 @@
     </ShowAsAssociation>
     <ShowAsCollectionAssociation>
       <Property Name="reserveringen" />
-      <Property Name="klantgegevens" />
       <Property Name="tafels" />
       <Property Name="reviews" />
       <Property Name="feedback" />
+      <Property Name="login_gegevens" />
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="restaurant.Klantgegevens">
     <Position X="23.5" Y="0.5" Width="1.5" />
-    <AssociationLine Name="login_gegevens" Type="restaurant.Login_gegevens" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="24.312" Y="0.5" />
-        <Point X="24.312" Y="0.125" />
-        <Point X="30.875" Y="0.125" />
-        <Point X="30.875" Y="0.5" />
-      </Path>
-    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>BCAAAAkAAABAAAAAAAAAQAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
+      <HashCode>BCAAAAgAAABAAAAAAAAAQAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
       <FileName>Klantgegevens.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="adres" />
-      <Property Name="login_gegevens" />
     </ShowAsAssociation>
   </Class>
   <Class Name="restaurant.adres">
@@ -308,11 +287,21 @@
     </TypeIdentifier>
   </Class>
   <Class Name="restaurant.Login_gegevens">
-    <Position X="30.25" Y="0.5" Width="1.5" />
+    <Position X="20.5" Y="1.5" Width="1.5" />
+    <AssociationLine Name="klantgegevens" Type="restaurant.Klantgegevens" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="21.188" Y="1.5" />
+        <Point X="21.188" Y="1.375" />
+        <Point X="23.5" Y="1.375" />
+      </Path>
+    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAgAAAAAAAAAAABAAAAAAAAAgAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAoAAAAAAAAAAABAAAAAAAAAgAAAAA=</HashCode>
       <FileName>Login_gegevens.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="klantgegevens" />
+    </ShowAsAssociation>
   </Class>
   <Class Name="restaurant.Type_BTW_Prijs">
     <Position X="37.25" Y="5.75" Width="1.5" />
