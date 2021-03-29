@@ -248,20 +248,20 @@
         <Position X="-0.672" Y="0.477" />
       </MemberNameLabel>
     </AssociationLine>
-    <AssociationLine Name="feedback" Type="restaurant.Feedback" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="19.562" Y="6.5" />
-        <Point X="19.562" Y="2.193" />
-        <Point X="13.906" Y="2.193" />
-        <Point X="13.906" Y="1.733" />
-      </Path>
-    </AssociationLine>
     <AssociationLine Name="reviews" Type="restaurant.Review" ManuallyRouted="true">
       <Path>
         <Point X="20.062" Y="6.5" />
         <Point X="20.062" Y="2.047" />
         <Point X="15.75" Y="2.047" />
         <Point X="15.75" Y="1.733" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="feedback" Type="restaurant.Feedback" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="19.562" Y="6.5" />
+        <Point X="19.562" Y="2.193" />
+        <Point X="13.906" Y="2.193" />
+        <Point X="13.906" Y="1.733" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
@@ -277,8 +277,8 @@
       <Property Name="reserveringen" />
       <Property Name="klantgegevens" />
       <Property Name="tafels" />
-      <Property Name="feedback" />
       <Property Name="reviews" />
+      <Property Name="feedback" />
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="restaurant.Klantgegevens">
@@ -310,7 +310,7 @@
   <Class Name="restaurant.Login_gegevens">
     <Position X="30.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAgAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAgAAAAAAAAAAABAAAAAAAAAgAAAAA=</HashCode>
       <FileName>Login_gegevens.cs</FileName>
     </TypeIdentifier>
   </Class>
