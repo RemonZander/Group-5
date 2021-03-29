@@ -123,7 +123,7 @@ Here you will see an example of the details of a single meal from a menu.
         private Dictionary<string, dynamic> InvalidInputScreen()
         {
             var dict = CreateScreen();
-            dict["output"] = "Please write a valid choice.\nValid choices are the ones marked with -> [] with a number inside it.\nDon't type your choice with the brackets (These things -> [])\n[1] Go back";
+            dict["output"] = "Please type a valid choice.\nValid choices are the ones marked with -> [] with a number inside it.\nDon't type your choice with the brackets (These things -> [])\nExample: When you see this option -> [1] you press the number: 1 and then click on enter\n[1] Go back";
             dict["choices"].Add(1);
             return dict;
         }
