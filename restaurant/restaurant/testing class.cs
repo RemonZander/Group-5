@@ -8,7 +8,7 @@ namespace restaurant
 {
     public class Testing_class
     {
-        private Database database = new Database();
+        private readonly Database database = new Database();
         private readonly IO io = new IO();
 
         public Testing_class()
@@ -21,6 +21,10 @@ namespace restaurant
 
         }
 
+        //In de region hierinder staat alle code voor het opslaan van Reserveringen
+        #region Reserveringen
+
+        //Deze functie is voor als je de database wilt vullen met random reserveringen
         public void Fill_reservations(int amount)
         {
             List<Reserveringen> reserveringen_list = new List<Reserveringen>();
@@ -47,18 +51,37 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        public void Fill_reservations(int amount, List<DateTime> datum, List<Gerechten> gerechten, List<Tafels> tafels)
+        //Deze functie is voor als je de database wilt vullen met je eigen data.
+        //Zorg wel dat iedere list even lang is als amount
+        public void Fill_reservations(int amount, List<DateTime> datum, List<List<Gerechten>> gerechten, List<List<Tafels>> tafels)
         {
+            if (datum.Count != amount || gerechten.Count != amount || tafels.Count != amount)
+            {
+                return;
+            }
+
             List<Reserveringen> reserveringen_list = new List<Reserveringen>();
             for (int a = 0; a < amount; a++)
             {
                 reserveringen_list.Add(new Reserveringen
                 {
-
+                    datum = datum[a],
+                    ID = a,
+                    gerechten = gerechten[a],
+                    tafels = tafels[a],
                 });
             }
+
+            database.reserveringen = reserveringen_list;
+            io.Savedatabase(database);
         }
 
+        #endregion
+
+        //In de region hieronder staat alle code voor het maken van gerechten
+        #region Gerechten
+
+        //Deze functie is voor als je simpel een lijst van gerechten wilt zonder voorkeur
         public List<Gerechten> Make_dishes()
         {
             List<Gerechten> gerechten = new List<Gerechten>();
@@ -121,6 +144,7 @@ namespace restaurant
             return gerechten;
         }
 
+        //Deze functie is voor als je een lijst van gerechten wilt met een voorkeur. Zorg wel dat iedere list die je doorgeeft dezelfde lengte heeft
         public List<Gerechten> Make_dishes(List<string> names, List<bool> populair, List<bool> archived, List<bool> special, List<double> price)
         {
             if (populair.Count != names.Count || archived.Count != names.Count || special.Count != names.Count || price.Count != names.Count)
@@ -145,5 +169,7 @@ namespace restaurant
 
             return gerechten;
         }
+
+        #endregion
     }
 }

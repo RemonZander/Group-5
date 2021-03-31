@@ -32,9 +32,9 @@ namespace restaurant
 
         public List<Login_gegevens> login_gegevens { get; set; }
 
-        public restaurant.Uitgaven uitgaven { get; set; }
+        public Uitgaven uitgaven { get; set; }
 
-        public restaurant.Inkomsten inkomsten { get; set; }
+        public Inkomsten inkomsten { get; set; }
 
         public List<Tafels> tafels { get; set; }
 

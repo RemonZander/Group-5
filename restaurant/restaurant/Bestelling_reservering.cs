@@ -9,8 +9,8 @@ namespace restaurant
     {
         public double fooi { get; set; }
 
-        public Klantgegevens klantgegevens { get; set; }
-
         public int korting { get; set; }
+
+        public Reserveringen reserveringen { get; set; }
     }
 }
