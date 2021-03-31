@@ -25,6 +25,8 @@ namespace restaurant
 
         private readonly restaurant.Code_Gebruiker_menu Code_Gebruiker = new Code_Gebruiker_menu();
 
+        private readonly restaurant.Testing_class TestingClass = new Testing_class();
+
         private Dictionary<string, dynamic> currentScreen;
 
         private readonly List<Dictionary<string, dynamic>> screens = new List<Dictionary<string, dynamic>>();
@@ -175,6 +177,10 @@ Here you will see an example of the details of a single meal from a menu.
                 else if (inputAsInteger == 103)
                 {
                     // Code_Medewerker.Debug();
+                }
+                else if (inputAsInteger == 104)
+                {
+                    TestingClass.Debug();
                 }
                 else if (inputAsInteger > currentScreen["choices"].Count || inputAsInteger < 1)
                 {
