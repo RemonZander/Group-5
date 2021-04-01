@@ -5,7 +5,7 @@ using System.Text;
 
 namespace restaurant
 {
-    public class Code_Gebruiker_menu
+    public partial class Code_Gebruiker_menu
     {
         Database database = new Database();
         IO io = new IO();

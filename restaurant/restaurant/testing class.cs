@@ -18,7 +18,8 @@ namespace restaurant
         
         public void Debug()
         {
-
+            Fill_Userdata(100);
+            Fill_reservations(100);
         }
 
         //In de region hierinder staat alle code voor het opslaan van Reserveringen
@@ -39,7 +40,7 @@ namespace restaurant
 
                 reserveringen_list.Add(new Reserveringen
                 {
-                    datum = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day + rnd.Next(-30, 30), 22, 0, 0),
+                    datum = new DateTime(DateTime.Now.Year, DateTime.Now.Month, rnd.Next(1, 30), 22, 0, 0),
                     ID = a,
                     gerechten = Make_dishes(),
                     tafels = tafels,
@@ -171,5 +172,160 @@ namespace restaurant
         }
 
         #endregion
+
+        public void Fill_Userdata(int amount)
+        {
+            string[][] names = Make_Names();
+            Random rnd = new Random();
+            List<Login_gegevens> login_Gegevens = new List<Login_gegevens>();
+            for (int a = 0; a < amount; a++)
+            {
+                string Firstname = "";
+                string Surname = "";
+                if (a % 2 == 0)
+                {
+                    Firstname = names[0][rnd.Next(0, 20)];
+                }
+                else
+                {
+                    Firstname = names[1][rnd.Next(0, 20)];
+                }
+
+                if (Firstname != "Rémon" && Firstname != "Moureen")
+                {
+                    Surname = names[2][rnd.Next(0, 40)];
+                }
+                else if (Firstname == "Rémon")
+                {
+                    Surname = "Zander";
+                }
+                else
+                {
+                    Surname = "Wittekoek";
+                }
+
+                login_Gegevens.Add(new Login_gegevens
+                {
+                    email = Firstname + "." + Surname + "@gmail.com",
+                    type = "Gebruiker",
+                    password = "000" + a.ToString(),
+                    klantgegevens = new Klantgegevens
+                    {
+                        voornaam = Firstname,
+                        achternaam = Surname,
+                        geb_datum = new DateTime(rnd.Next(1929, 2006), rnd.Next(1, 13),rnd.Next(1, 29), 1, 0, 0),
+                        klantnummer = a,
+                    }
+                }) ;
+            }
+
+            database.login_gegevens = login_Gegevens;
+            io.Savedatabase(database);
+        }
+
+        private string[][] Make_Names()
+        {
+            string[][] names = new string[3][];
+            names[0] = new string[]
+            {
+               "Wade",
+                "Dave",
+                "Seth",
+                "Ivan",
+                "Riley",
+                "Gilbert",
+                "Jorge",
+                 "Dan",
+                "Brian",
+                "Roberto",
+                "Rémon",
+                "Miles",
+                "Liam",
+                "Nathaniel",
+                "Ethan",
+                "Lewis",
+                "Milton",
+                "Claude",
+                "Joshua",
+                "Glen",
+                "Harvey",
+                "Blake",
+                "Antonio",
+            };
+
+            names[1] = new string[]
+            {
+                "Daisy",
+                "Deborah",
+                "Isabel",
+                "Stella",
+                "Debra",
+                "Beverly",
+                "Vera",
+                "Angela",
+                "Lucy",
+                "Lauren",
+                "Janet",
+                "Loretta",
+                "Tracey",
+                "Beatrice",
+                "Sabrina",
+                "Moureen",
+                "Chrysta",
+                "Christina",
+                "Vicki",
+                "Molly",
+            };
+
+            names[2] = new string[]
+            {
+                "Williams",
+                "Harris",
+                "Thomas",
+                "Robinson",
+                "Walker",
+                "Scott",
+                "Nelson",
+                "Mitchell",
+                "Morgan",
+                "Cooper",
+                "Howard",
+                "Davis",
+                "Miller",
+                "Martin",
+                "Smith",
+                "Anderson",
+                "White",
+                "Perry",
+                "Clark",
+                "Richards",
+                "Wheeler",
+                "Wittekoek",
+                "Zander",
+                "Holland",
+                "Terry",
+                "Shelton",
+                "Miles",
+                "Lucas",
+                "Fletcher",
+                "Parks",
+                "Norris",
+                "Guzman",
+                "Daniel",
+                "Newton",
+                "Potter",
+                "Francis",
+                "Erickson",
+                "Norman",
+                "Moody",
+                "Lindsey",
+            };
+            return names;
+        }
+    }
+
+    public partial class Code_Gebruiker_menu
+    {
+
     }
 }

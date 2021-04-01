@@ -31,6 +31,21 @@ namespace restaurant
             string output = File.ReadAllText(@"..\database\database.Json");
             database = JsonConvert.DeserializeObject<Database>(output);
 
+            List<Tafels> temp = new List<Tafels>();
+            for (int i = 0; i < 100; i++)
+            {
+                Tafels tafel = new Tafels
+                {
+                    ID = i,
+                    Zetels = 4
+                };
+
+                if (i % 2 != 0) tafel.isRaam = true;
+
+                temp.Add(tafel);
+            }
+            database.tafels = temp;
+
             return database;
         }
     }
