@@ -40,7 +40,7 @@ namespace restaurant
 
                 reserveringen_list.Add(new Reserveringen
                 {
-                    datum = new DateTime(DateTime.Now.Year, DateTime.Now.Month, rnd.Next(1, 30), 22, 0, 0),
+                    datum = new DateTime(DateTime.Now.Year, DateTime.Now.Month, rnd.Next(1, 30), rnd.Next(10, 22), 0, 0),
                     ID = a,
                     gerechten = Make_dishes(),
                     tafels = tafels,
