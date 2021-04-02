@@ -40,7 +40,7 @@ namespace restaurant
 
                 reserveringen_list.Add(new Reserveringen
                 {
-                    datum = new DateTime(DateTime.Now.Year, DateTime.Now.Month, rnd.Next(1, 30), rnd.Next(10, 22), 0, 0),
+                    datum = new DateTime(DateTime.Now.Year, DateTime.Now.Month, rnd.Next(1, 30), rnd.Next(10, 22), Rnd_quarters(), 0),
                     ID = a,
                     gerechten = Make_dishes(),
                     tafels = tafels,
@@ -50,6 +50,15 @@ namespace restaurant
 
             database.reserveringen = reserveringen_list;
             io.Savedatabase(database);
+        }
+
+        private int Rnd_quarters()
+        {
+            Random rnd = new Random();
+
+            int a = rnd.Next(0, 4);
+
+            return a * 15;
         }
 
         //Deze functie is voor als je de database wilt vullen met je eigen data.
