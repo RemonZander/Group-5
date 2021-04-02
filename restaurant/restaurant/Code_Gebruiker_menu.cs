@@ -26,22 +26,28 @@ namespace restaurant
             List<Tuple<DateTime, List<Tafels>>> beschikbaar = new List<Tuple<DateTime, List<Tafels>>>();
 
             //de eerste for loop, maakt voor iedere dag een nieuwe tijd aan
-            //de tweede for loop, voegt alle beschikbare tijden voor iedere dag toe (om de twee uur vanaf 1000 tot 2200)
-            for (int a= 0; a<=dagen; a++)
+            //de tweede for loop, gaat door alle uren heen,
+            //de derde loop voegt steeds een kwartier toe aan de tijd,
+            //als laatste word tijd teruggezet naar 1000 de volgende dag
+            DateTime possibleTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 10, 0, 0);
+            for (int days = 0; days <= dagen; days++)
             {
-                DateTime temp = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 10, 0, 0);
-                temp = temp.AddDays(a);
-                for (int b = 0; b<=6; b++)
+                for (int hours = 0; hours < 12; hours++)
                 {
-                    temp.AddHours(b * 2);
-                    beschikbaar.Add(Tuple.Create(temp,database.tafels));
+                    for (int quarter = 0; quarter < 4; quarter++)
+                    {
+                        beschikbaar.Add(Tuple.Create(possibleTime, database.tafels));
+                        possibleTime = possibleTime.AddMinutes(15);
+                    }
                 }
+                possibleTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day + 1, 10, 0, 0);
             }
-            
+
             foreach (var reservering in database.reserveringen)
             {
                 // reservering heeft een tijdsblok van 2 uur
-                if(reservering.datum.Date == DateTime.Now.Date || reservering.datum.Date <= new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day+dagen, 22, 0, 0))
+                //als die een reservering vind in de database moet die bij de gereserveerde tafel voor een x aantal uur en y aantal minuten de beschikbare reservering weghalen
+                if(reservering.datum.Date == DateTime.Now.Date || reservering.datum.Date <= new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day+dagen, 21, 0, 0))
                 {
                     List<Tafels> tempTableList = beschikbaar[beschikbaar.IndexOf(Tuple.Create(reservering.datum, database.tafels))].Item2;
                     foreach (var tafel in reservering.tafels)
