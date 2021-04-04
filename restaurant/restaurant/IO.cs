@@ -8,7 +8,7 @@ using System.IO;
 
 namespace restaurant
 {
-    public class IO
+    public partial class IO
     {
         public void Savedatabase(Database database)
         {

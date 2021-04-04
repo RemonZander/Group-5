@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.VisualBasic.FileIO;
 
 namespace restaurant
 {
@@ -26,6 +28,8 @@ namespace restaurant
         #region Reserveringen
 
         //Deze functie is voor als je de database wilt vullen met random reserveringen
+        //Als er al klantgegevens zijn in het systeem dan vult hij die gelijk aan in de reservering
+        //Als er geen klantgegevens in het systeem zijn dan kunnen er ook geen gerechten gegeten zijn dus die zijn dan ook leeg in de reservering
         public void Fill_reservations(int amount)
         {
             List<Reserveringen> reserveringen_list = new List<Reserveringen>();
@@ -33,19 +37,54 @@ namespace restaurant
             for (int a = 0; a < amount; a++)
             {
                 List<Tafels> tafels = new List<Tafels>();
-                for (int b = 0; b < rnd.Next(4); b++)
+                for (int b = 0; b < rnd.Next(1, 4); b++)
                 {
                     tafels.Add(database.tafels[b]);
                 }
 
-                reserveringen_list.Add(new Reserveringen
+                if (database.login_gegevens.Count == 0)
                 {
-                    datum = new DateTime(DateTime.Now.Year, DateTime.Now.Month, rnd.Next(1, 30), rnd.Next(10, 22), Rnd_quarters(), 0),
-                    ID = a,
-                    gerechten = Make_dishes(),
-                    tafels = tafels,
-                    
-                });
+                    reserveringen_list.Add(new Reserveringen
+                    {
+                        datum = new DateTime(DateTime.Now.Year, DateTime.Now.Month, rnd.Next(1, 30), rnd.Next(10, 22), Rnd_quarters(), 0),
+                        ID = a,
+                        tafels = tafels,
+                    });
+                }
+                else
+                {
+                    List<Klantgegevens> klantgegevens = new List<Klantgegevens>();
+                    switch (tafels.Count)
+                    {
+                        case 1:
+                            for (int c = 0; c < rnd.Next(1, 5); c++)
+                            {
+                                klantgegevens.Add(database.login_gegevens[rnd.Next(database.login_gegevens.Count)].klantgegevens);
+                            }
+                            break;
+                        case 2:
+                            for (int c = 0; c < rnd.Next(5, 9); c++)
+                            {
+                                klantgegevens.Add(database.login_gegevens[rnd.Next(database.login_gegevens.Count)].klantgegevens);
+                            }
+                            break;
+                        case 3:
+                            for (int c = 0; c < rnd.Next(9, 13); c++)
+                            {
+                                klantgegevens.Add(database.login_gegevens[rnd.Next(database.login_gegevens.Count)].klantgegevens);
+                            }
+                            break;
+                    }
+
+                    reserveringen_list.Add(new Reserveringen
+                    {
+                        datum = new DateTime(DateTime.Now.Year, DateTime.Now.Month, rnd.Next(1, 30), rnd.Next(10, 22), Rnd_quarters(), 0),
+                        ID = a,
+                        tafels = tafels,
+                        klantgegevens = klantgegevens,
+                        gerechten = Make_dishes(klantgegevens.Count * 3)
+                    });
+                }
             }
 
             database.reserveringen = reserveringen_list;
@@ -63,7 +102,7 @@ namespace restaurant
 
         //Deze functie is voor als je de database wilt vullen met je eigen data.
         //Zorg wel dat iedere list even lang is als amount
-        public void Fill_reservations(int amount, List<DateTime> datum, List<List<Gerechten>> gerechten, List<List<Tafels>> tafels)
+        public void Fill_reservations(int amount, List<DateTime> datum, List<List<Gerechten>> gerechten, List<List<Tafels>> tafels, List<List<Klantgegevens>> klantgegevens)
         {
             if (datum.Count != amount || gerechten.Count != amount || tafels.Count != amount)
             {
@@ -79,6 +118,7 @@ namespace restaurant
                     ID = a,
                     gerechten = gerechten[a],
                     tafels = tafels[a],
+                    klantgegevens = klantgegevens[a]
                 });
             }
 
@@ -92,64 +132,83 @@ namespace restaurant
         #region Gerechten
 
         //Deze functie is voor als je simpel een lijst van gerechten wilt zonder voorkeur
-        public List<Gerechten> Make_dishes()
+        public List<Gerechten> Make_dishes(int amount)
         {
             List<Gerechten> gerechten = new List<Gerechten>();
+            Random rnd = new Random();
 
-            gerechten.Add(new Gerechten
+            for (int a = 0; a <= amount; a++)
             {
-                ID = 0,
-                naam = "Pizza Salami",
-                is_populair = true,
-                is_gearchiveerd = false,
-                special = true,
-                prijs = 15.0
-            });
-            gerechten.Add(new Gerechten
-            {
-                ID = 1,
-                naam = "Vla",
-                is_populair = false,
-                is_gearchiveerd = false,
-                special = true,
-                prijs = 8.0
-            });
-            gerechten.Add(new Gerechten
-            {
-                ID = 2,
-                naam = "Hamburger",
-                is_populair = true,
-                is_gearchiveerd = false,
-                special = false,
-                prijs = 13.0
-            });
-            gerechten.Add(new Gerechten
-            {
-                ID = 3,
-                naam = "Yoghurt",
-                is_populair = false,
-                is_gearchiveerd = true,
-                special = false,
-                prijs = 6.0
-            });
-            gerechten.Add(new Gerechten
-            {
-                ID = 4,
-                naam = "IJs",
-                is_populair = false,
-                is_gearchiveerd = true,
-                special = false,
-                prijs = 9.5
-            });
-            gerechten.Add(new Gerechten
-            {
-                ID = 5,
-                naam = "Patat",
-                is_populair = true,
-                is_gearchiveerd = false,
-                special = false,
-                prijs = 11.5
-            });
+                switch (rnd.Next(6))
+                {
+                    case 0:
+                        gerechten.Add(new Gerechten
+                        {
+                            ID = 0,
+                            naam = "Pizza Salami",
+                            is_populair = true,
+                            is_gearchiveerd = false,
+                            special = true,
+                            prijs = 15.0
+                        });
+                        break;
+                    case 1:
+                        gerechten.Add(new Gerechten
+                        {
+                            ID = 1,
+                            naam = "Vla",
+                            is_populair = false,
+                            is_gearchiveerd = false,
+                            special = true,
+                            prijs = 8.0
+                        });
+                        break;
+                    case 2:
+                        gerechten.Add(new Gerechten
+                        {
+                            ID = 2,
+                            naam = "Hamburger",
+                            is_populair = true,
+                            is_gearchiveerd = false,
+                            special = false,
+                            prijs = 13.0
+                        });
+                        break;
+                    case 3:
+                        gerechten.Add(new Gerechten
+                        {
+                            ID = 3,
+                            naam = "Yoghurt",
+                            is_populair = false,
+                            is_gearchiveerd = true,
+                            special = false,
+                            prijs = 6.0
+                        });
+                        break;
+                    case 4:
+                        gerechten.Add(new Gerechten
+                        {
+                            ID = 4,
+                            naam = "IJs",
+                            is_populair = false,
+                            is_gearchiveerd = true,
+                            special = false,
+                            prijs = 9.5
+                        });
+                        break;
+                    case 5:
+                        gerechten.Add(new Gerechten
+                        {
+                            ID = 5,
+                            naam = "Patat",
+                            is_populair = true,
+                            is_gearchiveerd = false,
+                            special = false,
+                            prijs = 11.5
+                        });
+                        break;
+                }
+            }
 
             return gerechten;
         }
@@ -333,8 +392,40 @@ namespace restaurant
         }
     }
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public partial class Code_Gebruiker_menu
     {
 
+    }
+    
+    public partial class IO
+    {
+
+        //Deze functie is klaar en kan geknipt worden naar het daadwerkelijke IO bestand. Maakt de boel overzichtelijker
+        public void Reset_filesystem()
+        {
+            try
+            {
+                FileSystem.DeleteDirectory(@"..\database\", DeleteDirectoryOption.DeleteAllContents);
+            }
+            catch
+            {
+            }
+
+            if (!FileSystem.DirectoryExists(@"..\database\"))
+            {
+                FileSystem.CreateDirectory(@"..\database\");
+            }
+        }
     }
 }
