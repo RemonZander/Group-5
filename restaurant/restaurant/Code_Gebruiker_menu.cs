@@ -56,7 +56,7 @@ namespace restaurant
                     
                     //als er geen tafels meer vrij zijn haalt hij de tafel weg
                     if(tempTableList.Count == 0)
-                        for (int a = 0; a <= 8; a++)
+                        for (int a = 0; a < 8; a++)
                         {
                             beschikbaar.Remove(Tuple.Create(new DateTime(reservering.datum.Year, reservering.datum.Month, reservering.datum.Day, a * 15, 0, 0), tempTableList));
                         }
@@ -64,7 +64,7 @@ namespace restaurant
                     //maakt tuple met tafels die wel beschikbaar zijn
                     else
                     {
-                        for (int a = 0; a <= 8; a++)
+                        for (int a = 0; a < 8; a++)
                         {
                             beschikbaar[beschikbaar.IndexOf(Tuple.Create(reservering.datum, database.tafels))] = Tuple.Create(new DateTime(reservering.datum.Year, reservering.datum.Month, reservering.datum.Day, a * 15, 0, 0), tempTableList);
                         }
@@ -72,6 +72,50 @@ namespace restaurant
                 }
             }
             return beschikbaar;
+        }
+    
+        public string GetMenukaart()
+        {
+            string menukaart = "";
+
+            for(int i = 0; i< database.menukaart.gerechten.Count; i++)
+            {
+                //begint bij de naam van het gerecht
+                menukaart += database.menukaart.gerechten[i].naam;
+                
+                //checked if gerecht is populair zo ja, voeg er wat achter en enter
+                if (database.menukaart.gerechten[i].is_populair && database.menukaart.gerechten[i].special)
+                {
+                    menukaart += " | Populair | Speciaal\n";
+                }
+                else if (database.menukaart.gerechten[i].is_populair)
+                {
+                    menukaart += " |"
+                }
+                else if (database.menukaart.gerechten[i].special)
+                {
+
+                }
+                else
+                {
+                    menukaart += "\n";
+                }
+
+                //voegt alle ingrediënten toe en per 5 doet een enter
+                for (int j = 0; j < database.menukaart.gerechten[i].ingredienten.Count; j++)
+                {
+                    menukaart += "Ingrediënten: " + database.menukaart.gerechten[i].ingredienten[j];
+                    
+                    if (j % 5 == 0)
+                    {
+                        menukaart += "\n";
+                    }
+                }
+                
+            }
+            
+            
+            return menukaart;
         }
     }
 }

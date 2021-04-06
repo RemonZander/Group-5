@@ -453,21 +453,6 @@ namespace restaurant
     public partial class IO
     {
 
-        //Deze functie is klaar en kan geknipt worden naar het daadwerkelijke IO bestand. Maakt de boel overzichtelijker
-        public void Reset_filesystem()
-        {
-            try
-            {
-                FileSystem.DeleteDirectory(@"..\database\", DeleteDirectoryOption.DeleteAllContents);
-            }
-            catch
-            {
-            }
-
-            if (!FileSystem.DirectoryExists(@"..\database\"))
-            {
-                FileSystem.CreateDirectory(@"..\database\");
-            }
-        }
+        
     }
 }

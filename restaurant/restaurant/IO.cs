@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;
 using System.IO;
+using Microsoft.VisualBasic.FileIO;
 
 namespace restaurant
 {
@@ -47,6 +48,23 @@ namespace restaurant
             database.tafels = temp;
 
             return database;
+        }
+        
+        //Deze functie is klaar en kan geknipt worden naar het daadwerkelijke IO bestand. Maakt de boel overzichtelijker
+        public void Reset_filesystem()
+        {
+            try
+            {
+                FileSystem.DeleteDirectory(@"..\database\", DeleteDirectoryOption.DeleteAllContents);
+            }
+            catch
+            {
+            }
+
+            if (!FileSystem.DirectoryExists(@"..\database\"))
+            {
+                FileSystem.CreateDirectory(@"..\database\");
+            }
         }
     }
 }
