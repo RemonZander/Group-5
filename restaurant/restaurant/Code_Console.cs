@@ -10,7 +10,10 @@ namespace restaurant
     * NOTE: Screens could be defined in JSON
     * NOTE: Code in FirstInit if condition can be copied into a constructor
     * 
-    * TODO: Choice should be dynamically added to output
+    * TODO: Make distinction between DisplayScreen and ActionScreen
+    * To elaborate: DisplayScreens are purely for displaying data, ActionScreens is for doing a certain action (like logging in)
+    * Difference in code is in the part where the choices are located. ActionScreens dont have choices for going to another screen.
+    * They instead hold a list of actions that must be performed in that screen to then move on to the next screen or display an error message of some kind.
     * 
     */
     public class Code_Console
@@ -46,6 +49,13 @@ namespace restaurant
 
         public Code_Console()
         {
+            Login_gegevens data = new Login_gegevens();
+            data.email = "test@gmail.com";
+            data.password = "123";
+            data.type = "Eigenaar";
+
+            Code_login.Register(data);
+
             screens.Add(StartScreenCustomer());
             screens.Add(StartScreenEmployee());
             screens.Add(ChoiceScreen());
@@ -93,6 +103,13 @@ namespace restaurant
         private Dictionary<string, dynamic> StartScreenEmployee()
         {
             var dict = CreateScreen("StartScreenEmployee");
+            dict["output"] = $"{GFLogo}\nMedewerkers Scherm";
+            return dict;
+        }
+
+        private Dictionary<string, dynamic> LoginScreen()
+        {
+            var dict = CreateScreen("LoginScreen");
             dict["output"] = $"{GFLogo}\nMedewerkers Scherm";
             return dict;
         }
