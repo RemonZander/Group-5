@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Microsoft.VisualBasic.FileIO;
 
 namespace restaurant
@@ -25,8 +27,8 @@ namespace restaurant
         public void Debug()
         {
             Fill_Userdata(100);
-            Fill_reservations(100);
-            //Inkomsten();
+            Fill_reservations(500);
+            Inkomsten(new DateTime(DateTime.Now.Year, 1, 1, 10, 0, 0), DateTime.Now);
         }
 
         //In de region hierinder staat alle code voor het opslaan van Reserveringen
@@ -51,7 +53,7 @@ namespace restaurant
                 {
                     reserveringen_list.Add(new Reserveringen
                     {
-                        datum = new DateTime(DateTime.Now.Year, rnd.Next(1, 13), rnd.Next(1, 30), rnd.Next(10, 22), Rnd_quarters(), 0),
+                        datum = new DateTime(DateTime.Now.Year, rnd.Next(1, 12), rnd.Next(1, 29), rnd.Next(10, 22), Rnd_quarters(), 0),
                         ID = a,
                         tafels = tafels,
                     });
@@ -83,7 +85,7 @@ namespace restaurant
 
                     reserveringen_list.Add(new Reserveringen
                     {
-                        datum = new DateTime(DateTime.Now.Year, DateTime.Now.Month, rnd.Next(1, 30), rnd.Next(10, 22), Rnd_quarters(), 0),
+                        datum = new DateTime(DateTime.Now.Year, rnd.Next(1, 12), rnd.Next(1, 29), rnd.Next(10, 22), Rnd_quarters(), 0),
                         ID = a,
                         tafels = tafels,
                         klantgegevens = klantgegevens,
@@ -408,7 +410,10 @@ namespace restaurant
             if (database.reserveringen.Count == 0 || endtime > DateTime.Now) return;
 
             Random rnd = new Random();
-            for (int a = 0; a < database.reserveringen.Count(); a++)
+
+            Inkomsten inkomsten = database.inkomsten;
+            List<Bestelling_reservering> bestelling_Reservering = new List<Bestelling_reservering>();
+            for (int a = 0, b = 0; a < database.reserveringen.Count(); a++)
             {
                 if (database.reserveringen[a].datum >= begintime && database.reserveringen[a].datum <= endtime)
                 {
@@ -417,17 +422,21 @@ namespace restaurant
                     {
                         prijs += gerecht.prijs;
                     }
-                    database.inkomsten.bestelling_reservering.Add(new Bestelling_reservering
+                    bestelling_Reservering.Add(new Bestelling_reservering
                     {
-                        ID = a,
+                        ID = b,
                         reserveringen = database.reserveringen[a],
                         fooi = rnd.Next(11),
                         prijs = prijs,
-                        BTW = prijs / 100 * 0.21,
+                        BTW = prijs * 0.21,
                     });
+
+                    b++;
                 }
             }
 
+            inkomsten.bestelling_reservering = bestelling_Reservering;
+            database.inkomsten = inkomsten;
             io.Savedatabase(database);
         }
 
@@ -455,4 +464,51 @@ namespace restaurant
 
         
     }
+
+
+
+    //Dit is voor Luenna (oeps)
+
+    /*
+             //Deze functie is af en kan geknipt worden naar Code_Gebruiker_menu.cs
+        public string Register(Login_gegevens login_Gegevens)
+        {
+            List<string> chars = Make_chararray();
+            foreach (var item in database.login_gegevens)
+            {
+                if (item.email == login_Gegevens.email && item.type == login_Gegevens.type)
+                {
+                    return "Deze email en account type is al in gebruik";
+                }
+            }
+
+            for (int b = 0; b < chars.Count(); b++)
+            {
+                if (login_Gegevens.password.Contains(chars[b]) && login_Gegevens.password.Length < 8 &&
+                    (login_Gegevens.password.Contains("0") || login_Gegevens.password.Contains("1") || login_Gegevens.password.Contains("2") ||
+                    login_Gegevens.password.Contains("3") || login_Gegevens.password.Contains("4") || login_Gegevens.password.Contains("5") ||
+                    login_Gegevens.password.Contains("6") || login_Gegevens.password.Contains("7") || login_Gegevens.password.Contains("8") || login_Gegevens.password.Contains("9")))
+                {
+                    database.login_gegevens.Add(login_Gegevens);
+
+                    io.Savedatabase(database);
+                    return "Succes!";
+                }
+            }
+
+            return "Password moet minimaal 8 tekens, een leesteken en een cijfer hebben";
+        }
+
+        //Deze functie is af en kan geknipt worden naar Code_Gebruiker_menu.cs
+        private List<string> Make_chararray()
+        {
+            List<string> chars = new List<string>();
+            chars.AddRange(new List<string>
+            {
+                "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "=", "+", "[", "]", "{", "}", @"\", "|", ";", ":", @"'", ",", ".", "<", ">", "/", "?"
+            });
+
+            return chars;
+        }
+     */
 }
