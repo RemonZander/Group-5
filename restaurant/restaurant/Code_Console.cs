@@ -10,10 +10,8 @@ namespace restaurant
     * NOTE: Screens could be defined in JSON
     * NOTE: Code in FirstInit if condition can be copied into a constructor
     * 
-    * Screens:
-    *   id: int
-    *   output: string,
-    *   choices: List<int>
+    * TODO: Choice should be dynamically added to output
+    * 
     */
     public class Code_Console
     {
@@ -26,65 +24,82 @@ namespace restaurant
         private readonly restaurant.Code_Gebruiker_menu Code_Gebruiker = new Code_Gebruiker_menu();
 
         private readonly restaurant.Testing_class TestingClass = new Testing_class();
-
-        private Dictionary<string, dynamic> currentScreen;
+        
+        private Dictionary<string, dynamic> currentScreen, previousScreen;
 
         private readonly List<Dictionary<string, dynamic>> screens = new List<Dictionary<string, dynamic>>();
+
+        private readonly List<string> screenNames = new List<string>();
 
         private bool invalidInput = false;
 
         private string input = "0";
 
-        private int screenIds = 0;
+        private int screenIds = -1;
+
+        private string GFLogo = @" _____                     _  ______         _             
+|  __ \                   | | |  ___|       (_)            
+| |  \/_ __ __ _ _ __   __| | | |_ _   _ ___ _  ___  _ __  
+| | __| '__/ _` | '_ \ / _` | |  _| | | / __| |/ _ \| '_ \ 
+| |_\ \ | | (_| | | | | (_| | | | | |_| \__ \ | (_) | | | |
+ \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|";
 
         public Code_Console()
         {
-            screens.Add(StartMenu());
-            screens.Add(TestScreen());
-            screens.Add(HelloScreen());
+            screens.Add(StartScreenCustomer());
+            screens.Add(StartScreenEmployee());
+            screens.Add(ChoiceScreen());
 
-            currentScreen = screens[0];
+            previousScreen = null;
+            currentScreen = screens[screenNames.IndexOf("ChoiceScreen")];
         }
 
         /*
          * Creates a dict with string keys and different type of values.
          * id: int
+         * name: string
          * output: string
-         * choices: List<int> holds the id's
+         * choices: List<int> holds the id
          */
-        private Dictionary<string, dynamic> CreateScreen()
+        private Dictionary<string, dynamic> CreateScreen(string name)
         {
             screenIds++;
+            screenNames.Add(name);
 
             var dict = new Dictionary<string, dynamic>();
             dict.Add("id", screenIds);
             dict.Add("output", "");
-            dict.Add("choices", new List<int>());
+            dict.Add("choices", new Dictionary<int, string>());
 
             return dict;
         }
 
-        private Dictionary<string, dynamic> StartMenu()
+        private Dictionary<string, dynamic> ChoiceScreen()
         {
-            var dict = CreateScreen();
-            dict["output"] = @" _____                     _  ______         _             
-|  __ \                   | | |  ___|       (_)            
-| |  \/_ __ __ _ _ __   __| | | |_ _   _ ___ _  ___  _ __  
-| | __| '__/ _` | '_ \ / _` | |  _| | | / __| |/ _ \| '_ \ 
-| |_\ \ | | (_| | | | | (_| | | | | |_| \__ \ | (_) | | | |
- \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|
+            var dict = CreateScreen("ChoiceScreen");
+            dict["output"] = "Kies een rol:";
+            dict["choices"].Add(screenNames.IndexOf("StartScreenCustomer"), "Customer");
+            dict["choices"].Add(screenNames.IndexOf("StartScreenEmployee"), "Employee");
+            return dict;
+        }
 
-Welkom bij de menu van GrandFusion!
-[1] Mockup single meal
-[2] Say Hello!";
-            dict["choices"].Add(2);
-            dict["choices"].Add(3);
+        private Dictionary<string, dynamic> StartScreenCustomer()
+        {
+            var dict = CreateScreen("StartScreenCustomer");
+            dict["output"] = $"{GFLogo}\nKlanten Scherm";
+            return dict;
+        }
+
+        private Dictionary<string, dynamic> StartScreenEmployee()
+        {
+            var dict = CreateScreen("StartScreenEmployee");
+            dict["output"] = $"{GFLogo}\nMedewerkers Scherm";
             return dict;
         }
 
         private Dictionary<string, dynamic> TestScreen()
         {
-            var dict = CreateScreen();
+            var dict = CreateScreen("TestScreen");
             dict["output"] = @"Hello! You are now at the test screen.
 Here you will see an example of the details of a single meal from a menu.
 #############################
@@ -110,36 +125,29 @@ Here you will see an example of the details of a single meal from a menu.
 # Soy Sauce on the side     #
 #############################
 [1] Go back";
-            dict["choices"].Add(1);
-            return dict;
-        }
-
-        private Dictionary<string, dynamic> HelloScreen()
-        {
-            var dict = CreateScreen();
-            dict["output"] = "Hello!\n[1] Go back";
-            dict["choices"].Add(1);
+            dict["choices"].Add(screenNames.IndexOf("StartScreenCustomer"));
             return dict;
         }
 
         private Dictionary<string, dynamic> InvalidInputScreen()
         {
-            var dict = CreateScreen();
-            dict["output"] = "Please type a valid choice.\nValid choices are the ones marked with -> [] with a number inside it.\nDon't type your choice with the brackets (These things -> [])\nExample: When you see this option -> [1] you press the number: 1 and then click on enter\n[1] Go back";
-            dict["choices"].Add(1);
+            var dict = CreateScreen("InvalidInputScreen");
+            dict["output"] = "Please type a valid choice.\nValid choices are the ones marked with -> [] with a number inside it.\nDon't type your choice with the brackets (These things -> [])\nExample: When you see this option -> [1] you press the number: 1 and then click on enter";
+            dict["choices"].Add(previousScreen["id"], "Go back");
             return dict;
         }
 
         private void ScreenManager(int input)
         {
             // Choice represents a screen ID
-            int choice = currentScreen["choices"][input - 1];
+            Dictionary<int, string> choices = currentScreen["choices"];
 
             // for every screen match the id with choice then get that screen and set it as current screen.
             foreach (var screen in screens)
             {
-                if (screen["id"] == choice)
+                if (choices.ContainsKey(screen["id"]))
                 {
+                    previousScreen = currentScreen;
                     currentScreen = screen;
                     break;
                 }
@@ -150,8 +158,14 @@ Here you will see an example of the details of a single meal from a menu.
         {
             if (invalidInput)
             {
+                previousScreen = currentScreen;
                 currentScreen = InvalidInputScreen();
                 invalidInput = false;
+            }
+            
+            foreach (KeyValuePair<int, string> choice in currentScreen["choices"])
+            {
+                currentScreen["output"] += $"\n[{choice.Key + 1}] {choice.Value}";
             }
 
             Console.WriteLine(currentScreen["output"]);
