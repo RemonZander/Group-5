@@ -8,6 +8,10 @@ using Microsoft.VisualBasic.FileIO;
 
 namespace restaurant
 {
+    //Voor het goed gebruiken van de testing class is het handig om de data op een bepaalde manier toe te voegen.
+    //Voeg als eerste klantgegevens in door de funcite Fill_Userdata
+    //Voeg daarna reserveringen toe met de functie Fill_reservations
+    //Voeg daarna inkosten toe met de functie Inkomsten
     public class Testing_class
     {
         private readonly Database database = new Database();
@@ -22,6 +26,7 @@ namespace restaurant
         {
             Fill_Userdata(100);
             Fill_reservations(100);
+            //Inkomsten();
         }
 
         //In de region hierinder staat alle code voor het opslaan van Reserveringen
@@ -46,7 +51,7 @@ namespace restaurant
                 {
                     reserveringen_list.Add(new Reserveringen
                     {
-                        datum = new DateTime(DateTime.Now.Year, DateTime.Now.Month, rnd.Next(1, 30), rnd.Next(10, 22), Rnd_quarters(), 0),
+                        datum = new DateTime(DateTime.Now.Year, rnd.Next(1, 13), rnd.Next(1, 30), rnd.Next(10, 22), Rnd_quarters(), 0),
                         ID = a,
                         tafels = tafels,
                     });
@@ -241,6 +246,9 @@ namespace restaurant
 
         #endregion
 
+        //In de region hieronder staat alle code voor het maken van klantgegevens en login gegevens
+        #region Klantgegevens
+
         public void Fill_Userdata(int amount)
         {
             string[][] names = Make_Names();
@@ -390,19 +398,53 @@ namespace restaurant
             };
             return names;
         }
+
+        #endregion
+
+        #region Sales
+
+        public void Inkomsten(DateTime begintime, DateTime endtime)
+        {
+            if (database.reserveringen.Count == 0 || endtime > DateTime.Now) return;
+
+            Random rnd = new Random();
+            for (int a = 0; a < database.reserveringen.Count(); a++)
+            {
+                if (database.reserveringen[a].datum >= begintime && database.reserveringen[a].datum <= endtime)
+                {
+                    double prijs = 0;
+                    foreach (var gerecht in database.reserveringen[a].gerechten)
+                    {
+                        prijs += gerecht.prijs;
+                    }
+                    database.inkomsten.bestelling_reservering.Add(new Bestelling_reservering
+                    {
+                        ID = a,
+                        reserveringen = database.reserveringen[a],
+                        fooi = rnd.Next(11),
+                        prijs = prijs,
+                        BTW = prijs / 100 * 0.21,
+                    });
+                }
+            }
+
+            io.Savedatabase(database);
+        }
+
+        #endregion
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
     public partial class Code_Gebruiker_menu
     {
 

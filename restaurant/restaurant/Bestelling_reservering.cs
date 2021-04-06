@@ -5,7 +5,7 @@ using System.Text;
 
 namespace restaurant
 {
-    public abstract class Bestelling_reservering : Type_BTW_Prijs
+    public class Bestelling_reservering : Type_BTW_Prijs
     {
         public double fooi { get; set; }
 
