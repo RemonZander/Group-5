@@ -90,11 +90,11 @@ namespace restaurant
                 }
                 else if (database.menukaart.gerechten[i].is_populair)
                 {
-                    menukaart += " |"
+                    menukaart += " | Populair\n";
                 }
                 else if (database.menukaart.gerechten[i].special)
                 {
-
+                    menukaart += " | Speciaal\n";
                 }
                 else
                 {
