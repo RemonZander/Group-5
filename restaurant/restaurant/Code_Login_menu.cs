@@ -7,13 +7,13 @@ namespace restaurant
 {
     public class Code_Login_menu
     {
-        private IO IO = new IO();
+        private IO io = new IO();
         
         private Database database = new Database();
 
         public Code_Login_menu()
         {
-            database = IO.Getdatabase();
+            database = io.Getdatabase();
         }
 
         public void Debug()
@@ -36,25 +36,47 @@ namespace restaurant
             };
         }
 
+        
         public string Register(Login_gegevens login_Gegevens)
         {
-            List<Login_gegevens> List_Login_temp = database.login_gegevens;
-
-            foreach (var login_temp in database.login_gegevens)
+            List<string> chars = Make_chararray();
+            if (database.login_gegevens != null)
             {
-                if (login_Gegevens.email == login_temp.email && login_Gegevens.type == login_temp.type)
+                foreach (var item in database.login_gegevens)
                 {
-                    return "Account already exists";
-                }
-                else
-                {
-                    List_Login_temp.Add(login_Gegevens);
-                    database.login_gegevens = List_Login_temp;
-                    IO.Savedatabase(database);
-                    return "Account created";
+                    if (item.email == login_Gegevens.email && item.type == login_Gegevens.type)
+                    {
+                        return "This email and account type is already in use";
+                    }
                 }
             }
-            return "Unexpected error";
+
+            for (int b = 0; b < chars.Count(); b++)
+            {
+                if (login_Gegevens.password.Contains(chars[b]) && login_Gegevens.password.Length < 8 &&
+                    (login_Gegevens.password.Contains("0") || login_Gegevens.password.Contains("1") || login_Gegevens.password.Contains("2") ||
+                    login_Gegevens.password.Contains("3") || login_Gegevens.password.Contains("4") || login_Gegevens.password.Contains("5") ||
+                    login_Gegevens.password.Contains("6") || login_Gegevens.password.Contains("7") || login_Gegevens.password.Contains("8") || login_Gegevens.password.Contains("9")))
+                {
+                    database.login_gegevens.Add(login_Gegevens);
+
+                    io.Savedatabase(database);
+                    return "Succes!";
+                }
+            }
+
+            return "Password must contain at least 8 characters, 1 punctuation mark and 1 number.";
+        }
+
+        private List<string> Make_chararray()
+        {
+            List<string> chars = new List<string>();
+            chars.AddRange(new List<string>
+                {
+                    "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "=", "+", "[", "]", "{", "}", @"\", "|", ";", ":", @"'", ",", ".", "<", ">", "/", "?"
+                });
+
+            return chars;
         }
     }
 }
