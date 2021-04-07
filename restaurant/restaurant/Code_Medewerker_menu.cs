@@ -20,5 +20,20 @@ namespace restaurant
         {
 
         }
+
+        // Medewerker moet huidige reserveringen kunnen zien
+        public void getReserveringen()
+        {
+
+        }
+
+        // Medewerkers moeten kunnen zien welke tafels al gereserveerd zijn (en welke niet)
+        // zie Reservering_beschikbaarheid() in Code_Gebruiker_menu.cs
+
+        // Medewerkers moeten een reservering kunnen koppelen aan een tafel
+        public void tafelKoppelen()
+        {
+
+        }
     }
 }
