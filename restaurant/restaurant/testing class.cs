@@ -441,6 +441,8 @@ namespace restaurant
         }
 
         #endregion
+
+
     }
 
 
@@ -468,12 +470,12 @@ namespace restaurant
 
 
     //Dit is voor Luenna (oeps)
-
     /*
-             //Deze functie is af en kan geknipt worden naar Code_Gebruiker_menu.cs
-        public string Register(Login_gegevens login_Gegevens)
+    public string Register(Login_gegevens login_Gegevens)
+    {
+        List<string> chars = Make_chararray();
+        if (database.login_gegevens != null)
         {
-            List<string> chars = Make_chararray();
             foreach (var item in database.login_gegevens)
             {
                 if (item.email == login_Gegevens.email && item.type == login_Gegevens.type)
@@ -481,34 +483,35 @@ namespace restaurant
                     return "Deze email en account type is al in gebruik";
                 }
             }
-
-            for (int b = 0; b < chars.Count(); b++)
-            {
-                if (login_Gegevens.password.Contains(chars[b]) && login_Gegevens.password.Length < 8 &&
-                    (login_Gegevens.password.Contains("0") || login_Gegevens.password.Contains("1") || login_Gegevens.password.Contains("2") ||
-                    login_Gegevens.password.Contains("3") || login_Gegevens.password.Contains("4") || login_Gegevens.password.Contains("5") ||
-                    login_Gegevens.password.Contains("6") || login_Gegevens.password.Contains("7") || login_Gegevens.password.Contains("8") || login_Gegevens.password.Contains("9")))
-                {
-                    database.login_gegevens.Add(login_Gegevens);
-
-                    io.Savedatabase(database);
-                    return "Succes!";
-                }
-            }
-
-            return "Password moet minimaal 8 tekens, een leesteken en een cijfer hebben";
         }
 
-        //Deze functie is af en kan geknipt worden naar Code_Gebruiker_menu.cs
-        private List<string> Make_chararray()
+        for (int b = 0; b < chars.Count(); b++)
         {
-            List<string> chars = new List<string>();
-            chars.AddRange(new List<string>
+            if (login_Gegevens.password.Contains(chars[b]) && login_Gegevens.password.Length < 8 &&
+                (login_Gegevens.password.Contains("0") || login_Gegevens.password.Contains("1") || login_Gegevens.password.Contains("2") ||
+                login_Gegevens.password.Contains("3") || login_Gegevens.password.Contains("4") || login_Gegevens.password.Contains("5") ||
+                login_Gegevens.password.Contains("6") || login_Gegevens.password.Contains("7") || login_Gegevens.password.Contains("8") || login_Gegevens.password.Contains("9")))
+            {
+                database.login_gegevens.Add(login_Gegevens);
+
+                io.Savedatabase(database);
+                return "Succes!";
+            }
+        }
+
+        return "Password moet minimaal 8 tekens, een leesteken en een cijfer hebben";
+    }
+
+    private List<string> Make_chararray()
+    {
+        List<string> chars = new List<string>();
+        chars.AddRange(new List<string>
             {
                 "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "=", "+", "[", "]", "{", "}", @"\", "|", ";", ":", @"'", ",", ".", "<", ">", "/", "?"
             });
 
-            return chars;
-        }
-     */
+        return chars;
+    }
+    */
+
 }
