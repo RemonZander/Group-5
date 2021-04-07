@@ -15,6 +15,10 @@ namespace restaurant
     * Difference in code is in the part where the choices are located. ActionScreens dont have choices for going to another screen.
     * They instead hold a list of actions that must be performed in that screen to then move on to the next screen or display an error message of some kind.
     * 
+    * ActionScreen Flow
+    * ActionScreen holds a list of actions
+    * ActionScreen holds a list called variables that is a dict with key: String | value: Dynamic
+    * The purpose of the action is to take the variable and store it in the variables dict
     */
     public class Code_Console
     {
@@ -34,6 +38,8 @@ namespace restaurant
 
         private readonly List<string> screenNames = new List<string>();
 
+        private const int DisplayType = 0, ActionType = 1;
+
         private bool invalidInput = false;
 
         private string input = "0";
@@ -49,6 +55,8 @@ namespace restaurant
 
         public Code_Console()
         {
+            // restaurant.Database.login_gegevens.get returned null.
+
             Login_gegevens data = new Login_gegevens();
             data.email = "test@gmail.com";
             data.password = "123";
@@ -56,30 +64,60 @@ namespace restaurant
 
             Code_login.Register(data);
 
+            // screens.Add(LoginScreen());
             screens.Add(StartScreenCustomer());
             screens.Add(StartScreenEmployee());
             screens.Add(ChoiceScreen());
 
-            previousScreen = null;
             currentScreen = screens[screenNames.IndexOf("ChoiceScreen")];
+            previousScreen = currentScreen;
         }
+
+        #region Screen Functions
+
+        private int GetScreenIdByName(string name)
+        {
+            return screenNames.IndexOf(name);
+        }
+
+        private void AddActionWithMessage(List<dynamic[]> actions, Func<string, dynamic> action, string message)
+        {
+            actions.Add(new dynamic[] { action, message });
+        }
+
+        private dynamic[] CreateChoice(int screenId, string text)
+        {
+            return new dynamic[] { screenId, text };
+        }
+
+        #endregion
+
+        #region Screens
 
         /*
          * Creates a dict with string keys and different type of values.
          * id: int
          * name: string
          * output: string
-         * choices: List<int> holds the id
+         * choices: List<Dictionary<int, string>> int = the id of the screen | string is the message to display
          */
-        private Dictionary<string, dynamic> CreateScreen(string name)
+        private Dictionary<string, dynamic> CreateScreen(string name, int type = DisplayType)
         {
             screenIds++;
             screenNames.Add(name);
 
-            var dict = new Dictionary<string, dynamic>();
-            dict.Add("id", screenIds);
-            dict.Add("output", "");
-            dict.Add("choices", new Dictionary<int, string>());
+            var dict = new Dictionary<string, dynamic>
+            {
+                { "id", screenIds },
+                { "output", "" },
+            };
+
+            if (type == DisplayType) {
+                dict.Add("choices", new List<dynamic[]>());
+            } else if (type == ActionType) {
+                dict.Add("variables", new Dictionary<string, dynamic>());
+                dict.Add("actions", new List<dynamic[]>());
+            }
 
             return dict;
         }
@@ -87,9 +125,9 @@ namespace restaurant
         private Dictionary<string, dynamic> ChoiceScreen()
         {
             var dict = CreateScreen("ChoiceScreen");
-            dict["output"] = "Kies een rol:";
-            dict["choices"].Add(screenNames.IndexOf("StartScreenCustomer"), "Customer");
-            dict["choices"].Add(screenNames.IndexOf("StartScreenEmployee"), "Employee");
+            dict["output"] = $"{GFLogo}\nKies een optie:";
+            dict["choices"].Add(CreateChoice(GetScreenIdByName("StartScreenCustomer"), "Customer"));
+            dict["choices"].Add(CreateChoice(GetScreenIdByName("StartScreenEmployee"), "Employee"));
             return dict;
         }
 
@@ -109,40 +147,25 @@ namespace restaurant
 
         private Dictionary<string, dynamic> LoginScreen()
         {
-            var dict = CreateScreen("LoginScreen");
-            dict["output"] = $"{GFLogo}\nMedewerkers Scherm";
-            return dict;
-        }
+            var dict = CreateScreen("LoginScreen", ActionType);
+            dict["output"] = $"{GFLogo}\nPlease Login with your email and password.\n";
 
-        private Dictionary<string, dynamic> TestScreen()
-        {
-            var dict = CreateScreen("TestScreen");
-            dict["output"] = @"Hello! You are now at the test screen.
-Here you will see an example of the details of a single meal from a menu.
-#############################
-# Sushi Pizza               #
-# 4.5 / 5.0 Stars           #
-#                           #
-# Ingredients:              #
-# Fish                      #
-# Rice                      #
-# Dough                     #
-# Tomato                    #
-# Cheese                    #
-#                           #
-# Allergies:                #
-# Lorem                     #
-# Ipsum                     #
-# Lorem                     #
-# Dorem                     #
-# Bipsum                    #
-#                           #
-# Extra options:            #
-# Wasabi on pizza (HOT)     #
-# Soy Sauce on the side     #
-#############################
-[1] Go back";
-            dict["choices"].Add(screenNames.IndexOf("StartScreenCustomer"));
+            // typecast the lambda to avoid error, maybe find another way to implement this more cleanly?
+            AddActionWithMessage(dict["actions"], (Func<string, dynamic>)(input => dict["variables"].Add("email", input)), "Your email");
+            AddActionWithMessage(dict["actions"], (Func<string, dynamic>)(input => dict["variables"].Add("psw", input)), "Your password");
+            AddActionWithMessage(dict["actions"], (Func<string, dynamic>)(input =>
+                {
+                    if (input == "y")
+                    {
+                        return Code_login.Login_Check(dict["variables"]["email"], dict["variables"]["psw"]);
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }), "Are you sure? (y/n)"
+            );
+
             return dict;
         }
 
@@ -150,25 +173,77 @@ Here you will see an example of the details of a single meal from a menu.
         {
             var dict = CreateScreen("InvalidInputScreen");
             dict["output"] = "Please type a valid choice.\nValid choices are the ones marked with -> [] with a number inside it.\nDon't type your choice with the brackets (These things -> [])\nExample: When you see this option -> [1] you press the number: 1 and then click on enter";
-            dict["choices"].Add(previousScreen["id"], "Go back");
+            dict["choices"].Add(CreateChoice(previousScreen["id"], "Go back"));
             return dict;
         }
 
-        private void ScreenManager(int input)
+        #endregion
+
+        private void ScreenManager(string input)
         {
-            // Choice represents a screen ID
-            Dictionary<int, string> choices = currentScreen["choices"];
+            List<dynamic[]> choices = null;
+            Dictionary<int, string> actions = null;
+
+            int inputAsInteger = int.Parse(input);
+
+            // Check if the current screen is a DisplayScreen or ActionScreen
+            if (currentScreen.ContainsKey("choices")) {
+                choices = currentScreen["choices"];
+
+            } else if (currentScreen.ContainsKey("actions")) {
+                actions = currentScreen["actions"];
+            }
 
             // for every screen match the id with choice then get that screen and set it as current screen.
             foreach (var screen in screens)
             {
-                if (choices.ContainsKey(screen["id"]))
+                if (choices != null)
                 {
-                    previousScreen = currentScreen;
-                    currentScreen = screen;
-                    break;
+                    if (screen["id"] == choices[inputAsInteger - 1][0])
+                    {
+                        previousScreen = currentScreen;
+                        currentScreen = screen;
+                        break;
+                    }
+                }
+
+                if (actions != null)
+                {
+                    var funcResult = currentScreen["actions"][0](input);
+
+                    if (funcResult is Login_gegevens)
+                    {
+                        if (funcResult.type == "No account found")
+                        {
+                            Console.WriteLine("No Account Found");
+                        }
+                    }
+
+                    currentScreen["actions"].RemoveAt(0);
                 }
             }
+        }
+
+        private bool InputCheck(string input)
+        {
+            if (input == null)
+            {
+                invalidInput = true;
+                return false;
+            }
+
+            if (currentScreen.ContainsKey("choices"))
+            {
+                bool isInteger = int.TryParse(input, out int number);
+
+                if (!isInteger || !(number > 0 && number <= currentScreen["choices"].Count))
+                {
+                    invalidInput = true;
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public void Display()
@@ -179,51 +254,49 @@ Here you will see an example of the details of a single meal from a menu.
                 currentScreen = InvalidInputScreen();
                 invalidInput = false;
             }
-            
-            foreach (KeyValuePair<int, string> choice in currentScreen["choices"])
+
+            string output = currentScreen["output"];
+
+            if (currentScreen.ContainsKey("choices"))
             {
-                currentScreen["output"] += $"\n[{choice.Key + 1}] {choice.Value}";
+                int counter = 0;
+                foreach (dynamic[] choice in currentScreen["choices"])
+                {
+                    output += $"\n[{++counter}] {choice[1]}";
+                }
             }
 
-            Console.WriteLine(currentScreen["output"]);
+            Console.WriteLine(output);
 
             input = Console.ReadLine();
 
-            if (input != null && int.TryParse(input, out _))
+            if (InputCheck(input))
             {
-                int inputAsInteger = Convert.ToInt32(input);
-
-                if (inputAsInteger == 100)
+                if (input == "100")
                 {
                     Code_Gebruiker.Debug();
                 }
-                else if (inputAsInteger == 101)
+                else if (input == "101")
                 {
                     Code_Eigenaar.Debug();
                 }
-                else if (inputAsInteger == 102)
+                else if (input == "102")
                 {
                     // Code_login.Debug();
                 }
-                else if (inputAsInteger == 103)
+                else if (input == "103")
                 {
                     // Code_Medewerker.Debug();
                 }
-                else if (inputAsInteger == 104)
+                else if (input == "104")
                 {
                     TestingClass.Debug();
-                }
-                else if (inputAsInteger > currentScreen["choices"].Count || inputAsInteger < 1)
-                {
-                    invalidInput = true;
                 }
                 else
                 {
                     // Proceed
-                    ScreenManager(inputAsInteger);
+                    ScreenManager(input);
                 }
-            } else {
-                invalidInput = true;
             }
         }
 
