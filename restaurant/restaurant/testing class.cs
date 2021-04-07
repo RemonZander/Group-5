@@ -413,7 +413,7 @@ namespace restaurant
 
             Inkomsten inkomsten = database.inkomsten;
             List<Bestelling_reservering> bestelling_Reservering = new List<Bestelling_reservering>();
-            for (int a = 0, b = 0; a < database.reserveringen.Count(); a++)
+            for (int a = 0, b = 0; a < database.reserveringen.Count; a++)
             {
                 if (database.reserveringen[a].datum >= begintime && database.reserveringen[a].datum <= endtime)
                 {
