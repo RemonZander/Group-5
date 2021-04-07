@@ -76,14 +76,14 @@ namespace restaurant
     
         public string GetMenukaart()
         {
+            
             string menukaart = "";
-
             for(int i = 0; i< database.menukaart.gerechten.Count; i++)
             {
                 //begint bij de naam van het gerecht
                 menukaart += database.menukaart.gerechten[i].naam;
                 
-                //checked if gerecht is populair zo ja, voeg er wat achter en enter
+                //checked if gerecht is populair of speciaal zo ja, voeg er wat achter en enter
                 if (database.menukaart.gerechten[i].is_populair && database.menukaart.gerechten[i].special)
                 {
                     menukaart += " | Populair | Speciaal\n";
@@ -101,20 +101,17 @@ namespace restaurant
                     menukaart += "\n";
                 }
 
-                //voegt alle ingrediënten toe en per 5 doet een enter
+                //voegt alle ingrediënten toe en per 7 doet een enter
                 for (int j = 0; j < database.menukaart.gerechten[i].ingredienten.Count; j++)
                 {
                     menukaart += "Ingrediënten: " + database.menukaart.gerechten[i].ingredienten[j];
-                    
-                    if (j % 5 == 0)
+                    if (j % 7 == 0)
                     {
                         menukaart += "\n";
                     }
                 }
                 
             }
-            
-            
             return menukaart;
         }
     }
