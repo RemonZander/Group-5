@@ -239,7 +239,11 @@ namespace restaurant
                 is_populair = false,
                 is_gearchiveerd = false,
                 special = true,
-                prijs = 8.0
+                prijs = 8.0,
+                allergenen = new List<string>
+                {
+                    "lactose intolerantie"
+                }
             });
             gerechten.Add(new Gerechten
             {
@@ -257,7 +261,11 @@ namespace restaurant
                 is_populair = false,
                 is_gearchiveerd = true,
                 special = false,
-                prijs = 6.0
+                prijs = 6.0,
+                allergenen = new List<string>
+                {
+                    "lactose intolerantie"
+                }
             });
             gerechten.Add(new Gerechten
             {
@@ -266,7 +274,11 @@ namespace restaurant
                 is_populair = false,
                 is_gearchiveerd = true,
                 special = false,
-                prijs = 9.5
+                prijs = 9.5,
+                allergenen = new List<string>
+                {
+                    "lactose intolerantie"
+                }
             });
             gerechten.Add(new Gerechten
             {
