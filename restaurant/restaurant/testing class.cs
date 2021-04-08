@@ -230,7 +230,8 @@ namespace restaurant
                 is_populair = true,
                 is_gearchiveerd = false,
                 special = true,
-                prijs = 15.0
+                prijs = 15.0,
+                allergenen = new List<string>()
             });
             gerechten.Add(new Gerechten
             {
@@ -252,7 +253,8 @@ namespace restaurant
                 is_populair = true,
                 is_gearchiveerd = false,
                 special = false,
-                prijs = 13.0
+                prijs = 13.0,
+                allergenen = new List<string>()
             });
             gerechten.Add(new Gerechten
             {
@@ -287,7 +289,8 @@ namespace restaurant
                 is_populair = true,
                 is_gearchiveerd = false,
                 special = false,
-                prijs = 11.5
+                prijs = 11.5,
+                allergenen = new List<string>()
             });
 
             return gerechten;
