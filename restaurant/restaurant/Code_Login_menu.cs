@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -66,7 +67,14 @@ namespace restaurant
                 return "Password must contain at least 8 characters, 1 punctuation mark and 1 number.";
             }
 
-            database.login_gegevens.Add(login_Gegevens);
+            if (database.login_gegevens == null)
+            {
+               database.login_gegevens = new List<Login_gegevens>{login_Gegevens};
+            }
+            else
+            {
+                database.login_gegevens.Add(login_Gegevens);
+            }            
 
             io.Savedatabase(database);
             return "Succes!";
