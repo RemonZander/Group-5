@@ -460,7 +460,7 @@ namespace restaurant
     {
 
         //Deze functie is klaar en kan geknipt worden naar Code_Gebruiker_menu.cs
-        public List<Reserveringen> Getreservations(Klantgegevens klant)
+        public List<Reserveringen> Get_reservations(Klantgegevens klant)
         {
             List<Reserveringen> filter = new List<Reserveringen>();
             foreach (var reserveringen in database.reserveringen)
@@ -480,7 +480,7 @@ namespace restaurant
         }
 
         //Deze functie is klaar en kan geknipt worden naar Code_Gebruiker_menu.cs
-        public void Removereservation(Reserveringen reserveringen)
+        public void Remove_reservations(Reserveringen reserveringen)
         {
             database = io.Getdatabase();
             database.reserveringen.Remove(reserveringen);
@@ -493,52 +493,4 @@ namespace restaurant
 
         
     }
-
-
-
-    //Dit is voor Luenna (oeps)
-    /*
-    public string Register(Login_gegevens login_Gegevens)
-    {
-        List<string> chars = Make_chararray();
-        if (database.login_gegevens != null)
-        {
-            foreach (var item in database.login_gegevens)
-            {
-                if (item.email == login_Gegevens.email && item.type == login_Gegevens.type)
-                {
-                    return "Deze email en account type is al in gebruik";
-                }
-            }
-        }
-
-        for (int b = 0; b < chars.Count(); b++)
-        {
-            if (login_Gegevens.password.Contains(chars[b]) && login_Gegevens.password.Length < 8 &&
-                (login_Gegevens.password.Contains("0") || login_Gegevens.password.Contains("1") || login_Gegevens.password.Contains("2") ||
-                login_Gegevens.password.Contains("3") || login_Gegevens.password.Contains("4") || login_Gegevens.password.Contains("5") ||
-                login_Gegevens.password.Contains("6") || login_Gegevens.password.Contains("7") || login_Gegevens.password.Contains("8") || login_Gegevens.password.Contains("9")))
-            {
-                database.login_gegevens.Add(login_Gegevens);
-
-                io.Savedatabase(database);
-                return "Succes!";
-            }
-        }
-
-        return "Password moet minimaal 8 tekens, een leesteken en een cijfer hebben";
-    }
-
-    private List<string> Make_chararray()
-    {
-        List<string> chars = new List<string>();
-        chars.AddRange(new List<string>
-            {
-                "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "=", "+", "[", "]", "{", "}", @"\", "|", ";", ":", @"'", ",", ".", "<", ">", "/", "?"
-            });
-
-        return chars;
-    }
-    */
-
 }
