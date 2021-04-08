@@ -9,70 +9,28 @@ namespace restaurant
     {
         Database database = new Database();
         IO io = new IO();
+        Testing_class testClass = new Testing_class();
         
         public void Debug()
         {
-
+            if (database.menukaart == null)
+            {
+                database.menukaart = new Menukaart();
+                database.menukaart.gerechten = new List<Gerechten>();
+                database.menukaart.gerechten.AddRange(testClass.Get_standard_dishes());
+            }
+            else
+            {
+                database.menukaart.gerechten = testClass.Get_standard_dishes();
+            }
+            List<Gerechten> test = Getmenukaart(new List<string> { "lactose intolerantie" });
         }
         
         public Code_Gebruiker_menu()
         {
             database = io.Getdatabase();
         }
-        public List<Tuple<DateTime, List<Tafels>>> Reservering_beschikbaarheid(int dagen) 
-        {
-            //maakt een lijst met tuples die beheert alle beschikbare plekken op int aantal dagen
-            List<Tuple<DateTime, List<Tafels>>> beschikbaar = new List<Tuple<DateTime, List<Tafels>>>();
-
-            //vult de List met alle beschikbare momenten en tafels
-            DateTime possibleTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 10, 0, 0);
-            for (int days = 0; days <= dagen; days++)
-            {
-                //48 kwaterieren van 1000 tot 2145
-                for (int i = 0; i < 48; i++)
-                {
-                 possibleTime = possibleTime.AddMinutes(15);
-                 beschikbaar.Add(Tuple.Create(possibleTime, database.tafels));
-                }
-                //gaat naar de volgende dag met de openingsuren
-                possibleTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day + 1, 10, 0, 0);
-            }
-
-            
-            //verantwoordelijk voor het communiceren met de database
-            foreach (var reservering in database.reserveringen)
-            {
-                //voor de datum tussen nu en de ingevoerde dag
-                if(reservering.datum.Date == DateTime.Now.Date || reservering.datum.Date <= new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day+dagen, 21, 0, 0))
-                {
-                    //temptablelist bevat alle tafels
-                    List<Tafels> tempTableList = beschikbaar[beschikbaar.IndexOf(Tuple.Create(reservering.datum, database.tafels))].Item2;
-                    
-                    //gaat door alle gereserveerde tafels in die reservering en haalt deze weg
-                    foreach (var tafel in reservering.tafels)
-                    {
-                        tempTableList.Remove(tafel);
-                    }
-                    
-                    //als er geen tafels meer vrij zijn haalt hij de tafel weg
-                    if(tempTableList.Count == 0)
-                        for (int a = 0; a < 8; a++)
-                        {
-                            beschikbaar.Remove(Tuple.Create(new DateTime(reservering.datum.Year, reservering.datum.Month, reservering.datum.Day, a * 15, 0, 0), tempTableList));
-                        }
-                    
-                    //maakt tuple met tafels die wel beschikbaar zijn
-                    else
-                    {
-                        for (int a = 0; a < 8; a++)
-                        {
-                            beschikbaar[beschikbaar.IndexOf(Tuple.Create(reservering.datum, database.tafels))] = Tuple.Create(new DateTime(reservering.datum.Year, reservering.datum.Month, reservering.datum.Day, a * 15, 0, 0), tempTableList);
-                        }
-                    }
-                }
-            }
-            return beschikbaar;
-        }
+        
 
         //Deze functie is klaar en kan geknipt worden naar Code_Gebruiker_menu.cs
         public List<Reserveringen> Get_reservations(Klantgegevens klant)
@@ -102,7 +60,7 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        public string GetMenukaart()
+        /*public string GetMenukaart()
         {
             
             string menukaart = "";
@@ -141,6 +99,32 @@ namespace restaurant
                 
             }
             return menukaart;
+        }*/
+
+        public List<Gerechten> Getmenukaart()
+        {
+            return database.menukaart.gerechten;
+        }
+
+        public List<Gerechten> Getmenukaart(List<string> allergenen)
+        {
+            List<Gerechten> menulist = new List<Gerechten>(Getmenukaart());
+            //menulist = Getmenukaart();
+            
+            //for all in filter
+
+            for (int i = 0; i < database.menukaart.gerechten.Count; i++)
+            {
+                for (int j = 0; j < allergenen.Count; j++)
+                {
+                    if (database.menukaart.gerechten[i].allergenen.Contains(allergenen[j]))
+                    {
+                        menulist[i] = null;
+                    }
+                }
+            }
+            menulist.RemoveAll(x => x == null);
+            return menulist;
         }
     }
 }
