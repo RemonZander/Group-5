@@ -21,6 +21,6 @@ namespace restaurant
 
         public bool is_gearchiveerd { get; set; }
 
-        public string Allergenen { get; set; }
+        public List<string> allergenen { get; set; }
     }
 }
