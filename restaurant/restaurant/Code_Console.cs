@@ -30,6 +30,8 @@ namespace restaurant
 
         private readonly restaurant.Code_Gebruiker_menu Code_Gebruiker = new Code_Gebruiker_menu();
 
+        private readonly restaurant.IO IO = new IO();
+
         private readonly restaurant.Testing_class TestingClass = new Testing_class();
 
         private readonly List<Dictionary<string, dynamic>> screens = new List<Dictionary<string, dynamic>>();
@@ -379,7 +381,11 @@ namespace restaurant
             else if (input == "104")
             {
                 TestingClass.Debug();
-            } 
+            }
+            else if (input == "1000")
+            {
+                IO.Reset_filesystem();
+            }
             else if (InputCheck(input))
             {
                 ScreenManager(input);
