@@ -520,38 +520,10 @@ namespace restaurant
     public partial class Code_Gebruiker_menu
     {
 
-        //Deze functie is klaar en kan geknipt worden naar Code_Gebruiker_menu.cs
-        public List<Reserveringen> Get_reservations(Klantgegevens klant)
-        {
-            List<Reserveringen> filter = new List<Reserveringen>();
-            foreach (var reserveringen in database.reserveringen)
-            {
-                foreach (var klantgegevens in reserveringen.klantgegevens)
-                {
-                    if (klant == klantgegevens && reserveringen.datum > DateTime.Now)
-                    {
-                        filter.Add(reserveringen);
-                        break;
-                    }
-                }
-            }
-
-
-            return filter;
-        }
-
-        //Deze functie is klaar en kan geknipt worden naar Code_Gebruiker_menu.cs
-        public void Remove_reservations(Reserveringen reserveringen)
-        {
-            database = io.Getdatabase();
-            database.reserveringen.Remove(reserveringen);
-            io.Savedatabase(database);
-        }
     }
     
     public partial class IO
     {
 
-        
     }
 }
