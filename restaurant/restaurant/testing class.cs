@@ -16,7 +16,7 @@ namespace restaurant
     //Voeg daarna inkosten toe met de functie Inkomsten
     public class Testing_class
     {
-        private readonly Database database = new Database();
+        private Database database = new Database();
         private readonly IO io = new IO();
 
         public Testing_class()
@@ -39,6 +39,7 @@ namespace restaurant
         //Als er geen klantgegevens in het systeem zijn dan kunnen er ook geen gerechten gegeten zijn dus die zijn dan ook leeg in de reservering
         public void Fill_reservations(int amount)
         {
+            database = io.Getdatabase();
             List<Reserveringen> reserveringen_list = new List<Reserveringen>();
             Random rnd = new Random();
             for (int a = 0; a < amount; a++)
@@ -111,6 +112,7 @@ namespace restaurant
         //Zorg wel dat iedere list even lang is als amount
         public void Fill_reservations(int amount, List<DateTime> datum, List<List<Gerechten>> gerechten, List<List<Tafels>> tafels, List<List<Klantgegevens>> klantgegevens)
         {
+            database = io.Getdatabase();
             if (datum.Count != amount || gerechten.Count != amount || tafels.Count != amount)
             {
                 return;
@@ -329,6 +331,7 @@ namespace restaurant
 
         public void Fill_Userdata(int amount)
         {
+            database = io.Getdatabase();
             string[][] names = Make_Names();
             Random rnd = new Random();
             List<Login_gegevens> login_Gegevens = new List<Login_gegevens>();
@@ -483,6 +486,7 @@ namespace restaurant
 
         public void Inkomsten(DateTime begintime, DateTime endtime)
         {
+            database = io.Getdatabase();
             if (database.reserveringen.Count == 0 || endtime > DateTime.Now) return;
 
             Random rnd = new Random();
