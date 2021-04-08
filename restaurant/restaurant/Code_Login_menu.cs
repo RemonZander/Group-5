@@ -36,10 +36,9 @@ namespace restaurant
             };
         }
 
-        
+
         public string Register(Login_gegevens login_Gegevens)
         {
-            List<string> chars = Make_chararray();
             if (database.login_gegevens != null)
             {
                 foreach (var item in database.login_gegevens)
@@ -51,21 +50,26 @@ namespace restaurant
                 }
             }
 
-            for (int b = 0; b < chars.Count(); b++)
-            {
-                if (login_Gegevens.password.Contains(chars[b]) && login_Gegevens.password.Length < 8 &&
-                    (login_Gegevens.password.Contains("0") || login_Gegevens.password.Contains("1") || login_Gegevens.password.Contains("2") ||
-                    login_Gegevens.password.Contains("3") || login_Gegevens.password.Contains("4") || login_Gegevens.password.Contains("5") ||
-                    login_Gegevens.password.Contains("6") || login_Gegevens.password.Contains("7") || login_Gegevens.password.Contains("8") || login_Gegevens.password.Contains("9")))
-                {
-                    database.login_gegevens.Add(login_Gegevens);
+            char[] pswChars = login_Gegevens.password.ToCharArray();
 
-                    io.Savedatabase(database);
-                    return "Succes!";
-                }
+            int punctFoundAmount = 0;
+            int digitFoundAmount = 0;
+
+            for (int i = 0; i < pswChars.Length; i++)
+            {
+                if (char.IsPunctuation(pswChars[i])) punctFoundAmount++;
+                if (char.IsDigit(pswChars[i])) digitFoundAmount++;
             }
 
-            return "Password must contain at least 8 characters, 1 punctuation mark and 1 number.";
+            if (!(login_Gegevens.password.Length < 8) && !(punctFoundAmount > 0) && !(digitFoundAmount > 0))
+            {
+                return "Password must contain at least 8 characters, 1 punctuation mark and 1 number.";
+            }
+
+            database.login_gegevens.Add(login_Gegevens);
+
+            io.Savedatabase(database);
+            return "Succes!";
         }
 
         private List<string> Make_chararray()
