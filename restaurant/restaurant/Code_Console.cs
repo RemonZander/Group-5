@@ -360,33 +360,29 @@ namespace restaurant
 
             input = Console.ReadLine();
 
-            if (InputCheck(input))
+            if (input == "100")
             {
-                if (input == "100")
-                {
-                    Code_Gebruiker.Debug();
-                }
-                else if (input == "101")
-                {
-                    Code_Eigenaar.Debug();
-                }
-                else if (input == "102")
-                {
-                    // Code_login.Debug();
-                }
-                else if (input == "103")
-                {
-                    // Code_Medewerker.Debug();
-                }
-                else if (input == "104")
-                {
-                    TestingClass.Debug();
-                }
-                else
-                {
-                    // Proceed
-                    ScreenManager(input);
-                }
+                Code_Gebruiker.Debug();
+            }
+            else if (input == "101")
+            {
+                Code_Eigenaar.Debug();
+            }
+            else if (input == "102")
+            {
+                Code_login.Debug();
+            }
+            else if (input == "103")
+            {
+                Code_Medewerker.Debug();
+            }
+            else if (input == "104")
+            {
+                TestingClass.Debug();
+            } 
+            else if (InputCheck(input))
+            {
+                ScreenManager(input);
             }
         }
 
