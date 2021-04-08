@@ -71,16 +71,5 @@ namespace restaurant
             io.Savedatabase(database);
             return "Succes!";
         }
-
-        private List<string> Make_chararray()
-        {
-            List<string> chars = new List<string>();
-            chars.AddRange(new List<string>
-                {
-                    "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "=", "+", "[", "]", "{", "}", @"\", "|", ";", ":", @"'", ",", ".", "<", ">", "/", "?"
-                });
-
-            return chars;
-        }
     }
 }
