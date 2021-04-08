@@ -220,6 +220,67 @@ namespace restaurant
             return gerechten;
         }
 
+        public List<Gerechten> Get_standard_dishes()
+        {
+            List<Gerechten> gerechten = new List<Gerechten>();
+            gerechten.Add(new Gerechten
+            {
+                ID = 0,
+                naam = "Pizza Salami",
+                is_populair = true,
+                is_gearchiveerd = false,
+                special = true,
+                prijs = 15.0
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 1,
+                naam = "Vla",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = true,
+                prijs = 8.0
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 2,
+                naam = "Hamburger",
+                is_populair = true,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 13.0
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 3,
+                naam = "Yoghurt",
+                is_populair = false,
+                is_gearchiveerd = true,
+                special = false,
+                prijs = 6.0
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 4,
+                naam = "IJs",
+                is_populair = false,
+                is_gearchiveerd = true,
+                special = false,
+                prijs = 9.5
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 5,
+                naam = "Patat",
+                is_populair = true,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 11.5
+            });
+
+            return gerechten;
+        }
+
         //Deze functie is voor als je een lijst van gerechten wilt met een voorkeur. Zorg wel dat iedere list die je doorgeeft dezelfde lengte heeft
         public List<Gerechten> Make_dishes(List<string> names, List<bool> populair, List<bool> archived, List<bool> special, List<double> price)
         {
