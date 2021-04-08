@@ -5,7 +5,7 @@ using System.Text;
 
 namespace restaurant
 {
-    public struct Gerechten
+    public class Gerechten
     {
         public string naam { get; set; }
 
