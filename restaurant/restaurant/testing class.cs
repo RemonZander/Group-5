@@ -26,9 +26,13 @@ namespace restaurant
         
         public void Debug()
         {
+            Make_menu();
             Fill_Userdata(100);
-            Fill_reservations(500);
-            Inkomsten(new DateTime(DateTime.Now.Year, 1, 1, 10, 0, 0), DateTime.Now);
+            //Fill_reservations(2000, 9, 9, 10, 10);
+            
+            Fill_reservations(400, 9, 9, 9, 9);
+            Save_Sales();
+            List<Tuple<DateTime, List<Tafels>>> test = Reservering_beschikbaarheid(Calc_totale_beschikbaarheid(9, 9, 9, 9), database.reserveringen ,9, 9, 9, 9);         
         }
 
         //In de region hierinder staat alle code voor het opslaan van Reserveringen
@@ -37,60 +41,78 @@ namespace restaurant
         //Deze functie is voor als je de database wilt vullen met random reserveringen
         //Als er al klantgegevens zijn in het systeem dan vult hij die gelijk aan in de reservering
         //Als er geen klantgegevens in het systeem zijn dan kunnen er ook geen gerechten gegeten zijn dus die zijn dan ook leeg in de reservering
-        public void Fill_reservations(int amount)
+        public void Fill_reservations(int amount, int start_month, int stop_month, int start_day, int stop_day)
         {
             database = io.Getdatabase();
             List<Reserveringen> reserveringen_list = new List<Reserveringen>();
+            List<Tuple<DateTime, List<Tafels>>> totaal_beschikbaar = Calc_totale_beschikbaarheid(start_month, stop_month, start_day, stop_day);
             Random rnd = new Random();
             for (int a = 0; a < amount; a++)
             {
+                List<Tuple<DateTime, List<Tafels>>> beschikbaar = Reservering_beschikbaarheid(totaal_beschikbaar, reserveringen_list, start_month, stop_month, start_day, stop_day);
                 List<Tafels> tafels = new List<Tafels>();
+                int pos = rnd.Next(0, beschikbaar.Count);
+
+                if (beschikbaar.Count == 0)
+                {
+                    database.reserveringen = reserveringen_list;
+                    io.Savedatabase(database);
+                    return;
+                }
+
                 for (int b = 0; b < rnd.Next(1, 4); b++)
                 {
-                    tafels.Add(database.tafels[b]);
+                    tafels.Add(beschikbaar[pos].Item2[rnd.Next(0, beschikbaar[pos].Item2.Count)]);
                 }
 
                 if (database.login_gegevens.Count == 0)
                 {
                     reserveringen_list.Add(new Reserveringen
                     {
-                        datum = new DateTime(DateTime.Now.Year, rnd.Next(1, 12), rnd.Next(1, 29), rnd.Next(10, 22), Rnd_quarters(), 0),
+                        datum = beschikbaar[pos].Item1,
                         ID = a,
                         tafels = tafels,
                     });
                 }
                 else
                 {
-                    List<Klantgegevens> klantgegevens = new List<Klantgegevens>();
+                    List<int> klantnummers = new List<int>();
                     switch (tafels.Count)
                     {
                         case 1:
                             for (int c = 0; c < rnd.Next(1, 5); c++)
                             {
-                                klantgegevens.Add(database.login_gegevens[rnd.Next(database.login_gegevens.Count)].klantgegevens);
+                                klantnummers.Add(database.login_gegevens[rnd.Next(database.login_gegevens.Count)].klantgegevens.klantnummer);
                             }
                             break;
                         case 2:
                             for (int c = 0; c < rnd.Next(5, 9); c++)
                             {
-                                klantgegevens.Add(database.login_gegevens[rnd.Next(database.login_gegevens.Count)].klantgegevens);
+                                klantnummers.Add(database.login_gegevens[rnd.Next(database.login_gegevens.Count)].klantgegevens.klantnummer);
                             }
                             break;
                         case 3:
                             for (int c = 0; c < rnd.Next(9, 13); c++)
                             {
-                                klantgegevens.Add(database.login_gegevens[rnd.Next(database.login_gegevens.Count)].klantgegevens);
+                                klantnummers.Add(database.login_gegevens[rnd.Next(database.login_gegevens.Count)].klantgegevens.klantnummer);
                             }
                             break;
                     }
 
+                    List<Gerechten> gerechten = Make_dishes(klantnummers.Count * 3);
+                    List<int> gerechten_ID = new List<int>();
+                    for (int c = 0; c < gerechten.Count; c++)
+                    {
+                        gerechten_ID.Add(gerechten[c].ID);
+                    }
+
                     reserveringen_list.Add(new Reserveringen
                     {
-                        datum = new DateTime(DateTime.Now.Year, rnd.Next(1, 12), rnd.Next(1, 29), rnd.Next(10, 22), Rnd_quarters(), 0),
+                        datum = beschikbaar[pos].Item1,
                         ID = a,
                         tafels = tafels,
-                        klantgegevens = klantgegevens,
-                        gerechten = Make_dishes(klantgegevens.Count * 3)
+                        klantnummers = klantnummers,
+                        gerechten_ID = gerechten_ID
                     });
                 }
             }
@@ -99,21 +121,98 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        private int Rnd_quarters()
+        private  List<Tuple<DateTime, List<Tafels>>> Reservering_beschikbaarheid(List<Tuple<DateTime, List<Tafels>>> beschikbaar, List<Reserveringen> reserveringen, int start_maand, int eind_maand, int start_dag, int eind_dag)
         {
-            Random rnd = new Random();
+            if (reserveringen == null) return beschikbaar;
+            //verantwoordelijk voor het communiceren met de database
+            for (int c = 0; c < reserveringen.Count; c++)
+            {
+                List<Tafels> tempTableList = new List<Tafels>();
+                List<Tafels> removed_tables = new List<Tafels>();
+                for (int d = 0; d < beschikbaar.Count; d++)
+                {
+                    if (beschikbaar[d].Item1 == reserveringen[c].datum)
+                    {
+                        tempTableList = new List<Tafels>(beschikbaar[d].Item2);
+                        break;
+                    }
+                }
 
-            int a = rnd.Next(0, 4);
+                //gaat door alle gereserveerde tafels in die reservering en haalt deze weg
+                foreach (var tafel in reserveringen[c].tafels)
+                {
+                    tempTableList.Remove(tafel);
+                    removed_tables.Add(tafel);
+                }
 
-            return a * 15;
+                //als er geen tafels meer vrij zijn haalt hij de datum weg
+                if (tempTableList.Count == 0)
+                {
+                    for (int a = 0; a < beschikbaar.Count; a++)
+                    {
+                        if (beschikbaar[a].Item1 == reserveringen[c].datum)
+                        {
+                            beschikbaar.RemoveAt(a);
+                            break;
+                        }
+                    }
+                }
+                //maakt tuple met tafels die wel beschikbaar zijn
+                else
+                {
+                    for (int a = 0; a < beschikbaar.Count; a++)
+                    {
+                        if (beschikbaar[a].Item1 == reserveringen[c].datum)
+                        {
+                            beschikbaar[a] = Tuple.Create(reserveringen[c].datum, tempTableList);
+                            for (int b = 1; b <= 8; b++)
+                            {
+                                if ((a + b) >= beschikbaar.Count) break;
+                                beschikbaar[a + b] = Tuple.Create(reserveringen[c].datum.AddMinutes(15 * b), beschikbaar[a + b].Item2.Except(removed_tables).ToList());
+                                if (beschikbaar[a + b].Item2.Count == 0)
+                                {
+                                    beschikbaar.RemoveAt(a + b);
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }  
+            }
+            return beschikbaar;
+        }
+
+        private List<Tuple<DateTime, List<Tafels>>> Calc_totale_beschikbaarheid(int start_maand, int eind_maand, int start_dag, int eind_dag)
+        {
+            List<Tuple<DateTime, List<Tafels>>> beschikbaar = new List<Tuple<DateTime, List<Tafels>>>();
+
+            //vult de List met alle beschikbare momenten en tafels
+            DateTime possibleTime = new DateTime(DateTime.Now.Year, start_maand, start_dag, 10, 0, 0);
+            for (int maanden = start_maand; maanden <= eind_maand; maanden++)
+            {
+                for (int days = start_dag; days <= eind_dag; days++)
+                {
+                    //gaat naar de volgende dag met de openingsuren
+                    possibleTime = new DateTime(DateTime.Now.Year, maanden, days, 10, 0, 0);
+                    //48 kwaterieren van 1000 tot 2130
+                    for (int i = 0; i < 47; i++)
+                    {
+                        beschikbaar.Add(Tuple.Create(possibleTime, database.tafels));
+                        possibleTime = possibleTime.AddMinutes(15);
+                    }
+                }
+                possibleTime = new DateTime(DateTime.Now.Year, maanden, start_dag, 10, 0, 0);
+            }
+
+            return beschikbaar;
         }
 
         //Deze functie is voor als je de database wilt vullen met je eigen data.
         //Zorg wel dat iedere list even lang is als amount
-        public void Fill_reservations(int amount, List<DateTime> datum, List<List<Gerechten>> gerechten, List<List<Tafels>> tafels, List<List<Klantgegevens>> klantgegevens)
+        public void Fill_reservations(int amount, List<DateTime> datum, List<List<int>> gerechten_ID, List<List<Tafels>> tafels, List<List<int>> klantnummers)
         {
             database = io.Getdatabase();
-            if (datum.Count != amount || gerechten.Count != amount || tafels.Count != amount)
+            if (datum.Count != amount || gerechten_ID.Count != amount || tafels.Count != amount)
             {
                 return;
             }
@@ -125,9 +224,9 @@ namespace restaurant
                 {
                     datum = datum[a],
                     ID = a,
-                    gerechten = gerechten[a],
+                    gerechten_ID = gerechten_ID[a],
                     tafels = tafels[a],
-                    klantgegevens = klantgegevens[a]
+                    klantnummers = klantnummers[a]
                 });
             }
 
@@ -140,8 +239,21 @@ namespace restaurant
         //In de region hieronder staat alle code voor het maken van gerechten
         #region Gerechten
 
+        //Deze functie maakt de menukaart aan en vult de gerechten aan
+        public void Make_menu()
+        {
+            database = io.Getdatabase();
+            Menukaart menukaart = new Menukaart
+            {
+                gerechten = Get_standard_dishes()
+            };
+
+            database.menukaart = menukaart;
+            io.Savedatabase(database);
+        }
+
         //Deze functie is voor als je simpel een lijst van gerechten wilt zonder voorkeur
-        public List<Gerechten> Make_dishes(int amount)
+        public  List<Gerechten> Make_dishes(int amount)
         {
             List<Gerechten> gerechten = new List<Gerechten>();
             Random rnd = new Random();
@@ -222,7 +334,7 @@ namespace restaurant
             return gerechten;
         }
 
-        public List<Gerechten> Get_standard_dishes()
+        public  List<Gerechten> Get_standard_dishes()
         {
             List<Gerechten> gerechten = new List<Gerechten>();
             gerechten.Add(new Gerechten
@@ -299,7 +411,7 @@ namespace restaurant
         }
 
         //Deze functie is voor als je een lijst van gerechten wilt met een voorkeur. Zorg wel dat iedere list die je doorgeeft dezelfde lengte heeft
-        public List<Gerechten> Make_dishes(List<string> names, List<bool> populair, List<bool> archived, List<bool> special, List<double> price)
+        public  List<Gerechten> Make_dishes(List<string> names, List<bool> populair, List<bool> archived, List<bool> special, List<double> price)
         {
             if (populair.Count != names.Count || archived.Count != names.Count || special.Count != names.Count || price.Count != names.Count)
             {
@@ -329,6 +441,10 @@ namespace restaurant
         //In de region hieronder staat alle code voor het maken van klantgegevens en login gegevens
         #region Klantgegevens
 
+        /// <summary>
+        /// This is a private function to make a list of names. This is used for making random clients
+        /// </summary>
+        /// <param name="amount">Fill here the amount of different users you want to add</param>
         public void Fill_Userdata(int amount)
         {
             database = io.Getdatabase();
@@ -337,8 +453,8 @@ namespace restaurant
             List<Login_gegevens> login_Gegevens = new List<Login_gegevens>();
             for (int a = 0; a < amount; a++)
             {
-                string Firstname = "";
-                string Surname = "";
+                string Surname;
+                string Firstname;
                 if (a % 2 == 0)
                 {
                     Firstname = names[0][rnd.Next(0, 20)];
@@ -380,6 +496,10 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
+        /// <summary>
+        /// This is a private function to make a list of names. This is used for making random clients
+        /// </summary>
+        /// <returns>This returns a jaggered string, array 1 is male names, array 2 is female names and array 3 is surnames</returns>
         private string[][] Make_Names()
         {
             string[][] names = new string[3][];
@@ -484,10 +604,15 @@ namespace restaurant
 
         #region Sales
 
-        public void Inkomsten(DateTime begintime, DateTime endtime)
+        /// <summary>
+        /// This function retuns a list of Sales between begintime and endtime. If there are no reservations then this function returns new Inkomsten().
+        /// </summary>
+        /// <param name="begintime">This is the starting date</param>
+        /// <param name="endtime">This is the end date, this can't be the the same or higher then the current date</param>
+        public Inkomsten Sales(DateTime begintime, DateTime endtime)
         {
             database = io.Getdatabase();
-            if (database.reserveringen.Count == 0 || endtime > DateTime.Now) return;
+            if (database.reserveringen.Count == 0) return new Inkomsten();
 
             Random rnd = new Random();
 
@@ -498,14 +623,21 @@ namespace restaurant
                 if (database.reserveringen[a].datum >= begintime && database.reserveringen[a].datum <= endtime)
                 {
                     double prijs = 0;
-                    foreach (var gerecht in database.reserveringen[a].gerechten)
+                    foreach (var gerecht_ID in database.reserveringen[a].gerechten_ID)
                     {
-                        prijs += gerecht.prijs;
+                        foreach (var gerecht in database.menukaart.gerechten)
+                        {
+                            if (gerecht.ID == gerecht_ID)
+                            {
+                                prijs += gerecht.prijs;
+                                break;
+                            }
+                        }                        
                     }
                     bestelling_Reservering.Add(new Bestelling_reservering
                     {
                         ID = b,
-                        reserveringen = database.reserveringen[a],
+                        reservering_ID = database.reserveringen[a].ID,
                         fooi = rnd.Next(11),
                         prijs = prijs,
                         BTW = prijs * 0.21,
@@ -513,6 +645,52 @@ namespace restaurant
 
                     b++;
                 }
+            }
+
+            inkomsten.bestelling_reservering = bestelling_Reservering;
+
+            return inkomsten;
+        }
+
+        /// <summary>
+        /// This function retuns a list of all Sales. If there are no reservations then this function returns new Inkomsten().
+        /// </summary>
+        public void Save_Sales()
+        {
+            database = io.Getdatabase();
+            if (database.reserveringen == null) return;
+
+            Random rnd = new Random();
+
+            Inkomsten inkomsten = database.inkomsten;
+            List<Bestelling_reservering> bestelling_Reservering = new List<Bestelling_reservering>();
+            for (int a = 0, b = 0; a < database.reserveringen.Count; a++)
+            {
+                double prijs = 0;
+                if (database.reserveringen[a].datum < DateTime.Now)
+                {
+                    foreach (var gerecht_ID in database.reserveringen[a].gerechten_ID)
+                    {
+                        foreach (var gerecht in database.menukaart.gerechten)
+                        {
+                            if (gerecht.ID == gerecht_ID)
+                            {
+                                prijs += gerecht.prijs;
+                                break;
+                            }
+                        }
+                    }
+                }
+                bestelling_Reservering.Add(new Bestelling_reservering
+                {
+                    ID = b,
+                    reservering_ID = database.reserveringen[a].ID,
+                    fooi = rnd.Next(11),
+                    prijs = prijs,
+                    BTW = prijs * 0.21,
+                });
+
+                b++;
             }
 
             inkomsten.bestelling_reservering = bestelling_Reservering;

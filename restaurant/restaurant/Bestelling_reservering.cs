@@ -11,6 +11,6 @@ namespace restaurant
 
         public int korting { get; set; }
 
-        public Reserveringen reserveringen { get; set; }
+        public int reservering_ID { get; set; }
     }
 }
