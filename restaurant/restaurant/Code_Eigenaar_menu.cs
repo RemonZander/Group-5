@@ -8,90 +8,61 @@ namespace restaurant
     public class Code_Eigenaar_menu
     {
         private Database database = new Database();
+
         IO io = new IO();
+        Testing_class instance = new Testing_class();
 
         public Code_Eigenaar_menu()
         {
-            database = io.Getdatabase();
         }
 
         public void Debug()
         {
+            database = io.Getdatabase();
+            Menukaart menukaart = new Menukaart();
+            menukaart.gerechten = instance.Get_standard_dishes();
+            
+            database.menukaart = menukaart;
+            io.Savedatabase(database);
+
             DateTime endDate = DateTime.Now;
             endDate = endDate.AddDays(7);
-            FillReservations();
+            instance.Fill_Userdata(10);
+            instance.Fill_reservations(100, 1, 12, 1, 28);
+            database = io.Getdatabase();
             GetUserOrderInfo(DateTime.Now, endDate);
+            MakeDishPopular(0);
         }
 
-        private void FillReservations()
+        private bool IfDishExists(int id)
         {
-            List<Reserveringen> reserveringen = new List<Reserveringen>();
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < database.menukaart.gerechten.Count; i++)
             {
-                List<Tafels> tafelsTemp = new List<Tafels>();
-                Random rndTafels = new Random();
-                for (int j = 0; j < rndTafels.Next(4); j++)
+                if (database.menukaart.gerechten[i].ID == id)
                 {
-                    Tafels temp = new Tafels
-                    {
-                        Zetels = 4,
-                        ID = rndTafels.Next(101)
-                    };
-                    if (temp.ID % 2 != 0)
-                    {
-                        temp.isRaam = true;
-                    }
-                    tafelsTemp.Add(temp);
+                    return true;
                 }
-
-                List<Gerechten> gerechtenList = new List<Gerechten>();
-                Random rndGerechten = new Random();
-                for (int z = 0; z < 4; z++)
-                {
-                    int x = rndGerechten.Next(6);
-                    Gerechten gerechtenTemp = new Gerechten();
-                    gerechtenTemp.ID = x;
-                    if (x == 0)
-                    {
-                        gerechtenTemp.naam = "Pizza Salami";
-                    }
-                    else if (x == 1)
-                    {
-                        gerechtenTemp.naam = "Vla";
-                    }
-                    else if (x == 2)
-                    {
-                        gerechtenTemp.naam = "Hamburger";
-                    }
-                    else if (x == 3)
-                    {
-                        gerechtenTemp.naam = "Yoghurt";
-                    }
-                    else if (x == 4)
-                    {
-                        gerechtenTemp.naam = "IJs";
-                    }
-                    else if (x == 5)
-                    {
-                        gerechtenTemp.naam = "Patat";
-                    }
-                    gerechtenList.Add(gerechtenTemp);
-                }
-
-                Random rndDay = new Random();
-                DateTime datum = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, rndDay.Next(9, 23), 0, 0);
-                datum.AddDays(rndDay.Next(8));
-                Reserveringen tempRes = new Reserveringen
-                {
-                    ID = i,
-                    tafels = tafelsTemp,
-                    datum = datum,
-                    gerechten = gerechtenList
-                };
-
-                reserveringen.Add(tempRes);
             }
-            database.reserveringen = reserveringen;
+            return false;
+        }
+        
+        public void MakeDishPopular(int id)
+        {
+            if (IfDishExists(id))
+            {
+                int dishIndex = database.menukaart.gerechten.FindIndex(x => x.ID == id);
+                database.menukaart.gerechten[dishIndex] = new Gerechten
+                {
+                    ID = database.menukaart.gerechten[dishIndex].ID,
+                    ingredienten = database.menukaart.gerechten[dishIndex].ingredienten,
+                    is_gearchiveerd = database.menukaart.gerechten[dishIndex].is_gearchiveerd,
+                    is_populair = true,
+                    naam = database.menukaart.gerechten[dishIndex].naam,
+                    prijs = database.menukaart.gerechten[dishIndex].prijs,
+                    special = database.menukaart.gerechten[dishIndex].special,
+                };
+                io.Savedatabase(database);
+            }
         }
 
         public List<Tuple<Gerechten, int>> GetUserOrderInfo(DateTime beginDate, DateTime endDate)
@@ -99,51 +70,25 @@ namespace restaurant
             List<Tuple<Gerechten, int>> populaireGerechten = new List<Tuple<Gerechten, int>>();
             //hier komt een loop waarbij populaire gerechten gevuld wordt met alle bestaande gerechten.
             //als de reservering plaats heeft gevonden binnen de gestelde tijd.
-            populaireGerechten.Add(Tuple.Create(new Gerechten { 
-                ID = 0,
-                naam = "Pizza Salami",
-            }, 0));
-            populaireGerechten.Add(Tuple.Create(new Gerechten
+            for (int i = 0; i < 6; i++)
             {
-                ID = 1,
-                naam = "Vla",
-            }, 0));
-            populaireGerechten.Add(Tuple.Create(new Gerechten
-            {
-                ID = 2,
-                naam = "Hamburger",
-            }, 0));
-            populaireGerechten.Add(Tuple.Create(new Gerechten
-            {
-                ID = 3,
-                naam = "Yoghurt",
-            }, 0));
-            populaireGerechten.Add(Tuple.Create(new Gerechten
-            {
-                ID = 4,
-                naam = "IJs",
-            }, 0));
-            populaireGerechten.Add(Tuple.Create(new Gerechten
-            {
-                ID = 5,
-                naam = "Patat",
-            }, 0));
+                populaireGerechten.Add(Tuple.Create(instance.Get_standard_dishes()[i], 0));
+
+            }
             foreach (var reservering in database.reserveringen)
             {
                 if (reservering.datum.Date >= beginDate.Date && reservering.datum.Date <= endDate.Date)
                 {
-                    foreach (var gerecht in reservering.gerechten)
+                    foreach (var gerechtID in reservering.gerechten_ID)
                     {
                         for (int i = 0; i < populaireGerechten.Count; i++)
                         {
-                            if (populaireGerechten[i].Item1.Equals(gerecht))
+                            if (populaireGerechten[i].Item1.ID == gerechtID)
                             {
-                                populaireGerechten[i] = Tuple.Create(gerecht, populaireGerechten[i].Item2 + 1);
+                                populaireGerechten[i] = Tuple.Create(populaireGerechten[i].Item1, populaireGerechten[i].Item2 + 1);
                                 break;
                             }
                         }
-                        
-
                     }
                 }
             }
