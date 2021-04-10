@@ -38,9 +38,9 @@ namespace restaurant
             List<Reserveringen> filter = new List<Reserveringen>();
             foreach (var reserveringen in database.reserveringen)
             {
-                foreach (var klantgegevens in reserveringen.klantgegevens)
+                foreach (var klantnummer in reserveringen.klantnummers)
                 {
-                    if (klant == klantgegevens && reserveringen.datum > DateTime.Now)
+                    if (klant.klantnummer == klantnummer && reserveringen.datum > DateTime.Now)
                     {
                         filter.Add(reserveringen);
                         break;

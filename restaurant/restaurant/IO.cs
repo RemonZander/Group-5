@@ -70,6 +70,7 @@ namespace restaurant
 
         public List<Tuple<DateTime, List<Tafels>>> Reservering_beschikbaarheid(int dagen)
         {
+            database = Getdatabase();
             //maakt een lijst met tuples die beheert alle beschikbare plekken op int aantal dagen
             List<Tuple<DateTime, List<Tafels>>> beschikbaar = new List<Tuple<DateTime, List<Tafels>>>();
 
@@ -87,35 +88,63 @@ namespace restaurant
                 possibleTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day + 1, 10, 0, 0);
             }
 
-
             //verantwoordelijk voor het communiceren met de database
             foreach (var reservering in database.reserveringen)
             {
                 //voor de datum tussen nu en de ingevoerde dag
-                if (reservering.datum.Date == DateTime.Now.Date || reservering.datum.Date <= new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day + dagen, 21, 0, 0))
+                if (reservering.datum >= DateTime.Now && reservering.datum <= new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day + dagen, 21, 30, 0))
                 {
                     //temptablelist bevat alle tafels
-                    List<Tafels> tempTableList = beschikbaar[beschikbaar.IndexOf(Tuple.Create(reservering.datum, database.tafels))].Item2;
-
+                    //List<Tafels> tempTableList = beschikbaar[beschikbaar.IndexOf(Tuple.Create(reservering.datum, database.tafels))].Item2;
+                    List<Tafels> tempTableList = new List<Tafels>();
+                    List<Tafels> removed_tables = new List<Tafels>();
                     //gaat door alle gereserveerde tafels in die reservering en haalt deze weg
-                    foreach (var tafel in reservering.tafels)
+                    for (int d = 0; d < beschikbaar.Count; d++)
                     {
-                        tempTableList.Remove(tafel);
+                        if (beschikbaar[d].Item1 == reservering.datum)
+                        {
+                            tempTableList = new List<Tafels>(beschikbaar[d].Item2);
+                            foreach (var tafel in reservering.tafels)
+                            {
+                                tempTableList.Remove(tafel);
+                                removed_tables.Add(tafel);
+                            }
+                            break;
+                        }
                     }
 
                     //als er geen tafels meer vrij zijn haalt hij de tafel weg
                     if (tempTableList.Count == 0)
-                        for (int a = 0; a < 8; a++)
+                        for (int a = 0; a < beschikbaar.Count; a++)
                         {
-                            beschikbaar.Remove(Tuple.Create(new DateTime(reservering.datum.Year, reservering.datum.Month, reservering.datum.Day, a * 15, 0, 0), tempTableList));
+                            if (beschikbaar[a].Item1 == reservering.datum)
+                            {
+                                for (int b = 0; b <= 8; b++)
+                                {
+                                    beschikbaar.RemoveAt(a + b);
+                                }
+                                break;
+                            }
                         }
-
                     //maakt tuple met tafels die wel beschikbaar zijn
                     else
                     {
-                        for (int a = 0; a < 8; a++)
+                        for (int a = 0; a < beschikbaar.Count; a++)
                         {
-                            beschikbaar[beschikbaar.IndexOf(Tuple.Create(reservering.datum, database.tafels))] = Tuple.Create(new DateTime(reservering.datum.Year, reservering.datum.Month, reservering.datum.Day, a * 15, 0, 0), tempTableList);
+                            if (beschikbaar[a].Item1 == reservering.datum)
+                            {
+                                beschikbaar[a] = Tuple.Create(reservering.datum, tempTableList);
+                                for (int b = 1; b <= 8; b++)
+                                {
+                                    if ((a + b) >= beschikbaar.Count) break;
+                                    beschikbaar[a + b] = Tuple.Create(reservering.datum.AddMinutes(15 * b), beschikbaar[a + b].Item2.Except(removed_tables).ToList());
+                                    if (beschikbaar[a + b].Item2.Count == 0)
+                                    {
+                                        beschikbaar.RemoveAt(a + b);
+                                    }
+                                }
+                                break;
+                            }
                         }
                     }
                 }
