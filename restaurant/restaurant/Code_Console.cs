@@ -42,7 +42,6 @@ namespace restaurant
 
         private const int DisplayType = 0, ActionType = 1;
 
-        // Generate a random int with it to make it more faultproof?
         private const string ActionCancelled = "ACTION_CANCELLED", ActionException = "ACTION_EXCEPTION";
 
         private const string ScreenNext = "SCREEN_NEXT", ScreenBack = "SCREEN_BACK";
@@ -67,7 +66,7 @@ namespace restaurant
             data.password = "rU3#)J2A8$E";
             data.type = "Eigenaar";
 
-            var result = Code_login.Register(data);
+            Code_login.Register(data);
 
             screens.Add(LoginScreen());
             screens.Add(StartScreenCustomer());
@@ -105,7 +104,17 @@ namespace restaurant
          * id: int
          * name: string
          * output: string
-         * choices: List<Dictionary<int, string>> int = the id of the screen | string is the message to display
+         * previousScreen: int
+         * type: int
+         * 
+         * Depending on what type of screen it is (signified by the type parameter) different items will be added.
+         * Display Screen
+         *  choices: List<Dictionary<int, string>> int = the id of the screen | string is the message to display
+         * 
+         * Action Screen
+         *  actionStep: int
+         *  variables: new Dictionary<string, dynamic>
+         *  action: new List<dynamic[]> (HEADS UP: To make creating actions more consistent use the AddActionWithMessage method)
          */
         private Dictionary<string, dynamic> CreateScreen(string name, int type = DisplayType)
         {
@@ -169,24 +178,9 @@ namespace restaurant
             }), "Your email");
             AddActionWithMessage(dict["actions"], (Func<string, dynamic>)(input => {
                 dict["variables"].Add("psw", input);
-                return null;
+
+                return Code_login.Login_Check(dict["variables"]["email"], dict["variables"]["psw"]);
             }), "Your password");
-            AddActionWithMessage(dict["actions"], (Func<string, dynamic>)(input =>
-                {
-                    if (input == "y")
-                    {
-                        return Code_login.Login_Check(dict["variables"]["email"], dict["variables"]["psw"]);
-                    }
-                    else if (input == "n")
-                    {
-                        return ActionCancelled;
-                    }
-                    else
-                    {
-                        return ActionException;
-                    }
-               }), "Are you sure? Type in y or n"
-            );
 
             return dict;
         }
@@ -258,6 +252,7 @@ namespace restaurant
             if (actions != null)
             {
                 var funcResult = actions[currentScreen["actionStep"]][0](input);
+
                 bool isLastStep = currentScreen["actionStep"] == actions.Count - 1;
                 int actionPreviousScreenId = currentScreen["previousScreen"];
 
@@ -331,7 +326,16 @@ namespace restaurant
         {
             if (invalidInput)
             {
-                var temp = currentScreen["id"];
+                int temp;
+                if (currentScreen["type"] == ActionType)
+                {
+                    temp = currentScreen["id"];
+                }
+                else
+                {
+                    temp = currentScreen["previousScreen"];
+                }
+
                 currentScreen = screens[GetScreenIdByName("InvalidInputScreen")];
                 currentScreen["previousScreen"] = temp;
                 invalidInput = false;
@@ -344,6 +348,7 @@ namespace restaurant
                 int counter = 0;
                 foreach (dynamic[] choice in currentScreen["choices"])
                 {
+                    // Can be removed maybe?
                     if (choice[2] == ScreenBack)
                     {
                         choice[0] = currentScreen["previousScreen"];
