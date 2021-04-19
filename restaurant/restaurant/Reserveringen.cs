@@ -14,9 +14,13 @@ namespace restaurant
 
         public List<int> klantnummers { get; set; }
 
-        //positie 1 is ID en positie 2 is aantal zetels per tafel
+        //Bij het reserveren van een plek in het restaurant is deze lijst gevult
+        //Bij het afhalen van eten (of laten brengen) is deze lijst leeg
         public List<Tafels> tafels { get; set; }
 
+        //Dit is een lijst met de Id's van de gerechten
+        //Bij het reserveren van een plek in het restaurant is deze lijst leeg
+        //Bij het afhalen van eten (of laten brengen) is deze lijst gevult
         public List<int> gerechten_ID { get; set; }
     }
 }

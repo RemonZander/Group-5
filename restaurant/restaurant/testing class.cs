@@ -44,6 +44,9 @@ namespace restaurant
             List<Tuple<DateTime, List<Tafels>>> test = Reservering_beschikbaarheid(Calc_totale_beschikbaarheid(9, 9, 9, 9), database.reserveringen ,9, 9, 9, 9);         
         }
 
+        //In de region hierinder staat alle code voor het opslaan van Reserveringen
+        #region Reserveringen
+
         private void Fill_reservations_threading()
         {
             Thread[] reservation_thread = new Thread[24];
@@ -73,9 +76,6 @@ namespace restaurant
             database.reserveringen = reserveringen_list;
             io.Savedatabase(database);
         }
-
-        //In de region hierinder staat alle code voor het opslaan van Reserveringen
-        #region Reserveringen
 
         //Deze functie is voor als je de database wilt vullen met random reserveringen
         //Als er al klantgegevens zijn in het systeem dan vult hij die gelijk aan in de reservering
