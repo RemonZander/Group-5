@@ -47,7 +47,7 @@ namespace restaurant
         //In de region hierinder staat alle code voor het opslaan van Reserveringen
         #region Reserveringen
 
-        private void Fill_reservations_threading(int threads,int amount, int start_month, int stop_month, int start_day, int stop_day)
+        public void Fill_reservations_threading(int threads,int amount, int start_month, int stop_month, int start_day, int stop_day)
         {
             Thread[] reservation_thread = new Thread[threads];
             database = io.Getdatabase();
@@ -90,7 +90,7 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        public void Fill_reservations(int threads, int ofset, int amount, List<Tuple<DateTime, List<Tafels>>> totaal_beschikbaar)
+        private void Fill_reservations(int threads, int ofset, int amount, List<Tuple<DateTime, List<Tafels>>> totaal_beschikbaar)
         {           
             for (int a = ofset; a < amount; a += threads - 1)
             {
@@ -774,6 +774,35 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
+        public void Make_feedback()
+        {
+            database = io.Getdatabase();
+            if (database.reserveringen == null) return;
+            if (database.login_gegevens == null) return;
+            if (database.werknemers == null) return;
+
+            List<Feedback> feedback = new List<Feedback>();
+            Random rnd = new Random();
+
+            foreach (var reservering in database.reserveringen)
+            {
+                if (reservering.datum < DateTime.Now)
+                {
+                    feedback.Add(new Feedback
+                    {
+                        ID = feedback.Count,
+                        Klantnummer = reservering.klantnummers[0],
+                        reservering_ID = reservering.ID,
+                        message = "",
+                        Receiver = database.werknemers[rnd.Next(0, database.werknemers.Count)].ID
+                    });
+                }
+            }
+
+            database.feedback = feedback;
+            io.Savedatabase(database);
+        }
+
         #endregion
 
         #region Medewerkers
@@ -793,9 +822,18 @@ namespace restaurant
                 {
                     salaris = 3000,
                     inkomstenbelasting = 0.371,
-                    prestatiebeloning = rnd.NextDouble()
+                    prestatiebeloning = rnd.Next(0 , 30) / 100,
+                    ID = werknemers.Count,
+                    Klantgegevens = new Klantgegevens
+                    {
+                        voornaam = names[rnd.Next(0, 2)][rnd.Next(0, 24)],
+                        achternaam = names[2][rnd.Next(0, 30)],
+                    },
                 });
             }
+
+            database.werknemers = werknemers;
+            io.Savedatabase(database);
         }
 
         #endregion
