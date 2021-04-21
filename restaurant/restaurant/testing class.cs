@@ -47,7 +47,7 @@ namespace restaurant
         //In de region hierinder staat alle code voor het opslaan van Reserveringen
         #region Reserveringen
 
-        private void Fill_reservations_threading(int threads,int amount, int start_month, int stop_month, int start_day, int stop_day)
+        public void Fill_reservations_threading(int threads,int amount, int start_month, int stop_month, int start_day, int stop_day)
         {
             Thread[] reservation_thread = new Thread[threads];
             database = io.Getdatabase();
@@ -90,7 +90,7 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        public void Fill_reservations(int threads, int ofset, int amount, List<Tuple<DateTime, List<Tafels>>> totaal_beschikbaar)
+        private void Fill_reservations(int threads, int ofset, int amount, List<Tuple<DateTime, List<Tafels>>> totaal_beschikbaar)
         {           
             for (int a = ofset; a < amount; a += threads - 1)
             {
@@ -793,7 +793,8 @@ namespace restaurant
                 {
                     salaris = 3000,
                     inkomstenbelasting = 0.371,
-                    prestatiebeloning = rnd.NextDouble()
+                    prestatiebeloning = rnd.Next(0 , 30) / 100,
+                    ID = werknemers.Count,
                 });
             }
         }
