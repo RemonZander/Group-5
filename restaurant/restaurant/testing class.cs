@@ -774,6 +774,35 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
+        public void Make_feedback()
+        {
+            database = io.Getdatabase();
+            if (database.reserveringen == null) return;
+            if (database.login_gegevens == null) return;
+            if (database.werknemers == null) return;
+
+            List<Feedback> feedback = new List<Feedback>();
+            Random rnd = new Random();
+
+            foreach (var reservering in database.reserveringen)
+            {
+                if (reservering.datum < DateTime.Now)
+                {
+                    feedback.Add(new Feedback
+                    {
+                        ID = feedback.Count,
+                        Klantnummer = reservering.klantnummers[0],
+                        reservering_ID = reservering.ID,
+                        message = "",
+                        Receiver = database.werknemers[rnd.Next(0, database.werknemers.Count)].ID
+                    });
+                }
+            }
+
+            database.feedback = feedback;
+            io.Savedatabase(database);
+        }
+
         #endregion
 
         #region Medewerkers
@@ -795,8 +824,16 @@ namespace restaurant
                     inkomstenbelasting = 0.371,
                     prestatiebeloning = rnd.Next(0 , 30) / 100,
                     ID = werknemers.Count,
+                    Klantgegevens = new Klantgegevens
+                    {
+                        voornaam = names[rnd.Next(0, 2)][rnd.Next(0, 24)],
+                        achternaam = names[2][rnd.Next(0, 30)],
+                    },
                 });
             }
+
+            database.werknemers = werknemers;
+            io.Savedatabase(database);
         }
 
         #endregion

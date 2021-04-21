@@ -26,5 +26,7 @@ namespace restaurant
         public double werkkleding { get; set; }
 
         public double ziektekostenverzekering { get; set; }
+
+        public Klantgegevens Klantgegevens { get; set; }
     }
 }

@@ -41,5 +41,9 @@ namespace restaurant
         public List<Review> reviews { get; set; }
 
         public List<Feedback> feedback { get; set; }
+
+        public List<Werknemer> werknemers { get; set; }
+
+        public List<Eigenaar> eigenaars { get; set; }
     }
 }
