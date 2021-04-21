@@ -12,5 +12,7 @@ namespace restaurant
         public int Klantnummer { get; set; }
 
         public string message { get; set; }
+
+        public int reservering_ID { get; set; }
     }
 }
