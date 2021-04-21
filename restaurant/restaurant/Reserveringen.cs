@@ -12,6 +12,7 @@ namespace restaurant
 
         public DateTime datum { get; set; }
 
+        //het 1e klantnummer is altijd de persoon die de reservering plaatst
         public List<int> klantnummers { get; set; }
 
         //Bij het reserveren van een plek in het restaurant is deze lijst gevult
