@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.VisualBasic.FileIO;
 using System.Threading;
@@ -34,44 +33,39 @@ namespace restaurant
             Fill_Userdata(100);
             //Fill_reservations(1000, 9, 9, 9, 9);
             //Fill_reservations(10000, 1, 12, 1, 28);
-            Fill_reservations_threading();
+            Fill_reservations_threading(24, 5000, 9, 11, 1, 9);
 
             //Save_Sales();
             
             Inkomsten inkomsten = Sales(new DateTime(DateTime.Now.Year, 9, 9, 10, 0, 0), new DateTime(DateTime.Now.Year, 9, 9, 22, 59, 0));
             database.inkomsten = inkomsten;
 
-            List<Tuple<DateTime, List<Tafels>>> test = Reservering_beschikbaarheid(Calc_totale_beschikbaarheid(9, 9, 9, 9), database.reserveringen ,9, 9, 9, 9);         
+            List<Tuple<DateTime, List<Tafels>>> test = Reservering_beschikbaarheid(Calc_totale_beschikbaarheid(9, 9, 9, 9), database.reserveringen);         
         }
 
         //In de region hierinder staat alle code voor het opslaan van Reserveringen
         #region Reserveringen
 
-        private void Fill_reservations_threading()
+        private void Fill_reservations_threading(int threads,int amount, int start_month, int stop_month, int start_day, int stop_day)
         {
-            Thread[] reservation_thread = new Thread[24];
+            Thread[] reservation_thread = new Thread[threads];
             database = io.Getdatabase();
-            for (int a = 0; a < 24; a++)
+            List<Tuple<DateTime, List<Tafels>>> beschikbaar = Calc_totale_beschikbaarheid(start_month, stop_month, start_day, stop_day);
+            for (int a = 0; a < threads; a++)
             {
-                reservation_thread[a] = new Thread(() => Fill_reservations(24, a, 1000, 9, 9, 9, 9));
+                reservation_thread[a] = new Thread(() => Fill_reservations(threads, a, amount, new List<Tuple<DateTime, List<Tafels>>>(beschikbaar)));
             }
 
-            for (int a = 0; a < 24; a++)
+            for (int a = 0; a < threads; a++)
             {
                 reservation_thread[a].Start();
             }
 
-            do
+
+            for (int b = 0; b < threads; b++)
             {
-                Thread.Sleep(100);
-            } while (!(reservation_thread[0].ThreadState == ThreadState.Stopped && reservation_thread[1].ThreadState == ThreadState.Stopped && reservation_thread[2].ThreadState == ThreadState.Stopped &&
-                reservation_thread[3].ThreadState == ThreadState.Stopped && reservation_thread[4].ThreadState == ThreadState.Stopped && reservation_thread[5].ThreadState == ThreadState.Stopped &&
-                reservation_thread[6].ThreadState == ThreadState.Stopped && reservation_thread[7].ThreadState == ThreadState.Stopped && reservation_thread[8].ThreadState == ThreadState.Stopped &&
-                reservation_thread[9].ThreadState == ThreadState.Stopped && reservation_thread[10].ThreadState == ThreadState.Stopped && reservation_thread[11].ThreadState == ThreadState.Stopped &&
-                reservation_thread[12].ThreadState == ThreadState.Stopped && reservation_thread[13].ThreadState == ThreadState.Stopped && reservation_thread[14].ThreadState == ThreadState.Stopped &&
-                reservation_thread[15].ThreadState == ThreadState.Stopped && reservation_thread[16].ThreadState == ThreadState.Stopped && reservation_thread[17].ThreadState == ThreadState.Stopped &&
-                reservation_thread[18].ThreadState == ThreadState.Stopped && reservation_thread[19].ThreadState == ThreadState.Stopped && reservation_thread[20].ThreadState == ThreadState.Stopped &&
-                reservation_thread[21].ThreadState == ThreadState.Stopped && reservation_thread[22].ThreadState == ThreadState.Stopped && reservation_thread[23].ThreadState == ThreadState.Stopped));
+                reservation_thread[b].Join();
+            }
 
             database.reserveringen = reserveringen_list;
             io.Savedatabase(database);
@@ -88,26 +82,25 @@ namespace restaurant
             Random rnd = new Random();
             for (int a = 0; a < amount; a++)
             {
-                make_reservation(a, totaal_beschikbaar, start_month, stop_month, start_day, stop_day);
+                make_reservation(a, totaal_beschikbaar);
             }
 
             database.reserveringen = reserveringen_list;
             io.Savedatabase(database);
         }
 
-        public void Fill_reservations(int threads, int ofset, int amount, int start_month, int stop_month, int start_day, int stop_day)
+        public void Fill_reservations(int threads, int ofset, int amount, List<Tuple<DateTime, List<Tafels>>> totaal_beschikbaar)
         {           
-            List<Tuple<DateTime, List<Tafels>>> totaal_beschikbaar = Calc_totale_beschikbaarheid(start_month, stop_month, start_day, stop_day);
             for (int a = ofset; a < amount; a += threads - 1)
             {
-                make_reservation(a, totaal_beschikbaar, start_month, stop_month, start_day, stop_day);
+                make_reservation(a, totaal_beschikbaar);
             }
         }
 
-        private void make_reservation(int a, List<Tuple<DateTime, List<Tafels>>> totaal_beschikbaar, int start_month, int stop_month, int start_day, int stop_day)
+        private void make_reservation(int a, List<Tuple<DateTime, List<Tafels>>> totaal_beschikbaar)
         {
             Random rnd = new Random();
-            List<Tuple<DateTime, List<Tafels>>> beschikbaar = Reservering_beschikbaarheid(totaal_beschikbaar, reserveringen_list, start_month, stop_month, start_day, stop_day);
+            List<Tuple<DateTime, List<Tafels>>> beschikbaar = Reservering_beschikbaarheid(totaal_beschikbaar, reserveringen_list);
         a:
             List<Tafels> tafels = new List<Tafels>();
             int pos = rnd.Next(0, beschikbaar.Count);
@@ -115,7 +108,6 @@ namespace restaurant
             if (beschikbaar.Count == 0)
             {
                 database.reserveringen = reserveringen_list;
-                io.Savedatabase(database);
                 return;
             }
 
@@ -180,9 +172,11 @@ namespace restaurant
             }
         }
 
-        private  List<Tuple<DateTime, List<Tafels>>> Reservering_beschikbaarheid(List<Tuple<DateTime, List<Tafels>>> beschikbaar, List<Reserveringen> reserveringen, int start_maand, int eind_maand, int start_dag, int eind_dag)
+        private  List<Tuple<DateTime, List<Tafels>>> Reservering_beschikbaarheid(List<Tuple<DateTime, List<Tafels>>> beschikbaar, List<Reserveringen> reserveringen)
         {
             if (reserveringen == null) return beschikbaar;
+            if (beschikbaar.Count == 0) return beschikbaar;
+
             //verantwoordelijk voor het communiceren met de database
             for (int c = 0; c < reserveringen.Count; c++)
             {
@@ -227,6 +221,7 @@ namespace restaurant
                     }                  
                 }  
             }
+
             return beschikbaar;
         }
 
