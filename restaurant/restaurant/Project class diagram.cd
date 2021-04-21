@@ -101,7 +101,7 @@
   <Class Name="restaurant.Code_Eigenaar_menu">
     <Position X="8.5" Y="14" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAIBAAAAAQIAAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <HashCode>AAAAAAIAAAAAAIBAAAAAQAAAAABAAAAEAAAAAEAAAAA=</HashCode>
       <FileName>Code_Eigenaar_menu.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -185,6 +185,13 @@
   </Class>
   <Class Name="restaurant.Database">
     <Position X="19.25" Y="6.5" Width="2.5" />
+    <AssociationLine Name="menukaart" Type="restaurant.Menukaart" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="20.812" Y="6.5" />
+        <Point X="20.812" Y="3.844" />
+        <Point X="24.25" Y="3.844" />
+      </Path>
+    </AssociationLine>
     <AssociationLine Name="reserveringen" Type="restaurant.Reserveringen">
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="0.393" Y="-0.307" />
@@ -232,21 +239,14 @@
         <Point X="13.906" Y="1.733" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="menukaart" Type="restaurant.Menukaart" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="20.812" Y="6.5" />
-        <Point X="20.812" Y="3.844" />
-        <Point X="24.25" Y="3.844" />
-      </Path>
-    </AssociationLine>
     <TypeIdentifier>
       <HashCode>QAAAAAEAAAACAAIUAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
       <FileName>Database.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
+      <Property Name="menukaart" />
       <Property Name="uitgaven" />
       <Property Name="inkomsten" />
-      <Property Name="menukaart" />
     </ShowAsAssociation>
     <ShowAsCollectionAssociation>
       <Property Name="reserveringen" />
@@ -380,24 +380,10 @@
   </Class>
   <Class Name="restaurant.review_feedback_base">
     <Position X="17.5" Y="0.5" Width="1.5" />
-    <AssociationLine Name="klantgegevens" Type="restaurant.Klantgegevens" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="19" Y="0.875" />
-        <Point X="22.139" Y="0.875" />
-        <Point X="22.139" Y="0.875" />
-        <Point X="23.5" Y="0.875" />
-      </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="1.537" Y="0.102" />
-      </MemberNameLabel>
-    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAgAAIAAAAAAAAAAAAAAAAAAAAAAAAACA=</HashCode>
+      <HashCode>AAAAAAAAAAAAgAAAQAAAAAAAAAAAAAAAAAAAAAAAACA=</HashCode>
       <FileName>review_feedback_base.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="klantgegevens" />
-    </ShowAsAssociation>
   </Class>
   <Class Name="restaurant.Review">
     <Position X="15" Y="0.5" Width="1.5" />
@@ -451,7 +437,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAABAgAAQAAAAAACAAAAAAAAAAgAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAABAgAAQAAIAAAAAAAAAAAAAAgAAAAAAAAA=</HashCode>
       <FileName>Reserveringen.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>

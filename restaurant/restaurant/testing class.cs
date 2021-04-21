@@ -237,8 +237,8 @@ namespace restaurant
                 {
                     //gaat naar de volgende dag met de openingsuren
                     possibleTime = new DateTime(DateTime.Now.Year, maanden, days, 10, 0, 0);
-                    //48 kwaterieren van 1000 tot 2130
-                    for (int i = 0; i < 47; i++)
+                    //45 kwaterieren van 1000 tot 2100
+                    for (int i = 0; i < 45; i++)
                     {
                         beschikbaar.Add(Tuple.Create(possibleTime, database.tafels));
                         possibleTime = possibleTime.AddMinutes(15);

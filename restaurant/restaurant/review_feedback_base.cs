@@ -9,7 +9,7 @@ namespace restaurant
     {
         public int ID { get; set; }
 
-        public Klantgegevens klantgegevens { get; set; }
+        public int Klantnummer { get; set; }
 
         public string message { get; set; }
     }
