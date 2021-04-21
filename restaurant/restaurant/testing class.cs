@@ -33,10 +33,11 @@ namespace restaurant
             Fill_Userdata(100);
             //Fill_reservations(1000, 9, 9, 9, 9);
             //Fill_reservations(10000, 1, 12, 1, 28);
-            Fill_reservations_threading(24, 5000, 9, 11, 1, 9);
+            Fill_reservations_threading(24, 5000, 1, 3, 1, 9);
+            Make_reviews();
 
             //Save_Sales();
-            
+
             Inkomsten inkomsten = Sales(new DateTime(DateTime.Now.Year, 9, 9, 10, 0, 0), new DateTime(DateTime.Now.Year, 9, 9, 22, 59, 0));
             database.inkomsten = inkomsten;
 
@@ -743,7 +744,61 @@ namespace restaurant
 
         #endregion
 
+        #region Review and feedback
 
+        public void Make_reviews()
+        {
+            database = io.Getdatabase();
+            if (database.reserveringen == null) return;
+            if (database.login_gegevens == null) return;
+
+            List<Review> reviews = new List<Review>();
+            Random rnd = new Random();
+
+            foreach (var reservering in database.reserveringen)
+            {
+                if (reservering.datum < DateTime.Now)
+                {
+                    reviews.Add(new Review
+                    {
+                        ID = reviews.Count,
+                        Klantnummer = reservering.klantnummers[0],
+                        reservering_ID = reservering.ID,
+                        Rating = rnd.Next(0, 6),
+                        message = ""
+                    });
+                }
+            }
+
+            database.reviews = reviews;
+            io.Savedatabase(database);
+        }
+
+        #endregion
+
+        #region Medewerkers
+
+        public void Maak_werknemer(int amount)
+        {
+            database = io.Getdatabase();
+
+            string[][] names = Make_Names();
+
+            List<Werknemer> werknemers = new List<Werknemer>();
+            Random rnd = new Random();
+
+            for (int a = 0; a < amount; a++)
+            {
+                werknemers.Add(new Werknemer
+                {
+                    salaris = 3000,
+                    inkomstenbelasting = 0.371,
+                    prestatiebeloning = rnd.NextDouble()
+                });
+            }
+        }
+
+        #endregion
     }
 
 
