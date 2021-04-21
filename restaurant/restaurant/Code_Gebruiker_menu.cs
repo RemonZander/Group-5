@@ -32,27 +32,27 @@ namespace restaurant
         }
         
 
-        //Deze functie is klaar en kan geknipt worden naar Code_Gebruiker_menu.cs
-        public List<Reserveringen> Get_reservations(Klantgegevens klant)
+        //pakt de reservering van een klant
+        public List<Reserveringen> Get_reservation(Klantgegevens klant)
         {
-            List<Reserveringen> filter = new List<Reserveringen>();
+            List<Reserveringen> reservering = new List<Reserveringen>();
+            //voor elke reservering in de database, voor elk klantnummer
             foreach (var reserveringen in database.reserveringen)
             {
                 foreach (var klantnummer in reserveringen.klantnummers)
                 {
+                    //als de klant is gevonden en datum is in de toekomst, voeg de reservering toe
                     if (klant.klantnummer == klantnummer && reserveringen.datum > DateTime.Now)
                     {
-                        filter.Add(reserveringen);
+                        reservering.Add(reserveringen);
                         break;
                     }
                 }
             }
-
-
-            return filter;
+            return reservering;
         }
 
-        //Deze functie is klaar en kan geknipt worden naar Code_Gebruiker_menu.cs
+        //reset de database
         public void Remove_reservations(Reserveringen reserveringen)
         {
             database = io.Getdatabase();
@@ -108,21 +108,22 @@ namespace restaurant
 
         public List<Gerechten> Getmenukaart(List<string> allergenen)
         {
+            //maakt nieuwe lijst met de menukaart
             List<Gerechten> menulist = new List<Gerechten>(Getmenukaart());
-            //menulist = Getmenukaart();
             
-            //for all in filter
-
+            //voor alles in menukaart, voor alle allergenen
             for (int i = 0; i < database.menukaart.gerechten.Count; i++)
             {
                 for (int j = 0; j < allergenen.Count; j++)
                 {
+                    //als ingredient == allergeen zet die naar null
                     if (database.menukaart.gerechten[i].allergenen.Contains(allergenen[j]))
                     {
                         menulist[i] = null;
                     }
                 }
             }
+
             menulist.RemoveAll(x => x == null);
             return menulist;
         }
