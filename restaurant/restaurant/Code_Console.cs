@@ -3,17 +3,116 @@ using System.Collections.Generic;
 
 namespace restaurant
 {
+    public class Choice
+    {
+        public const string SCREEN_NEXT = "SCREEN_NEXT", SCREEN_BACK = "SCREEN_BACK";
+
+        public string ScreenName { get; set; }
+        public string Text { get; set; }
+        public string ScreenFlowDirection { get; set; }
+
+        public Choice(string screenName, string text, string screenDirection = SCREEN_NEXT)
+        {
+            ScreenName = screenName;
+            Text = text;
+            ScreenFlowDirection = screenDirection;
+        }
+    }
+
+    public abstract class BaseScreen
+    {
+        public string Name { get; protected set; }
+        public string Text { get; protected set; }
+        public BaseScreen PreviousScreen { get; set; }
+    }
+
+    public class DisplayScreen : BaseScreen
+    {
+        public List<Choice> Choices = new List<Choice>();
+
+        public DisplayScreen(string name, string text)
+        {
+            Name = name;
+            Text = text;
+        }
+    }
+
+    public class FunctionScreen : BaseScreen
+    {
+        public const string CANCELLED = "FUNCTION_CANCELLED", EXCEPTION = "FUNCTION_EXCEPTION", FINISHED = "FUNCTION_FINISHED";
+
+        private int FunctionStep = 0;
+        private int TotalFunctionSteps = 0;
+        public readonly Dictionary<string, dynamic> Variables = new Dictionary<string, dynamic>();
+        public readonly List<Tuple<Func<string, dynamic>, string>> Functions = new List<Tuple<Func<string, dynamic>, string>>();
+
+        public FunctionScreen(string name, string text)
+        {
+
+            Name = name;
+            Text = text;
+        }
+
+        public void AddFunctionWithMessage(Func<string, dynamic> func, string message)
+        {
+            Functions.Add(new Tuple<Func<string, dynamic>, string>( func, message ));
+            TotalFunctionSteps++;
+        }
+
+        public void AddFunction(Func<string, dynamic> func)
+        {
+            AddFunctionWithMessage(func, "");
+        }
+
+        public Func<string, dynamic> GetCurrentFunction()
+        {
+            return Functions[FunctionStep].Item1;
+        }
+
+        public string GetCurrentMessage()
+        {
+            return Functions[FunctionStep].Item2;
+        }
+
+        public bool IsLastStep()
+        {
+            return FunctionStep == TotalFunctionSteps;
+        }
+
+        public void Reset()
+        {
+            FunctionStep = 0;
+            Variables.Clear();
+        }
+
+        public void NextFunction()
+        {
+            FunctionStep++;
+        }
+    }
+
+    public class Screens
+    {
+        public readonly List<BaseScreen> AllScreens = new List<BaseScreen>();
+        public BaseScreen CurrentScreen { get; set; }
+
+        public BaseScreen GetScreenByName(string name)
+        {
+            foreach (var screen in AllScreens)
+            {
+                if (screen.Name == name)
+                {
+                    return screen;
+                } 
+            }
+
+            return null;
+        }
+    }
+
     /*
     * This class is in charge of displaying the content of the application to the user.
     * Every input that the user has goes through here.
-    * 
-    * NOTE: Screens could be defined in JSON
-    * NOTE: Code in FirstInit if condition can be copied into a constructor
-    * 
-    * TODO: Make distinction between DisplayScreen and ActionScreen
-    * To elaborate: DisplayScreens are purely for displaying data, ActionScreens is for doing a certain action (like logging in)
-    * Difference in code is in the part where the choices are located. ActionScreens dont have choices for going to another screen.
-    * They instead hold a list of actions that must be performed in that screen to then move on to the next screen or display an error message of some kind.
     * 
     * ActionScreen Flow
     * ActionScreen holds a list of actions
@@ -34,23 +133,13 @@ namespace restaurant
 
         private readonly restaurant.Testing_class TestingClass = new Testing_class();
 
-        private readonly List<Dictionary<string, dynamic>> screens = new List<Dictionary<string, dynamic>>();
+        private readonly Screens screens = new Screens();
 
-        private readonly List<string> screenNames = new List<string>();
-
-        private Dictionary<string, dynamic> currentScreen;
-
-        private const int DisplayType = 0, ActionType = 1;
-
-        private const string ActionCancelled = "ACTION_CANCELLED", ActionException = "ACTION_EXCEPTION";
-
-        private const string ScreenNext = "SCREEN_NEXT", ScreenBack = "SCREEN_BACK";
+        private BaseScreen currentScreen;
 
         private bool invalidInput = false;
 
         private string input = "0";
-
-        private int screenIds = -1;
 
         private string GFLogo = @" _____                     _  ______         _             
 |  __ \                   | | |  ___|       (_)            
@@ -68,19 +157,70 @@ namespace restaurant
 
             Code_login.Register(data);
 
-            screens.Add(LoginScreen());
-            screens.Add(StartScreenCustomer());
-            screens.Add(StartScreenEmployee());
-            screens.Add(StartScreen());
-            screens.Add(InvalidInputScreen());
+            DisplayScreen startScreen = new DisplayScreen("StartMenu", $"{GFLogo}\nKies een optie:");
+            startScreen.Choices.Add(new Choice("StartScreenCustomer", "Klant"));
+            startScreen.Choices.Add(new Choice("LoginScreenEmployee", "Medewerker"));
 
-            currentScreen = screens[screenNames.IndexOf("StartScreen")];
+            DisplayScreen startScreenCustomer = new DisplayScreen("StartScreenCustomer", $"{GFLogo}\nKlanten Scherm");
+            startScreenCustomer.Choices.Add(new Choice("StartMenu", "Ga terug", Choice.SCREEN_BACK));
+
+            DisplayScreen startScreenEmployee = new DisplayScreen("StartScreenEmployee", $"{GFLogo}\nMedewerkers Scherm");
+            startScreenEmployee.Choices.Add(new Choice("StartMenu", "Ga terug", Choice.SCREEN_BACK));
+
+            DisplayScreen invalidInputScreen = new DisplayScreen("InvalidInputScreen", "Type alstublieft de correcte keuze in.\nCorrecte keuzes zijn gemarkeerd met -> [] met een nummer erin.\nType alleen de nummer van de keuze in.\nVoorbeeld: Met keuze [1] type je in 1");
+            invalidInputScreen.Choices.Add(new Choice("StartMenu", "Ga terug", Choice.SCREEN_BACK));
+
+            FunctionScreen loginScreen = new FunctionScreen("LoginScreenEmployee", $"{GFLogo}\nLog in met je Email en Wachtwoord");
+            loginScreen.AddFunctionWithMessage(input => {
+                loginScreen.Variables.Add("email", input);
+                return null;
+            }, "Je email");
+            loginScreen.AddFunctionWithMessage(input => {
+                loginScreen.Variables.Add("psw", input);
+
+                Login_gegevens funcResult = Code_login.Login_Check(loginScreen.Variables["email"], loginScreen.Variables["psw"]);
+                BaseScreen previousScreen = currentScreen.PreviousScreen;
+
+                if (funcResult.type == "No account found")
+                {
+                    DisplayScreen noAccountFoundScreen = new DisplayScreen(
+                        "",
+                        "The account with the specified mail does not exist in our current Database."
+                    );
+                    noAccountFoundScreen.Choices.Add(new Choice("StartMenu", "Go back", Choice.SCREEN_BACK));
+
+                    currentScreen = noAccountFoundScreen;
+                }
+                else
+                {
+                    DisplayScreen loginSuccesfullScreen = new DisplayScreen(
+                        "",
+                        "Login successfull."
+                    );
+
+                    loginSuccesfullScreen.Choices.Add(new Choice("StartScreenEmployee", "Continue"));
+
+                    currentScreen = loginSuccesfullScreen;
+                    currentScreen.PreviousScreen = previousScreen;
+                }
+
+                return FunctionScreen.FINISHED;
+            }, "Je wachtwoord");
+
+
+            screens.AllScreens.Add(loginScreen);
+            screens.AllScreens.Add(startScreenCustomer);
+            screens.AllScreens.Add(startScreenEmployee);
+            screens.AllScreens.Add(startScreen);
+            screens.AllScreens.Add(invalidInputScreen);
+
+            currentScreen = screens.CurrentScreen = startScreen;
         }
 
         #region Screen Functions
 
         // Throw exception on -1
-        private int GetScreenIdByName(string name)
+/*        private int GetScreenIdByName(string name)
         {
             return screenNames.IndexOf(name);
         }
@@ -90,33 +230,16 @@ namespace restaurant
             actions.Add(new dynamic[] { action, message });
         }
 
-        private dynamic[] CreateChoice(int screenId, string text, string ScreenFlowDirection = ScreenNext)
+        private dynamic[] CreateChoice(int screenId, string text, string ScreenFlowDirection = SCREEN_NEXT)
         {
             return new dynamic[] { screenId, text , ScreenFlowDirection };
-        }
+        }*/
 
         #endregion
 
         #region Screens
 
-        /*
-         * Creates a dict with string keys and different type of values.
-         * id: int
-         * name: string
-         * output: string
-         * previousScreen: int
-         * type: int
-         * 
-         * Depending on what type of screen it is (signified by the type parameter) different items will be added.
-         * Display Screen
-         *  choices: List<Dictionary<int, string>> int = the id of the screen | string is the message to display
-         * 
-         * Action Screen
-         *  actionStep: int
-         *  variables: new Dictionary<string, dynamic>
-         *  action: new List<dynamic[]> (HEADS UP: To make creating actions more consistent use the AddActionWithMessage method)
-         */
-        private Dictionary<string, dynamic> CreateScreen(string name, int type = DisplayType)
+/*        private Dictionary<string, dynamic> CreateScreen(string name, int type = DisplayType)
         {
             screenIds++;
             screenNames.Add(name);
@@ -139,9 +262,9 @@ namespace restaurant
             }
 
             return dict;
-        }
+        }*/
 
-        private Dictionary<string, dynamic> StartScreen()
+/*        private Dictionary<string, dynamic> StartScreen()
         {
             var dict = CreateScreen("StartScreen");
             dict["output"] = $"{GFLogo}\nKies een optie:";
@@ -154,7 +277,7 @@ namespace restaurant
         {
             var dict = CreateScreen("StartScreenCustomer");
             dict["output"] = $"{GFLogo}\nKlanten Scherm";
-            dict["choices"].Add(CreateChoice(0, "Go back", ScreenBack));
+            dict["choices"].Add(CreateChoice(0, "Go back", SCREEN_BACK));
             return dict;
         }
 
@@ -162,11 +285,11 @@ namespace restaurant
         {
             var dict = CreateScreen("StartScreenEmployee");
             dict["output"] = $"{GFLogo}\nMedewerkers Scherm";
-            dict["choices"].Add(CreateChoice(0, "Go back", ScreenBack));
+            dict["choices"].Add(CreateChoice(0, "Go back", SCREEN_BACK));
             return dict;
-        }
+        }*/
 
-        private Dictionary<string, dynamic> LoginScreen()
+/*        private Dictionary<string, dynamic> LoginScreen()
         {
             var dict = CreateScreen("LoginScreen", ActionType);
             dict["output"] = $"{GFLogo}\nPlease Login with your email and password.";
@@ -183,24 +306,24 @@ namespace restaurant
             }), "Your password");
 
             return dict;
-        }
+        }*/
 
-        private Dictionary<string, dynamic> InvalidInputScreen()
+/*        private Dictionary<string, dynamic> InvalidInputScreen()
         {
             var dict = CreateScreen("InvalidInputScreen");
             dict["output"] = "Please type a valid choice.\nValid choices are the ones marked with -> [] with a number inside it.\nDon't type your choice with the brackets (These things -> [])\nExample: When you see this option -> [1] you press the number: 1 and then click on enter";
-            dict["choices"].Add(CreateChoice(0, "Go back", ScreenBack));
+            dict["choices"].Add(CreateChoice(0, "Go back", SCREEN_BACK));
             return dict;
-        }
+        }*/
 
-        private Dictionary<string, dynamic> ActionResultScreen(string outputMessage, params dynamic[][] choices)
+/*        private Dictionary<string, dynamic> ActionResultScreen(string outputMessage, params dynamic[][] choices)
         {
             var dict = CreateScreen("ActionResultScreen");
             dict["output"] = outputMessage;
 
             foreach (dynamic[] choice in choices)
             {
-                if (choice[2] == ScreenBack)
+                if (choice[2] == SCREEN_BACK)
                 {
                     dict["previousScreen"] = choice[0];
                 }
@@ -209,94 +332,60 @@ namespace restaurant
             }
 
             return dict;
-        }
+        }*/
 
         #endregion
 
         private void ScreenManager(string input)
         {
-            List<dynamic[]> choices = null;
-            List<dynamic[]> actions = null;
-
-            // Check if the current screen is a DisplayScreen or ActionScreen
-            if (currentScreen.ContainsKey("choices")) {
-                choices = currentScreen["choices"];
-            } else if (currentScreen.ContainsKey("actions")) {
-                actions = currentScreen["actions"];
-            }
-
             // for every screen match the id with choice then get that screen and set it as current screen.
-            if (choices != null)
+            if (currentScreen.GetType() == typeof(DisplayScreen))
             {
-                foreach (var screen in screens)
+                var displayScreen = (DisplayScreen)currentScreen;
+                var choices = displayScreen.Choices;
+
+                foreach (var screen in screens.AllScreens)
                 {
                     int inputAsInteger = int.Parse(input);
-                    if (choices[inputAsInteger - 1][0] == screen["id"])
+                    if (choices[inputAsInteger - 1].ScreenName == screen.Name)
                     {
-                        if (currentScreen["name"] != "InvalidInputScreen" && currentScreen["name"] != "ActionResultScreen") 
+                        if (currentScreen.Name != "InvalidInputScreen") 
                         {
-                            screen["previousScreen"] = currentScreen["id"];
-                        }
-
-                        if (currentScreen["name"] == "ActionResultScreen")
-                        {
-                            screen["previousScreen"] = currentScreen["previousScreen"];
+                            screen.PreviousScreen = currentScreen;
                         }
 
                         currentScreen = screen;
                         break;
                     }
                 }
-            }
-
-            if (actions != null)
+            } 
+            else if (currentScreen.GetType() == typeof(FunctionScreen)) 
             {
-                var funcResult = actions[currentScreen["actionStep"]][0](input);
+                FunctionScreen funcScreen = (FunctionScreen)currentScreen;
 
-                bool isLastStep = currentScreen["actionStep"] == actions.Count - 1;
-                int actionPreviousScreenId = currentScreen["previousScreen"];
+                var funcResult = funcScreen.GetCurrentFunction()(input);
 
-                // if the program has gone to every action in the screen reset the action
-                if (isLastStep)
-                {
-                    currentScreen["actionStep"] = 0;
-                    currentScreen["variables"].Clear();
-                }
-
-                // If result eq to null it means the action has no return value
                 if (funcResult != null)
                 {
-                    if (funcResult.GetType() == typeof(string) && funcResult == ActionCancelled)
+                    if (funcResult.GetType() == typeof(string) && funcResult == FunctionScreen.CANCELLED)
                     {
-                        currentScreen = ActionResultScreen(
-                            "The current action has been cancelled.",
-                            CreateChoice(actionPreviousScreenId, "Go back", ScreenBack)
+                        DisplayScreen functionCancelledScreen = new DisplayScreen(
+                            "",
+                            "The current action has been cancelled."
                         );
-                    }
+                        functionCancelledScreen.Choices.Add(new Choice("", "Go back", Choice.SCREEN_BACK));
 
-                    if (funcResult.GetType() == typeof(string) && funcResult == ActionException)
+                        currentScreen = functionCancelledScreen;
+                    }
+                    else if (funcResult.GetType() == typeof(string) && funcResult == FunctionScreen.EXCEPTION)
                     {
                         invalidInput = true;
                     }
-
-                    if (funcResult.GetType() == typeof(Login_gegevens))
+                    else if (funcResult.GetType() == typeof(string) && funcResult == FunctionScreen.FINISHED)
                     {
-                        if (funcResult.type == "No account found")
-                        {
-                            currentScreen = ActionResultScreen(
-                                "The account with the specified mail does not exist in our current Database.",
-                                CreateChoice(actionPreviousScreenId, "Go back", ScreenBack)
-                            );
-                        }
-                        else
-                        {
-                            currentScreen = ActionResultScreen("Succesfully logged in.", CreateChoice(GetScreenIdByName("StartScreenEmployee"), "Continue"));
-                            currentScreen["previousScreen"] = actionPreviousScreenId;
-                        }
+                        funcScreen.Reset();
                     }
-                }
-
-                if (!isLastStep) currentScreen["actionStep"] += 1;
+                } else if (!funcScreen.IsLastStep()) funcScreen.NextFunction();
             }
         }
 
@@ -308,11 +397,12 @@ namespace restaurant
                 return false;
             }
 
-            if (currentScreen.ContainsKey("choices"))
+            if (currentScreen.GetType() == typeof(DisplayScreen))
             {
+                DisplayScreen displayScreen = (DisplayScreen)currentScreen;
                 bool isInteger = int.TryParse(input, out int number);
 
-                if (!isInteger || !(number > 0 && number <= currentScreen["choices"].Count))
+                if (!isInteger || !(number > 0 && number <= displayScreen.Choices.Count))
                 {
                     invalidInput = true;
                     return false;
@@ -326,41 +416,41 @@ namespace restaurant
         {
             if (invalidInput)
             {
-                int temp;
-                if (currentScreen["type"] == ActionType)
-                {
-                    temp = currentScreen["id"];
-                }
-                else
-                {
-                    temp = currentScreen["previousScreen"];
-                }
-
-                currentScreen = screens[GetScreenIdByName("InvalidInputScreen")];
-                currentScreen["previousScreen"] = temp;
+                /*                string temp;
+                                if (currentScreen.GetType() == typeof(FunctionScreen))
+                                {
+                                    temp = currentScreen.Name;
+                                }
+                                else
+                                {
+                                    temp = currentScreen["previousScreen"];
+                                }*/
+                
+                BaseScreen temp = currentScreen.PreviousScreen;
+                currentScreen = screens.GetScreenByName("InvalidInputScreen");
+                currentScreen.PreviousScreen = temp;
                 invalidInput = false;
             }
 
-            string output = currentScreen["output"];
+            string output = currentScreen.Text;
 
-            if (currentScreen.ContainsKey("choices"))
+            if (currentScreen.GetType() == typeof(DisplayScreen))
             {
+                DisplayScreen ds = (DisplayScreen)currentScreen;
                 int counter = 0;
-                foreach (dynamic[] choice in currentScreen["choices"])
+
+                foreach (var choice in ds.Choices)
                 {
-                    // Can be removed maybe?
-                    if (choice[2] == ScreenBack)
-                    {
-                        choice[0] = currentScreen["previousScreen"];
-                    }
-
-                    output += $"\n[{++counter}] {choice[1]}";
+                    output += $"\n[{++counter}] {choice.Text}";
                 }
-            }
-
-            if (currentScreen.ContainsKey("actions") && currentScreen["actions"].Count > 0)
+            } else if (currentScreen.GetType() == typeof(FunctionScreen))
             {
-                output += $"\n{currentScreen["actions"][currentScreen["actionStep"]][1]}";
+                FunctionScreen fs = (FunctionScreen)currentScreen;
+
+                if (fs.Functions.Count > 0)
+                {
+                    output += $"\n{fs.GetCurrentMessage()}";
+                }
             }
 
             Console.WriteLine(output);
