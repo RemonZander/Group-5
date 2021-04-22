@@ -174,7 +174,8 @@ namespace restaurant
                     ID = a,
                     tafels = tafels,
                     klantnummers = klantnummers,
-                    gerechten_ID = gerechten_ID
+                    gerechten_ID = gerechten_ID,
+                    aantal = klantnummers.Count
                 });
 
                 

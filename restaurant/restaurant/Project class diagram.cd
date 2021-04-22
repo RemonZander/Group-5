@@ -459,8 +459,8 @@
     <Position X="23.5" Y="5.25" Width="1.5" />
     <AssociationLine Name="tafels" Type="restaurant.Tafels" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="23.5" Y="6.421" />
-        <Point X="22.25" Y="6.421" />
+        <Point X="23.5" Y="6.542" />
+        <Point X="22.25" Y="6.542" />
         <Point X="22.25" Y="5.738" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
@@ -468,7 +468,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAABEgAAQAAIAAAAAAAAAAAAAAgAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAABEgAAQAAIAAAAAAAAAAAAAAgIAAAAAAAA=</HashCode>
       <FileName>Reserveringen.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
