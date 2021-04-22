@@ -101,7 +101,7 @@
   <Class Name="restaurant.Code_Eigenaar_menu">
     <Position X="8.5" Y="14" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAIAAAAAAIBAAAAAQAAAAABAAAAEAAAAAEAAAAA=</HashCode>
+      <HashCode>CABAAAIAAAAAAIBACAAAQAIAAABAAAAEAAAAAEAAAAA=</HashCode>
       <FileName>Code_Eigenaar_menu.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -450,10 +450,18 @@
   </Class>
   <Class Name="restaurant.Gerechten">
     <Position X="27.75" Y="3.5" Width="1.5" />
+    <AssociationLine Name="ingredienten" Type="restaurant.Ingredient">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.006" Y="-0.378" />
+      </MemberNameLabel>
+    </AssociationLine>
     <TypeIdentifier>
       <HashCode>IAAAAIAAAAAAgAAAAAAAAAAgCAQAAgAAAAAAIAAAAAA=</HashCode>
       <FileName>Gerechten.cs</FileName>
     </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="ingredienten" />
+    </ShowAsCollectionAssociation>
   </Class>
   <Struct Name="restaurant.Reserveringen">
     <Position X="23.5" Y="5.25" Width="1.5" />
@@ -522,6 +530,13 @@
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAgAAAAAQAAAAAAAABAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Tafels.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="restaurant.Ingredient">
+    <Position X="25.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgEAAAAAAAAAAAAAEAAAAAAAAABAAAAA=</HashCode>
+      <FileName>Ingredient.cs</FileName>
     </TypeIdentifier>
   </Struct>
   <Font Name="Segoe UI" Size="9" />
