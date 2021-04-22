@@ -802,7 +802,7 @@ namespace restaurant
                         Klantnummer = reservering.klantnummers[0],
                         reservering_ID = reservering.ID,
                         message = "",
-                        Receiver = database.werknemers[rnd.Next(0, database.werknemers.Count)].ID
+                        recipient = database.werknemers[rnd.Next(0, database.werknemers.Count)].ID
                     });
                 }
             }

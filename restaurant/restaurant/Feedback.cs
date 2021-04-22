@@ -7,6 +7,6 @@ namespace restaurant
 {
     public class Feedback : review_feedback_base
     {
-        public int Receiver { get; set; }
+        public int recipient { get; set; }
     }
 }
