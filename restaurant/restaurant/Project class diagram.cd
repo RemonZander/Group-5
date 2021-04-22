@@ -172,7 +172,7 @@
   <Class Name="restaurant.Code_Gebruiker_menu">
     <Position X="5.5" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAQAAgAAAAAAIBAAAAAQIAAAAAAAAAAAAAAAAIAAAA=</HashCode>
+      <HashCode>AAAQAAhAAAAAAIBAAAAAQIAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Code_Gebruiker_menu.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -250,6 +250,14 @@
         <Point X="13.906" Y="1.733" />
       </Path>
     </AssociationLine>
+    <AssociationLine Name="werknemers" Type="restaurant.Werknemer" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="20.938" Y="7.603" />
+        <Point X="20.938" Y="12.396" />
+        <Point X="41.375" Y="12.396" />
+        <Point X="41.375" Y="9.747" />
+      </Path>
+    </AssociationLine>
     <AssociationLine Name="eigenaars" Type="restaurant.Eigenaar" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="21.25" Y="7.603" />
@@ -258,14 +266,6 @@
         <Point X="38.9" Y="8.167" />
         <Point X="41.5" Y="8.167" />
         <Point X="41.5" Y="7.497" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="werknemers" Type="restaurant.Werknemer" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="20.938" Y="7.603" />
-        <Point X="20.938" Y="12.396" />
-        <Point X="41.375" Y="12.396" />
-        <Point X="41.375" Y="9.747" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
@@ -283,8 +283,8 @@
       <Property Name="tafels" />
       <Property Name="reviews" />
       <Property Name="feedback" />
-      <Property Name="eigenaars" />
       <Property Name="werknemers" />
+      <Property Name="eigenaars" />
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="restaurant.Klantgegevens">
@@ -459,8 +459,8 @@
     <Position X="23.5" Y="5.25" Width="1.5" />
     <AssociationLine Name="tafels" Type="restaurant.Tafels" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="23.5" Y="6.301" />
-        <Point X="22.25" Y="6.301" />
+        <Point X="23.5" Y="6.421" />
+        <Point X="22.25" Y="6.421" />
         <Point X="22.25" Y="5.738" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
@@ -468,7 +468,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAABAgAAQAAIAAAAAAAAAAAAAAgAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAABEgAAQAAIAAAAAAAAAAAAAAgAAAAAAAAA=</HashCode>
       <FileName>Reserveringen.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>

@@ -23,5 +23,7 @@ namespace restaurant
         //Bij het reserveren van een plek in het restaurant is deze lijst leeg
         //Bij het afhalen van eten (of laten brengen) is deze lijst gevult
         public List<int> gerechten_ID { get; set; }
+
+        public bool tafel_bij_raam { get; set; }
     }
 }

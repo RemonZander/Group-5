@@ -19,6 +19,7 @@ namespace restaurant
         private Database database = new Database();
         private readonly IO io = new IO();
         private List<Reserveringen> reserveringen_list = new List<Reserveringen>();
+        private int[] counter = new int[25];
 
         public Testing_class()
         {
@@ -54,7 +55,8 @@ namespace restaurant
             List<Tuple<DateTime, List<Tafels>>> beschikbaar = Calc_totale_beschikbaarheid(start_month, stop_month, start_day, stop_day);
             for (int a = 0; a < threads; a++)
             {
-                reservation_thread[a] = new Thread(() => Fill_reservations(threads, a, amount, new List<Tuple<DateTime, List<Tafels>>>(beschikbaar)));
+                int b = a;
+                reservation_thread[a] = new Thread(() => Fill_reservations(threads, b, amount, new List<Tuple<DateTime, List<Tafels>>>(beschikbaar)));
             }
 
             for (int a = 0; a < threads; a++)
@@ -66,8 +68,10 @@ namespace restaurant
             for (int b = 0; b < threads; b++)
             {
                 reservation_thread[b].Join();
+                counter[24] += counter[b];
             }
 
+            
             database.reserveringen = reserveringen_list;
             io.Savedatabase(database);
         }
@@ -92,9 +96,11 @@ namespace restaurant
 
         private void Fill_reservations(int threads, int ofset, int amount, List<Tuple<DateTime, List<Tafels>>> totaal_beschikbaar)
         {           
-            for (int a = ofset; a < amount; a += threads - 1)
+            for (int a = ofset; a < amount; a += threads)
             {
                 make_reservation(a, totaal_beschikbaar);
+
+                counter[ofset] += 1;
             }
         }
 
@@ -170,6 +176,8 @@ namespace restaurant
                     klantnummers = klantnummers,
                     gerechten_ID = gerechten_ID
                 });
+
+                
             }
         }
 
