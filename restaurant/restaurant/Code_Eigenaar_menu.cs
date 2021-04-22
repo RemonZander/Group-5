@@ -21,7 +21,7 @@ namespace restaurant
             database = io.Getdatabase();
             Menukaart menukaart = new Menukaart();
             menukaart.gerechten = instance.Get_standard_dishes();
-            
+
             database.menukaart = menukaart;
             io.Savedatabase(database);
 
@@ -31,6 +31,53 @@ namespace restaurant
             instance.Maak_werknemer(10);
             instance.Make_feedback();
             database = io.Getdatabase();
+        }
+
+        public List<Ingredient> GetIngredients()
+        {
+            return database.ingredienten;
+        }
+
+        public List<Ingredient> GetAlmostExpiredIngredients(DateTime date)
+        {
+            List<Ingredient> ingredients = new List<Ingredient>(GetIngredients());
+            for (int i = 0; i < ingredients.Count; i++)
+            {
+                if (ingredients[i].houdbaarheids_datum < date)
+                {
+                    ingredients.RemoveAt(i);
+                }
+            }
+            return ingredients;
+        }
+
+        public List<Ingredient> GetExpiredIngredients()
+        {
+            List<Ingredient> ingredients = new List<Ingredient>(GetIngredients());
+            for (int i = 0; i < ingredients.Count; i++)
+            {
+                if (ingredients[i].houdbaarheids_datum > DateTime.Now)
+                {
+                    ingredients.RemoveAt(i);
+                }
+            }
+            return ingredients;
+        }
+
+        public void DeleteExpiredIngredients(List<Ingredient> ingredient)
+        {
+            database = io.Getdatabase();
+            for (int i = 0; i < database.ingredienten.Count; i++)
+            {
+                for (int j = 0; j < ingredient.Count; j++)
+                {
+                    if (database.ingredienten[i].Equals(ingredient[j]))
+                    {
+                        database.ingredienten.RemoveAt(i);
+                    }
+                }
+            }
+            io.Savedatabase(database);
         }
 
         public List<Feedback> GetFeedback()
