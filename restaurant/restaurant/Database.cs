@@ -45,5 +45,7 @@ namespace restaurant
         public List<Werknemer> werknemers { get; set; }
 
         public List<Eigenaar> eigenaars { get; set; }
+
+        public List<Ingredient> ingredienten { get; set; }
     }
 }

@@ -11,7 +11,7 @@ namespace restaurant
 
         public int ID { get; set; }
 
-        public List<Ingredient> ingredienten { get; set; }
+        public List<int> ingredienten { get; set; }
 
         public bool is_populair { get; set; }
 
