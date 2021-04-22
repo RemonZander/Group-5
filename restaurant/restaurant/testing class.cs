@@ -835,8 +835,8 @@ namespace restaurant
                     ID = werknemers.Count,
                     Klantgegevens = new Klantgegevens
                     {
-                        voornaam = names[rnd.Next(0, 2)][rnd.Next(0, 24)],
-                        achternaam = names[2][rnd.Next(0, 30)],
+                        voornaam = names[rnd.Next(0, 2)][rnd.Next(0, 23)],
+                        achternaam = names[2][rnd.Next(0, 40)],
                     },
                 });
             }
