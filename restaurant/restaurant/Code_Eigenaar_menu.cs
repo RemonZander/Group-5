@@ -25,13 +25,100 @@ namespace restaurant
             database.menukaart = menukaart;
             io.Savedatabase(database);
 
-            DateTime endDate = DateTime.Now;
-            endDate = endDate.AddDays(7);
-            instance.Fill_Userdata(10);
-            instance.Fill_reservations(100, 1, 12, 1, 28);
+            instance.Fill_Userdata(100);
+            instance.Fill_reservations_threading(24, 1000, 1, 3, 1, 9);
+            instance.Make_reviews();
+            instance.Maak_werknemer(10);
+            instance.Make_feedback();
             database = io.Getdatabase();
-            GetUserOrderInfo(DateTime.Now, endDate);
-            MakeDishPopular(0);
+        }
+
+        public List<Feedback> GetFeedback()
+        {
+            return database.feedback;
+        }
+
+        public List<Feedback> GetFeedback(int werknemerID)
+        {
+            List<Feedback> feedback = new List<Feedback>(GetFeedback());
+            for (int i = 0; i < feedback.Count; i++)
+            {
+                if (feedback[i].recipient != werknemerID)
+                {
+                    feedback[i] = null;
+                }
+            }
+            feedback.RemoveAll(x => x == null);
+            return feedback;
+        }
+
+        public void DeleteFeedback(int feedbackID)
+        {
+            List<Feedback> feedback = new List<Feedback>(GetFeedback());
+            for (int i = 0; i < feedback.Count; i++)
+            {
+                if (feedback[i].ID == feedbackID)
+                {
+                    feedback[i] = null;
+                    break;
+                }
+            }
+            feedback.RemoveAll(x => x == null);
+            database.feedback = feedback;
+            io.Savedatabase(database);
+        }
+
+        public List<Review> GetReviews()
+        {
+            return database.reviews;
+        }
+
+        public List<Review> GetReviews(int rating)
+        {
+            List<Review> reviews = new List<Review>(GetReviews());
+            for (int i = 0; i < reviews.Count; i++)
+            {
+                if (reviews[i].Rating != rating)
+                {
+                    reviews[i] = null;
+                }
+            }
+            reviews.RemoveAll(x => x == null);
+            return reviews;
+        }
+
+        public List<Review> GetReviews(List<int> rating)
+        {
+            List<Review> reviews = new List<Review>(GetReviews());
+            for (int i = 0; i < reviews.Count; i++)
+            {
+                for (int j = 0; j < rating.Count; j++)
+                {
+                    if (reviews[i].Rating != rating[j])
+                    {
+                        reviews[i] = null;
+                        break;
+                    }
+                }
+            }
+            reviews.RemoveAll(x => x == null);
+            return reviews;
+        }
+
+        public void DeleteReview(int reviewID)
+        {
+            List<Review> reviews = new List<Review>(GetReviews());
+            for (int i = 0; i < reviews.Count; i++)
+            {
+                if (reviews[i].ID == reviewID)
+                {
+                    reviews[i] = null;
+                    break;
+                }
+            }
+            reviews.RemoveAll(x => x == null);
+            database.reviews = reviews;
+            io.Savedatabase(database);
         }
 
         private bool IfDishExists(int id)
