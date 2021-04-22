@@ -195,7 +195,6 @@ namespace restaurant
                 }
                 possibleTime = new DateTime(DateTime.Now.Year, maanden, start_dag, 10, 0, 0);
             }
-
             return beschikbaar;
         }
     }

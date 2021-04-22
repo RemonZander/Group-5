@@ -30,12 +30,11 @@ namespace restaurant
         {
             database = io.Getdatabase();
         }
-        
 
         //pakt de reservering van een klant
-        public List<Reserveringen> Get_reservation(Klantgegevens klant)
+        public Reserveringen Get_reservation(Klantgegevens klant)
         {
-            List<Reserveringen> reservering = new List<Reserveringen>();
+            Reserveringen reservering = new Reserveringen();
             //voor elke reservering in de database, voor elk klantnummer
             foreach (var reserveringen in database.reserveringen)
             {
@@ -44,8 +43,7 @@ namespace restaurant
                     //als de klant is gevonden en datum is in de toekomst, voeg de reservering toe
                     if (klant.klantnummer == klantnummer && reserveringen.datum > DateTime.Now)
                     {
-                        reservering.Add(reserveringen);
-                        break;
+                        reservering = reserveringen;
                     }
                 }
             }
@@ -123,7 +121,6 @@ namespace restaurant
                     }
                 }
             }
-
             menulist.RemoveAll(x => x == null);
             return menulist;
         }
