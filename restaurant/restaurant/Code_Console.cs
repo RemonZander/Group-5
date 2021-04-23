@@ -195,7 +195,7 @@ namespace restaurant
                     SpacesBetweenItems += " ";
                 }
 
-                MealsOutput += $"{item.naam}{SpacesBetweenItems}{item.prijs}\n";
+                MealsOutput += $"{item.naam}{SpacesBetweenItems}{item.prijs.ToString("F")} euro\n";
             }
             //
 
