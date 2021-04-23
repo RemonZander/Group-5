@@ -162,13 +162,48 @@ namespace restaurant
             startScreen.Choices.Add(new Choice("LoginScreenEmployee", "Medewerker"));
 
             DisplayScreen startScreenCustomer = new DisplayScreen("StartScreenCustomer", $"{GFLogo}\nKlanten Scherm");
+            startScreenCustomer.Choices.Add(new Choice("ScreenMeals", "Gerechten Menu"));
             startScreenCustomer.Choices.Add(new Choice("StartMenu", "Ga terug", Choice.SCREEN_BACK));
 
             DisplayScreen startScreenEmployee = new DisplayScreen("StartScreenEmployee", $"{GFLogo}\nMedewerkers Scherm");
             startScreenEmployee.Choices.Add(new Choice("StartMenu", "Ga terug", Choice.SCREEN_BACK));
 
+            DisplayScreen startScreenMeals = new DisplayScreen("ScreenMeals", $"{GFLogo}\nWelkom bij de gerechten menu van GRAND FUSION. Eet smakelijk!");
+            startScreenMeals.Choices.Add(new Choice("AllMeals", "Laat alle gerechten zien"));
+            startScreenMeals.Choices.Add(new Choice("StartScreenCustomer", "Ga terug", Choice.SCREEN_BACK));
+
+            // Kan in een aparte functie
+            List<Gerechten> MealsMenu = TestingClass.Get_standard_dishes();
+            int SpacesBetweenColumn = 20;
+            string MealsNameColumn = "Naam:";
+            string MealsPriceColumn = "Price:";
+            string temp = "";
+
+            for (int i = 0; i < SpacesBetweenColumn - MealsNameColumn.Length; i++)
+            {
+                temp += " ";
+            }
+
+            string MealsOutput = $"{GFLogo}\n{MealsNameColumn}{temp}{MealsPriceColumn}\n";
+
+            foreach (Gerechten item in MealsMenu)
+            {
+                string SpacesBetweenItems = "";
+
+                for (int i = 0; i < SpacesBetweenColumn - item.naam.Length; i++)
+                {
+                    SpacesBetweenItems += " ";
+                }
+
+                MealsOutput += $"{item.naam}{SpacesBetweenItems}{item.prijs}\n";
+            }
+            //
+
+            DisplayScreen allMeals = new DisplayScreen("AllMeals", MealsOutput);
+            allMeals.Choices.Add(new Choice("", "Ga terug", Choice.SCREEN_BACK));
+
             DisplayScreen invalidInputScreen = new DisplayScreen("InvalidInputScreen", "Type alstublieft de correcte keuze in.\nCorrecte keuzes zijn gemarkeerd met -> [] met een nummer erin.\nType alleen de nummer van de keuze in.\nVoorbeeld: Met keuze [1] type je in 1");
-            invalidInputScreen.Choices.Add(new Choice("StartMenu", "Ga terug", Choice.SCREEN_BACK));
+            invalidInputScreen.Choices.Add(new Choice("", "Ga terug", Choice.SCREEN_BACK));
 
             FunctionScreen loginScreen = new FunctionScreen("LoginScreenEmployee", $"{GFLogo}\nLog in met je Email en Wachtwoord");
             loginScreen.AddFunctionWithMessage(input => {
@@ -212,129 +247,12 @@ namespace restaurant
             screens.AllScreens.Add(startScreenCustomer);
             screens.AllScreens.Add(startScreenEmployee);
             screens.AllScreens.Add(startScreen);
+            screens.AllScreens.Add(startScreenMeals);
+            screens.AllScreens.Add(allMeals);
             screens.AllScreens.Add(invalidInputScreen);
 
             currentScreen = screens.CurrentScreen = startScreen;
         }
-
-        #region Screen Functions
-
-        // Throw exception on -1
-/*        private int GetScreenIdByName(string name)
-        {
-            return screenNames.IndexOf(name);
-        }
-
-        private void AddActionWithMessage(List<dynamic[]> actions, Func<string, dynamic> action, string message)
-        {
-            actions.Add(new dynamic[] { action, message });
-        }
-
-        private dynamic[] CreateChoice(int screenId, string text, string ScreenFlowDirection = SCREEN_NEXT)
-        {
-            return new dynamic[] { screenId, text , ScreenFlowDirection };
-        }*/
-
-        #endregion
-
-        #region Screens
-
-/*        private Dictionary<string, dynamic> CreateScreen(string name, int type = DisplayType)
-        {
-            screenIds++;
-            screenNames.Add(name);
-
-            var dict = new Dictionary<string, dynamic>
-            {
-                { "id", screenIds },
-                { "name", name},
-                { "output", "" },
-                { "previousScreen", 0},
-                { "type", type},
-            };
-
-            if (type == DisplayType) {
-                dict.Add("choices", new List<dynamic[]>());
-            } else if (type == ActionType) {
-                dict.Add("actionStep", 0);
-                dict.Add("variables", new Dictionary<string, dynamic>());
-                dict.Add("actions", new List<dynamic[]>());
-            }
-
-            return dict;
-        }*/
-
-/*        private Dictionary<string, dynamic> StartScreen()
-        {
-            var dict = CreateScreen("StartScreen");
-            dict["output"] = $"{GFLogo}\nKies een optie:";
-            dict["choices"].Add(CreateChoice(GetScreenIdByName("StartScreenCustomer"), "Customer"));
-            dict["choices"].Add(CreateChoice(GetScreenIdByName("LoginScreen"), "Employee"));
-            return dict;
-        }
-
-        private Dictionary<string, dynamic> StartScreenCustomer()
-        {
-            var dict = CreateScreen("StartScreenCustomer");
-            dict["output"] = $"{GFLogo}\nKlanten Scherm";
-            dict["choices"].Add(CreateChoice(0, "Go back", SCREEN_BACK));
-            return dict;
-        }
-
-        private Dictionary<string, dynamic> StartScreenEmployee()
-        {
-            var dict = CreateScreen("StartScreenEmployee");
-            dict["output"] = $"{GFLogo}\nMedewerkers Scherm";
-            dict["choices"].Add(CreateChoice(0, "Go back", SCREEN_BACK));
-            return dict;
-        }*/
-
-/*        private Dictionary<string, dynamic> LoginScreen()
-        {
-            var dict = CreateScreen("LoginScreen", ActionType);
-            dict["output"] = $"{GFLogo}\nPlease Login with your email and password.";
-
-            // typecast the lambda to avoid error, maybe find another way to implement this more cleanly?
-            AddActionWithMessage(dict["actions"], (Func<string, dynamic>)(input => {
-                dict["variables"].Add("email", input);
-                return null;
-            }), "Your email");
-            AddActionWithMessage(dict["actions"], (Func<string, dynamic>)(input => {
-                dict["variables"].Add("psw", input);
-
-                return Code_login.Login_Check(dict["variables"]["email"], dict["variables"]["psw"]);
-            }), "Your password");
-
-            return dict;
-        }*/
-
-/*        private Dictionary<string, dynamic> InvalidInputScreen()
-        {
-            var dict = CreateScreen("InvalidInputScreen");
-            dict["output"] = "Please type a valid choice.\nValid choices are the ones marked with -> [] with a number inside it.\nDon't type your choice with the brackets (These things -> [])\nExample: When you see this option -> [1] you press the number: 1 and then click on enter";
-            dict["choices"].Add(CreateChoice(0, "Go back", SCREEN_BACK));
-            return dict;
-        }*/
-
-/*        private Dictionary<string, dynamic> ActionResultScreen(string outputMessage, params dynamic[][] choices)
-        {
-            var dict = CreateScreen("ActionResultScreen");
-            dict["output"] = outputMessage;
-
-            foreach (dynamic[] choice in choices)
-            {
-                if (choice[2] == SCREEN_BACK)
-                {
-                    dict["previousScreen"] = choice[0];
-                }
-
-                dict["choices"].Add(choice);
-            }
-
-            return dict;
-        }*/
-
-        #endregion
 
         private void ScreenManager(string input)
         {
@@ -347,7 +265,8 @@ namespace restaurant
                 foreach (var screen in screens.AllScreens)
                 {
                     int inputAsInteger = int.Parse(input);
-                    if (choices[inputAsInteger - 1].ScreenName == screen.Name)
+                    Choice choice = choices[inputAsInteger - 1];
+                    if (choice.ScreenName == screen.Name)
                     {
                         if (currentScreen.Name != "InvalidInputScreen") 
                         {
@@ -355,6 +274,11 @@ namespace restaurant
                         }
 
                         currentScreen = screen;
+                        break;
+                    } 
+                    else if (choice.ScreenName == "" && choice.ScreenFlowDirection == Choice.SCREEN_BACK)
+                    {
+                        currentScreen = displayScreen.PreviousScreen;
                         break;
                     }
                 }
@@ -416,19 +340,18 @@ namespace restaurant
         {
             if (invalidInput)
             {
-                /*                string temp;
-                                if (currentScreen.GetType() == typeof(FunctionScreen))
-                                {
-                                    temp = currentScreen.Name;
-                                }
-                                else
-                                {
-                                    temp = currentScreen["previousScreen"];
-                                }*/
-                
-                BaseScreen temp = currentScreen.PreviousScreen;
+                BaseScreen previousScreen;
+                if (currentScreen.GetType() == typeof(FunctionScreen))
+                {
+                    previousScreen = currentScreen.PreviousScreen;
+                }
+                else
+                {
+                    previousScreen = currentScreen;
+                }
+
                 currentScreen = screens.GetScreenByName("InvalidInputScreen");
-                currentScreen.PreviousScreen = temp;
+                currentScreen.PreviousScreen = previousScreen;
                 invalidInput = false;
             }
 
