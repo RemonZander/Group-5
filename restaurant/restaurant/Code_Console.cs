@@ -220,7 +220,7 @@ namespace restaurant
                 {
                     DisplayScreen noAccountFoundScreen = new DisplayScreen(
                         "",
-                        "The account with the specified mail does not exist in our current Database."
+                        "De account met de gespecificeerde mail of wachtwoord is niet juist."
                     );
                     noAccountFoundScreen.Choices.Add(new Choice("StartMenu", "Go back", Choice.SCREEN_BACK));
 
@@ -230,10 +230,10 @@ namespace restaurant
                 {
                     DisplayScreen loginSuccesfullScreen = new DisplayScreen(
                         "",
-                        "Login successfull."
+                        "Login successvol."
                     );
 
-                    loginSuccesfullScreen.Choices.Add(new Choice("StartScreenEmployee", "Continue"));
+                    loginSuccesfullScreen.Choices.Add(new Choice("StartScreenEmployee", "Ga door"));
 
                     currentScreen = loginSuccesfullScreen;
                     currentScreen.PreviousScreen = previousScreen;
@@ -294,7 +294,7 @@ namespace restaurant
                     {
                         DisplayScreen functionCancelledScreen = new DisplayScreen(
                             "",
-                            "The current action has been cancelled."
+                            "De huidige actie is geannuleerd."
                         );
                         functionCancelledScreen.Choices.Add(new Choice("", "Go back", Choice.SCREEN_BACK));
 
