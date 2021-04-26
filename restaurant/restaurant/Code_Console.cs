@@ -222,7 +222,7 @@ namespace restaurant
                         "",
                         "De account met de gespecificeerde mail of wachtwoord is niet juist."
                     );
-                    noAccountFoundScreen.Choices.Add(new Choice("StartMenu", "Go back", Choice.SCREEN_BACK));
+                    noAccountFoundScreen.Choices.Add(new Choice("StartMenu", "Ga terug", Choice.SCREEN_BACK));
 
                     currentScreen = noAccountFoundScreen;
                 }
