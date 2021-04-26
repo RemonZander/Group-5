@@ -176,7 +176,7 @@ namespace restaurant
             List<Gerechten> MealsMenu = TestingClass.Get_standard_dishes();
             int SpacesBetweenColumn = 20;
             string MealsNameColumn = "Naam:";
-            string MealsPriceColumn = "Price:";
+            string MealsPriceColumn = "Prijs:";
             string temp = "";
 
             for (int i = 0; i < SpacesBetweenColumn - MealsNameColumn.Length; i++)
@@ -241,7 +241,6 @@ namespace restaurant
 
                 return FunctionScreen.FINISHED;
             }, "Je wachtwoord");
-
 
             screens.AllScreens.Add(loginScreen);
             screens.AllScreens.Add(startScreenCustomer);
