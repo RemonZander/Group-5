@@ -230,7 +230,7 @@ namespace restaurant
                 {
                     DisplayScreen loginSuccesfullScreen = new DisplayScreen(
                         "",
-                        "Login successvol."
+                        "Login succesvol."
                     );
 
                     loginSuccesfullScreen.Choices.Add(new Choice("StartScreenEmployee", "Ga door"));
