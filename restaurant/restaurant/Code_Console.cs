@@ -296,7 +296,7 @@ namespace restaurant
                             "",
                             "De huidige actie is geannuleerd."
                         );
-                        functionCancelledScreen.Choices.Add(new Choice("", "Go back", Choice.SCREEN_BACK));
+                        functionCancelledScreen.Choices.Add(new Choice("", "Ga terug", Choice.SCREEN_BACK));
 
                         currentScreen = functionCancelledScreen;
                     }
