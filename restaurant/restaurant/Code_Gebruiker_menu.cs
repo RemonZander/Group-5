@@ -195,12 +195,20 @@ namespace restaurant
             Review review = new Review
             {
                 Rating = rating,
-                ID = database.reviews.Count + 1,
                 Klantnummer = klant.klantnummer,
                 message = message,
                 reservering_ID = reservering.ID,
                 datum = DateTime.Now
             };
+            if (database.reviews.Count == 0)
+            {
+                review.ID = 1;
+            }
+            else
+            {
+                review.ID = database.reviews[database.reviews.Count - 1].ID + 1;
+            }
+
             database.reviews.Add(review);
             io.Savedatabase(database);
         }
