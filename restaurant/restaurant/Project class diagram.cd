@@ -436,7 +436,7 @@
   <Class Name="restaurant.review_feedback_base">
     <Position X="17.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAACgAAAQAAAAAAAAAAAAAAAAAAEAAAAACA=</HashCode>
+      <HashCode>AAAAAAAAAAACgAAAQAAAAAAAAAAAAAAAAgAEAAAAACA=</HashCode>
       <FileName>review_feedback_base.cs</FileName>
     </TypeIdentifier>
   </Class>
