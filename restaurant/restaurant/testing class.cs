@@ -32,19 +32,17 @@ namespace restaurant
         {
             Make_menu();
             Fill_Userdata(100);
-            //Fill_reservations(1000, 9, 9, 9, 9);
-            //Fill_reservations(10000, 1, 12, 1, 28);
             Fill_reservations_threading(24, 5000, 1, 3, 1, 9);
             Maak_werknemer(10);
             Save_expenses();
-            //Make_reviews();
+            Make_reviews();
+            Make_feedback();
+            Save_Sales();
 
-            //Save_Sales();
+            //Inkomsten inkomsten = Sales(new DateTime(DateTime.Now.Year, 9, 9, 10, 0, 0), new DateTime(DateTime.Now.Year, 9, 9, 22, 59, 0));
+            //database.inkomsten = inkomsten;
 
-            Inkomsten inkomsten = Sales(new DateTime(DateTime.Now.Year, 9, 9, 10, 0, 0), new DateTime(DateTime.Now.Year, 9, 9, 22, 59, 0));
-            database.inkomsten = inkomsten;
-
-            List<Tuple<DateTime, List<Tafels>>> test = Reservering_beschikbaarheid(Calc_totale_beschikbaarheid(9, 9, 9, 9), database.reserveringen);
+            //List<Tuple<DateTime, List<Tafels>>> test = Reservering_beschikbaarheid(Calc_totale_beschikbaarheid(9, 9, 9, 9), database.reserveringen);
         }
 
         //In de region hierinder staat alle code voor het opslaan van Reserveringen
@@ -72,26 +70,6 @@ namespace restaurant
             for (int b = 0; b < threads; b++)
             {
                 reservation_thread[b].Join();
-            }
-
-            database.ingredienten.AddRange(ingredient_temp);
-            database.reserveringen = reserveringen_list;
-            io.Savedatabase(database);
-        }
-
-        //Deze functie is voor als je de database wilt vullen met random reserveringen
-        //Als er al klantgegevens zijn in het systeem dan vult hij die gelijk aan in de reservering
-        //Als er geen klantgegevens in het systeem zijn dan kunnen er ook geen gerechten gegeten zijn dus die zijn dan ook leeg in de reservering
-        public void Fill_reservations(int amount, int start_month, int stop_month, int start_day, int stop_day)
-        {
-            database = io.Getdatabase();
-            List<Reserveringen> reserveringen_list = new List<Reserveringen>();
-            List<Tuple<DateTime, List<Tafels>>> totaal_beschikbaar = Calc_totale_beschikbaarheid(start_month, stop_month, start_day, stop_day);
-            BlockingCollection<Ingredient> ingredient_temp = new BlockingCollection<Ingredient>();
-            Random rnd = new Random();
-            for (int a = 0; a < amount; a++)
-            {
-                make_reservation(a, totaal_beschikbaar, ingredient_temp);
             }
 
             database.ingredienten.AddRange(ingredient_temp);
@@ -261,33 +239,6 @@ namespace restaurant
             }
 
             return beschikbaar;
-        }
-
-        //Deze functie is voor als je de database wilt vullen met je eigen data.
-        //Zorg wel dat iedere list even lang is als amount
-        public void Fill_reservations(int amount, List<DateTime> datum, List<List<int>> gerechten_ID, List<List<Tafels>> tafels, List<List<int>> klantnummers)
-        {
-            database = io.Getdatabase();
-            if (datum.Count != amount || gerechten_ID.Count != amount || tafels.Count != amount)
-            {
-                return;
-            }
-
-            List<Reserveringen> reserveringen_list = new List<Reserveringen>();
-            for (int a = 0; a < amount; a++)
-            {
-                reserveringen_list.Add(new Reserveringen
-                {
-                    datum = datum[a],
-                    ID = a,
-                    gerechten_ID = gerechten_ID[a],
-                    tafels = tafels[a],
-                    klantnummers = klantnummers[a]
-                });
-            }
-
-            database.reserveringen = reserveringen_list;
-            io.Savedatabase(database);
         }
 
         #endregion

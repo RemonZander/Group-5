@@ -436,7 +436,7 @@
   <Class Name="restaurant.review_feedback_base">
     <Position X="17.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAACgAAAQAAAAAAAAAAAAAAAAAAAAAAAACA=</HashCode>
+      <HashCode>AAAAAAAAAAACgAAAQAAAAAAAAAAAAAAAAAAEAAAAACA=</HashCode>
       <FileName>review_feedback_base.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -482,7 +482,7 @@
   <Class Name="restaurant.Testing_class">
     <Position X="4.75" Y="13" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ABACAAAQQAAMAIBQACAARAAAAgAAAAAABIgCAQAgAAA=</HashCode>
+      <HashCode>ABACAAAQQAAMAIBQACAARABIAgAAAAAABIgCAQAgAAA=</HashCode>
       <FileName>testing class.cs</FileName>
     </TypeIdentifier>
   </Class>
