@@ -10,7 +10,7 @@ namespace restaurant
         Database database = new Database();
         IO io = new IO();
         Testing_class testClass = new Testing_class();
-        
+
         public void Debug()
         {
             if (database.menukaart == null)
@@ -25,18 +25,12 @@ namespace restaurant
             }
             List<Gerechten> test = Getmenukaart(new List<string> { "lactose intolerantie" });
 
-            if (database.reserveringen == null)
-            {
-                database.reserveringen = new List<Reserveringen>();
-
-
-                List<int> num = new List<int>{ 223541, 220793 };
-                MakeCustomerReservation(DateTime.Now, num, 6, false);
-                num = new List<int>{ 223167 };
-                MakeCustomerReservation(new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day + 3), num, 2, true);
-            }
+            List<int> num = new List<int> { 223541, 220793 };
+            MakeCustomerReservation(DateTime.Now, num, 6, false);
+            num = new List<int> { 223167 };
+            MakeCustomerReservation(new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day + 3), num, 2, true);
         }
-        
+
         public Code_Gebruiker_menu()
         {
             database = io.Getdatabase();
@@ -61,54 +55,42 @@ namespace restaurant
             return reservering;
         }
 
-        //reset de database
-        public void Remove_reservations(Reserveringen reserveringen)
+        //maakt een incomplete reservering aan (een medewerker moet nog een tafel toewijzen) en voegt deze toe aan de database
+        public void MakeCustomerReservation(DateTime date, List<int> klantnummers, int aantalMensen, bool raamTafel)
         {
             database = io.Getdatabase();
-            database.reserveringen.Remove(reserveringen);
+            if (database.reserveringen == null)
+            {
+                database.reserveringen = new List<Reserveringen>();
+            }
+                
+            Reserveringen reservering = new Reserveringen
+            {
+
+                //zet het ID van de reservering naar +1 van het aantal dat al is gemaakt
+                ID = database.reserveringen.Count + 1,
+
+                //aatnal mensen
+                aantal = aantalMensen,
+
+                //voeg alle klantnummers toe
+                klantnummers = new List<int>(klantnummers),
+
+                datum = date
+            };
+
+            //voeg de reservering toe aan de database
+            database.reserveringen.Add(reservering);
             io.Savedatabase(database);
         }
 
-        /*public string GetMenukaart()
-        {
-            
-            string menukaart = "";
-            for(int i = 0; i< database.menukaart.gerechten.Count; i++)
+        //reset de database
+        public void Remove_reservations(Reserveringen reserveringen)
             {
-                //begint bij de naam van het gerecht
-                menukaart += database.menukaart.gerechten[i].naam;
-                
-                //checked if gerecht is populair of speciaal zo ja, voeg er wat achter en enter
-                if (database.menukaart.gerechten[i].is_populair && database.menukaart.gerechten[i].special)
-                {
-                    menukaart += " | Populair | Speciaal\n";
-                }
-                else if (database.menukaart.gerechten[i].is_populair)
-                {
-                    menukaart += " | Populair\n";
-                }
-                else if (database.menukaart.gerechten[i].special)
-                {
-                    menukaart += " | Speciaal\n";
-                }
-                else
-                {
-                    menukaart += "\n";
-                }
-
-                //voegt alle ingrediënten toe en per 7 doet een enter
-                for (int j = 0; j < database.menukaart.gerechten[i].ingredienten.Count; j++)
-                {
-                    menukaart += "Ingrediënten: " + database.menukaart.gerechten[i].ingredienten[j];
-                    if (j % 7 == 0)
-                    {
-                        menukaart += "\n";
-                    }
-                }
-                
+                database = io.Getdatabase();
+                database.reserveringen.Remove(reserveringen);
+                io.Savedatabase(database);
             }
-            return menukaart;
-        }*/
 
         #region Menukaart
         //pakt menukaart uit de database
@@ -116,13 +98,13 @@ namespace restaurant
         {
             return database.menukaart.gerechten;
         }
-        
+
         //verwijderd allergenen uit de menukaart en returned een gefilterde menukaart
         public List<Gerechten> Getmenukaart(List<string> allergenen)
         {
             //maakt nieuwe lijst met de menukaart
             List<Gerechten> menulist = new List<Gerechten>(Getmenukaart());
-            
+
             //voor alles in menukaart, voor alle allergenen
             for (int i = 0; i < database.menukaart.gerechten.Count; i++)
             {
@@ -198,28 +180,66 @@ namespace restaurant
             return menulist;
         }
         #endregion
-        
-        //maakt een incomplete reservering aan (een medewerker moet nog een tafel toewijzen) en voegt deze toe aan de database
-        public void MakeCustomerReservation(DateTime date, List<int> klantnummers, int aantalMensen, bool raamTafel)
+
+
+        #region Reviews
+        //maakt een review
+        public void makeReview(int rating, Klantgegevens klant, string message, Reserveringen reservering, bool anoniem)
         {
             database = io.Getdatabase();
-            Reserveringen reservering = new Reserveringen();
+            if (database.reviews == null)
+            {
+                database.reviews = new List<Review>();
+            }
 
-            //zet het ID van de reservering naar +1 van het aantal dat al is gemaakt
-            reservering.ID = database.reserveringen.Count + 1;
-
-            //aatnal mensen
-            reservering.aantal = aantalMensen;
-
-            //voeg alle klantnummers toe
-            reservering.klantnummers = new List<int>(klantnummers);
-
-            reservering.datum = date;
-
-            //voeg de reservering toe aan de database
-            database.reserveringen.Add(reservering);
+            Review review = new Review
+            {
+                Rating = rating,
+                ID = database.reviews.Count + 1,
+                Klantnummer = klant.klantnummer,
+                message = message,
+                reservering_ID = reservering.ID,
+                datum = DateTime.Now
+            };
+            database.reviews.Add(review);
             io.Savedatabase(database);
         }
 
+        //returned max 50 reviews, als de review anoniem is verandert de naam en reservering nummer naar 0
+        public List<Review> getReviews()
+        {
+            io.Getdatabase();
+            List < Review > reviewList = new List<Review>();
+            if (database.reviews == null)
+            {
+                return reviewList;
+            }
+            else
+            {
+                //laat 50 reviews zien, als er zoveel zijn
+                for (int i = 0, j = 0; i < database.reviews.Count && j < 50; i++, j++)
+                {
+                    if (database.reviews[i].anomiem)
+                    {
+                        Review temp = database.reviews[i];
+                        temp.Klantnummer = 0;
+                        temp.reservering_ID = 0;
+                        reviewList.Add(temp);
+                    }
+                    else
+                    {
+                        reviewList.Add(database.reviews[i]);
+                    }
+                }
+                return reviewList;
+            }
+        }
+
+        //TO DO
+        //public Review overwriteReview(int rating, Klantgegevens klant, string message, Reserveringen reservering, bool anoniem)
+        //{
+
+        //}
     }
+    #endregion
 }
