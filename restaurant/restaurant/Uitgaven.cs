@@ -11,7 +11,7 @@ namespace restaurant
 
         public List<int> eigenaar_ID { get; set; }
 
-        public List<Ingredienten> ingredienten { get; set; }
+        public List<int> ingredienten_ID { get; set; }
 
         public List<int> werknemer_ID { get; set; }
 

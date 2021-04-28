@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using Microsoft.VisualBasic.FileIO;
 using System.Threading;
+using System.Collections.Concurrent;
 
 namespace restaurant
 {
@@ -19,7 +20,6 @@ namespace restaurant
         private Database database = new Database();
         private readonly IO io = new IO();
         private List<Reserveringen> reserveringen_list = new List<Reserveringen>();
-        private int[] counter = new int[25];
 
         public Testing_class()
         {
@@ -35,14 +35,16 @@ namespace restaurant
             //Fill_reservations(1000, 9, 9, 9, 9);
             //Fill_reservations(10000, 1, 12, 1, 28);
             Fill_reservations_threading(24, 5000, 1, 3, 1, 9);
-            Make_reviews();
+            Maak_werknemer(10);
+            Save_expenses();
+            //Make_reviews();
 
             //Save_Sales();
 
             Inkomsten inkomsten = Sales(new DateTime(DateTime.Now.Year, 9, 9, 10, 0, 0), new DateTime(DateTime.Now.Year, 9, 9, 22, 59, 0));
             database.inkomsten = inkomsten;
 
-            List<Tuple<DateTime, List<Tafels>>> test = Reservering_beschikbaarheid(Calc_totale_beschikbaarheid(9, 9, 9, 9), database.reserveringen);         
+            List<Tuple<DateTime, List<Tafels>>> test = Reservering_beschikbaarheid(Calc_totale_beschikbaarheid(9, 9, 9, 9), database.reserveringen);
         }
 
         //In de region hierinder staat alle code voor het opslaan van Reserveringen
@@ -53,25 +55,26 @@ namespace restaurant
             Thread[] reservation_thread = new Thread[threads];
             database = io.Getdatabase();
             List<Tuple<DateTime, List<Tafels>>> beschikbaar = Calc_totale_beschikbaarheid(start_month, stop_month, start_day, stop_day);
+            BlockingCollection<Ingredient> ingredient_temp = new BlockingCollection<Ingredient>();
             for (int a = 0; a < threads; a++)
             {
                 int b = a;
-                reservation_thread[a] = new Thread(() => Fill_reservations(threads, b, amount, new List<Tuple<DateTime, List<Tafels>>>(beschikbaar)));
+                reservation_thread[a] = new Thread(() => Fill_reservations(threads, b, amount, new List<Tuple<DateTime, List<Tafels>>>(beschikbaar), ingredient_temp));
             }
 
             for (int a = 0; a < threads; a++)
             {
                 reservation_thread[a].Start();
+                Thread.Sleep(300);
             }
 
 
             for (int b = 0; b < threads; b++)
             {
                 reservation_thread[b].Join();
-                counter[24] += counter[b];
             }
 
-            
+            database.ingredienten.AddRange(ingredient_temp);
             database.reserveringen = reserveringen_list;
             io.Savedatabase(database);
         }
@@ -84,27 +87,27 @@ namespace restaurant
             database = io.Getdatabase();
             List<Reserveringen> reserveringen_list = new List<Reserveringen>();
             List<Tuple<DateTime, List<Tafels>>> totaal_beschikbaar = Calc_totale_beschikbaarheid(start_month, stop_month, start_day, stop_day);
+            BlockingCollection<Ingredient> ingredient_temp = new BlockingCollection<Ingredient>();
             Random rnd = new Random();
             for (int a = 0; a < amount; a++)
             {
-                make_reservation(a, totaal_beschikbaar);
+                make_reservation(a, totaal_beschikbaar, ingredient_temp);
             }
 
+            database.ingredienten.AddRange(ingredient_temp);
             database.reserveringen = reserveringen_list;
             io.Savedatabase(database);
         }
 
-        private void Fill_reservations(int threads, int ofset, int amount, List<Tuple<DateTime, List<Tafels>>> totaal_beschikbaar)
+        private void Fill_reservations(int threads, int ofset, int amount, List<Tuple<DateTime, List<Tafels>>> totaal_beschikbaar, BlockingCollection<Ingredient> ingredient_temp)
         {           
             for (int a = ofset; a < amount; a += threads)
             {
-                make_reservation(a, totaal_beschikbaar);
-
-                counter[ofset] += 1;
+                make_reservation(a, totaal_beschikbaar, ingredient_temp);
             }
         }
 
-        private void make_reservation(int a, List<Tuple<DateTime, List<Tafels>>> totaal_beschikbaar)
+        private void make_reservation(int a, List<Tuple<DateTime, List<Tafels>>> totaal_beschikbaar, BlockingCollection<Ingredient> ingredient_temp)
         {
             Random rnd = new Random();
             List<Tuple<DateTime, List<Tafels>>> beschikbaar = Reservering_beschikbaarheid(totaal_beschikbaar, reserveringen_list);
@@ -165,7 +168,7 @@ namespace restaurant
                         break;
                 }
 
-                List<Gerechten> gerechten = Make_dishes(klantnummers.Count * 3);
+                List<Gerechten> gerechten = Make_dishes(klantnummers.Count * 3, beschikbaar[pos].Item1, ingredient_temp);
                 List<int> gerechten_ID = gerechten.Select(g => g.ID).ToList();
 
                 reserveringen_list.Add(new Reserveringen
@@ -305,8 +308,166 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
+        private BlockingCollection<int> Maak_gerechten(string gerecht_naam, DateTime bestel_Datum, BlockingCollection<Ingredient> ingredient_temp)
+        {
+            BlockingCollection<int> ingredienten_id = new BlockingCollection<int>();
+            if (database.ingredienten == null) database.ingredienten = new List<Ingredient>();
+
+            if (gerecht_naam == "Pizza Salami")
+            {
+                Ingredient ingredient = new Ingredient
+                {
+                    bestel_datum = bestel_Datum,
+                    ID = ingredient_temp.Count + 1,
+                    name = "Deeg",
+                    prijs = 1,
+                };
+
+                ingredient_temp.Add(ingredient);
+                ingredienten_id.Add(ingredient.ID);
+
+                ingredient = new Ingredient
+                {
+                    bestel_datum = bestel_Datum,
+                    ID = ingredient_temp.Count + 1,
+                    name = "Salami",
+                    prijs = 0.80,
+                };
+
+                ingredient_temp.Add(ingredient);
+                ingredienten_id.Add(ingredient.ID);
+
+                ingredient = new Ingredient
+                {
+                    bestel_datum = bestel_Datum,
+                    ID = ingredient_temp.Count + 1,
+                    name = "Tomaten saus",
+                    prijs = 0.60,
+                };
+
+                ingredient_temp.Add(ingredient);
+                ingredienten_id.Add(ingredient.ID);
+
+            }
+            else if (gerecht_naam == "Vla")
+            {
+                Ingredient ingredient = new Ingredient
+                {
+                    bestel_datum = bestel_Datum,
+                    ID = ingredient_temp.Count + 1,
+                    name = "Vanille vla",
+                    prijs = 1.5,
+                };
+
+                ingredient_temp.Add(ingredient);
+                ingredienten_id.Add(ingredient.ID);
+
+            }
+            else if (gerecht_naam == "Hamburger")
+            {
+                Ingredient ingredient = new Ingredient
+                {
+                    bestel_datum = bestel_Datum,
+                    ID = ingredient_temp.Count + 1,
+                    name = "Broodjes",
+                    prijs = 0.10,
+                };
+
+                ingredient_temp.Add(ingredient);
+                ingredienten_id.Add(ingredient.ID);
+
+                ingredient = new Ingredient
+                {
+                    bestel_datum = bestel_Datum,
+                    ID = ingredient_temp.Count + 1,
+                    name = "Vlees",
+                    prijs = 0.85,
+                };
+
+                ingredient_temp.Add(ingredient);
+                ingredienten_id.Add(ingredient.ID);
+
+                ingredient = new Ingredient
+                {
+                    bestel_datum = bestel_Datum,
+                    ID = ingredient_temp.Count + 1,
+                    name = "Sla",
+                    prijs = 0.05,
+                };
+
+                ingredient_temp.Add(ingredient);
+                ingredienten_id.Add(ingredient.ID);
+
+            }
+            else if (gerecht_naam == "Yoghurt")
+            {
+                Ingredient ingredient = new Ingredient
+                {
+                    bestel_datum = bestel_Datum,
+                    ID = ingredient_temp.Count + 1,
+                    name = "Yoghurt",
+                    prijs = 1.8,
+                };
+
+                ingredient_temp.Add(ingredient);
+                ingredienten_id.Add(ingredient.ID);
+
+            }
+            else if (gerecht_naam == "IJs")
+            {
+                Ingredient ingredient = new Ingredient
+                {
+                    bestel_datum = bestel_Datum,
+                    ID = ingredient_temp.Count + 1,
+                    name = "Vanille ijs",
+                    prijs = 1.85,
+                };
+
+                ingredient_temp.Add(ingredient);
+                ingredienten_id.Add(ingredient.ID);
+
+            }
+            else if (gerecht_naam == "Patat")
+            {
+                Ingredient ingredient = new Ingredient
+                {
+                    bestel_datum = bestel_Datum,
+                    ID = ingredient_temp.Count + 1,
+                    name = "Frituur vet",
+                    prijs = 0.10,
+                };
+
+                ingredient_temp.Add(ingredient);
+                ingredienten_id.Add(ingredient.ID);
+
+                ingredient = new Ingredient
+                {
+                    bestel_datum = bestel_Datum,
+                    ID = ingredient_temp.Count + 1,
+                    name = "Aardappelen",
+                    prijs = 0.15,
+                };
+
+                ingredient_temp.Add(ingredient);
+                ingredienten_id.Add(ingredient.ID);
+
+                ingredient = new Ingredient
+                {
+                    bestel_datum = bestel_Datum,
+                    ID = ingredient_temp.Count + 1,
+                    name = "Friet saus",
+                    prijs = 0.30,
+                };
+
+                ingredient_temp.Add(ingredient);
+                ingredienten_id.Add(ingredient.ID);
+            }
+
+            return ingredienten_id;
+        }
+
         //Deze functie is voor als je simpel een lijst van gerechten wilt zonder voorkeur
-        public  List<Gerechten> Make_dishes(int amount)
+        public  List<Gerechten> Make_dishes(int amount, DateTime bestel_Datum, BlockingCollection<Ingredient> ingredient_temp)
         {
             List<Gerechten> gerechten = new List<Gerechten>();
             Random rnd = new Random();
@@ -323,7 +484,8 @@ namespace restaurant
                             is_populair = true,
                             is_gearchiveerd = false,
                             special = true,
-                            prijs = 15.0
+                            prijs = 15.0,
+                            ingredienten = Maak_gerechten("Pizza Salami", bestel_Datum, ingredient_temp).ToList()
                         });
                         break;
                     case 1:
@@ -334,7 +496,8 @@ namespace restaurant
                             is_populair = false,
                             is_gearchiveerd = false,
                             special = true,
-                            prijs = 8.0
+                            prijs = 8.0,
+                            ingredienten = Maak_gerechten("Vla", bestel_Datum, ingredient_temp).ToList()
                         });
                         break;
                     case 2:
@@ -345,7 +508,8 @@ namespace restaurant
                             is_populair = true,
                             is_gearchiveerd = false,
                             special = false,
-                            prijs = 13.0
+                            prijs = 13.0,
+                            ingredienten = Maak_gerechten("Hamburger", bestel_Datum, ingredient_temp).ToList()
                         });
                         break;
                     case 3:
@@ -356,7 +520,8 @@ namespace restaurant
                             is_populair = false,
                             is_gearchiveerd = true,
                             special = false,
-                            prijs = 6.0
+                            prijs = 6.0,
+                            ingredienten = Maak_gerechten("Yoghurt", bestel_Datum, ingredient_temp).ToList()
                         });
                         break;
                     case 4:
@@ -367,7 +532,8 @@ namespace restaurant
                             is_populair = false,
                             is_gearchiveerd = true,
                             special = false,
-                            prijs = 9.5
+                            prijs = 9.5,
+                            ingredienten = Maak_gerechten("IJs", bestel_Datum, ingredient_temp).ToList()
                         });
                         break;
                     case 5:
@@ -378,7 +544,8 @@ namespace restaurant
                             is_populair = true,
                             is_gearchiveerd = false,
                             special = false,
-                            prijs = 11.5
+                            prijs = 11.5,
+                            ingredienten = Maak_gerechten("Patat", bestel_Datum, ingredient_temp).ToList()
                         });
                         break;
                 }
@@ -745,6 +912,51 @@ namespace restaurant
 
             inkomsten.bestelling_reservering = bestelling_Reservering;
             database.inkomsten = inkomsten;
+            io.Savedatabase(database);
+        }
+
+        public void Save_expenses()
+        {
+            database = io.Getdatabase();
+            if (database.reserveringen == null || database.werknemers == null || database.ingredienten == null) return;
+
+            Uitgaven uitgaven = database.uitgaven;
+            uitgaven.ingredienten_ID = new List<int>();
+            uitgaven.werknemer_ID = new List<int>();
+            foreach (var werknemer in database.werknemers)
+            {
+                uitgaven.werknemer_ID.Add(werknemer.ID);
+            }
+
+            foreach (var ingredient in database.ingredienten)
+            {
+                uitgaven.ingredienten_ID.Add(ingredient.ID);
+            }
+
+            uitgaven.inboedel = new List<Inboedel>();
+            for (int a = 0; a < 100; a++)
+            {
+                uitgaven.inboedel.Add(new Inboedel
+                {
+                    ID = a * 5,
+                    item_Naam = "Tafel nummer: " + a,
+                    prijs = 50,
+                    verzendkosten = 5
+                });
+
+                for (int b = 1; b < 5; b++)
+                {
+                    uitgaven.inboedel.Add(new Inboedel
+                    {
+                        ID = a * 5 + b,
+                        item_Naam = "Stoel",
+                        prijs = 20,
+                        verzendkosten = 3
+                    });
+                }
+            }
+
+            database.uitgaven = uitgaven;
             io.Savedatabase(database);
         }
 
