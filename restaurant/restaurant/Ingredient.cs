@@ -15,5 +15,7 @@ namespace restaurant
 
         public DateTime houdbaarheids_datum { get; set; }
 
+        public double prijs { get; set; }
+
     }
 }

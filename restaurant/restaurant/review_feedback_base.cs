@@ -14,5 +14,9 @@ namespace restaurant
         public string message { get; set; }
 
         public int reservering_ID { get; set; }
+
+        public bool anomiem { get; set; }
+
+        public DateTime datum { get; set; }
     }
 }
