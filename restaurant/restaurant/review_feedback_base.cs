@@ -15,7 +15,7 @@ namespace restaurant
 
         public int reservering_ID { get; set; }
 
-        public bool anomiem { get; set; }
+        public bool annomeme { get; set; }
 
         public DateTime datum { get; set; }
     }
