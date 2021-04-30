@@ -43,32 +43,79 @@ namespace restaurant
         }
     }
 
+
     public partial class Code_Eigenaar_menu
     {
         #region Inkomsten_en_Uitgaven
-        public double Winst_Verlies() // Mogelijkheid een bepaald tijdspan te selecteren om van een bepaalde tijd de winst of verlies te kunnen zien.
-        {
-            double WinstVerlies;
-            return WinstVerlies;
-        }
 
 
-        public double Uitgaven() // Mogelijkheid een bepaald tijdspan te selecteren om van een bepaalde tijd de uitgaven te kunnen zien.
+        public double Uitgaven(DateTime beginDatum, DateTime eindDatum) // Mogelijkheid een bepaald tijdsspan in te voeren en daarvan de uitgaven te kunnen zien.
         {
-            double uitgaven;
+            double uitgaven = 0;
+
+            /*public double GetUitgavenInboedel() // Inboedel
+            {
+                double uitgavenInboedel = 0;
+                return uitgavenInboedel;
+            }
+
+            public double GetUitgavenEigenaar() // Eigenaar
+            {
+                double uitgavenEigenaar = 0;
+                foreach (var uitgave in database.uitgaven.eigenaar_ID)
+                {
+                    uitgavenEigenaar += uitgave;
+                }
+                return uitgavenEigenaar;
+            }
+
+            public double GetUitgavenIngredienten() // Ingrediënten
+            {
+                double uitgavenIngredienten = 0;
+                foreach (var uitgave in database.uitgaven.ingredienten_ID)
+                {
+                    uitgavenIngredienten += uitgave;
+                }
+                return uitgavenIngredienten;
+            }
+
+            public double GetUitgavenWerknemers()
+            {
+                double uitgavenWerknemers = 0;
+                foreach (var uitgave in database.uitgaven.werknemer_ID)
+                {
+                    uitgavenWerknemers += uitgave;
+                }
+                return uitgavenWerknemers;
+            }
+
+            public double GetUitgavenOverig()
+            {
+                double uitgavenOverig = 0;
+                return uitgavenOverig;
+            }*/
+
             return uitgaven;
         }
-        
 
-        public double Inkomsten() // Mogelijkheid een bepaald tijdspan te selecteren om van een bepaalde tijd de inkomsten te kunnen zien.
+        public double Inkomsten(DateTime beginDatum, DateTime eindDatum) // Mogelijkheid een bepaald tijdsspan in te voeren en daarvan de inkomsten te kunnen zien.
         {
-            double inkomsten;
-            foreach (var bestelling in database.inkomsten.bestelling_Reservering) 
-	        {
-                inkomsten += bestelling.prijs;
-	        }
+            double inkomsten = 0;
+            foreach (var bestelling in database.inkomsten.bestelling_reservering)
+            {
+                foreach (var reservering in database.reserveringen)
+                {
+                    if (reservering.ID == bestelling.reservering_ID && beginDatum <= reservering.datum && reservering.datum <= eindDatum)
+                    {
+                        inkomsten += bestelling.prijs;
+                        break;
+                    }
+                }
+            }
             return inkomsten;
         }
+        
+        
         #endregion
-    }
+    } 
 }
