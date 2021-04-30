@@ -32,7 +32,97 @@ namespace restaurant
             instance.Make_feedback();
             database = io.Getdatabase();
         }
+        #region Meal
 
+        public void DeleteMeal(int ID)
+        {
+            List<Gerechten> gerechten = new List<Gerechten>(GetMeals());
+            for (int i = 0; i < gerechten.Count; i++)
+            {
+                if (gerechten[i].ID == ID)
+                {
+                    gerechten[i] = null;
+                    break;
+                }
+            }
+            gerechten.RemoveAll(x => x == null);
+            database.menukaart.gerechten = gerechten;
+            io.Savedatabase(database);
+        }
+
+        public void ArchiveMeal(int ID)
+        {
+            List<Gerechten> gerechten = new List<Gerechten>(GetMeals());
+            for (int i = 0; i < gerechten.Count; i++)
+            {
+                if (gerechten[i].ID == ID)
+                {
+                    gerechten[i].is_gearchiveerd = true;
+                    break;
+                }
+            }
+            database.menukaart.gerechten = gerechten;
+            io.Savedatabase(database);
+        }
+
+        public void EditMeal(int ID, string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<int> ingredients, List<string> allergens)
+        {
+            List<Gerechten> gerechten = new List<Gerechten>(GetMeals());
+            for (int i = 0; i < gerechten.Count; i++)
+            {
+                if (gerechten[i].ID == ID)
+                {
+                    gerechten[i].naam = name;
+                    gerechten[i].is_populair = isPopular;
+                    gerechten[i].prijs = price;
+                    gerechten[i].special = isSpecial;
+                    gerechten[i].is_gearchiveerd = isArchived;
+                    gerechten[i].ingredienten = ingredients;
+                    gerechten[i].allergenen = allergens;
+                    break;
+                }
+            }
+            database.menukaart.gerechten = gerechten;
+            io.Savedatabase(database);
+        }
+
+        /*public void CreateMeal(string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<int> ingredients, List<string> allergens)
+        {
+            List<Gerechten> gerechten = new List<Gerechten>(GetMeals());
+            for (int i = 0; i < gerechten.Count; i++)
+            {
+                
+                    gerechten[i].id = gerechten.Count + 1;
+                    gerechten[i].naam = name;
+                    gerechten[i].is_populair = isPopular;
+                    gerechten[i].prijs = price;
+                    gerechten[i].special = isSpecial;
+                    gerechten[i].is_gearchiveerd = isArchived;
+                    gerechten[i].ingredienten = ingredients;
+                    gerechten[i].allergenen = allergens;
+                    break;
+                }
+            }
+            database.menukaart.gerechten = gerechten;
+            io.Savedatabase(database);
+            gerechten.naam = name;
+            gerechten.is_populair = isPopular;
+            gerechten.prijs = price;
+            gerechten.special = isSpecial;
+            gerechten.is_gearchiveerd = isArchived;
+            gerechten.ingredienten = ingredients;
+            gerechten.allergenen = allergens;
+            database.menukaart.gerechten = gerechten;
+            io.Savedatabase(database);
+        }*/
+
+        public List<Gerechten> GetMeals()
+        {
+            return database.menukaart.gerechten;
+        }
+        #endregion
+
+        #region Ingredients
         public List<Ingredient> GetIngredients()
         {
             return database.ingredienten;
@@ -80,6 +170,9 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
+        #endregion
+
+        #region Feedback
         public List<Feedback> GetFeedback()
         {
             return database.feedback;
@@ -114,7 +207,9 @@ namespace restaurant
             database.feedback = feedback;
             io.Savedatabase(database);
         }
+        #endregion
 
+        #region Review
         public List<Review> GetReviews()
         {
             return database.reviews;
@@ -167,6 +262,8 @@ namespace restaurant
             database.reviews = reviews;
             io.Savedatabase(database);
         }
+
+        #endregion
 
         private bool IfDishExists(int id)
         {
