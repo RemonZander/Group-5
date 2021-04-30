@@ -199,7 +199,7 @@ namespace restaurant
                 Klantnummer = klant.klantnummer,
                 message = message,
                 reservering_ID = reservering.ID,
-                anomiem = anoniem,
+                annomeme = anoniem,
                 datum = DateTime.Now
             };
             if (database.reviews.Count == 0)
@@ -229,7 +229,7 @@ namespace restaurant
                 //laat 50 reviews zien, als er zoveel zijn
                 for (int i = 0, j = 0; i < database.reviews.Count && j < 50; i++, j++)
                 {
-                    if (database.reviews[i].anomiem)
+                    if (database.reviews[i].annomeme)
                     {
                         Review temp = database.reviews[i];
                         temp.Klantnummer = 0;
@@ -261,7 +261,7 @@ namespace restaurant
                     database.reviews[i] = new Review
                     {
                         Rating = rating,
-                        anomiem = anoniem,
+                        annomeme = anoniem,
                         datum = database.reviews[i].datum,
                         ID = database.reviews[i].ID,
                         Klantnummer = database.reviews[i].Klantnummer,
@@ -316,8 +316,8 @@ namespace restaurant
             //maakt feedback
             Feedback feedback = new Feedback
             {
-                //recipient = 
-                anomiem = anoniem,
+                recipient = werknemer.ID,
+                annomeme = anoniem,
                 datum = DateTime.Now,
                 Klantnummer = klant.klantnummer,
                 message = message,
@@ -354,7 +354,7 @@ namespace restaurant
                 //sla tot 50 items op en return deze lijst
                 for (int i = 0, j = 0; i < database.feedback.Count && j < 50; i++, j++)
                 {
-                    if (database.feedback[i].anomiem)
+                    if (database.feedback[i].annomeme)
                     {
                         Feedback temp = database.feedback[i];
                         temp.Klantnummer = 0;
@@ -385,8 +385,8 @@ namespace restaurant
                     //maakt een nieuwe feeback op dezelfde locatie als de oude met informatie van de oude en de nieuwe
                     database.feedback[i] = new Feedback
                     {
-                        //recipient = 
-                        anomiem = anoniem,
+                        recipient = database.feedback[i].recipient,
+                        annomeme = anoniem,
                         datum = database.feedback[i].datum,
                         ID = database.feedback[i].ID,
                         Klantnummer = database.feedback[i].Klantnummer,
