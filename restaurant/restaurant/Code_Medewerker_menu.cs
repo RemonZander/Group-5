@@ -42,4 +42,33 @@ namespace restaurant
 
         }
     }
+
+    public partial class Code_Eigenaar_menu
+    {
+        #region Inkomsten_en_Uitgaven
+        public double Winst_Verlies() // Mogelijkheid een bepaald tijdspan te selecteren om van een bepaalde tijd de winst of verlies te kunnen zien.
+        {
+            double WinstVerlies;
+            return WinstVerlies;
+        }
+
+
+        public double Uitgaven() // Mogelijkheid een bepaald tijdspan te selecteren om van een bepaalde tijd de uitgaven te kunnen zien.
+        {
+            double uitgaven;
+            return uitgaven;
+        }
+        
+
+        public double Inkomsten() // Mogelijkheid een bepaald tijdspan te selecteren om van een bepaalde tijd de inkomsten te kunnen zien.
+        {
+            double inkomsten;
+            foreach (var bestelling in database.inkomsten.bestelling_Reservering) 
+	        {
+                inkomsten += bestelling.prijs;
+	        }
+            return inkomsten;
+        }
+        #endregion
+    }
 }
