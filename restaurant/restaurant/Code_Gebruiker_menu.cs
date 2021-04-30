@@ -204,7 +204,7 @@ namespace restaurant
             };
             if (database.reviews.Count == 0)
             {
-                review.ID = 1;
+                review.ID = 0;
             }
             else
             {
@@ -327,7 +327,7 @@ namespace restaurant
             //als er geen feedback in de lijst is, zet ID naar 1, anders feebackID is laatste feedbackID+1
             if (database.feedback.Count == 0)
             {
-                feedback.ID = 1;
+                feedback.ID = 0;
             }
             else
             {
