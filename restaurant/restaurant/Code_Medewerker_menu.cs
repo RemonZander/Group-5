@@ -28,7 +28,13 @@ namespace restaurant
         }
 
         // Medewerkers moeten kunnen zien welke tafels al gereserveerd zijn (en welke niet)
-        // zie Reservering_beschikbaarheid() in Code_Gebruiker_menu.cs
+        public void getGereserveerdeTafels()
+        {
+
+        }
+
+        // zie Reservering_beschikbaarheid() in IO.cs
+        
 
         // Medewerkers moeten een reservering kunnen koppelen aan een tafel
         public void tafelKoppelen()
