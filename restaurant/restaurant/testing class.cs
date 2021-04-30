@@ -45,7 +45,6 @@ namespace restaurant
             //List<Tuple<DateTime, List<Tafels>>> test = Reservering_beschikbaarheid(Calc_totale_beschikbaarheid(9, 9, 9, 9), database.reserveringen);
         }
 
-        //In de region hierinder staat alle code voor het opslaan van Reserveringen
         #region Reserveringen
 
         public void Fill_reservations_threading(int threads,int amount, int start_month, int stop_month, int start_day, int stop_day)
@@ -243,7 +242,6 @@ namespace restaurant
 
         #endregion
 
-        //In de region hieronder staat alle code voor het maken van gerechten
         #region Gerechten
 
         //Deze functie maakt de menukaart aan en vult de gerechten aan
@@ -609,11 +607,10 @@ namespace restaurant
 
         #endregion
 
-        //In de region hieronder staat alle code voor het maken van klantgegevens en login gegevens
         #region Klantgegevens
 
         /// <summary>
-        /// This is a private function to make a list of names. This is used for making random clients
+        /// This function makes userdata and saves it in the database
         /// </summary>
         /// <param name="amount">Fill here the amount of different users you want to add</param>
         public void Fill_Userdata(int amount)
@@ -668,9 +665,9 @@ namespace restaurant
         }
 
         /// <summary>
-        /// This is a private function to make a list of names. This is used for making random clients
+        /// This is a private function to make a list of names. This is used for making random clients and employee's
         /// </summary>
-        /// <returns>This returns a jaggered string, array 1 is male names, array 2 is female names and array 3 is surnames</returns>
+        /// <returns>This returns a jaggered string array, array 0 is male names, array 1 is female names and array 2 is surnames</returns>
         private string[][] Make_Names()
         {
             string[][] names = new string[3][];
@@ -777,6 +774,7 @@ namespace restaurant
         /// </summary>
         /// <param name="begintime">This is the starting date</param>
         /// <param name="endtime">This is the end date, this can't be the the same or higher then the current date</param>
+        /// <returns>This returns inkomsten where inkomsten.bestelling_reservering is a list of all sales between begintime and endtime</returns>
         public Inkomsten Sales(DateTime begintime, DateTime endtime)
         {
             database = io.Getdatabase();
@@ -821,7 +819,7 @@ namespace restaurant
         }
 
         /// <summary>
-        /// This function retuns a list of all Sales. If there are no reservations then this function returns new Inkomsten().
+        /// This function Saves all Sales. If there are no reservations then this function returns new Inkomsten().
         /// </summary>
         public void Save_Sales()
         {
@@ -866,6 +864,10 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
+        /// <summary>
+        /// This function saves all expenses based on ingredients and tables, chairs and employee's.
+        /// If database.reserveringen == null || database.werknemers == null || database.ingredienten == null then this functions aborts.
+        /// </summary>
         public void Save_expenses()
         {
             database = io.Getdatabase();
@@ -915,11 +917,14 @@ namespace restaurant
 
         #region Review and feedback
 
+        /// <summary>
+        /// This function that saves reviews of all reservations.
+        /// If reservations and login_gegevens are empty then this function aborts.
+        /// </summary>
         public void Make_reviews()
         {
             database = io.Getdatabase();
-            if (database.reserveringen == null) return;
-            if (database.login_gegevens == null) return;
+            if (database.reserveringen == null || database.login_gegevens == null) return;
 
             List<Review> reviews = new List<Review>();
             Random rnd = new Random();
@@ -943,12 +948,14 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
+        /// <summary>
+        /// This function that saves feedback of all reservations.
+        /// If reservations and login_gegevens and werknemers are empty then this function aborts.
+        /// </summary>
         public void Make_feedback()
         {
             database = io.Getdatabase();
-            if (database.reserveringen == null) return;
-            if (database.login_gegevens == null) return;
-            if (database.werknemers == null) return;
+            if (database.reserveringen == null || database.login_gegevens == null || database.werknemers == null) return;
 
             List<Feedback> feedback = new List<Feedback>();
             Random rnd = new Random();
@@ -976,6 +983,10 @@ namespace restaurant
 
         #region Medewerkers
 
+        /// <summary>
+        /// This function makes employee's and saves them in the database
+        /// </summary>
+        /// <param name="amount">This is the amount of employee's you want to make</param>
         public void Maak_werknemer(int amount)
         {
             database = io.Getdatabase();
