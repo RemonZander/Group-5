@@ -197,5 +197,16 @@ namespace restaurant
             }
             return beschikbaar;
         }
+
+        //public List<Reserveringen> orderReserveringID()
+        //{
+        //    database = Getdatabase();
+        //    Reserveringen[] Array = new Reserveringen[database.reserveringen[database.reserveringen.Count-1].ID];
+        //    foreach (var reservering in database.reserveringen)
+        //    {
+        //        Array[reservering.ID] = reservering;
+        //    }
+        //    return Array.ToList();
+        //}
     }
 }
