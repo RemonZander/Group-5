@@ -25,12 +25,21 @@ namespace restaurant
             database.menukaart = menukaart;
             io.Savedatabase(database);
 
-            instance.Fill_Userdata(100);
+            /*instance.Fill_Userdata(100);
             instance.Fill_reservations_threading(24, 1000, 1, 3, 1, 9);
             instance.Make_reviews();
             instance.Maak_werknemer(10);
-            instance.Make_feedback();
+            instance.Make_feedback();*/
             database = io.Getdatabase();
+
+            List<int> ingredients = new List<int>();
+            ingredients.Add(0);
+            List<string> allergens = new List<string>();
+            allergens.Add("Lactose");
+            CreateMeal("Tomatensoep", true, 10.00, true, false, ingredients, allergens);
+            ArchiveMeal(database.menukaart.gerechten.Count - 1);
+            DeleteMeal(database.menukaart.gerechten.Count - 1);
+
         }
         #region Meal
 
@@ -86,37 +95,25 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        /*public void CreateMeal(string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<int> ingredients, List<string> allergens)
+        public void CreateMeal(string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<int> ingredients, List<string> allergens)
         {
             List<Gerechten> gerechten = new List<Gerechten>(GetMeals());
-            for (int i = 0; i < gerechten.Count; i++)
-            {
-                
-                    gerechten[i].id = gerechten.Count + 1;
-                    gerechten[i].naam = name;
-                    gerechten[i].is_populair = isPopular;
-                    gerechten[i].prijs = price;
-                    gerechten[i].special = isSpecial;
-                    gerechten[i].is_gearchiveerd = isArchived;
-                    gerechten[i].ingredienten = ingredients;
-                    gerechten[i].allergenen = allergens;
-                    break;
-                }
-            }
-            database.menukaart.gerechten = gerechten;
-            io.Savedatabase(database);
-            gerechten.naam = name;
-            gerechten.is_populair = isPopular;
-            gerechten.prijs = price;
-            gerechten.special = isSpecial;
-            gerechten.is_gearchiveerd = isArchived;
-            gerechten.ingredienten = ingredients;
-            gerechten.allergenen = allergens;
-            database.menukaart.gerechten = gerechten;
-            io.Savedatabase(database);
-        }*/
 
-        public List<Gerechten> GetMeals()
+            Gerechten gerecht = new Gerechten();
+            gerecht.ID = gerechten.Count;
+            gerecht.naam = name;
+            gerecht.is_populair = isPopular;
+            gerecht.prijs = price;
+            gerecht.special = isSpecial;
+            gerecht.is_gearchiveerd = isArchived;
+            gerecht.ingredienten = ingredients;
+            gerecht.allergenen = allergens;
+            gerechten.Add(gerecht);
+            database.menukaart.gerechten = gerechten;
+            io.Savedatabase(database);
+        }
+
+    public List<Gerechten> GetMeals()
         {
             return database.menukaart.gerechten;
         }
