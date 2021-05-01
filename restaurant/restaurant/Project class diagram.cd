@@ -25,8 +25,6 @@
       <Path>
         <Point X="13" Y="8.569" />
         <Point X="13" Y="9.36" />
-        <Point X="17.167" Y="9.36" Type="JumpStart" />
-        <Point X="17.333" Y="9.36" Type="JumpEnd" />
         <Point X="19.625" Y="9.36" />
         <Point X="19.625" Y="7.603" />
       </Path>
@@ -73,8 +71,10 @@
         <Point X="5.75" Y="9.691" />
         <Point X="6.323" Y="9.691" Type="JumpStart" />
         <Point X="6.49" Y="9.691" Type="JumpEnd" />
-        <Point X="12.229" Y="9.691" Type="JumpStart" />
-        <Point X="12.396" Y="9.691" Type="JumpEnd" />
+        <Point X="11.917" Y="9.691" Type="JumpStart" />
+        <Point X="12.083" Y="9.691" Type="JumpEnd" />
+        <Point X="12.292" Y="9.691" Type="JumpStart" />
+        <Point X="12.458" Y="9.691" Type="JumpEnd" />
         <Point X="17.167" Y="9.691" Type="JumpStart" />
         <Point X="17.333" Y="9.691" Type="JumpEnd" />
         <Point X="20.062" Y="9.691" />
@@ -124,7 +124,7 @@
   <Class Name="restaurant.Code_Eigenaar_menu">
     <Position X="8.5" Y="14" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>CABAAAIAAAAIAKBAiAAAQAIAAABAAAAEAAAAAEAAAAE=</HashCode>
+      <HashCode>CABAAEIAAAAIAKBAigACQAIAAARAACAEAAAAAEgAAAE=</HashCode>
       <FileName>Code_Eigenaar_menu.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -164,7 +164,7 @@
   <Class Name="restaurant.Code_Medewerker_menu">
     <Position X="5.5" Y="1.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAIBAABAAQAAAAAQAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAIBAABBAQAAAAAQAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Code_Medewerker_menu.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -195,14 +195,14 @@
   <Class Name="restaurant.Code_Gebruiker_menu">
     <Position X="5.5" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAQAAhAQAAAAIBAAACAQIAAAAAAAAACAIEAAAAAAAA=</HashCode>
+      <HashCode>QIAQAAgAQAAAAIBACACAUIAAAAACAAACDIEAAAAAAAA=</HashCode>
       <FileName>Code_Gebruiker_menu.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="restaurant.IO">
     <Position X="16.5" Y="6.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAQAAEAABAAAAAAABAAAAJAAAAAIAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAQAAEAABAAAAAAABAAAAJAAAAAIAAAAAgAAA=</HashCode>
       <FileName>IO.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -355,7 +355,7 @@
   <Class Name="restaurant.Naam_Verzendkosten">
     <Position X="34" Y="6" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAgAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAgAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAgAAAAAAAAA=</HashCode>
       <FileName>Naam_Verzendkosten.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -517,7 +517,7 @@
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAAAAAAgAAAAAAYAAAAAAAAAAAAAAAAQ=</HashCode>
+      <HashCode>AAAAAAAAAAAACAAAAAAQAAAAAQAAAgAAAAAAAAAAAAQ=</HashCode>
       <FileName>Uitgaven.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>

@@ -38,7 +38,7 @@ namespace restaurant
 
         #region Reserveringen
         //pakt de reservering van een klant
-        public Reserveringen Get_reservation(Klantgegevens klant)
+        public Reserveringen getCustomerReservation(Klantgegevens klant)
         {
             Reserveringen reservering = new Reserveringen();
             //voor elke reservering in de database, voor elk klantnummer
