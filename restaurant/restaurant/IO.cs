@@ -198,15 +198,24 @@ namespace restaurant
             return beschikbaar;
         }
 
-        //public List<Reserveringen> orderReserveringID()
-        //{
-        //    database = Getdatabase();
-        //    Reserveringen[] Array = new Reserveringen[database.reserveringen[database.reserveringen.Count-1].ID];
-        //    foreach (var reservering in database.reserveringen)
-        //    {
-        //        Array[reservering.ID] = reservering;
-        //    }
-        //    return Array.ToList();
-        //}
+        //ordered reserveringen op ID
+        public void orderReserveringID()
+        {
+            //pakt de database
+            database = Getdatabase();
+            //ordered bij een lambda, in dit geval ID
+            database.reserveringen = database.reserveringen.OrderBy(s => s.ID).ToList();
+            Savedatabase(database);
+        }
+        
+        //ordered reserveringen op datum
+        public void orderReserveringDatum()
+        {
+            //pakt de database
+            database = Getdatabase();
+            //ordered bij een lambda, in dit geval datum
+            database.reserveringen = database.reserveringen.OrderBy(s => s.datum).ToList();
+            Savedatabase(database);
+        }
     }
 }
