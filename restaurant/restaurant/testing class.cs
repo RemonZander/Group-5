@@ -874,16 +874,16 @@ namespace restaurant
             if (database.reserveringen == null || database.werknemers == null || database.ingredienten == null) return;
 
             Uitgaven uitgaven = database.uitgaven;
-            uitgaven.ingredienten_ID = new List<int>();
-            uitgaven.werknemer_ID = new List<int>();
+            uitgaven.ingredienten = new List<Tuple<int, DateTime>>();
+            uitgaven.werknemer = new List<Tuple<int, DateTime>>();
             foreach (var werknemer in database.werknemers)
             {
-                uitgaven.werknemer_ID.Add(werknemer.ID);
+                uitgaven.werknemer.Add(Tuple.Create(werknemer.ID, DateTime.Now));
             }
 
             foreach (var ingredient in database.ingredienten)
             {
-                uitgaven.ingredienten_ID.Add(ingredient.ID);
+                uitgaven.ingredienten.Add(Tuple.Create(ingredient.ID, DateTime.Now));
             }
 
             uitgaven.inboedel = new List<Inboedel>();
@@ -894,7 +894,8 @@ namespace restaurant
                     ID = a * 5,
                     item_Naam = "Tafel nummer: " + a,
                     prijs = 50,
-                    verzendkosten = 5
+                    verzendkosten = 5,
+                    datum = DateTime.Now
                 });
 
                 for (int b = 1; b < 5; b++)
@@ -904,7 +905,8 @@ namespace restaurant
                         ID = a * 5 + b,
                         item_Naam = "Stoel",
                         prijs = 20,
-                        verzendkosten = 3
+                        verzendkosten = 3,
+                        datum = DateTime.Now
                     });
                 }
             }

@@ -9,11 +9,11 @@ namespace restaurant
     {
         public List<Inboedel> inboedel { get; set; }
 
-        public List<int> eigenaar_ID { get; set; }
+        public List<Tuple<int, DateTime>> eigenaar { get; set; }
 
-        public List<int> ingredienten_ID { get; set; }
+        public List<Tuple<int, DateTime>> ingredienten { get; set; }
 
-        public List<int> werknemer_ID { get; set; }
+        public List<Tuple<int, DateTime>> werknemer { get; set; }
 
         public int[,] overig { get; set; }
     }

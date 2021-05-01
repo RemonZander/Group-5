@@ -10,5 +10,7 @@ namespace restaurant
         public string item_Naam { get; set; }
 
         public double verzendkosten { get; set; }
+
+        public DateTime datum { get; set; }
     }
 }
