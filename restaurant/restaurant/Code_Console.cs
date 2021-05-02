@@ -12,8 +12,6 @@ namespace restaurant
         public string ScreenName { get; set; }
         public string Text { get; set; }
         public string ScreenFlowDirection { get; set; }
-        public bool ShowOnlyWhenLoggedIn { get; private set; }
-        public bool ShowOnlyWhenLoggedOut { get; private set; }
         public Func<bool> DisplayCondition { get; private set; }
 
         public Choice(string screenName, string text, string screenDirection = SCREEN_NEXT, Func<bool> displayCondition = null)
