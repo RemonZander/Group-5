@@ -163,7 +163,7 @@ namespace restaurant
 
         private string input = "0";
 
-        private string GFLogo = @" _____                     _  ______         _             
+        private string GFLogo = @" _____                     _  ______         _         
 |  __ \                   | | |  ___|       (_)            
 | |  \/_ __ __ _ _ __   __| | | |_ _   _ ___ _  ___  _ __  
 | | __| '__/ _` | '_ \ / _` | |  _| | | / __| |/ _ \| '_ \ 
@@ -297,7 +297,7 @@ namespace restaurant
             startScreen.Choices.Add(new Choice("StartScreenEmployee", "Medewerker", Choice.SCREEN_NEXT, isMedewerker));
             startScreen.Choices.Add(new Choice("StartScreenOwner", "Eigenaar", Choice.SCREEN_NEXT, isEigenaar));
             startScreen.Choices.Add(new Choice("LoginScreenEmployee", "Inloggen", Choice.SCREEN_NEXT, () => !userLoggedIn));
-            startScreen.Choices.Add(new Choice("LogoutScreen", "Uitloggen", Choice.SCREEN_NEXT, () => userLoggedIn));
+            // startScreen.Choices.Add(new Choice("LogoutScreen", "Uitloggen", Choice.SCREEN_NEXT, () => userLoggedIn));
 
             DisplayScreen startScreenCustomer = new DisplayScreen("StartScreenCustomer", $"{GFLogo}\nWelkom bij het klanten scherm.");
             startScreenCustomer.Choices.Add(new Choice("AllMeals", "Laat alle gerechten zien"));
@@ -506,6 +506,11 @@ namespace restaurant
             screens.AllScreens.Add(allReviews);
             screens.AllScreens.Add(invalidInputScreen);
 
+            foreach (var screen in screens.AllScreens)
+            {
+                if (screen.GetType() == typeof(DisplayScreen)) ((DisplayScreen)screen).Choices.Add(new Choice("LogoutScreen", "Uitloggen", Choice.SCREEN_NEXT, () => userLoggedIn));
+            }
+
             currentScreen = screens.CurrentScreen = startScreen;
         }
 
@@ -695,7 +700,7 @@ namespace restaurant
                 IO.Reset_filesystem();
 
                 Login_gegevens dataEigenaar = new Login_gegevens();
-                dataEigenaar.email = "eigenaarr@gmail.com";
+                dataEigenaar.email = "eigenaar@gmail.com";
                 dataEigenaar.password = "rU3#)J2A8$E";
                 dataEigenaar.type = "Eigenaar";
 
