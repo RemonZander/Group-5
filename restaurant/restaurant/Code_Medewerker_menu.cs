@@ -21,11 +21,22 @@ namespace restaurant
 
         }
 
-        // Medewerker moet huidige reserveringen kunnen zien
-        public void getReserveringen()
-        {
+        #region Reververingen
 
+        public List<Reserveringen> getReserveringen() // medewerker kan de reserveringen van de huidige dag zien
+        {
+            var reserveringenVandaag = new List<Reserveringen>();
+            foreach (var reservering in database.reserveringen)
+            {
+                if (reservering.datum == DateTime.Now)
+                {
+                    reserveringenVandaag.Add(reservering);
+                }
+            }
+            return reserveringenVandaag;
         }
+        
+        #endregion
 
         // Medewerkers moeten kunnen zien welke tafels al gereserveerd zijn (en welke niet)
         public void getGereserveerdeTafels()
