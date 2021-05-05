@@ -23,7 +23,7 @@ namespace restaurant
 
         #region Reververingen
 
-        public List<Reserveringen> getReserveringen() // medewerker kan de reserveringen van de huidige dag zien
+        public List<Reserveringen> getReserveringen() // Medewerker kan de reserveringen van de huidige dag zien
         {
             var reserveringenVandaag = new List<Reserveringen>();
             foreach (var reservering in database.reserveringen)
@@ -35,11 +35,13 @@ namespace restaurant
             }
             return reserveringenVandaag;
         }
-        
+
         #endregion
 
-        // Medewerkers moeten kunnen zien welke tafels al gereserveerd zijn (en welke niet)
-        public void getGereserveerdeTafels()
+
+        #region Tafels
+
+        public void getGereserveerdeTafels() // Medewerker kan zien welke tafels al gereserveerd zijn
         {
 
         }
@@ -52,6 +54,8 @@ namespace restaurant
         {
 
         }
+
+        #endregion
     }
 
 
