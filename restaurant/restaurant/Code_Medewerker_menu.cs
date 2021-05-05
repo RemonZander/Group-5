@@ -41,18 +41,32 @@ namespace restaurant
 
         #region Tafels
 
-        public void getGereserveerdeTafels() // Medewerker kan zien welke tafels al gereserveerd zijn
+        public List<Tuple<DateTime, List<Tafels>>> getBeschikbareTafels() // Medewerker kan zien welke tafels beschikbaar zijn op de huidige dag
         {
+            var beschikbareTafels = io.Reservering_beschikbaarheid(DateTime.Now);
+            return beschikbareTafels;
+        }
+        
+        public List<Reserveringen> getReserveringenZonderTafel() // Returns de reserveringen die nog niet zijn gekoppeld aan een tafel
+        {
+            var reserveringen = getReserveringen();
+            var reserveringenZonderTafel = new List<Reserveringen>();
 
+            foreach (var reservering in reserveringen)
+            {
+                if (reservering.tafels == null)
+                {
+                    reserveringenZonderTafel.Add(reservering);
+                }
+            }
+
+            return reserveringenZonderTafel;
         }
 
-        // zie Reservering_beschikbaarheid() in IO.cs
-        
-
-        // Medewerkers moeten een reservering kunnen koppelen aan een tafel
-        public void tafelKoppelen()
+        public void tafelKoppelen() // Medewerker moet de reserveringen kunnen koppelen aan een tafel
         {
-
+            var reserveringenZonderTafel = getReserveringenZonderTafel();
+            var beschikbareTafels = getBeschikbareTafels();
         }
 
         #endregion
