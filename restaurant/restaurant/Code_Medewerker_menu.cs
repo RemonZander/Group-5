@@ -48,55 +48,68 @@ namespace restaurant
     {
         #region Inkomsten_en_Uitgaven
 
-
         public double Uitgaven(DateTime beginDatum, DateTime eindDatum) // Mogelijkheid een bepaald tijdsspan in te voeren en daarvan de uitgaven te kunnen zien.
         {
             double uitgaven = 0;
-
-            /*public double GetUitgavenInboedel() // Inboedel
-            {
-                double uitgavenInboedel = 0;
-                return uitgavenInboedel;
-            }
-
-            public double GetUitgavenEigenaar() // Eigenaar
-            {
-                double uitgavenEigenaar = 0;
-                foreach (var uitgave in database.uitgaven.eigenaar_ID)
-                {
-                    uitgavenEigenaar += uitgave;
-                }
-                return uitgavenEigenaar;
-            }
-
-            public double GetUitgavenIngredienten() // Ingrediënten
-            {
-                double uitgavenIngredienten = 0;
-                foreach (var uitgave in database.uitgaven.ingredienten_ID)
-                {
-                    uitgavenIngredienten += uitgave;
-                }
-                return uitgavenIngredienten;
-            }
-
-            public double GetUitgavenWerknemers()
-            {
-                double uitgavenWerknemers = 0;
-                foreach (var uitgave in database.uitgaven.werknemer_ID)
-                {
-                    uitgavenWerknemers += uitgave;
-                }
-                return uitgavenWerknemers;
-            }
-
-            public double GetUitgavenOverig()
-            {
-                double uitgavenOverig = 0;
-                return uitgavenOverig;
-            }*/
-
+            uitgaven += GetUitgavenEigenaar(beginDatum, eindDatum);
+            uitgaven += GetUitgavenIngredienten(beginDatum, eindDatum);
+            uitgaven += GetUitgavenWerknemers(beginDatum, eindDatum);
             return uitgaven;
         }
+
+        /*public double GetUitgavenInboedel(DateTime beginDatum, DateTime eindDatum) // Inboedel
+        {
+            double uitgavenInboedel = 0;
+            return uitgavenInboedel;
+        }*/
+
+        public double GetUitgavenEigenaar(DateTime beginDatum, DateTime eindDatum) // Eigenaar
+        {
+            double uitgavenEigenaar = 0;
+            foreach (var uitgave in database.uitgaven.eigenaar)
+            {
+                if (beginDatum <= uitgave.Item2 && uitgave.Item2 <= eindDatum)
+                {
+                    uitgavenEigenaar += uitgave.Item1;
+                    break;
+                }
+            }
+            return uitgavenEigenaar;
+        }
+
+        public double GetUitgavenIngredienten(DateTime beginDatum, DateTime eindDatum) // Ingrediënten
+        {
+            double uitgavenIngredienten = 0;
+            foreach (var uitgave in database.uitgaven.ingredienten)
+            {
+                if (beginDatum <= uitgave.Item2 && uitgave.Item2 <= eindDatum)
+                {
+                    uitgavenIngredienten += uitgave.Item1;
+                    break;
+                }
+            }
+            return uitgavenIngredienten;
+        }
+
+        public double GetUitgavenWerknemers(DateTime beginDatum, DateTime eindDatum) // Werknemers
+        {
+            double uitgavenWerknemers = 0;
+            foreach (var uitgave in database.uitgaven.werknemer)
+            {
+                if (beginDatum <= uitgave.Item2 && uitgave.Item2 <= eindDatum)
+                {
+                    uitgavenWerknemers += uitgave.Item1;
+                    break;
+                }
+            }
+            return uitgavenWerknemers;
+        }
+
+        /*public double GetUitgavenOverig(DateTime beginDatum, DateTime eindDatum)
+        {
+            double uitgavenOverig = 0;
+            return uitgavenOverig;
+        }*/
 
         public double Inkomsten(DateTime beginDatum, DateTime eindDatum) // Mogelijkheid een bepaald tijdsspan in te voeren en daarvan de inkomsten te kunnen zien.
         {
@@ -114,8 +127,19 @@ namespace restaurant
             }
             return inkomsten;
         }
-        
-        
+
         #endregion
-    } 
+
+        #region Winst_of_Verlies
+
+        public double Winst_of_Verlies(DateTime beginDatum, DateTime eindDatum)
+        {
+            double inkomsten = Inkomsten(beginDatum, eindDatum);
+            double uitgaven = Uitgaven(beginDatum, eindDatum);
+
+            return inkomsten - uitgaven;
+        }
+
+        #endregion
+    }
 }
