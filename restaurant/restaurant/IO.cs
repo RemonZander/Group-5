@@ -24,7 +24,7 @@ namespace restaurant
             File.WriteAllText(@"..\database\database.Json", output);
         }
 
-        public Database Getdatabase()
+        public Database getDatabase()
         {
             Database database = new Database();
 
@@ -51,7 +51,7 @@ namespace restaurant
         }
 
         //Reset de database
-        public void Reset_filesystem()
+        public void resetFilesystem()
         {
             try
             {
@@ -66,11 +66,12 @@ namespace restaurant
                 FileSystem.CreateDirectory(@"..\database\");
             }
         }
-        
+
+        #region Reservering
         //pakt alle beschikbare tijden en tafels voor de ingevoerde dag
-        public List<Tuple<DateTime, List<Tafels>>> Reservering_beschikbaarheid(DateTime date)
+        public List<Tuple<DateTime, List<Tafels>>> reserveringBeschikbaarheid(DateTime date)
         {
-            database = Getdatabase();
+            database = getDatabase();
             //maakt een lijst met tuples die beheert alle beschikbare plekken op int aantal dagen
             List<Tuple<DateTime, List<Tafels>>> beschikbaar = new List<Tuple<DateTime, List<Tafels>>>();
 
@@ -90,18 +91,18 @@ namespace restaurant
                 //op de dag die is ingevoerd, pak alle beschikbare tijden en tafels
                 if (reservering.datum >= new DateTime(date.Year, date.Month, date.Day, 10, 0, 0) && reservering.datum <= new DateTime(date.Year, date.Month, date.Day, 21, 0, 0))
                 {
-                    beschikbaar = verwijder_Reservering(beschikbaar, reservering);
+                    beschikbaar = verwijderReservering(beschikbaar, reservering);
                 }
             }
             return beschikbaar;
         }
 
         //pakt alle beschikbare tijden en tafels tussen nu en aantal ingevoerde dagen
-        public List<Tuple<DateTime, List<Tafels>>> Reservering_beschikbaarheid(int start_maand, int eind_maand, int start_dag, int eind_dag)
+        public List<Tuple<DateTime, List<Tafels>>> reserveringBeschikbaarheid(int start_maand, int eind_maand, int start_dag, int eind_dag)
         {
-            database = Getdatabase();
+            database = getDatabase();
             //maakt een lijst met tuples die beheert alle beschikbare plekken op int aantal dagen
-            List<Tuple<DateTime, List<Tafels>>> beschikbaar = Calc_totale_beschikbaarheid(start_maand, eind_maand, start_dag, eind_dag);
+            List<Tuple<DateTime, List<Tafels>>> beschikbaar = berekenTotaleBeschikbaarheid(start_maand, eind_maand, start_dag, eind_dag);
 
 
             //verantwoordelijk voor het communiceren met de database
@@ -110,14 +111,14 @@ namespace restaurant
                 //voor de datum tussen nu en de ingevoerde dag
                 if (reservering.datum >= new DateTime(DateTime.Now.Year, start_maand, start_dag, 10, 0, 0) && reservering.datum <= new DateTime(DateTime.Now.Year, eind_maand, eind_dag, 21, 0, 0))
                 {
-                    beschikbaar = verwijder_Reservering(beschikbaar, reservering);
+                    beschikbaar = verwijderReservering(beschikbaar, reservering);
                 }
             }
             return beschikbaar;
         }
 
         //verwijderd de reservering uit beschikbaar en returned beschikbaar
-        private List<Tuple<DateTime, List<Tafels>>> verwijder_Reservering(List<Tuple<DateTime, List<Tafels>>> beschikbaar, Reserveringen reservering)
+        private List<Tuple<DateTime, List<Tafels>>> verwijderReservering(List<Tuple<DateTime, List<Tafels>>> beschikbaar, Reserveringen reservering)
         {
             //bevat alle tafels
             List<Tafels> tempTableList = new List<Tafels>();
@@ -173,7 +174,7 @@ namespace restaurant
         }
         
         //maakt alle mogelijke plekken aan voor een starttijd en een eindtijd
-        private List<Tuple<DateTime, List<Tafels>>> Calc_totale_beschikbaarheid(int start_maand, int eind_maand, int start_dag, int eind_dag)
+        private List<Tuple<DateTime, List<Tafels>>> berekenTotaleBeschikbaarheid(int start_maand, int eind_maand, int start_dag, int eind_dag)
         {
             List<Tuple<DateTime, List<Tafels>>> beschikbaar = new List<Tuple<DateTime, List<Tafels>>>();
 
@@ -197,25 +198,123 @@ namespace restaurant
             }
             return beschikbaar;
         }
+        #endregion
 
-        //ordered reserveringen op ID
+        #region sorteren
+        //ordered reserveringen op ID ASCENDING
         public void orderReserveringID()
         {
             //pakt de database
-            database = Getdatabase();
+            database = getDatabase();
             //ordered bij een lambda, in dit geval ID
             database.reserveringen = database.reserveringen.OrderBy(s => s.ID).ToList();
             Savedatabase(database);
         }
         
-        //ordered reserveringen op datum
+        //ordered reserveringen op datum ASCENDING
         public void orderReserveringDatum()
         {
             //pakt de database
-            database = Getdatabase();
+            database = getDatabase();
             //ordered bij een lambda, in dit geval datum
             database.reserveringen = database.reserveringen.OrderBy(s => s.datum).ToList();
             Savedatabase(database);
         }
+        #endregion
+
+        #region Deprecated
+        [Obsolete("Reservering_beschikbaarheid graag vervangen met reserveringBeschikbaarheid.")]
+        public List<Tuple<DateTime, List<Tafels>>> Reservering_beschikbaarheid(int start_maand, int eind_maand, int start_dag, int eind_dag)
+        {
+            database = Getdatabase();
+            //maakt een lijst met tuples die beheert alle beschikbare plekken op int aantal dagen
+            List<Tuple<DateTime, List<Tafels>>> beschikbaar = berekenTotaleBeschikbaarheid(start_maand, eind_maand, start_dag, eind_dag);
+
+
+            //verantwoordelijk voor het communiceren met de database
+            foreach (var reservering in database.reserveringen)
+            {
+                //voor de datum tussen nu en de ingevoerde dag
+                if (reservering.datum >= new DateTime(DateTime.Now.Year, start_maand, start_dag, 10, 0, 0) && reservering.datum <= new DateTime(DateTime.Now.Year, eind_maand, eind_dag, 21, 0, 0))
+                {
+                    beschikbaar = verwijderReservering(beschikbaar, reservering);
+                }
+            }
+            return beschikbaar;
+        }
+
+        [Obsolete("Reservering_beschikbaarheid graag vervangen met reserveringBeschikbaarheid.")]
+        public List<Tuple<DateTime, List<Tafels>>> Reservering_beschikbaarheid(DateTime date)
+        {
+            database = Getdatabase();
+            //maakt een lijst met tuples die beheert alle beschikbare plekken op int aantal dagen
+            List<Tuple<DateTime, List<Tafels>>> beschikbaar = new List<Tuple<DateTime, List<Tafels>>>();
+
+            //vult de List met alle beschikbare momenten en tafels
+            DateTime possibleTime = new DateTime(date.Year, date.Month, date.Day, 10, 0, 0);
+
+            //45 kwaterieren van 1000 tot 2100
+            for (int i = 0; i < 45; i++)
+            {
+                beschikbaar.Add(Tuple.Create(possibleTime, database.tafels));
+                possibleTime = possibleTime.AddMinutes(15);
+            }
+
+            //voor elke reservering die gemaakt is
+            foreach (var reservering in database.reserveringen)
+            {
+                //op de dag die is ingevoerd, pak alle beschikbare tijden en tafels
+                if (reservering.datum >= new DateTime(date.Year, date.Month, date.Day, 10, 0, 0) && reservering.datum <= new DateTime(date.Year, date.Month, date.Day, 21, 0, 0))
+                {
+                    beschikbaar = verwijderReservering(beschikbaar, reservering);
+                }
+            }
+            return beschikbaar;
+        }
+
+        [Obsolete("Reset_filesystem graag vervangen met resetFilesystem.")]
+        public void Reset_filesystem()
+        {
+            try
+            {
+                FileSystem.DeleteDirectory(@"..\database\", DeleteDirectoryOption.DeleteAllContents);
+            }
+            catch
+            {
+            }
+
+            if (!FileSystem.DirectoryExists(@"..\database\"))
+            {
+                FileSystem.CreateDirectory(@"..\database\");
+            }
+        }
+        [Obsolete("Getdatabase graag vervangen met getDatabase.")]
+        public Database Getdatabase()
+        {
+            Database database = new Database();
+
+            if (!File.Exists(@"..\database\database.Json")) return database;
+            string output = File.ReadAllText(@"..\database\database.Json");
+            database = JsonConvert.DeserializeObject<Database>(output);
+
+            List<Tafels> temp = new List<Tafels>();
+            for (int i = 0; i < 100; i++)
+            {
+                Tafels tafel = new Tafels
+                {
+                    ID = i,
+                    Zetels = 4
+                };
+
+                if (i % 2 != 0) tafel.isRaam = true;
+
+                temp.Add(tafel);
+            }
+            database.tafels = temp;
+
+            return database;
+        }
+
+        #endregion
     }
 }

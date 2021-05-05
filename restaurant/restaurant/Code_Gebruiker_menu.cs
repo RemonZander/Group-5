@@ -33,13 +33,14 @@ namespace restaurant
 
         public Code_Gebruiker_menu()
         {
-            database = io.Getdatabase();
+            database = io.getDatabase();
         }
 
         #region Reserveringen
         //pakt de reservering van een klant
         public Reserveringen getCustomerReservation(Klantgegevens klant)
         {
+            database = io.getDatabase();
             Reserveringen reservering = new Reserveringen();
             //voor elke reservering in de database, voor elk klantnummer
             foreach (var reserveringen in database.reserveringen)
@@ -59,7 +60,7 @@ namespace restaurant
         //maakt een incomplete reservering aan (een medewerker moet nog een tafel toewijzen) en voegt deze toe aan de database
         public void MakeCustomerReservation(DateTime date, List<int> klantnummers, int aantalMensen, bool raamTafel)
         {
-            database = io.Getdatabase();
+            database = io.getDatabase();
             if (database.reserveringen == null)
             {
                 database.reserveringen = new List<Reserveringen>();
@@ -88,7 +89,7 @@ namespace restaurant
         //reset de database
         public void Remove_reservations(Reserveringen reserveringen)
         {
-            database = io.Getdatabase();
+            database = io.getDatabase();
             database.reserveringen.Remove(reserveringen);
             io.Savedatabase(database);
         }
@@ -98,6 +99,7 @@ namespace restaurant
         //pakt menukaart uit de database
         public List<Gerechten> Getmenukaart()
         {
+            database = io.getDatabase();
             return database.menukaart.gerechten;
         }
 
@@ -108,12 +110,12 @@ namespace restaurant
             List<Gerechten> menulist = new List<Gerechten>(Getmenukaart());
 
             //voor alles in menukaart, voor alle allergenen
-            for (int i = 0; i < database.menukaart.gerechten.Count; i++)
+            for (int i = 0; i < menulist.Count; i++)
             {
                 for (int j = 0; j < allergenen.Count; j++)
                 {
                     //als ingredient == allergeen zet die naar null
-                    if (database.menukaart.gerechten[i].allergenen.Contains(allergenen[j]))
+                    if (menulist[i].allergenen.Contains(allergenen[j]))
                     {
                         menulist[i] = null;
                     }
@@ -187,7 +189,7 @@ namespace restaurant
         //maakt een review
         public void makeReview(int rating, Klantgegevens klant, string message, Reserveringen reservering, bool anoniem)
         {
-            database = io.Getdatabase();
+            database = io.getDatabase();
             if (database.reviews == null)
             {
                 database.reviews = new List<Review>();
@@ -218,7 +220,7 @@ namespace restaurant
         //returned max 50 reviews, als de review anoniem is verandert de naam en reservering nummer naar 0
         public List<Review> getReviews()
         {
-            io.Getdatabase();
+            database = io.getDatabase();
             List<Review> reviewList = new List<Review>();
             if (database.reviews == null)
             {
@@ -249,7 +251,7 @@ namespace restaurant
         public void overwriteReview(int reviewID, int rating, Klantgegevens klant, string message, bool anoniem)
         {
             //pakt de database
-            database = io.Getdatabase();
+            database = io.getDatabase();
 
             //voor alle reviews in de database
             for (int i = 0; i < database.reviews.Count; i++)
@@ -280,7 +282,7 @@ namespace restaurant
         public void deleteReview(int reviewID, Klantgegevens klant)
         {
             //pakt de database
-            database = io.Getdatabase();
+            database = io.getDatabase();
 
             //voor alle reviews in de database
             for (int i = 0; i < database.reviews.Count; i++)
@@ -305,7 +307,7 @@ namespace restaurant
         public void makeFeedback(Werknemer werknemer,Klantgegevens klant, string message, Reserveringen reservering, bool anoniem)
         {
             //pakt database
-            database = io.Getdatabase();
+            database = io.getDatabase();
             
             //als feedback lijst nog niet bestaat maak die aan
             if (database.feedback == null)
@@ -341,7 +343,7 @@ namespace restaurant
         public List<Feedback> getFeedback()
         {
             //pakt de database
-            io.Getdatabase();
+            io.getDatabase();
             //maakt een lege feedbacklijst aan
             List<Feedback> feedbackList = new List<Feedback>();
             //als er geen feedback is return de lege lijst
@@ -374,7 +376,7 @@ namespace restaurant
         public void overwriteFeedback(int feedbackID, Klantgegevens klant, string message, bool anoniem)
         {
             //pakt de database
-            database = io.Getdatabase();
+            database = io.getDatabase();
 
             //voor alle feedbacks in de database
             for (int i = 0; i < database.feedback.Count; i++)
@@ -405,7 +407,7 @@ namespace restaurant
         public void deleteFeedback(int feedbackID, Klantgegevens klant)
         {
             //pakt de database
-            database = io.Getdatabase();
+            database = io.getDatabase();
 
             //voor alle feedback in de database
             for (int i = 0; i < database.feedback.Count; i++)
