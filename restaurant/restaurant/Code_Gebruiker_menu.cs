@@ -37,20 +37,44 @@ namespace restaurant
         }
 
         #region Reserveringen
-        //pakt de reservering van een klant
-        public Reserveringen getCustomerReservation(Klantgegevens klant)
+        //pakt de reserveringen van een klant
+        public List<Reserveringen> getCustomerReservation(Klantgegevens klant, bool toekomstReserveringen)
         {
             database = io.getDatabase();
-            Reserveringen reservering = new Reserveringen();
-            //voor elke reservering in de database, voor elk klantnummer
+            List<Reserveringen> reservering = new List<Reserveringen>();
+            //voor elke reservering in de database, voor elk klantnummer van een reservering
             foreach (var reserveringen in database.reserveringen)
             {
                 foreach (var klantnummer in reserveringen.klantnummers)
                 {
-                    //als de klant is gevonden en datum is in de toekomst, voeg de reservering toe
-                    if (klant.klantnummer == klantnummer && reserveringen.datum > DateTime.Now)
+                    //voegt alleen reserveringen in de toekomst toe
+                    if (toekomstReserveringen && klant.klantnummer == klantnummer && reserveringen.datum > DateTime.Now)
                     {
-                        reservering = reserveringen;
+                        reservering.Add(reserveringen);
+                    }
+                    //voegt alle reserveringen van de klant toe
+                    else if (klant.klantnummer == klantnummer && !toekomstReserveringen)
+                    {
+                        reservering.Add(reserveringen);
+                    }
+                }
+            }
+            return reservering;
+        }
+
+        public List<Reserveringen> getCustomerReservation(Klantgegevens klant)
+        {
+            database = io.getDatabase();
+            List<Reserveringen> reservering = new List<Reserveringen>();
+            //voor elke reservering in de database, voor elk klantnummer van een reservering
+            foreach (var reserveringen in database.reserveringen)
+            {
+                foreach (var klantnummer in reserveringen.klantnummers)
+                {
+                    //voegt alle reserveringen van de klant toe
+                    if (klant.klantnummer == klantnummer)
+                    {
+                        reservering.Add(reserveringen);
                     }
                 }
             }
