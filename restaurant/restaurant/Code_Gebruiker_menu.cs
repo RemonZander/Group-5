@@ -23,7 +23,7 @@ namespace restaurant
             {
                 database.menukaart.gerechten = testClass.Get_standard_dishes();
             }
-            List<Gerechten> test = Getmenukaart(new List<string> { "lactose intolerantie" });
+            List<Gerechten> test = GetMenukaart(new List<string> { "lactose intolerantie" });
 
             List<int> num = new List<int> { 223541, 220793 };
             MakeCustomerReservation(DateTime.Now, num, 6, false);
@@ -33,14 +33,14 @@ namespace restaurant
 
         public Code_Gebruiker_menu()
         {
-            database = io.getDatabase();
+            database = io.GetDatabase();
         }
 
         #region Reserveringen
         //pakt de reserveringen van een klant
-        public List<Reserveringen> getCustomerReservation(Klantgegevens klant, bool toekomstReserveringen)
+        public List<Reserveringen> GetCustomerReservation(Klantgegevens klant, bool toekomstReserveringen)
         {
-            database = io.getDatabase();
+            database = io.GetDatabase();
             List<Reserveringen> reservering = new List<Reserveringen>();
             //voor elke reservering in de database, voor elk klantnummer van een reservering
             foreach (var reserveringen in database.reserveringen)
@@ -62,9 +62,9 @@ namespace restaurant
             return reservering;
         }
 
-        public List<Reserveringen> getCustomerReservation(Klantgegevens klant)
+        public List<Reserveringen> GetCustomerReservation(Klantgegevens klant)
         {
-            database = io.getDatabase();
+            database = io.GetDatabase();
             List<Reserveringen> reservering = new List<Reserveringen>();
             //voor elke reservering in de database, voor elk klantnummer van een reservering
             foreach (var reserveringen in database.reserveringen)
@@ -84,7 +84,7 @@ namespace restaurant
         //maakt een incomplete reservering aan (een medewerker moet nog een tafel toewijzen) en voegt deze toe aan de database
         public void MakeCustomerReservation(DateTime date, List<int> klantnummers, int aantalMensen, bool raamTafel)
         {
-            database = io.getDatabase();
+            database = io.GetDatabase();
             if (database.reserveringen == null)
             {
                 database.reserveringen = new List<Reserveringen>();
@@ -111,9 +111,9 @@ namespace restaurant
         }
 
         //reset de database
-        public void Remove_reservations(Reserveringen reserveringen)
+        public void RemoveReservations(Reserveringen reserveringen)
         {
-            database = io.getDatabase();
+            database = io.GetDatabase();
             database.reserveringen.Remove(reserveringen);
             io.Savedatabase(database);
         }
@@ -121,17 +121,17 @@ namespace restaurant
 
         #region Menukaart
         //pakt menukaart uit de database
-        public List<Gerechten> Getmenukaart()
+        public List<Gerechten> GetMenukaart()
         {
-            database = io.getDatabase();
+            database = io.GetDatabase();
             return database.menukaart.gerechten;
         }
 
         //verwijderd allergenen uit de menukaart en returned een gefilterde menukaart
-        public List<Gerechten> Getmenukaart(List<string> allergenen)
+        public List<Gerechten> GetMenukaart(List<string> allergenen)
         {
             //maakt nieuwe lijst met de menukaart
-            List<Gerechten> menulist = new List<Gerechten>(Getmenukaart());
+            List<Gerechten> menulist = new List<Gerechten>(GetMenukaart());
 
             //voor alles in menukaart, voor alle allergenen
             for (int i = 0; i < menulist.Count; i++)
@@ -153,10 +153,10 @@ namespace restaurant
         /// filtered menukaart prijs
         /// </summary>
         /// <param name="toLower">if true, returned alles gelijk aan of lager dan de ingevoerde prijs. if false, returned alles met een hogere dan ingevoerde prijs</param>
-        public List<Gerechten> Getmenukaart(int price, bool toLower)
+        public List<Gerechten> GetMenukaart(int price, bool toLower)
         {
             //maakt nieuwe lijst met de menukaart
-            List<Gerechten> menulist = new List<Gerechten>(Getmenukaart());
+            List<Gerechten> menulist = new List<Gerechten>(GetMenukaart());
 
             //voor alles in menukaart, voor alle allergenen
             for (int i = 0; i < menulist.Count; i++)
@@ -174,10 +174,10 @@ namespace restaurant
             return menulist;
         }
 
-        public List<Gerechten> GetmenukaartPopulair()
+        public List<Gerechten> GetMenukaartPopulair()
         {
             //maakt nieuwe lijst met de menukaart
-            List<Gerechten> menulist = new List<Gerechten>(Getmenukaart());
+            List<Gerechten> menulist = new List<Gerechten>(GetMenukaart());
 
             //voor alles in menukaart, voor alle allergenen
             for (int i = 0; i < menulist.Count; i++)
@@ -191,10 +191,10 @@ namespace restaurant
             return menulist;
         }
 
-        public List<Gerechten> GetmenukaartSpeciaal()
+        public List<Gerechten> GetMenukaartSpeciaal()
         {
             //maakt nieuwe lijst met de menukaart
-            List<Gerechten> menulist = new List<Gerechten>(Getmenukaart());
+            List<Gerechten> menulist = new List<Gerechten>(GetMenukaart());
 
             //voor alles in menukaart, voor alle allergenen
             for (int i = 0; i < menulist.Count; i++)
@@ -211,9 +211,9 @@ namespace restaurant
 
         #region Reviews
         //maakt een review
-        public void makeReview(int rating, Klantgegevens klant, string message, Reserveringen reservering, bool anoniem)
+        public void MakeReview(int rating, Klantgegevens klant, string message, Reserveringen reservering, bool anoniem)
         {
-            database = io.getDatabase();
+            database = io.GetDatabase();
             if (database.reviews == null)
             {
                 database.reviews = new List<Review>();
@@ -242,9 +242,9 @@ namespace restaurant
         }
 
         //returned max 50 reviews, als de review anoniem is verandert de naam en reservering nummer naar 0
-        public List<Review> getReviews()
+        public List<Review> GetReviews()
         {
-            database = io.getDatabase();
+            database = io.GetDatabase();
             List<Review> reviewList = new List<Review>();
             if (database.reviews == null)
             {
@@ -272,10 +272,10 @@ namespace restaurant
         }
 
         //overwrite een review met 
-        public void overwriteReview(int reviewID, int rating, Klantgegevens klant, string message, bool anoniem)
+        public void OverwriteReview(int reviewID, int rating, Klantgegevens klant, string message, bool anoniem)
         {
             //pakt de database
-            database = io.getDatabase();
+            database = io.GetDatabase();
 
             //voor alle reviews in de database
             for (int i = 0; i < database.reviews.Count; i++)
@@ -303,10 +303,10 @@ namespace restaurant
         }
 
         //delete een review
-        public void deleteReview(int reviewID, Klantgegevens klant)
+        public void DeleteReview(int reviewID, Klantgegevens klant)
         {
             //pakt de database
-            database = io.getDatabase();
+            database = io.GetDatabase();
 
             //voor alle reviews in de database
             for (int i = 0; i < database.reviews.Count; i++)
@@ -328,10 +328,10 @@ namespace restaurant
 
         #region Feedback
         //maakt feedback aan
-        public void makeFeedback(Werknemer werknemer,Klantgegevens klant, string message, Reserveringen reservering, bool anoniem)
+        public void MakeFeedback(Werknemer werknemer,Klantgegevens klant, string message, Reserveringen reservering, bool anoniem)
         {
             //pakt database
-            database = io.getDatabase();
+            database = io.GetDatabase();
             
             //als feedback lijst nog niet bestaat maak die aan
             if (database.feedback == null)
@@ -364,10 +364,10 @@ namespace restaurant
         }
         
         //returned 50 items, als er zoveel zijn
-        public List<Feedback> getFeedback()
+        public List<Feedback> GetFeedback()
         {
             //pakt de database
-            io.getDatabase();
+            io.GetDatabase();
             //maakt een lege feedbacklijst aan
             List<Feedback> feedbackList = new List<Feedback>();
             //als er geen feedback is return de lege lijst
@@ -397,10 +397,10 @@ namespace restaurant
         }
 
         //herschrijft feedback voor gegeven feedbackID
-        public void overwriteFeedback(int feedbackID, Klantgegevens klant, string message, bool anoniem)
+        public void OverwriteFeedback(int feedbackID, Klantgegevens klant, string message, bool anoniem)
         {
             //pakt de database
-            database = io.getDatabase();
+            database = io.GetDatabase();
 
             //voor alle feedbacks in de database
             for (int i = 0; i < database.feedback.Count; i++)
@@ -428,10 +428,10 @@ namespace restaurant
         }
 
         //delete feedback voor gegeven feedbackID
-        public void deleteFeedback(int feedbackID, Klantgegevens klant)
+        public void DeleteFeedback(int feedbackID, Klantgegevens klant)
         {
             //pakt de database
-            database = io.getDatabase();
+            database = io.GetDatabase();
 
             //voor alle feedback in de database
             for (int i = 0; i < database.feedback.Count; i++)
@@ -449,6 +449,144 @@ namespace restaurant
             //save de database
             io.Savedatabase(database);
         }
+        #endregion
+
+        #region Deprecated
+        [Obsolete("getCustomerReservation is vervangen met GetCustomerReservation.")]
+        public List<Reserveringen> getCustomerReservation(Klantgegevens klant)
+        {
+            database = io.GetDatabase();
+            List<Reserveringen> reservering = new List<Reserveringen>();
+            //voor elke reservering in de database, voor elk klantnummer van een reservering
+            foreach (var reserveringen in database.reserveringen)
+            {
+                foreach (var klantnummer in reserveringen.klantnummers)
+                {
+                    //voegt alle reserveringen van de klant toe
+                    if (klant.klantnummer == klantnummer)
+                    {
+                        reservering.Add(reserveringen);
+                    }
+                }
+            }
+            return reservering;
+        }
+        
+        [Obsolete("makeReview is vervangen met MakeReview.")]
+        public void makeReview(int rating, Klantgegevens klant, string message, Reserveringen reservering, bool anoniem)
+        {
+            database = io.GetDatabase();
+            if (database.reviews == null)
+            {
+                database.reviews = new List<Review>();
+            }
+
+            Review review = new Review
+            {
+                Rating = rating,
+                Klantnummer = klant.klantnummer,
+                message = message,
+                reservering_ID = reservering.ID,
+                annomeme = anoniem,
+                datum = DateTime.Now
+            };
+            if (database.reviews.Count == 0)
+            {
+                review.ID = 0;
+            }
+            else
+            {
+                review.ID = database.reviews[database.reviews.Count - 1].ID + 1;
+            }
+
+            database.reviews.Add(review);
+            io.Savedatabase(database);
+        }
+
+        [Obsolete("getReviews is vervangen met GetReviews.")]
+        public List<Review> getReviews()
+        {
+            database = io.GetDatabase();
+            List<Review> reviewList = new List<Review>();
+            if (database.reviews == null)
+            {
+                return reviewList;
+            }
+            else
+            {
+                //laat 50 reviews zien, als er zoveel zijn
+                for (int i = 0, j = 0; i < database.reviews.Count && j < 50; i++, j++)
+                {
+                    if (database.reviews[i].annomeme)
+                    {
+                        Review temp = database.reviews[i];
+                        temp.Klantnummer = 0;
+                        temp.reservering_ID = 0;
+                        reviewList.Add(temp);
+                    }
+                    else
+                    {
+                        reviewList.Add(database.reviews[i]);
+                    }
+                }
+                return reviewList;
+            }
+        }
+
+        [Obsolete("overwriteReview is vervangen met OverwriteReview.")]
+        public void overwriteReview(int reviewID, int rating, Klantgegevens klant, string message, bool anoniem)
+        {
+            //pakt de database
+            database = io.GetDatabase();
+
+            //voor alle reviews in de database
+            for (int i = 0; i < database.reviews.Count; i++)
+            {
+                //als reviewID in de database gelijk staat aan gegeven reviewID en voor opgegeven klant, moet niet hebben dat mensen andere reviews kunnen aanpassen
+                if (reviewID == database.reviews[i].ID && klant.klantnummer == database.reviews[i].Klantnummer)
+                {
+                    //maakt een nieuwe review op dezelfde locatie als de oude met informatie van de oude en de nieuwe
+                    database.reviews[i] = new Review
+                    {
+                        Rating = rating,
+                        annomeme = anoniem,
+                        datum = database.reviews[i].datum,
+                        ID = database.reviews[i].ID,
+                        Klantnummer = database.reviews[i].Klantnummer,
+                        message = message,
+                        reservering_ID = database.reviews[i].reservering_ID,
+                    };
+                    //stop the count
+                    break;
+                }
+            }
+            //save de database
+            io.Savedatabase(database);
+        }
+
+        [Obsolete("deleteReview is vervangen met DeleteReview.")]
+        public void deleteReview(int reviewID, Klantgegevens klant)
+        {
+            //pakt de database
+            database = io.GetDatabase();
+
+            //voor alle reviews in de database
+            for (int i = 0; i < database.reviews.Count; i++)
+            {
+                //als reviewID in de database gelijk staat aan gegeven reviewID en voor opgegeven klant, moet niet hebben dat mensen andere reviews kunnen aanpassen
+                if (reviewID == database.reviews[i].ID && klant.klantnummer == database.reviews[i].Klantnummer)
+                {
+                    //delete de review
+                    database.reviews.RemoveAt(i);
+
+                    //stop the count
+                    break;
+                }
+            }
+            //save de database
+            io.Savedatabase(database);
+        }
+
         #endregion
     }
 }
