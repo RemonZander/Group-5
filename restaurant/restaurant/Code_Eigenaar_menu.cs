@@ -18,7 +18,7 @@ namespace restaurant
 
         public void Debug()
         {
-            database = io.Getdatabase();
+            database = io.GetDatabase();
             Menukaart menukaart = new Menukaart();
             menukaart.gerechten = instance.Get_standard_dishes();
 
@@ -30,7 +30,7 @@ namespace restaurant
             instance.Make_reviews();
             instance.Maak_werknemer(10);
             instance.Make_feedback();*/
-            database = io.Getdatabase();
+            database = io.GetDatabase();
 
             List<int> ingredients = new List<int>();
             ingredients.Add(0);
@@ -153,7 +153,7 @@ namespace restaurant
 
         public void DeleteExpiredIngredients(List<Ingredient> ingredient)
         {
-            database = io.Getdatabase();
+            database = io.GetDatabase();
             for (int i = 0; i < database.ingredienten.Count; i++)
             {
                 for (int j = 0; j < ingredient.Count; j++)
