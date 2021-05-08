@@ -241,37 +241,54 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        //returned max 50 reviews, als de review anoniem is verandert de naam en reservering nummer naar 0
-        public List<Review> GetReviews()
-        {
-            database = io.GetDatabase();
-            List<Review> reviewList = new List<Review>();
-            if (database.reviews == null)
-            {
-                return reviewList;
-            }
-            else
-            {
-                //laat 50 reviews zien, als er zoveel zijn
-                for (int i = 0, j = 0; i < database.reviews.Count && j < 50; i++, j++)
-                {
-                    if (database.reviews[i].annomeme)
-                    {
-                        Review temp = database.reviews[i];
-                        temp.Klantnummer = 0;
-                        temp.reservering_ID = 0;
-                        reviewList.Add(temp);
-                    }
-                    else
-                    {
-                        reviewList.Add(database.reviews[i]);
-                    }
-                }
-                return reviewList;
-            }
-        }
+        ////returned max 50 reviews, als de review anoniem is verandert de naam en reservering nummer naar 0
+        //public List<Review> GetReviews()
+        //{
+        //    database = io.GetDatabase();
+        //    List<Review> reviewList = new List<Review>();
+        //    if (database.reviews == null)
+        //    {
+        //        return reviewList;
+        //    }
+        //    else
+        //    {
+        //        //laat 50 reviews zien, als er zoveel zijn
+        //        for (int i = 0, j = 0; i < database.reviews.Count && j < 50; i++, j++)
+        //        {
+        //            if (database.reviews[i].annomeme)
+        //            {
+        //                Review temp = database.reviews[i];
+        //                temp.Klantnummer = 0;
+        //                temp.reservering_ID = 0;
+        //                reviewList.Add(temp);
+        //            }
+        //            else
+        //            {
+        //                reviewList.Add(database.reviews[i]);
+        //            }
+        //        }
+        //        return reviewList;
+        //    }
+        //}
 
-        //overwrite een review met 
+        ////returned alle reviews van een klant
+        //public List<Review> GetReviews(Klantgegevens klant)
+        //{
+        //    //pakt de database
+        //    database = io.GetDatabase();
+        //    List<Review> reviewList = new List<Review>();
+        //    //voor iedere review met hetzelfde klantnummer als de gegeven klant, voeg deze toe aan de lijst en return de lijst
+        //    foreach (var review in database.reviews)
+        //    {
+        //        if(review.Klantnummer == klant.klantnummer)
+        //        {
+        //            reviewList.Add(review);
+        //        }
+        //    }
+        //    return reviewList;
+        //}
+
+        //overwrite een review met een nieuwe review
         public void OverwriteReview(int reviewID, int rating, Klantgegevens klant, string message, bool anoniem)
         {
             //pakt de database
@@ -363,40 +380,7 @@ namespace restaurant
             io.Savedatabase(database);
         }
         
-        //returned 50 items, als er zoveel zijn
-        public List<Feedback> GetFeedback()
-        {
-            //pakt de database
-            io.GetDatabase();
-            //maakt een lege feedbacklijst aan
-            List<Feedback> feedbackList = new List<Feedback>();
-            //als er geen feedback is return de lege lijst
-            if (database.feedback == null)
-            {
-                return feedbackList;
-            }
-            else
-            {
-                //sla tot 50 items op en return deze lijst
-                for (int i = 0, j = 0; i < database.feedback.Count && j < 50; i++, j++)
-                {
-                    if (database.feedback[i].annomeme)
-                    {
-                        Feedback temp = database.feedback[i];
-                        temp.Klantnummer = 0;
-                        temp.reservering_ID = 0;
-                        feedbackList.Add(temp);
-                    }
-                    else
-                    {
-                        feedbackList.Add(database.feedback[i]);
-                    }
-                }
-                return feedbackList;
-            }
-        }
-
-        //herschrijft feedback voor gegeven feedbackID
+        //overschrijft feedback met een nieuwe en vervangt en feedback op de plaats van gegeven ID
         public void OverwriteFeedback(int feedbackID, Klantgegevens klant, string message, bool anoniem)
         {
             //pakt de database
