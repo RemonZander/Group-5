@@ -23,7 +23,7 @@ namespace restaurant
 
         public Testing_class()
         {
-            database = io.getDatabase();   
+            database = io.GetDatabase();   
         }
         
         public void Debug()
@@ -48,7 +48,7 @@ namespace restaurant
         public void Fill_reservations_threading(int threads,int amount, int start_month, int stop_month, int start_day, int stop_day)
         {
             Thread[] reservation_thread = new Thread[threads];
-            database = io.getDatabase();
+            database = io.GetDatabase();
             List<Tuple<DateTime, List<Tafels>>> beschikbaar = Calc_totale_beschikbaarheid(start_month, stop_month, start_day, stop_day);
             BlockingCollection<Ingredient> ingredient_temp = new BlockingCollection<Ingredient>();
             for (int a = 0; a < threads; a++)
@@ -245,7 +245,7 @@ namespace restaurant
         //Deze functie maakt de menukaart aan en vult de gerechten aan
         public void Make_menu()
         {
-            database = io.getDatabase();
+            database = io.GetDatabase();
             Menukaart menukaart = new Menukaart
             {
                 gerechten = Get_standard_dishes()
@@ -613,7 +613,7 @@ namespace restaurant
         /// <param name="amount">Fill here the amount of different users you want to add</param>
         public void Fill_Userdata(int amount)
         {
-            database = io.getDatabase();
+            database = io.GetDatabase();
             string[][] names = Make_Names();
             Random rnd = new Random();
             List<Login_gegevens> login_Gegevens = new List<Login_gegevens>();
@@ -775,7 +775,7 @@ namespace restaurant
         /// <returns>This returns inkomsten where inkomsten.bestelling_reservering is a list of all sales between begintime and endtime</returns>
         public Inkomsten Sales(DateTime begintime, DateTime endtime)
         {
-            database = io.getDatabase();
+            database = io.GetDatabase();
             if (database.reserveringen.Count == 0) return new Inkomsten();
 
             Random rnd = new Random();
@@ -821,7 +821,7 @@ namespace restaurant
         /// </summary>
         public void Save_Sales()
         {
-            database = io.getDatabase();
+            database = io.GetDatabase();
             if (database.reserveringen == null) return;
 
             Random rnd = new Random();
@@ -868,7 +868,7 @@ namespace restaurant
         /// </summary>
         public void Save_expenses()
         {
-            database = io.getDatabase();
+            database = io.GetDatabase();
             if (database.reserveringen == null || database.werknemers == null || database.ingredienten == null) return;
 
             Uitgaven uitgaven = database.uitgaven;
@@ -923,7 +923,7 @@ namespace restaurant
         /// </summary>
         public void Make_reviews()
         {
-            database = io.getDatabase();
+            database = io.GetDatabase();
             if (database.reserveringen == null || database.login_gegevens == null) return;
 
             List<Review> reviews = new List<Review>();
@@ -954,7 +954,7 @@ namespace restaurant
         /// </summary>
         public void Make_feedback()
         {
-            database = io.getDatabase();
+            database = io.GetDatabase();
             if (database.reserveringen == null || database.login_gegevens == null || database.werknemers == null) return;
 
             List<Feedback> feedback = new List<Feedback>();
@@ -989,7 +989,7 @@ namespace restaurant
         /// <param name="amount">This is the amount of employee's you want to make</param>
         public void Maak_werknemer(int amount)
         {
-            database = io.getDatabase();
+            database = io.GetDatabase();
 
             string[][] names = Make_Names();
 
