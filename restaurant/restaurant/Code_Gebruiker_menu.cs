@@ -380,57 +380,7 @@ namespace restaurant
             io.Savedatabase(database);
         }
         
-        ////returned 50 items, als er zoveel zijn
-        //public List<Feedback> GetFeedback()
-        //{
-        //    //pakt de database
-        //    database = io.GetDatabase();
-        //    //maakt een lege feedbacklijst aan
-        //    List<Feedback> feedbackList = new List<Feedback>();
-        //    //als er geen feedback is return de lege lijst
-        //    if (database.feedback == null)
-        //    {
-        //        return feedbackList;
-        //    }
-        //    else
-        //    {
-        //        //sla tot 50 items op en return deze lijst
-        //        for (int i = 0, j = 0; i < database.feedback.Count && j < 50; i++, j++)
-        //        {
-        //            if (database.feedback[i].annomeme)
-        //            {
-        //                Feedback temp = database.feedback[i];
-        //                temp.Klantnummer = 0;
-        //                temp.reservering_ID = 0;
-        //                feedbackList.Add(temp);
-        //            }
-        //            else
-        //            {
-        //                feedbackList.Add(database.feedback[i]);
-        //            }
-        //        }
-        //        return feedbackList;
-        //    }
-        //}
-
-        ////returned feedback van een klant
-        //public List<Feedback> GetFeedback(Klantgegevens klant)
-        //{
-        //    //pakt de database
-        //    database = io.GetDatabase();
-        //    List<Feedback> feedbackList = new List<Feedback>();
-        //    //voor iedere feedback met hetzelfde klantnummer als het klantnummer van de klant, voeg deze toe aan een lijst en return de lijst
-        //    foreach (var feedback in database.feedback)
-        //    {
-        //        if (feedback.Klantnummer == klant.klantnummer)
-        //        {
-        //            feedbackList.Add(feedback);
-        //        }
-        //    }
-        //    return feedbackList;
-        //}
-
-        //herschrijft feedback voor gegeven feedbackID
+        //overschrijft feedback met een nieuwe en vervangt en feedback op de plaats van gegeven ID
         public void OverwriteFeedback(int feedbackID, Klantgegevens klant, string message, bool anoniem)
         {
             //pakt de database
