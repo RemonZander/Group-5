@@ -10,7 +10,14 @@ namespace restaurant
 {
     public partial class IO
     {
+        
         private Database database = new Database();
+        
+        #region Database Functionality
+        /// <summary>
+        /// Opslaan van de database
+        /// </summary>
+        /// <param name="database">De database die moet worden opgeslagen</param>
         public void Savedatabase(Database database)
         {
             if (!FileSystem.DirectoryExists(@"..\database\"))
@@ -23,7 +30,11 @@ namespace restaurant
             // @ neemt tekst letterlijk, geen \n bijv.
             File.WriteAllText(@"..\database\database.Json", output);
         }
-
+        
+        /// <summary>
+        /// Voor het ophalen van de database
+        /// </summary>
+        /// <returns>Returned de Database</returns>
         public Database GetDatabase()
         {
             Database database = new Database();
@@ -50,7 +61,9 @@ namespace restaurant
             return database;
         }
 
-        //Reset de database
+        /// <summary>
+        /// Reset de database
+        /// </summary>
         public void ResetFilesystem()
         {
             try
@@ -66,9 +79,14 @@ namespace restaurant
                 FileSystem.CreateDirectory(@"..\database\");
             }
         }
+        #endregion
 
         #region Reservering
-        //pakt alle beschikbare tijden en tafels voor de ingevoerde dag
+        /// <summary>
+        /// Alle beschikbare tijden en tafels voor de ingevoerde dag
+        /// </summary>
+        /// <param name="date">De datum waarop je de beschikbaarheid wilt zien</param>
+        /// <returns>Een Tuple met de datum en een list met alle tafels die nog beschikbaar zijn</returns>
         public List<Tuple<DateTime, List<Tafels>>> ReserveringBeschikbaarheid(DateTime date)
         {
             database = GetDatabase();
@@ -97,7 +115,14 @@ namespace restaurant
             return beschikbaar;
         }
 
-        //pakt alle beschikbare tijden en tafels tussen nu en aantal ingevoerde dagen
+        /// <summary>
+        /// Alle beschikbare tijden tussen de ingevoerde maanden en dagen
+        /// </summary>
+        /// <param name="start_maand">De maand waar je begint</param>
+        /// <param name="eind_maand">De maand waar je eindigt</param>
+        /// <param name="start_dag">De dag waar je begint</param>
+        /// <param name="eind_dag">De dag waar je eindigt</param>
+        /// <returns>Een Tuple met de datum en een list met alle tafels die nog beschikbaar zijn</returns>
         public List<Tuple<DateTime, List<Tafels>>> ReserveringBeschikbaarheid(int start_maand, int eind_maand, int start_dag, int eind_dag)
         {
             database = GetDatabase();
@@ -201,7 +226,10 @@ namespace restaurant
         #endregion
 
         #region Get Reviews&Feedback
-        //returned max 50 reviews, als de review anoniem is verandert de naam en reservering nummer naar 0
+        /// <summary>
+        /// Ophalen van alle reviews
+        /// </summary>
+        /// <returns>Een list met alle reviews</returns>
         public List<Review> GetReviews()
         {
             database = GetDatabase();
@@ -213,7 +241,7 @@ namespace restaurant
             else
             {
                 //laat 50 reviews zien, als er zoveel zijn
-                for (int i = 0, j = 0; i < database.reviews.Count && j < 50; i++, j++)
+                for (int i = 0; i < database.reviews.Count; i++)
                 {
                     if (database.reviews[i].annomeme)
                     {
@@ -231,7 +259,45 @@ namespace restaurant
             }
         }
 
-        //returned alle reviews van een klant
+        /// <summary>
+        /// Ophalen van een bepaald aantal reviews
+        /// </summary>
+        /// <param name="max">de hoeveelheid reviews die hij moet ophalen</param>
+        /// <returns>Een list met max aantal reviews </returns>
+        public List<Review> GetReviews(int max)
+        {
+            database = GetDatabase();
+            List<Review> reviewList = new List<Review>();
+            if (database.reviews == null)
+            {
+                return reviewList;
+            }
+            else
+            {
+                //laat max reviews zien, als er zoveel zijn
+                for (int i = 0, j = 0; i < database.reviews.Count && j < max; i++, j++)
+                {
+                    if (database.reviews[i].annomeme)
+                    {
+                        Review temp = database.reviews[i];
+                        temp.Klantnummer = 0;
+                        temp.reservering_ID = 0;
+                        reviewList.Add(temp);
+                    }
+                    else
+                    {
+                        reviewList.Add(database.reviews[i]);
+                    }
+                }
+                return reviewList;
+            }
+        }
+
+        /// <summary>
+        /// Ophalen van alle reviews van een klant
+        /// </summary>
+        /// <param name="klant">de klant waarvan je de reviews wilt hebben</param>
+        /// <returns>Een list met alle reviews van een klant</returns>
         public List<Review> GetReviews(Klantgegevens klant)
         {
             //pakt de database
@@ -248,7 +314,10 @@ namespace restaurant
             return reviewList;
         }
 
-        //returned 50 items, als er zoveel zijn
+        /// <summary>
+        /// Ophalen van alle feedback
+        /// </summary>
+        /// <returns>Een list met alle feedback</returns>
         public List<Feedback> GetFeedback()
         {
             //pakt de database
@@ -281,7 +350,48 @@ namespace restaurant
             }
         }
 
-        //returned feedback van een klant
+        /// <summary>
+        /// Ophalen van een aantal feedback
+        /// </summary>
+        /// <param name="max">De maximale aantal van feedback die je ophaalt</param>
+        /// <returns>Een list met max aantal feedback</returns>
+        public List<Feedback> GetFeedback(int max)
+        {
+            //pakt de database
+            database = GetDatabase();
+            //maakt een lege feedbacklijst aan
+            List<Feedback> feedbackList = new List<Feedback>();
+            //als er geen feedback is return de lege lijst
+            if (database.feedback == null)
+            {
+                return feedbackList;
+            }
+            else
+            {
+                //sla tot 50 items op en return deze lijst
+                for (int i = 0, j = 0; i < database.feedback.Count && j < max; i++, j++)
+                {
+                    if (database.feedback[i].annomeme)
+                    {
+                        Feedback temp = database.feedback[i];
+                        temp.Klantnummer = 0;
+                        temp.reservering_ID = 0;
+                        feedbackList.Add(temp);
+                    }
+                    else
+                    {
+                        feedbackList.Add(database.feedback[i]);
+                    }
+                }
+                return feedbackList;
+            }
+        }
+
+        /// <summary>
+        /// Ophalen van alle feedback van een klant
+        /// </summary>
+        /// <param name="klant">De klant waarvan je alle feedback wilt</param>
+        /// <returns>Een list met alle feedback van een klant</returns>
         public List<Feedback> GetFeedback(Klantgegevens klant)
         {
             //pakt de database
@@ -300,24 +410,26 @@ namespace restaurant
         #endregion
 
         #region sorteren
-        //ordered reserveringen op ID ASCENDING
-        public void OrderReserveringID()
+        /// <summary>
+        /// ordered reserveringen op ID (ASCENDING)
+        /// </summary>
+        /// <returns>De database geordened op ID</returns>
+        public Database OrderReserveringID(Database database)
         {
-            //pakt de database
-            database = GetDatabase();
             //ordered bij een lambda, in dit geval ID
             database.reserveringen = database.reserveringen.OrderBy(s => s.ID).ToList();
-            Savedatabase(database);
+            return database;
         }
-        
-        //ordered reserveringen op datum ASCENDING
-        public void OrderReserveringDatum()
+
+        /// <summary>
+        /// ordered reserveringen op datum (ASCENDING)
+        /// </summary>
+        /// <returns>De database geordened op datum</returns>
+        public Database OrderReserveringDatum(Database database)
         {
-            //pakt de database
-            database = GetDatabase();
             //ordered bij een lambda, in dit geval datum
             database.reserveringen = database.reserveringen.OrderBy(s => s.datum).ToList();
-            Savedatabase(database);
+            return database;
         }
         #endregion
 

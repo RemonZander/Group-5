@@ -37,7 +37,12 @@ namespace restaurant
         }
 
         #region Reserveringen
-        //pakt de reserveringen van een klant
+        /// <summary>
+        /// Voor het krijgen van de oude of nieuwe reserveringen van een klant
+        /// </summary>
+        /// <param name="klant">de klant van wie je de reservering wilt ophalen </param>
+        /// <param name="toekomstReserveringen">if false, pakt alleen de oude reserveringen. if true, pakt alleen de toekomst reserveringen</param>
+        /// <returns>Een list met Reserveringen</returns>
         public List<Reserveringen> GetCustomerReservation(Klantgegevens klant, bool toekomstReserveringen)
         {
             database = io.GetDatabase();
@@ -52,8 +57,8 @@ namespace restaurant
                     {
                         reservering.Add(reserveringen);
                     }
-                    //voegt alle reserveringen van de klant toe
-                    else if (klant.klantnummer == klantnummer && !toekomstReserveringen)
+                    //voegt alle oude reservering toe van de klant
+                    else if (!toekomstReserveringen && klant.klantnummer == klantnummer && reserveringen.datum < DateTime.Now)
                     {
                         reservering.Add(reserveringen);
                     }
@@ -62,6 +67,11 @@ namespace restaurant
             return reservering;
         }
 
+        /// <summary>
+        /// Voor het krijgen van alle Reserveringen van een klant
+        /// </summary>
+        /// <param name="klant">De klant van wie je de reserveringen wil</param>
+        /// <returns>Een list met alle reserveringen van de klant</returns>
         public List<Reserveringen> GetCustomerReservation(Klantgegevens klant)
         {
             database = io.GetDatabase();
@@ -81,7 +91,13 @@ namespace restaurant
             return reservering;
         }
 
-        //maakt een incomplete reservering aan (een medewerker moet nog een tafel toewijzen) en voegt deze toe aan de database
+        /// <summary>
+        /// maakt een incomplete reservering aan (een medewerker moet nog een tafel toewijzen)
+        /// </summary>
+        /// <param name="date">De datum van de reservering</param>
+        /// <param name="klantnummers">De klantnummer(s) van de klant(en)</param>
+        /// <param name="aantalMensen">Het aantal mensen waarvoor gereserveerd word</param>
+        /// <param name="raamTafel">Of de klant een tafel bij het raam wilt</param>
         public void MakeCustomerReservation(DateTime date, List<int> klantnummers, int aantalMensen, bool raamTafel)
         {
             database = io.GetDatabase();
@@ -96,7 +112,7 @@ namespace restaurant
                 //zet het ID van de reservering naar +1 van het aantal dat al is gemaakt
                 ID = database.reserveringen.Count + 1,
 
-                //aatnal mensen
+                //aantal mensen
                 aantal = aantalMensen,
 
                 //voeg alle klantnummers toe
@@ -110,7 +126,10 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        //reset de database
+        /// <summary>
+        /// Verwijderd een reservering
+        /// </summary>
+        /// <param name="reserveringen">De reservering die verwijderd moet worden</param>
         public void RemoveReservations(Reserveringen reserveringen)
         {
             database = io.GetDatabase();
@@ -120,14 +139,21 @@ namespace restaurant
         #endregion
 
         #region Menukaart
-        //pakt menukaart uit de database
+        /// <summary>
+        /// Voor het verkrijgen van de menukaart
+        /// </summary>
+        /// <returns>Een list met de menukaart</returns>
         public List<Gerechten> GetMenukaart()
         {
             database = io.GetDatabase();
             return database.menukaart.gerechten;
         }
 
-        //verwijderd allergenen uit de menukaart en returned een gefilterde menukaart
+        /// <summary>
+        /// Filtert de menukaart op allergenen : een lijst met mogelijke allergenen zou makkelijk zijn hierzo ergens
+        /// </summary>
+        /// <param name="allergenen">Een list bestaande uit allergenen: een lijst met mogelijke allergenen zou makkelijk zijn hierzo ergens</param>
+        /// <returns>De menukaart zonder gerechten die gemarkeerd zijn met de gegeven allergenen</returns>
         public List<Gerechten> GetMenukaart(List<string> allergenen)
         {
             //maakt nieuwe lijst met de menukaart
@@ -150,10 +176,12 @@ namespace restaurant
         }
 
         /// <summary>
-        /// filtered menukaart prijs
+        /// Filtert menukaart de op prijs
         /// </summary>
         /// <param name="toLower">if true, returned alles gelijk aan of lager dan de ingevoerde prijs. if false, returned alles met een hogere dan ingevoerde prijs</param>
-        public List<Gerechten> GetMenukaart(int price, bool toLower)
+        /// <param name="price">de waarde waarop gefilterd moet worden</param>
+        /// <returns>De menukaart Gefilterd op prijs </returns>
+        public List<Gerechten> GetMenukaart(double price, bool toLower)
         {
             //maakt nieuwe lijst met de menukaart
             List<Gerechten> menulist = new List<Gerechten>(GetMenukaart());
@@ -174,23 +202,33 @@ namespace restaurant
             return menulist;
         }
 
+        /// <summary>
+        /// Filtert de menukaart op populair
+        /// </summary>
+        /// <returns>De menukaart gefilterd op populair</returns>
         public List<Gerechten> GetMenukaartPopulair()
         {
             //maakt nieuwe lijst met de menukaart
             List<Gerechten> menulist = new List<Gerechten>(GetMenukaart());
 
-            //voor alles in menukaart, voor alle allergenen
+            //voor alles in menukaart
             for (int i = 0; i < menulist.Count; i++)
             {
+                //als het NIET populair is zet het naar null
                 if (!menulist[i].is_populair)
                 {
                     menulist[i] = null;
                 }
             }
+            //verwijder alle nulls
             menulist.RemoveAll(x => x == null);
             return menulist;
         }
 
+        /// <summary>
+        /// Filtert de menukaart op speciaal
+        /// </summary>
+        /// <returns>De menukaart gefilterd op speciaal </returns>
         public List<Gerechten> GetMenukaartSpeciaal()
         {
             //maakt nieuwe lijst met de menukaart
@@ -210,7 +248,14 @@ namespace restaurant
         #endregion
 
         #region Reviews
-        //maakt een review
+        /// <summary>
+        /// Maakt een review aan
+        /// </summary>
+        /// <param name="rating">De Beoordeling</param>
+        /// <param name="klant">De klant die de review maakt</param>
+        /// <param name="message">Het bericht dat de klant erbij wilt zetten</param>
+        /// <param name="reservering">De reservering waarop de review is gegeven</param>
+        /// <param name="anoniem">if true, zal geen persoonlijke gegevens returnen bij GetReviews</param>
         public void MakeReview(int rating, Klantgegevens klant, string message, Reserveringen reservering, bool anoniem)
         {
             database = io.GetDatabase();
@@ -241,54 +286,14 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        ////returned max 50 reviews, als de review anoniem is verandert de naam en reservering nummer naar 0
-        //public List<Review> GetReviews()
-        //{
-        //    database = io.GetDatabase();
-        //    List<Review> reviewList = new List<Review>();
-        //    if (database.reviews == null)
-        //    {
-        //        return reviewList;
-        //    }
-        //    else
-        //    {
-        //        //laat 50 reviews zien, als er zoveel zijn
-        //        for (int i = 0, j = 0; i < database.reviews.Count && j < 50; i++, j++)
-        //        {
-        //            if (database.reviews[i].annomeme)
-        //            {
-        //                Review temp = database.reviews[i];
-        //                temp.Klantnummer = 0;
-        //                temp.reservering_ID = 0;
-        //                reviewList.Add(temp);
-        //            }
-        //            else
-        //            {
-        //                reviewList.Add(database.reviews[i]);
-        //            }
-        //        }
-        //        return reviewList;
-        //    }
-        //}
-
-        ////returned alle reviews van een klant
-        //public List<Review> GetReviews(Klantgegevens klant)
-        //{
-        //    //pakt de database
-        //    database = io.GetDatabase();
-        //    List<Review> reviewList = new List<Review>();
-        //    //voor iedere review met hetzelfde klantnummer als de gegeven klant, voeg deze toe aan de lijst en return de lijst
-        //    foreach (var review in database.reviews)
-        //    {
-        //        if(review.Klantnummer == klant.klantnummer)
-        //        {
-        //            reviewList.Add(review);
-        //        }
-        //    }
-        //    return reviewList;
-        //}
-
-        //overwrite een review met een nieuwe review
+        /// <summary>
+        /// Herschrijft een review
+        /// </summary>
+        /// <param name="reviewID">Het ID van de Review</param>
+        /// <param name="rating">De beoordeling van</param>
+        /// <param name="klant">De klant die de review geeft</param>
+        /// <param name="message">Het bericht dat de klant wil achterlaten</param>
+        /// <param name="anoniem">if true, zal geen persoonlijke gegevens returnen bij GetReviews</param>
         public void OverwriteReview(int reviewID, int rating, Klantgegevens klant, string message, bool anoniem)
         {
             //pakt de database
@@ -319,7 +324,11 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        //delete een review
+        /// <summary>
+        /// Verwijderd een review
+        /// </summary>
+        /// <param name="reviewID">Het ID van de review</param>
+        /// <param name="klant">De klant die de review heeft gegeven</param>
         public void DeleteReview(int reviewID, Klantgegevens klant)
         {
             //pakt de database
@@ -344,7 +353,14 @@ namespace restaurant
         #endregion
 
         #region Feedback
-        //maakt feedback aan
+        /// <summary>
+        /// Maakt feedback aan
+        /// </summary>
+        /// <param name="werknemer">De werknemer waarvoor de feedback is</param>
+        /// <param name="klant">De klant die de feedback geeft</param>
+        /// <param name="message">Het bericht die de klant achterlaat</param>
+        /// <param name="reservering">De reservering van de klant</param>
+        /// <param name="anoniem">if true, zal geen persoonlijke gegevens returnen bij GetReviews</param>
         public void MakeFeedback(Werknemer werknemer,Klantgegevens klant, string message, Reserveringen reservering, bool anoniem)
         {
             //pakt database
@@ -379,8 +395,14 @@ namespace restaurant
             //slaat de database op
             io.Savedatabase(database);
         }
-        
-        //overschrijft feedback met een nieuwe en vervangt en feedback op de plaats van gegeven ID
+
+        /// <summary>
+        /// Overschrijft feedback met een nieuwe en vervangt de feedback op de plaats van gegeven ID
+        /// </summary>
+        /// <param name="feedbackID">Het ID van de feedback</param>
+        /// <param name="klant">De klant die de feedback geeft</param>
+        /// <param name="message">Het bericht dat de klant wilt achterlaten</param>
+        /// <param name="anoniem">if true, zal geen persoonlijke gegevens returnen bij GetReviews</param>
         public void OverwriteFeedback(int feedbackID, Klantgegevens klant, string message, bool anoniem)
         {
             //pakt de database
@@ -411,7 +433,11 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        //delete feedback voor gegeven feedbackID
+        /// <summary>
+        /// delete feedback voor gegeven feedbackID
+        /// </summary>
+        /// <param name="feedbackID">Het ID van de feedback</param>
+        /// <param name="klant">De klant die de feedback heeft gemaakt</param>
         public void DeleteFeedback(int feedbackID, Klantgegevens klant)
         {
             //pakt de database
