@@ -200,6 +200,105 @@ namespace restaurant
         }
         #endregion
 
+        #region Get Reviews&Feedback
+        //returned max 50 reviews, als de review anoniem is verandert de naam en reservering nummer naar 0
+        public List<Review> GetReviews()
+        {
+            database = GetDatabase();
+            List<Review> reviewList = new List<Review>();
+            if (database.reviews == null)
+            {
+                return reviewList;
+            }
+            else
+            {
+                //laat 50 reviews zien, als er zoveel zijn
+                for (int i = 0, j = 0; i < database.reviews.Count && j < 50; i++, j++)
+                {
+                    if (database.reviews[i].annomeme)
+                    {
+                        Review temp = database.reviews[i];
+                        temp.Klantnummer = 0;
+                        temp.reservering_ID = 0;
+                        reviewList.Add(temp);
+                    }
+                    else
+                    {
+                        reviewList.Add(database.reviews[i]);
+                    }
+                }
+                return reviewList;
+            }
+        }
+
+        //returned alle reviews van een klant
+        public List<Review> GetReviews(Klantgegevens klant)
+        {
+            //pakt de database
+            database = GetDatabase();
+            List<Review> reviewList = new List<Review>();
+            //voor iedere review met hetzelfde klantnummer als de gegeven klant, voeg deze toe aan de lijst en return de lijst
+            foreach (var review in database.reviews)
+            {
+                if (review.Klantnummer == klant.klantnummer)
+                {
+                    reviewList.Add(review);
+                }
+            }
+            return reviewList;
+        }
+
+        //returned 50 items, als er zoveel zijn
+        public List<Feedback> GetFeedback()
+        {
+            //pakt de database
+            database = GetDatabase();
+            //maakt een lege feedbacklijst aan
+            List<Feedback> feedbackList = new List<Feedback>();
+            //als er geen feedback is return de lege lijst
+            if (database.feedback == null)
+            {
+                return feedbackList;
+            }
+            else
+            {
+                //sla tot 50 items op en return deze lijst
+                for (int i = 0, j = 0; i < database.feedback.Count && j < 50; i++, j++)
+                {
+                    if (database.feedback[i].annomeme)
+                    {
+                        Feedback temp = database.feedback[i];
+                        temp.Klantnummer = 0;
+                        temp.reservering_ID = 0;
+                        feedbackList.Add(temp);
+                    }
+                    else
+                    {
+                        feedbackList.Add(database.feedback[i]);
+                    }
+                }
+                return feedbackList;
+            }
+        }
+
+        //returned feedback van een klant
+        public List<Feedback> GetFeedback(Klantgegevens klant)
+        {
+            //pakt de database
+            database = GetDatabase();
+            List<Feedback> feedbackList = new List<Feedback>();
+            //voor iedere feedback met hetzelfde klantnummer als het klantnummer van de klant, voeg deze toe aan een lijst en return de lijst
+            foreach (var feedback in database.feedback)
+            {
+                if (feedback.Klantnummer == klant.klantnummer)
+                {
+                    feedbackList.Add(feedback);
+                }
+            }
+            return feedbackList;
+        }
+        #endregion
+
         #region sorteren
         //ordered reserveringen op ID ASCENDING
         public void OrderReserveringID()
@@ -223,26 +322,6 @@ namespace restaurant
         #endregion
 
         #region Deprecated
-        [Obsolete("Reservering_beschikbaarheid graag vervangen met ReserveringBeschikbaarheid.")]
-        public List<Tuple<DateTime, List<Tafels>>> Reservering_beschikbaarheid(int start_maand, int eind_maand, int start_dag, int eind_dag)
-        {
-            database = GetDatabase();
-            //maakt een lijst met tuples die beheert alle beschikbare plekken op int aantal dagen
-            List<Tuple<DateTime, List<Tafels>>> beschikbaar = BerekenTotaleBeschikbaarheid(start_maand, eind_maand, start_dag, eind_dag);
-
-
-            //verantwoordelijk voor het communiceren met de database
-            foreach (var reservering in database.reserveringen)
-            {
-                //voor de datum tussen nu en de ingevoerde dag
-                if (reservering.datum >= new DateTime(DateTime.Now.Year, start_maand, start_dag, 10, 0, 0) && reservering.datum <= new DateTime(DateTime.Now.Year, eind_maand, eind_dag, 21, 0, 0))
-                {
-                    beschikbaar = VerwijderReservering(beschikbaar, reservering);
-                }
-            }
-            return beschikbaar;
-        }
-
         [Obsolete("Reservering_beschikbaarheid graag vervangen met ReserveringBeschikbaarheid.")]
         public List<Tuple<DateTime, List<Tafels>>> Reservering_beschikbaarheid(DateTime date)
         {
@@ -271,7 +350,7 @@ namespace restaurant
             }
             return beschikbaar;
         }
-
+        
         [Obsolete("Reset_filesystem graag vervangen met ResetFilesystem.")]
         public void Reset_filesystem()
         {
@@ -288,34 +367,9 @@ namespace restaurant
                 FileSystem.CreateDirectory(@"..\database\");
             }
         }
+        
         [Obsolete("Getdatabase graag vervangen met GetDatabase.")]
         public Database Getdatabase()
-        {
-            Database database = new Database();
-
-            if (!File.Exists(@"..\database\database.Json")) return database;
-            string output = File.ReadAllText(@"..\database\database.Json");
-            database = JsonConvert.DeserializeObject<Database>(output);
-
-            List<Tafels> temp = new List<Tafels>();
-            for (int i = 0; i < 100; i++)
-            {
-                Tafels tafel = new Tafels
-                {
-                    ID = i,
-                    Zetels = 4
-                };
-
-                if (i % 2 != 0) tafel.isRaam = true;
-
-                temp.Add(tafel);
-            }
-            database.tafels = temp;
-
-            return database;
-        }
-        [Obsolete("getDatabase graag vervangen met GetDatabase.")]
-        public Database getDatabase()
         {
             Database database = new Database();
 
