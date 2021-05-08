@@ -233,30 +233,11 @@ namespace restaurant
         public List<Review> GetReviews()
         {
             database = GetDatabase();
-            List<Review> reviewList = new List<Review>();
-            if (database.reviews == null)
+            if (database.reviews != null)
             {
-                return reviewList;
+                return database.reviews;
             }
-            else
-            {
-                //laat 50 reviews zien, als er zoveel zijn
-                for (int i = 0; i < database.reviews.Count; i++)
-                {
-                    if (database.reviews[i].annomeme)
-                    {
-                        Review temp = database.reviews[i];
-                        temp.Klantnummer = 0;
-                        temp.reservering_ID = 0;
-                        reviewList.Add(temp);
-                    }
-                    else
-                    {
-                        reviewList.Add(database.reviews[i]);
-                    }
-                }
-                return reviewList;
-            }
+            return new List<Review>();
         }
 
         /// <summary>
@@ -277,17 +258,7 @@ namespace restaurant
                 //laat max reviews zien, als er zoveel zijn
                 for (int i = 0, j = 0; i < database.reviews.Count && j < max; i++, j++)
                 {
-                    if (database.reviews[i].annomeme)
-                    {
-                        Review temp = database.reviews[i];
-                        temp.Klantnummer = 0;
-                        temp.reservering_ID = 0;
-                        reviewList.Add(temp);
-                    }
-                    else
-                    {
-                        reviewList.Add(database.reviews[i]);
-                    }
+                    reviewList.Add(database.reviews[i]);
                 }
                 return reviewList;
             }
@@ -318,36 +289,14 @@ namespace restaurant
         /// Ophalen van alle feedback
         /// </summary>
         /// <returns>Een list met alle feedback</returns>
-        public List<Feedback> GetFeedback()
+        public List<Review> GetFeedback()
         {
-            //pakt de database
             database = GetDatabase();
-            //maakt een lege feedbacklijst aan
-            List<Feedback> feedbackList = new List<Feedback>();
-            //als er geen feedback is return de lege lijst
-            if (database.feedback == null)
+            if (database.reviews != null)
             {
-                return feedbackList;
+                return database.reviews;
             }
-            else
-            {
-                //sla tot 50 items op en return deze lijst
-                for (int i = 0, j = 0; i < database.feedback.Count && j < 50; i++, j++)
-                {
-                    if (database.feedback[i].annomeme)
-                    {
-                        Feedback temp = database.feedback[i];
-                        temp.Klantnummer = 0;
-                        temp.reservering_ID = 0;
-                        feedbackList.Add(temp);
-                    }
-                    else
-                    {
-                        feedbackList.Add(database.feedback[i]);
-                    }
-                }
-                return feedbackList;
-            }
+            return new List<Review>();
         }
 
         /// <summary>
@@ -371,17 +320,7 @@ namespace restaurant
                 //sla tot 50 items op en return deze lijst
                 for (int i = 0, j = 0; i < database.feedback.Count && j < max; i++, j++)
                 {
-                    if (database.feedback[i].annomeme)
-                    {
-                        Feedback temp = database.feedback[i];
-                        temp.Klantnummer = 0;
-                        temp.reservering_ID = 0;
-                        feedbackList.Add(temp);
-                    }
-                    else
-                    {
-                        feedbackList.Add(database.feedback[i]);
-                    }
+                    feedbackList.Add(database.feedback[i]);
                 }
                 return feedbackList;
             }
@@ -394,7 +333,6 @@ namespace restaurant
         /// <returns>Een list met alle feedback van een klant</returns>
         public List<Feedback> GetFeedback(Klantgegevens klant)
         {
-            //pakt de database
             database = GetDatabase();
             List<Feedback> feedbackList = new List<Feedback>();
             //voor iedere feedback met hetzelfde klantnummer als het klantnummer van de klant, voeg deze toe aan een lijst en return de lijst
@@ -432,6 +370,24 @@ namespace restaurant
             return database;
         }
         #endregion
+
+        /// <summary>
+        /// Ophalen van klantgegevens met ID
+        /// </summary>
+        /// <param name="ID">Het ID van de klant</param>
+        /// <returns>Klantgegevens van de klant</returns>
+        public Klantgegevens GetCustomer(int ID)
+        {
+            database = GetDatabase();
+            foreach (var klant in database.login_gegevens)
+            {
+                if (ID == klant.klantgegevens.klantnummer)
+                {
+                    return klant.klantgegevens;
+                }
+            }
+            return new Klantgegevens();
+        }
 
         #region Deprecated
         [Obsolete("Reservering_beschikbaarheid graag vervangen met ReserveringBeschikbaarheid.")]
