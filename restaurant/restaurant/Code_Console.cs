@@ -296,14 +296,18 @@ namespace restaurant
 
             #region startScreens
             DisplayScreen startScreen = new DisplayScreen("StartMenu", $"{GFLogo}\nKies een optie:");
-            startScreen.Choices.Add(new Choice("StartScreenCustomer", "GrandeFusion Information"));
+            startScreen.Choices.Add(new Choice("StartScreenGeneral", "GrandeFusion Information"));
+            startScreen.Choices.Add(new Choice("StartScreenCustomer", "Klant", Choice.SCREEN_NEXT, isGebruiker));
             startScreen.Choices.Add(new Choice("StartScreenEmployee", "Medewerker", Choice.SCREEN_NEXT, isMedewerker));
             startScreen.Choices.Add(new Choice("StartScreenOwner", "Eigenaar", Choice.SCREEN_NEXT, isEigenaar));
             startScreen.Choices.Add(new Choice("LoginScreenEmployee", "Inloggen", Choice.SCREEN_NEXT, () => !userLoggedIn));
 
+            DisplayScreen startScreenGeneral = new DisplayScreen("StartScreenGeneral", $"{GFLogo}\nWelkom bij de informatie scherm van GrandeFusion.");
+            startScreenGeneral.Choices.Add(new Choice("AllMeals", "Laat alle gerechten zien"));
+            startScreenGeneral.Choices.Add(new Choice("AllReviews", "Laat alle reviews zien"));
+            startScreenGeneral.Choices.Add(new Choice("StartMenu", "Ga terug", Choice.SCREEN_BACK));
+
             DisplayScreen startScreenCustomer = new DisplayScreen("StartScreenCustomer", $"{GFLogo}\nWelkom bij het klanten scherm.");
-            startScreenCustomer.Choices.Add(new Choice("AllMeals", "Laat alle gerechten zien"));
-            startScreenCustomer.Choices.Add(new Choice("AllReviews", "Laat alle reviews zien"));
             startScreenCustomer.Choices.Add(new Choice("CreateReview", "Maak een review aan", Choice.SCREEN_NEXT, isGebruiker));
             startScreenCustomer.Choices.Add(new Choice("CreateReservation", "Maak een reservatie aan", Choice.SCREEN_NEXT, isGebruiker));
             startScreenCustomer.Choices.Add(new Choice("EditReview", "Bewerk een review", Choice.SCREEN_NEXT, isGebruiker));
@@ -319,8 +323,12 @@ namespace restaurant
             #endregion
 
             #region userScreens
-            DisplayScreen allMeals = new DisplayScreen("AllMeals", GerechtenToOutput(TestingClass.Get_standard_dishes()));
+            DisplayScreen allMeals = new DisplayScreen("AllMeals", "");
             allMeals.Choices.Add(new Choice("", "Ga terug", Choice.SCREEN_BACK));
+            allMeals.OnDisplay(() =>
+            {
+                allMeals.Text = GerechtenToOutput(Code_Gebruiker.GetMenukaart());
+            });
 
             DisplayScreen allReviews = new DisplayScreen("AllReviews", "");
             allReviews.Choices.Add(new Choice("", "Ga terug", Choice.SCREEN_BACK));
@@ -333,7 +341,7 @@ namespace restaurant
             userReviews.Choices.Add(new Choice("", "Ga terug", Choice.SCREEN_BACK));
             userReviews.OnDisplay(() =>
             {
-                allReviews.Text = ReviewsToOutput(IO.GetReviews(currentUser.klantgegevens));
+                userReviews.Text = ReviewsToOutput(IO.GetReviews(currentUser.klantgegevens));
             });
 
             FunctionScreen createReview = new FunctionScreen("CreateReview", $"{GFLogo}\nLaat een review achter!");
@@ -574,6 +582,7 @@ namespace restaurant
 
             screens.AllScreens.Add(logoutScreen);
             screens.AllScreens.Add(loginScreen);
+            screens.AllScreens.Add(startScreenGeneral);
             screens.AllScreens.Add(startScreenCustomer);
             screens.AllScreens.Add(createReview);
             screens.AllScreens.Add(editReview);
@@ -737,7 +746,7 @@ namespace restaurant
 
             string output = currentScreen.Text;
 
-            if (currentScreen.GetType() == typeof(FunctionScreen)) output += "\nOm terug te gaan naar het vorige scherm type in 'terug' in het input veld.";
+            if (currentScreen.GetType() == typeof(FunctionScreen)) output += "\nOm terug te gaan naar het vorige scherm type in 'terug' in het input veld.\n";
 
             if (currentScreen.GetType() == typeof(DisplayScreen))
             {
