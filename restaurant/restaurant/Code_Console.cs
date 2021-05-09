@@ -305,6 +305,7 @@ namespace restaurant
             DisplayScreen startScreenGeneral = new DisplayScreen("StartScreenGeneral", $"{GFLogo}\nWelkom bij de informatie scherm van GrandeFusion.");
             startScreenGeneral.Choices.Add(new Choice("AllMeals", "Laat alle gerechten zien"));
             startScreenGeneral.Choices.Add(new Choice("AllReviews", "Laat alle reviews zien"));
+            startScreenGeneral.Choices.Add(new Choice("RegisterUser", "Registreer"));
             startScreenGeneral.Choices.Add(new Choice("StartMenu", "Ga terug", Choice.SCREEN_BACK));
 
             DisplayScreen startScreenCustomer = new DisplayScreen("StartScreenCustomer", $"{GFLogo}\nWelkom bij het klanten scherm.");
@@ -381,15 +382,15 @@ namespace restaurant
                     createReview.Variables["anonymous"]
                 );
 
-                DisplayScreen loginSuccesfullScreen = new DisplayScreen(
+                DisplayScreen endScreen = new DisplayScreen(
                     "",
                     "Bedankt voor uw review!."
                 );
 
-                loginSuccesfullScreen.Choices.Add(new Choice("", "Ga terug", Choice.SCREEN_BACK));
+                endScreen.Choices.Add(new Choice("", "Ga terug", Choice.SCREEN_BACK));
 
                 BaseScreen previousScreen = currentScreen.PreviousScreen;
-                currentScreen = loginSuccesfullScreen;
+                currentScreen = endScreen;
                 currentScreen.PreviousScreen = previousScreen;
 
                 return FunctionScreen.FINISHED;
@@ -515,6 +516,45 @@ namespace restaurant
             DisplayScreen invalidInputScreen = new DisplayScreen("InvalidInputScreen", "Type alstublieft de correcte keuze in.\nCorrecte keuzes zijn gemarkeerd met -> [] met een nummer erin.\nType alleen de nummer van de keuze in.\nVoorbeeld: Met keuze [1] type je in 1");
             invalidInputScreen.Choices.Add(new Choice("", "Ga terug", Choice.SCREEN_BACK));
 
+            FunctionScreen registerScreen = new FunctionScreen("RegisterUser", $"{GFLogo}\nHier kunt u een account maken om reserveringen te plaatsen voor GrandeFusion en meer!");
+            registerScreen.AddFunctionWithMessage(input => {
+                registerScreen.Variables.Add("email", input);
+                return null;
+            }, "Je email");
+            registerScreen.AddFunctionWithMessage(input => {
+                registerScreen.Variables.Add("psw", input);
+                return null;
+            }, "Je wachtwoord");
+            registerScreen.AddFunctionWithMessage(input => {
+                registerScreen.Variables.Add("vnaam", input);
+                return null;
+            }, "Je voornaam");
+            registerScreen.AddFunctionWithMessage(input => {
+                Login_gegevens lg = new Login_gegevens();
+                lg.email = registerScreen.Variables["email"];
+                lg.password = registerScreen.Variables["psw"];
+                lg.type = "Gebruiker";
+                lg.klantgegevens = new Klantgegevens();
+                lg.klantgegevens.voornaam = registerScreen.Variables["vnaam"];
+                lg.klantgegevens.achternaam = input;
+
+                Code_login.Register(lg);
+                userLoggedIn = true;
+                currentUser = lg;
+
+                DisplayScreen endScreen = new DisplayScreen(
+                    "",
+                    "Bedankt voor het registreren en welkom bij de GrandeFusion familie!"
+                );
+
+                endScreen.Choices.Add(new Choice("StartScreenCustomer", "Ga door"));
+
+                BaseScreen previousScreen = currentScreen.PreviousScreen;
+                currentScreen = endScreen;
+                currentScreen.PreviousScreen = previousScreen;
+                return FunctionScreen.FINISHED;
+            }, "Je achternaam");
+
             FunctionScreen loginScreen = new FunctionScreen("LoginScreenEmployee", $"{GFLogo}\nLog in met je Email en Wachtwoord");
             loginScreen.AddFunctionWithMessage(input => {
                 loginScreen.Variables.Add("email", input);
@@ -589,6 +629,7 @@ namespace restaurant
             screens.AllScreens.Add(deleteReview);
             screens.AllScreens.Add(startScreenEmployee);
             screens.AllScreens.Add(startScreenOwner);
+            screens.AllScreens.Add(registerScreen);
             screens.AllScreens.Add(startScreen);
             screens.AllScreens.Add(allMeals);
             screens.AllScreens.Add(allReviews);
@@ -800,8 +841,6 @@ namespace restaurant
             }
             else if (input == "105")
             {
-                IO.ResetFilesystem();
-
                 Login_gegevens dataEigenaar = new Login_gegevens();
                 dataEigenaar.email = "eigenaar@gmail.com";
                 dataEigenaar.password = "0000";
