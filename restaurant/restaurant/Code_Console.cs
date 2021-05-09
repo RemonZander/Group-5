@@ -296,17 +296,13 @@ namespace restaurant
 
             #region startScreens
             DisplayScreen startScreen = new DisplayScreen("StartMenu", $"{GFLogo}\nKies een optie:");
-            startScreen.Choices.Add(new Choice("StartScreenGeneral", "GrandeFusion Information"));
+            startScreen.Choices.Add(new Choice("AllMeals", "Laat alle gerechten zien"));
+            startScreen.Choices.Add(new Choice("AllReviews", "Laat alle reviews zien"));
+            startScreen.Choices.Add(new Choice("RegisterUser", "Registreer"));
             startScreen.Choices.Add(new Choice("StartScreenCustomer", "Klant", Choice.SCREEN_NEXT, isGebruiker));
             startScreen.Choices.Add(new Choice("StartScreenEmployee", "Medewerker", Choice.SCREEN_NEXT, isMedewerker));
             startScreen.Choices.Add(new Choice("StartScreenOwner", "Eigenaar", Choice.SCREEN_NEXT, isEigenaar));
             startScreen.Choices.Add(new Choice("LoginScreenEmployee", "Inloggen", Choice.SCREEN_NEXT, () => !userLoggedIn));
-
-            DisplayScreen startScreenGeneral = new DisplayScreen("StartScreenGeneral", $"{GFLogo}\nWelkom bij de informatie scherm van GrandeFusion.");
-            startScreenGeneral.Choices.Add(new Choice("AllMeals", "Laat alle gerechten zien"));
-            startScreenGeneral.Choices.Add(new Choice("AllReviews", "Laat alle reviews zien"));
-            startScreenGeneral.Choices.Add(new Choice("RegisterUser", "Registreer"));
-            startScreenGeneral.Choices.Add(new Choice("StartMenu", "Ga terug", Choice.SCREEN_BACK));
 
             DisplayScreen startScreenCustomer = new DisplayScreen("StartScreenCustomer", $"{GFLogo}\nWelkom bij het klanten scherm.");
             startScreenCustomer.Choices.Add(new Choice("CreateReview", "Maak een review aan", Choice.SCREEN_NEXT, isGebruiker));
@@ -653,7 +649,6 @@ namespace restaurant
 
             screens.AllScreens.Add(logoutScreen);
             screens.AllScreens.Add(loginScreen);
-            screens.AllScreens.Add(startScreenGeneral);
             screens.AllScreens.Add(startScreenCustomer);
             screens.AllScreens.Add(createReview);
             screens.AllScreens.Add(editReview);
