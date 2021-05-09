@@ -530,13 +530,44 @@ namespace restaurant
                 return null;
             }, "Je voornaam");
             registerScreen.AddFunctionWithMessage(input => {
+                registerScreen.Variables.Add("anaam", input);
+                return null;
+            }, "Je achternaam");
+            registerScreen.AddFunctionWithMessage(input => {
+                adres x = new adres();
+                string[] splitString = input.Split('-');
+                x.land = "NL";
+                x.postcode = splitString[0];
+                x.straatnaam = splitString[1];
+                x.huisnummer = int.Parse(splitString[2]);
+                x.woonplaats = splitString[3];
+
+                registerScreen.Variables.Add("adres", x);
+                return null;
+            }, "Je adres in postcode-straatnaam-huisnummer-woonplaats\nVoorbeeld: 1234AB-hondlaan-45-Spijkenisse");
+            registerScreen.AddFunctionWithMessage(input => {
+                List<long> listLong = new List<long>();
+
+                foreach (char item in input)
+                {
+                    listLong.Add(item);
+                }
+
+                registerScreen.Variables.Add("phoneNum", listLong);
+                return null;
+            }, "Je telefoonnummer");
+            registerScreen.AddFunctionWithMessage(input => {
                 Login_gegevens lg = new Login_gegevens();
                 lg.email = registerScreen.Variables["email"];
                 lg.password = registerScreen.Variables["psw"];
                 lg.type = "Gebruiker";
                 lg.klantgegevens = new Klantgegevens();
                 lg.klantgegevens.voornaam = registerScreen.Variables["vnaam"];
-                lg.klantgegevens.achternaam = input;
+                lg.klantgegevens.achternaam = registerScreen.Variables["anaam"];
+                lg.klantgegevens.adres = registerScreen.Variables["adres"];
+                lg.klantgegevens.klantnummer = IO.GetDatabase().login_gegevens.Count;
+                lg.klantgegevens.telefoonnummer = registerScreen.Variables["phoneNum"];
+                lg.klantgegevens.geb_datum = DateTime.Parse(input);
 
                 Code_login.Register(lg);
                 userLoggedIn = true;
@@ -553,7 +584,7 @@ namespace restaurant
                 currentScreen = endScreen;
                 currentScreen.PreviousScreen = previousScreen;
                 return FunctionScreen.FINISHED;
-            }, "Je achternaam");
+            }, "Je geboortedatum in Y/m/d dus als voorbeeld: 2001/04/23");
 
             FunctionScreen loginScreen = new FunctionScreen("LoginScreenEmployee", $"{GFLogo}\nLog in met je Email en Wachtwoord");
             loginScreen.AddFunctionWithMessage(input => {
