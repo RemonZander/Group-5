@@ -23,12 +23,12 @@ namespace restaurant
 
         #region Reververingen
 
-        public List<Reserveringen> getReserveringen() // Medewerker kan de reserveringen van de huidige dag zien
+        public List<Reserveringen> getReserveringen(DateTime datum) // Medewerker kan de reserveringen van de huidige dag zien
         {
             var reserveringenVandaag = new List<Reserveringen>();
             foreach (var reservering in database.reserveringen)
             {
-                if (reservering.datum == DateTime.Now)
+                if (reservering.datum == datum)
                 {
                     reserveringenVandaag.Add(reservering);
                 }
@@ -41,15 +41,14 @@ namespace restaurant
 
         #region Tafels
 
-        public List<Tuple<DateTime, List<Tafels>>> getBeschikbareTafels() // Medewerker kan zien welke tafels beschikbaar zijn op de huidige dag
+        public List<Tuple<DateTime, List<Tafels>>> getBeschikbareTafels(DateTime datum) // Medewerker kan zien welke tafels beschikbaar zijn op de huidige dag
         {
-            var beschikbareTafels = io.Reservering_beschikbaarheid(DateTime.Now);
-            return beschikbareTafels;
+            return io.Reservering_beschikbaarheid(datum);
         }
         
-        public List<Reserveringen> getReserveringenZonderTafel() // Returns de reserveringen die nog niet zijn gekoppeld aan een tafel
+        public List<Reserveringen> getReserveringenZonderTafel(DateTime datum) // Returns de reserveringen die nog niet zijn gekoppeld aan een tafel
         {
-            var reserveringen = getReserveringen();
+            var reserveringen = getReserveringen(datum);
             var reserveringenZonderTafel = new List<Reserveringen>();
 
             foreach (var reservering in reserveringen)
@@ -63,10 +62,27 @@ namespace restaurant
             return reserveringenZonderTafel;
         }
 
-        public void tafelKoppelen() // Medewerker moet de reserveringen kunnen koppelen aan een tafel
+        public List<Reserveringen> tafelKoppelen(Reserveringen reservering, List<Tafels> tafels) // Medewerker moet de reserveringen kunnen koppelen aan een tafel
         {
-            var reserveringenZonderTafel = getReserveringenZonderTafel();
-            var beschikbareTafels = getBeschikbareTafels();
+            for (int a = 0; a < database.reserveringen.Count; a++)
+            {
+                if (database.reserveringen[a].ID == reservering.ID)
+                {
+                    database.reserveringen[a] = new Reserveringen {
+                        datum = database.reserveringen[a].datum,
+                        ID = database.reserveringen[a].ID,
+                        aantal = database.reserveringen[a].aantal,
+                        klantnummers = database.reserveringen[a].klantnummers,
+                        tafel_bij_raam = database.reserveringen[a].tafel_bij_raam,
+                        tafels = tafels
+                    };
+                    break;
+                }
+            }
+
+            io.Savedatabase(database);
+
+            return database.reserveringen;            
         }
 
         #endregion
