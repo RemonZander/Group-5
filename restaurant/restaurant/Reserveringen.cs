@@ -12,10 +12,10 @@ namespace restaurant
 
         public DateTime datum { get; set; }
 
-        //het 1e klantnummer is altijd de persoon die de reservering plaatst
-        //Bij het reserveren kan de klant die reserveert ervoor kiezen om de namen van de mensen waarvoor hij reserveert.
-        //Dit zou je willen doen omdat als je 5x bij het restaurant gegeten hebt dan krijg je 10% korting
+        [Obsolete("klantnummers graag vervangen met klantnummer, dit is ook gen list meer")]
         public List<int> klantnummers { get; set; }
+
+        public int klantnummer { get; set; }
 
         //Dit is het aantal mensen
         public int aantal { get; set; }

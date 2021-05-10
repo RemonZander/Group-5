@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using Microsoft.VisualBasic.FileIO;
 using System.Threading;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace restaurant
 {
@@ -120,30 +121,30 @@ namespace restaurant
             }
             else
             {
-                List<int> klantnummers = new List<int>();
+                int aantal = 0;
                 switch (tafels.Count)
                 {
                     case 1:
                         for (int c = 0; c < rnd.Next(1, 5); c++)
                         {
-                            klantnummers.Add(database.login_gegevens[rnd.Next(database.login_gegevens.Count)].klantgegevens.klantnummer);
+                            aantal++;
                         }
                         break;
                     case 2:
                         for (int c = 0; c < rnd.Next(5, 9); c++)
                         {
-                            klantnummers.Add(database.login_gegevens[rnd.Next(database.login_gegevens.Count)].klantgegevens.klantnummer);
+                            aantal++;
                         }
                         break;
                     case 3:
                         for (int c = 0; c < rnd.Next(9, 13); c++)
                         {
-                            klantnummers.Add(database.login_gegevens[rnd.Next(database.login_gegevens.Count)].klantgegevens.klantnummer);
+                            aantal++;
                         }
                         break;
                 }
 
-                List<Gerechten> gerechten = Make_dishes(klantnummers.Count * 3, beschikbaar[pos].Item1, ingredient_temp);
+                List<Gerechten> gerechten = Make_dishes(aantal * 3, beschikbaar[pos].Item1, ingredient_temp);
                 List<int> gerechten_ID = gerechten.Select(g => g.ID).ToList();
 
                 reserveringen_list.Add(new Reserveringen
@@ -151,9 +152,9 @@ namespace restaurant
                     datum = beschikbaar[pos].Item1,
                     ID = a,
                     tafels = tafels,
-                    klantnummers = klantnummers,
+                    klantnummer = database.login_gegevens[rnd.Next(database.login_gegevens.Count)].klantgegevens.klantnummer,
                     gerechten_ID = gerechten_ID,
-                    aantal = klantnummers.Count
+                    aantal = aantal,
                 });
 
                 
@@ -936,9 +937,9 @@ namespace restaurant
                     reviews.Add(new Review
                     {
                         ID = reviews.Count,
-                        Klantnummer = reservering.klantnummers[0],
+                        Klantnummer = reservering.klantnummer,
                         reservering_ID = reservering.ID,
-                        Rating = rnd.Next(0, 6),
+                        Rating = rnd.Next(1, 6),
                         message = ""
                     });
                 }
@@ -967,7 +968,7 @@ namespace restaurant
                     feedback.Add(new Feedback
                     {
                         ID = feedback.Count,
-                        Klantnummer = reservering.klantnummers[0],
+                        Klantnummer = reservering.klantnummer,
                         reservering_ID = reservering.ID,
                         message = "",
                         recipient = database.werknemers[rnd.Next(0, database.werknemers.Count)].ID
