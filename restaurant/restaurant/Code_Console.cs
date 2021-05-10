@@ -279,10 +279,19 @@ namespace restaurant
         {
             string output = "Hier zijn alle reviews die zijn achtergelaten door onze klanten.\n";
 
-            foreach (Review review in reviews)
+
+            List<int> ids = new List<int>();
+
+            foreach (var review in reviews)
             {
-                Klantgegevens data = IO.GetCustomer(review.Klantnummer);
-                output += review.annomeme ? $"Voornaam: anoniem     Achternaam: anoniem     Review: {review.message}     Rating: {review.Rating}\n" : $"Voornaam: {data.voornaam}     Achternaam: {data.achternaam}     Review: {review.message}     Rating: {review.Rating}\n";
+                ids.Add(review.Klantnummer);
+            }
+
+            List<Klantgegevens> klantgegevens = IO.GetCustomer(ids);
+
+            for (int a = 0; a < klantgegevens.Count; a++)
+            {
+                output += reviews[a].annomeme ? $"Voornaam: anoniem     Achternaam: anoniem     Review: {reviews[a].message}     Rating: {reviews[a].Rating}\n" : $"Voornaam: {klantgegevens[a].voornaam}     Achternaam: {klantgegevens[a].achternaam}     Review: {reviews[a].message}     Rating: {reviews[a].Rating}\n";
             }
 
             return $"{GFLogo}\n" + output;

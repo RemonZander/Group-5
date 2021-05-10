@@ -376,17 +376,24 @@ namespace restaurant
         /// </summary>
         /// <param name="ID">Het ID van de klant</param>
         /// <returns>Klantgegevens van de klant</returns>
-        public Klantgegevens GetCustomer(int ID)
+        public List<Klantgegevens> GetCustomer(List<int> ID)
         {
             database = GetDatabase();
-            foreach (var klant in database.login_gegevens)
+
+            if (database.login_gegevens != database.login_gegevens.OrderBy(s => s.klantgegevens.klantnummer).ToList())
             {
-                if (ID == klant.klantgegevens.klantnummer)
-                {
-                    return klant.klantgegevens;
-                }
+                database.login_gegevens = database.login_gegevens.OrderBy(s => s.klantgegevens.klantnummer).ToList();
+                Savedatabase(database);
             }
-            return new Klantgegevens();
+
+            List<Klantgegevens> klantgegevens = new List<Klantgegevens>();
+
+            for (int a = 0; a < ID.Count; a++)
+            {
+                klantgegevens.Add(database.login_gegevens[ID[a]].klantgegevens);
+            }
+            
+            return klantgegevens;
         }
 
         #region Deprecated
