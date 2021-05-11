@@ -25,9 +25,9 @@ namespace restaurant
             }
             List<Gerechten> test = GetMenukaart(new List<string> { "lactose intolerantie" });
 
-            List<int> num = new List<int> { 223541, 220793 };
+            int num = 44532;
             MakeCustomerReservation(DateTime.Now, num, 6, false);
-            num = new List<int> { 223167 };
+            num = 22367;
             MakeCustomerReservation(new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day + 3), num, 2, true);
         }
 
@@ -47,21 +47,18 @@ namespace restaurant
         {
             database = io.GetDatabase();
             List<Reserveringen> reservering = new List<Reserveringen>();
-            //voor elke reservering in de database, voor elk klantnummer van een reservering
+            //voor elke reservering in de database
             foreach (var reserveringen in database.reserveringen)
             {
-                foreach (var klantnummer in reserveringen.klantnummers)
+                //als reservering overeenkomt met klantnummer, voegt alleen reserveringen in de toekomst toe
+                if (toekomstReserveringen && klant.klantnummer == reserveringen.klantnummer && reserveringen.datum > DateTime.Now)
                 {
-                    //voegt alleen reserveringen in de toekomst toe
-                    if (toekomstReserveringen && klant.klantnummer == klantnummer && reserveringen.datum > DateTime.Now)
-                    {
-                        reservering.Add(reserveringen);
-                    }
-                    //voegt alle oude reservering toe van de klant
-                    else if (!toekomstReserveringen && klant.klantnummer == klantnummer && reserveringen.datum < DateTime.Now)
-                    {
-                        reservering.Add(reserveringen);
-                    }
+                    reservering.Add(reserveringen);
+                }
+                //als reservering overeenkomt met klantnummer, voegt alle oude reservering toe van de klant
+                else if (!toekomstReserveringen && klant.klantnummer == reserveringen.klantnummer && reserveringen.datum < DateTime.Now)
+                {
+                    reservering.Add(reserveringen);
                 }
             }
             return reservering;
@@ -79,13 +76,10 @@ namespace restaurant
             //voor elke reservering in de database, voor elk klantnummer van een reservering
             foreach (var reserveringen in database.reserveringen)
             {
-                foreach (var klantnummer in reserveringen.klantnummers)
+                //voegt alle reserveringen van de klant toe
+                if (klant.klantnummer == reserveringen.klantnummer)
                 {
-                    //voegt alle reserveringen van de klant toe
-                    if (klant.klantnummer == klantnummer)
-                    {
-                        reservering.Add(reserveringen);
-                    }
+                    reservering.Add(reserveringen);
                 }
             }
             return reservering;
@@ -98,7 +92,7 @@ namespace restaurant
         /// <param name="klantnummers">De klantnummer(s) van de klant(en)</param>
         /// <param name="aantalMensen">Het aantal mensen waarvoor gereserveerd word</param>
         /// <param name="raamTafel">Of de klant een tafel bij het raam wilt</param>
-        public void MakeCustomerReservation(DateTime date, List<int> klantnummers, int aantalMensen, bool raamTafel)
+        public void MakeCustomerReservation(DateTime date, int klantnummer, int aantalMensen, bool raamTafel)
         {
             database = io.GetDatabase();
             //als er nog geen reserveringen list is in de database, maak die aan
@@ -117,7 +111,7 @@ namespace restaurant
                 aantal = aantalMensen,
 
                 //voeg alle klantnummers toe
-                klantnummers = new List<int>(klantnummers),
+                klantnummer = klantnummer,
 
                 datum = date
             };
