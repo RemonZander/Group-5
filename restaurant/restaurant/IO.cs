@@ -231,7 +231,7 @@ namespace restaurant
 
         #region Get Reviews&Feedback
         /// <summary>
-        /// Ophalen van alle reviews
+        /// Ophalen van alle reviews, gesorteerd op datum
         /// </summary>
         /// <returns>Een list met alle reviews</returns>
         public List<Review> GetReviews()
@@ -353,9 +353,10 @@ namespace restaurant
 
         #region sorteren
         /// <summary>
-        /// ordered reserveringen op ID (ASCENDING)
+        /// Ordered reserveringen in de database op ID (ASCENDING)
         /// </summary>
-        /// <returns>De database geordened op ID</returns>
+        /// <param name="database">De database</param>
+        /// <returns>De database met de reserveringen geordened op ID</returns>
         public Database OrderReserveringID(Database database)
         {
             //ordered bij een lambda, in dit geval ID
@@ -364,13 +365,37 @@ namespace restaurant
         }
 
         /// <summary>
-        /// ordered reserveringen op datum (ASCENDING)
+        /// Ordered reserveringen in de database op datum (ASCENDING)
         /// </summary>
         /// <returns>De database geordened op datum</returns>
         public Database OrderReserveringDatum(Database database)
         {
             //ordered bij een lambda, in dit geval datum
             database.reserveringen = database.reserveringen.OrderBy(s => s.datum).ToList();
+            return database;
+        }
+
+        /// <summary>
+        /// Ordered de reviews in de database op datum (ASCENDING)
+        /// </summary>
+        /// <param name="database">de database</param>
+        /// <returns>De database met de reviews geordened op datum</returns>
+        public Database OrderReviewDatum(Database database)
+        {
+            //ordered met een lambda, in dit geval datum
+            database.reviews = database.reviews.OrderBy(s => s.datum).ToList();
+            return database;
+        }
+
+        /// <summary>
+        /// Ordered de feedback in de database op datum (ASCENDING)
+        /// </summary>
+        /// <param name="database">de database</param>
+        /// <returns>De database met de feedback geordened op datum</returns>
+        public Database OrderFeedbackDatum(Database database)
+        {
+            //ordered met een lambda, in dit geval datum
+            database.feedback = database.feedback.OrderBy(s => s.datum).ToList();
             return database;
         }
         #endregion
@@ -384,7 +409,7 @@ namespace restaurant
         {
             database = GetDatabase();
 
-            //als de login_gegevens niet gesorteerd is sorteer deze op klantnummer en sla deze op
+            //als de login_gegevens niet gesorteerd is, sorteer deze op klantnummer en sla deze op
             if (database.login_gegevens != database.login_gegevens.OrderBy(s => s.klantgegevens.klantnummer).ToList())
             {
                 database.login_gegevens = database.login_gegevens.OrderBy(s => s.klantgegevens.klantnummer).ToList();
