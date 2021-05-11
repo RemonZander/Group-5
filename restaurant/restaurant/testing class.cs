@@ -946,7 +946,7 @@ namespace restaurant
                     switch (reviews[reviews.Count - 1].Rating)
                     {
                         case 1:
-                            reviews[reviews.Count - 1].message = "Verschikkelijk restaurant, hier kom ik nooit meer!" + Environment.NewLine + "Wie die sushipizza heeft uitgevonden mag branden in hell!";
+                            reviews[reviews.Count - 1].message = "Verschikkelijk restaurant, hier kom ik nooit meer! Wie die sushipizza heeft uitgevonden mag branden in hell!";
                             break;
                         case 2:
                             reviews[reviews.Count - 1].message = "De service was wel goed, maar het eten wat niet zo goed. Ik denk dat ik hier niet meer terug wil komen. Geen aanrader voor vrienden!";
@@ -958,7 +958,7 @@ namespace restaurant
                             reviews[reviews.Count - 1].message = "gewoon goed! niet meer te zeggen.";
                             break;
                         case 5:
-                            reviews[reviews.Count - 1].message = "OMG, die sushipiza was amazing!!! Dit is het beste restaurantr ever, nog nooit zo'n hipster restaurant gezien in mijn leven." + Environment.NewLine + "Ik kom hier zeker terug!!!";
+                            reviews[reviews.Count - 1].message = "OMG, die sushipiza was amazing!!! Dit is het beste restaurant ever, nog nooit zo'n hipster restaurant gezien in mijn leven. Ik kom hier zeker terug!!!";
                             break;
                     }
                 }
