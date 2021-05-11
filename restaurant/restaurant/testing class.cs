@@ -940,8 +940,27 @@ namespace restaurant
                         Klantnummer = reservering.klantnummer,
                         reservering_ID = reservering.ID,
                         Rating = rnd.Next(1, 6),
-                        message = ""
                     });
+
+
+                    switch (reviews[reviews.Count - 1].Rating)
+                    {
+                        case 1:
+                            reviews[reviews.Count - 1].message = "Verschikkelijk restaurant, hier kom ik nooit meer!" + Environment.NewLine + "Wie die sushipizza heeft uitgevonden mag branden in hell!";
+                            break;
+                        case 2:
+                            reviews[reviews.Count - 1].message = "De service was wel goed, maar het eten wat niet zo goed. Ik denk dat ik hier niet meer terug wil komen. Geen aanrader voor vrienden!";
+                            break;
+                        case 3:
+                            reviews[reviews.Count - 1].message = "Niet goed, niet slecht. Eten is te doen. Service was prima, ik kom nog wel terug.";
+                            break;
+                        case 4:
+                            reviews[reviews.Count - 1].message = "gewoon goed! niet meer te zeggen.";
+                            break;
+                        case 5:
+                            reviews[reviews.Count - 1].message = "OMG, die sushipiza was amazing!!! Dit is het beste restaurantr ever, nog nooit zo'n hipster restaurant gezien in mijn leven." + Environment.NewLine + "Ik kom hier zeker terug!!!";
+                            break;
+                    }
                 }
             }
 
