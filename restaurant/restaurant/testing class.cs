@@ -942,6 +942,7 @@ namespace restaurant
                         Rating = rnd.Next(1, 6),
                     });
 
+                    if (rnd.Next(5) == 3) reviews[reviews.Count - 1].annomeme = true;
 
                     switch (reviews[reviews.Count - 1].Rating)
                     {
