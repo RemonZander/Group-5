@@ -99,6 +99,7 @@ namespace restaurant
             //45 kwaterieren van 1000 tot 2100
             for (int i = 0; i < 45; i++)
             {
+                //voegt een tuple toe voor ieder kwartier
                 beschikbaar.Add(Tuple.Create(possibleTime, database.tafels));
                 possibleTime = possibleTime.AddMinutes(15);
             }
@@ -181,11 +182,14 @@ namespace restaurant
             {
                 //maakt op locatie in beschikbaar, een tuple met reservering datum en alle ongeboekte tafels
                 beschikbaar[location] = Tuple.Create(reservering.datum, tempTableList);
-                // ,1-8 want er zitten 8 kwartieren in 2uur
+                //1-8 want er zitten 8 kwartieren in 2uur
                 for (int b = 1; b <= 8; b++)
                 {
                     //als location+b out of range gaat, break
-                    if ((location + b) >= beschikbaar.Count) break;
+                    if ((location + b) >= beschikbaar.Count)
+                    {
+                        break;
+                    }
                     //haalt alle tafels uit beschikbaar die in removed_tables staan
                     beschikbaar[location + b] = Tuple.Create(reservering.datum.AddMinutes(15 * b), beschikbaar[location + b].Item2.Except(removed_tables).ToList());
                     //als er helemaal geen tafels meer beschikbaar zijn voor een gegeven tijd, haal die weg
@@ -380,6 +384,7 @@ namespace restaurant
         {
             database = GetDatabase();
 
+            //als de login_gegevens niet gesorteerd is sorteer deze op klantnummer en sla deze op
             if (database.login_gegevens != database.login_gegevens.OrderBy(s => s.klantgegevens.klantnummer).ToList())
             {
                 database.login_gegevens = database.login_gegevens.OrderBy(s => s.klantgegevens.klantnummer).ToList();
@@ -388,6 +393,7 @@ namespace restaurant
 
             List<Klantgegevens> klantgegevens = new List<Klantgegevens>();
 
+            //zoek voor klantgegevens op ID in de gegeven list
             for (int a = 0; a < ID.Count; a++)
             {
                 klantgegevens.Add(database.login_gegevens[ID[a]].klantgegevens);
@@ -424,23 +430,6 @@ namespace restaurant
                 }
             }
             return beschikbaar;
-        }
-        
-        [Obsolete("Reset_filesystem graag vervangen met ResetFilesystem.")]
-        public void Reset_filesystem()
-        {
-            try
-            {
-                FileSystem.DeleteDirectory(@"..\database\", DeleteDirectoryOption.DeleteAllContents);
-            }
-            catch
-            {
-            }
-
-            if (!FileSystem.DirectoryExists(@"..\database\"))
-            {
-                FileSystem.CreateDirectory(@"..\database\");
-            }
         }
         
         [Obsolete("Getdatabase graag vervangen met GetDatabase.")]
