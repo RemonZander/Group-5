@@ -157,6 +157,13 @@ namespace restaurant
         public List<Gerechten> GetMenukaart()
         {
             database = io.GetDatabase();
+            //als er nog geen menukaart is, maak een aan
+            if (database.menukaart == null)
+            {
+                database.menukaart = new Menukaart();
+                //ga ervan uit dat als ik een nieuwe menukaart maak dat er geen gerechten op staan dus maak ff lege list<Gerechten> om te returnen
+                database.menukaart.gerechten = new List<Gerechten>();
+            }
             return database.menukaart.gerechten;
         }
 
