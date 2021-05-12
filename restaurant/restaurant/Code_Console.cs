@@ -88,13 +88,15 @@ namespace restaurant
         /// <param name="screens">This is the list of screens to update</param>
         /// <returns>This returns the same list you just gave as param but now it has been updated with information</returns>
         public abstract List<Screen> Update(List<Screen> screens);
+
+        public string GetGFLogo() => ingelogd.type == null || ingelogd.type == "No account found" ? GFLogo + "\n" : GFLogo + $"\nU bent nu ingelogd als {ingelogd.klantgegevens.voornaam} {ingelogd.klantgegevens.achternaam}\n[4] Log uit\n";
     }
 
     public class StartScreen : Screen
     {
         public override int DoWork()
         {
-            Console.WriteLine(GFLogo);
+            Console.WriteLine(GetGFLogo());
             Console.WriteLine("Kies een optie:");
             Console.WriteLine("[1] Laat alle gerechten zien");
             Console.WriteLine("[2] Laat alle reviews zien");
@@ -106,7 +108,6 @@ namespace restaurant
             else
             {
                 Console.WriteLine("[3] Klant menu");
-                Console.WriteLine("[4] Log uit");
             }
 
             string choise = Console.ReadLine();
