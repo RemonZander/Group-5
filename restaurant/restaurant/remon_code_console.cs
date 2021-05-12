@@ -10,8 +10,9 @@ namespace restaurant
 {
     class remon_code_console
     {
-        int CurrentScreen;
-        List<dynamic> screens = new List<dynamic>();
+        private int currentScreen;
+        private int lastscreen;
+        private List<screens> screens = new List<screens>();
         public remon_code_console()
         {
             screens.Add(new StartScreen());
@@ -20,12 +21,14 @@ namespace restaurant
             screens.Add(new RegisterScreen());
             screens.Add(new LoginScreen());
             screens.Add(new ClientMenuScreen());
-            CurrentScreen = 0;
+            currentScreen = 0;
         }
 
         public void Display()
         {
-            CurrentScreen = screens[CurrentScreen].DoWork();
+            lastscreen = currentScreen;
+            currentScreen = screens[currentScreen].DoWork();
+            screens = screens[lastscreen].Update(screens);
         }
 
         public void Refresh()
@@ -43,7 +46,7 @@ namespace restaurant
         protected readonly Code_Login_menu code_login = new Code_Login_menu();
         protected readonly IO io = new IO();
         protected readonly Testing_class testing_class = new Testing_class();
-        protected Login_gegevens ingelogd = new Login_gegevens();
+        public Login_gegevens ingelogd = new Login_gegevens();
 
         protected const string GFLogo = @" _____                     _  ______         _         
 |  __ \                   | | |  ___|       (_)            
@@ -76,11 +79,24 @@ namespace restaurant
             }
             return output += new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
         }
+
+        /// <summary>
+        /// This is the main function of the current screen. Here is all the logic of that current screen
+        /// </summary>
+        /// <returns>This function returns the ID of the next screen to display</returns>
+        public abstract int DoWork();
+
+        /// <summary>
+        /// This function updates all screens with data from one screen to an other
+        /// </summary>
+        /// <param name="screens">This is the list of screens to update</param>
+        /// <returns>This returns the same list you just gave as param but now it has been updated with information</returns>
+        public abstract List<screens> Update(List<screens> screens);
     }
 
     public class StartScreen : screens
     {
-        public int DoWork()
+        public override int DoWork()
         {
             Console.WriteLine(GFLogo);
             Console.WriteLine("Kies een optie:");
@@ -159,6 +175,13 @@ namespace restaurant
 
             return 0;
         }
+
+        public override List<screens> Update(List<screens> screens)
+        {
+
+
+            return screens;
+        }
     }
 
     public class GerechtenScreen : screens
@@ -190,7 +213,7 @@ namespace restaurant
             return output;
         }
 
-        public int DoWork()
+        public override int DoWork()
         {
             Console.WriteLine(GFLogo);
             Console.WriteLine(gerechtenbox);
@@ -209,6 +232,13 @@ namespace restaurant
             {
                 return 0;
             }
+        }
+
+        public override List<screens> Update(List<screens> screens)
+        {
+
+
+            return screens;
         }
     }
 
@@ -280,7 +310,7 @@ namespace restaurant
             return output;
         }
 
-        public int DoWork()
+        public override int DoWork()
         {
             Console.WriteLine(GFLogo);
             Console.WriteLine("Dit zijn alle reviews die zijn achter gelaten door onze klanten: \n");
@@ -300,6 +330,13 @@ namespace restaurant
                 return 0;
             }
         }
+
+        public override List<screens> Update(List<screens> screens)
+        {
+
+
+            return screens;
+        }
     }
 
     public class RegisterScreen : screens
@@ -309,7 +346,7 @@ namespace restaurant
 
         }
 
-        public int DoWork()
+        public override int DoWork()
         {
             List<Login_gegevens> login_Gegevens = io.GetDatabase().login_gegevens;
             Login_gegevens new_gebruiker = new Login_gegevens();
@@ -387,6 +424,13 @@ namespace restaurant
 
             return 3;
         }
+
+        public override List<screens> Update(List<screens> screens)
+        {
+
+
+            return screens;
+        }
     }
 
     public class LoginScreen : screens
@@ -396,7 +440,7 @@ namespace restaurant
 
         }
 
-        public int DoWork()
+        public override int DoWork()
         {
             Console.WriteLine(GFLogo);
             Console.WriteLine("Log hier in met uw email en wachtwoord: \n");
@@ -419,20 +463,80 @@ namespace restaurant
                 return 0;
             }
         }
+
+        public override List<screens> Update(List<screens> screens)
+        {
+            foreach (var screen in screens)
+            {
+                screen.ingelogd = this.ingelogd;
+            }
+
+            return screens;
+        }
     }
 
     public class ClientMenuScreen : screens
     {
+        bool uitloggen = false;
         public ClientMenuScreen()
         {
 
         }
 
-        public int DoWork()
-        {
+        public override int DoWork()
+        {           
             Console.WriteLine(GFLogo);
+            Console.WriteLine("Welkom in het klanten menu.");
+            Console.WriteLine("[1] Maak een reservering aan");
+            Console.WriteLine("[2] Maak een review aan");
+            Console.WriteLine("[3] Bewerk een review");
+            Console.WriteLine("[4] Verwijder een review");
+            Console.WriteLine("[5] Bekijk uw eigen reviews");
+            Console.WriteLine("[6] Ga terug");
+            Console.WriteLine("[7] Uitloggen");
+
+            string choise = Console.ReadLine();
+
+            if (choise != "1" && choise != "2" && choise != "3" && choise != "4" && choise != "5" && choise != "6" && choise != "7")
+            {
+                Console.WriteLine("U moet wel een juiste keuze maken...");
+                Console.WriteLine("Druk op en knop om verder te gaan.");
+                Console.ReadKey();
+                return 5;
+            }
+            switch (choise)
+            {
+                case "1":
+                    return 6;
+                case "2":
+                    return 7;
+                case "3":
+                    return 8;
+                case "4":
+                    return 9;
+                case "5":
+                    return 10;
+                case "6":
+                    return 0;
+                case "7":
+                    uitloggen = true;
+                    return 0;
+            }
+
 
             return 5;
+        }
+
+        public override List<screens> Update(List<screens> screens)
+        {
+            if (uitloggen)
+            {
+                foreach (var screen in screens)
+                {
+                    screen.ingelogd = new Login_gegevens();
+                }
+            }
+            return screens;
         }
     }
 }
