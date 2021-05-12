@@ -94,15 +94,17 @@ namespace restaurant
             //maakt een lijst met tuples die beheert alle beschikbare plekken op int aantal dagen
             List<Tuple<DateTime, List<Tafels>>> beschikbaar = new List<Tuple<DateTime, List<Tafels>>>();
 
-            //vult de List met alle beschikbare momenten en tafels
+            //maakt een starttijd starttijd
             DateTime possibleTime = new DateTime(date.Year, date.Month, date.Day, 10, 0, 0);
 
             //45 kwaterieren van 1000 tot 2100
-            for (int i = 0; i < 45; i++)
+            //661 minuten van 1000 tot 2100
+            for (int i = 0; i < 661; i++)
             {
                 //voegt een tuple toe voor ieder kwartier
                 beschikbaar.Add(Tuple.Create(possibleTime, database.tafels));
-                possibleTime = possibleTime.AddMinutes(15);
+                //possibleTime = possibleTime.AddMinutes(15);
+                possibleTime = possibleTime.AddMinutes(1);
             }
 
             //voor elke reservering die gemaakt is
@@ -184,7 +186,8 @@ namespace restaurant
                 //maakt op locatie in beschikbaar, een tuple met reservering datum en alle ongeboekte tafels
                 beschikbaar[location] = Tuple.Create(reservering.datum, tempTableList);
                 //1-8 want er zitten 8 kwartieren in 2uur
-                for (int b = 1; b <= 8; b++)
+                //1-120 want er zitten 120 minuten in 2 uur
+                for (int b = 1; b <= 120; b++)
                 {
                     //als location+b out of range gaat, break
                     if ((location + b) >= beschikbaar.Count)
@@ -192,7 +195,7 @@ namespace restaurant
                         break;
                     }
                     //haalt alle tafels uit beschikbaar die in removed_tables staan
-                    beschikbaar[location + b] = Tuple.Create(reservering.datum.AddMinutes(15 * b), beschikbaar[location + b].Item2.Except(removed_tables).ToList());
+                    beschikbaar[location + b] = Tuple.Create(reservering.datum.AddMinutes(1 * b), beschikbaar[location + b].Item2.Except(removed_tables).ToList());
                     //als er helemaal geen tafels meer beschikbaar zijn voor een gegeven tijd, haal die weg
                     if (beschikbaar[location + b].Item2.Count == 0)
                     {
@@ -217,11 +220,13 @@ namespace restaurant
                     //gaat naar de volgende dag met de openingsuren
                     possibleTime = new DateTime(DateTime.Now.Year, maanden, days, 10, 0, 0);
                     //45 kwaterieren van 1000 tot 2100
-                    for (int i = 0; i < 45; i++)
+                    //661 minuten van 1000 tot 2100
+                    for (int i = 0; i < 661; i++)
                     {
                         //voegt alle beschikbare tijden en tafels aan beschikbaar voor ieder kwartier
                         beschikbaar.Add(Tuple.Create(possibleTime, database.tafels));
-                        possibleTime = possibleTime.AddMinutes(15);
+                        //possibleTime = possibleTime.AddMinutes(15);
+                        possibleTime = possibleTime.AddMinutes(1);
                     }
                 }
                 possibleTime = new DateTime(DateTime.Now.Year, maanden, start_dag, 10, 0, 0);

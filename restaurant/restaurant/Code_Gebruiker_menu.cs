@@ -555,7 +555,7 @@ namespace restaurant
         #endregion
 
         #region Deprecated
-        
+
         [Obsolete("makeReview is vervangen met MakeReview.")]
         public void makeReview(int rating, Klantgegevens klant, string message, Reserveringen reservering, bool anoniem)
         {
@@ -620,4 +620,18 @@ namespace restaurant
 
         #endregion
     }
+    #region Screens
+    public class MakeReviewScreen : Screen
+    {
+        public override int DoWork()
+        {
+            throw new NotImplementedException();
+        }
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            return screens;
+        }
+    }
+
+    #endregion
 }
