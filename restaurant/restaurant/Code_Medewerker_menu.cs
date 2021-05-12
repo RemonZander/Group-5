@@ -13,7 +13,7 @@ namespace restaurant
 
         public Code_Medewerker_menu()
         {
-            database = io.Getdatabase();
+            database = io.GetDatabase();
         }
 
         public void Debug()
@@ -43,7 +43,7 @@ namespace restaurant
 
         public List<Tuple<DateTime, List<Tafels>>> getBeschikbareTafels(DateTime datum) // Medewerker kan zien welke tafels beschikbaar zijn op de huidige dag
         {
-            return io.Reservering_beschikbaarheid(datum);
+            return io.ReserveringBeschikbaarheid(datum);
         }
         
         public List<Reserveringen> getReserveringenZonderTafel(DateTime datum) // Returns de reserveringen die nog niet zijn gekoppeld aan een tafel
@@ -72,7 +72,7 @@ namespace restaurant
                         datum = database.reserveringen[a].datum,
                         ID = database.reserveringen[a].ID,
                         aantal = database.reserveringen[a].aantal,
-                        klantnummers = database.reserveringen[a].klantnummers,
+                        klantnummer = database.reserveringen[a].klantnummer,
                         tafel_bij_raam = database.reserveringen[a].tafel_bij_raam,
                         tafels = tafels
                     };
