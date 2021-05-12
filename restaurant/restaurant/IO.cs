@@ -32,7 +32,7 @@ namespace restaurant
         }
         
         /// <summary>
-        /// Voor het ophalen van de database
+        /// Voor het ophalen van de hele database
         /// </summary>
         /// <returns>Returned de Database</returns>
         public Database GetDatabase()
@@ -43,6 +43,7 @@ namespace restaurant
             string output = File.ReadAllText(@"..\database\database.Json");
             database = JsonConvert.DeserializeObject<Database>(output);
 
+            /*
             List<Tafels> temp = new List<Tafels>();
             for (int i = 0; i < 100; i++)
             {
@@ -57,7 +58,7 @@ namespace restaurant
                 temp.Add(tafel);
             }
             database.tafels = temp;
-
+            */
             return database;
         }
 
@@ -428,35 +429,6 @@ namespace restaurant
         }
 
         #region Deprecated
-        [Obsolete("Reservering_beschikbaarheid graag vervangen met ReserveringBeschikbaarheid.")]
-        public List<Tuple<DateTime, List<Tafels>>> Reservering_beschikbaarheid(DateTime date)
-        {
-            database = GetDatabase();
-            //maakt een lijst met tuples die beheert alle beschikbare plekken op int aantal dagen
-            List<Tuple<DateTime, List<Tafels>>> beschikbaar = new List<Tuple<DateTime, List<Tafels>>>();
-
-            //vult de List met alle beschikbare momenten en tafels
-            DateTime possibleTime = new DateTime(date.Year, date.Month, date.Day, 10, 0, 0);
-
-            //45 kwaterieren van 1000 tot 2100
-            for (int i = 0; i < 45; i++)
-            {
-                beschikbaar.Add(Tuple.Create(possibleTime, database.tafels));
-                possibleTime = possibleTime.AddMinutes(15);
-            }
-
-            //voor elke reservering die gemaakt is
-            foreach (var reservering in database.reserveringen)
-            {
-                //op de dag die is ingevoerd, pak alle beschikbare tijden en tafels
-                if (reservering.datum >= new DateTime(date.Year, date.Month, date.Day, 10, 0, 0) && reservering.datum <= new DateTime(date.Year, date.Month, date.Day, 21, 0, 0))
-                {
-                    beschikbaar = VerwijderReservering(beschikbaar, reservering);
-                }
-            }
-            return beschikbaar;
-        }
-        
         [Obsolete("Getdatabase graag vervangen met GetDatabase.")]
         public Database Getdatabase()
         {

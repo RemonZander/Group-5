@@ -265,14 +265,13 @@ namespace restaurant
 
         #region Reviews
         /// <summary>
-        /// Maakt een review aan
+        /// Maakt een non-anonieme review aan
         /// </summary>
         /// <param name="rating">De Beoordeling</param>
         /// <param name="klant">De klant die de review maakt</param>
         /// <param name="message">Het bericht dat de klant erbij wilt zetten</param>
         /// <param name="reservering">De reservering waarop de review is gegeven</param>
-        /// <param name="anoniem">if true, zal geen persoonlijke gegevens returnen bij GetReviews</param>
-        public void MakeReview(int rating, Klantgegevens klant, string message, Reserveringen reservering, bool anoniem)
+        public void MakeReview(int rating, Klantgegevens klant, string message, Reserveringen reservering)
         {
             database = io.GetDatabase();
             //als er geen reviews zijn maak een nieuwe list voor reviews
@@ -287,7 +286,44 @@ namespace restaurant
                 Klantnummer = klant.klantnummer,
                 message = message,
                 reservering_ID = reservering.ID,
-                annomeme = anoniem,
+                annomeme = false,
+                datum = DateTime.Now
+            };
+            //als er geen reviews zijn zet ID naar 0, else pak het laatste ID en doe die +1
+            if (database.reviews.Count == 0)
+            {
+                review.ID = 0;
+            }
+            else
+            {
+                review.ID = database.reviews[database.reviews.Count - 1].ID + 1;
+            }
+            //add de review aan de database en sla die op
+            database.reviews.Add(review);
+            io.Savedatabase(database);
+        }
+
+        /// <summary>
+        /// maakt een anonieme review aan
+        /// </summary>
+        /// <param name="rating">De beoordeling van de review</param>
+        /// <param name="message">Het bericht bij de review</param>
+        public void MakeReview(int rating, string message)
+        {
+            database = io.GetDatabase();
+            //als er geen reviews zijn maak een nieuwe list voor reviews
+            if (database.reviews == null)
+            {
+                database.reviews = new List<Review>();
+            }
+            //maak een review met alle gegevens
+            Review review = new Review
+            {
+                Rating = rating,
+                Klantnummer = -1,
+                message = message,
+                reservering_ID = -1,
+                annomeme = true,
                 datum = DateTime.Now
             };
             //als er geen reviews zijn zet ID naar 0, else pak het laatste ID en doe die +1
@@ -312,7 +348,7 @@ namespace restaurant
         /// <param name="klant">De klant die de review geeft</param>
         /// <param name="message">Het bericht dat de klant wil achterlaten</param>
         /// <param name="anoniem">if true, zal geen persoonlijke gegevens returnen bij GetReviews</param>
-        public void OverwriteReview(int reviewID, int rating, Klantgegevens klant, string message, bool anoniem)
+        public void OverwriteReview(int reviewID, int rating, Klantgegevens klant, string message)
         {
             //pakt de database
             database = io.GetDatabase();
@@ -327,7 +363,7 @@ namespace restaurant
                     database.reviews[i] = new Review
                     {
                         Rating = rating,
-                        annomeme = anoniem,
+                        annomeme = false,
                         datum = database.reviews[i].datum,
                         ID = database.reviews[i].ID,
                         Klantnummer = database.reviews[i].Klantnummer,
@@ -372,14 +408,13 @@ namespace restaurant
 
         #region Feedback
         /// <summary>
-        /// Maakt feedback aan
+        /// Maakt non-anoniem feedback aan
         /// </summary>
         /// <param name="werknemer">De werknemer waarvoor de feedback is</param>
         /// <param name="klant">De klant die de feedback geeft</param>
         /// <param name="message">Het bericht die de klant achterlaat</param>
         /// <param name="reservering">De reservering van de klant</param>
-        /// <param name="anoniem">if true, zal geen persoonlijke gegevens returnen bij GetReviews</param>
-        public void MakeFeedback(Werknemer werknemer,Klantgegevens klant, string message, Reserveringen reservering, bool anoniem)
+        public void MakeFeedback(Werknemer werknemer,Klantgegevens klant, string message, Reserveringen reservering)
         {
             //pakt database
             database = io.GetDatabase();
@@ -394,7 +429,7 @@ namespace restaurant
             Feedback feedback = new Feedback
             {
                 recipient = werknemer.ID,
-                annomeme = anoniem,
+                annomeme = false,
                 datum = DateTime.Now,
                 Klantnummer = klant.klantnummer,
                 message = message,
@@ -415,13 +450,53 @@ namespace restaurant
         }
 
         /// <summary>
+        /// Maakt anoniem feedback aan
+        /// </summary>
+        /// <param name="werknemer">De werknemer voor wie de feedback is bedoeld</param>
+        /// <param name="message">De feedback</param>
+        public void MakeFeedback(Werknemer werknemer,string message)
+        {
+            //pakt database
+            database = io.GetDatabase();
+
+            //als feedback lijst nog niet bestaat maak die aan
+            if (database.feedback == null)
+            {
+                database.feedback = new List<Feedback>();
+            }
+
+            //maakt feedback
+            Feedback feedback = new Feedback
+            {
+                recipient = werknemer.ID,
+                annomeme = false,
+                datum = DateTime.Now,
+                Klantnummer = -1,
+                message = message,
+                reservering_ID = -1,
+            };
+
+            //als er geen feedback in de lijst is, zet ID naar 1, anders feebackID is laatste feedbackID+1
+            if (database.feedback.Count == 0)
+            {
+                feedback.ID = 0;
+            }
+            else
+            {
+                feedback.ID = database.feedback[database.feedback.Count - 1].ID + 1;
+            }
+            //slaat de database op
+            io.Savedatabase(database);
+        }
+
+        /// <summary>
         /// Overschrijft feedback met een nieuwe en vervangt de feedback op de plaats van gegeven ID
         /// </summary>
         /// <param name="feedbackID">Het ID van de feedback</param>
         /// <param name="klant">De klant die de feedback geeft</param>
         /// <param name="message">Het bericht dat de klant wilt achterlaten</param>
         /// <param name="anoniem">if true, zal geen persoonlijke gegevens returnen bij GetReviews</param>
-        public void OverwriteFeedback(int feedbackID, Klantgegevens klant, string message, bool anoniem)
+        public void OverwriteFeedback(int feedbackID, Klantgegevens klant, string message)
         {
             //pakt de database
             database = io.GetDatabase();
@@ -436,7 +511,7 @@ namespace restaurant
                     database.feedback[i] = new Feedback
                     {
                         recipient = database.feedback[i].recipient,
-                        annomeme = anoniem,
+                        annomeme = false,
                         datum = database.feedback[i].datum,
                         ID = database.feedback[i].ID,
                         Klantnummer = database.feedback[i].Klantnummer,
