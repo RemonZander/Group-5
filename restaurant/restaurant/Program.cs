@@ -26,7 +26,6 @@ namespace restaurant
             {
                 Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
                 Code_Console code = new Code_Console();
-                remon_code_console code2 = new remon_code_console();
                 NativeMethods.AllocConsole();
                 //Application.Run(new Login()); If we want to start working with forms this should be uncommented
 /*                string input = Console.ReadLine();
@@ -41,13 +40,8 @@ namespace restaurant
                     // Here we incorporate our visualization of the application
                     // The code in the do while loop will be called every 100ms so every visualization should be refreshed
                     // If the user asks for input the thread should be paused
-
-
-
                     code.Display();
                     code.Refresh();
-                    //code2.Display();
-                    //code2.Refresh();
                 } while (true);
             }
         }
