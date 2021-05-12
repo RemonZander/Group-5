@@ -38,7 +38,7 @@ namespace restaurant
 
     public class DisplayScreen : BaseScreen
     {
-        public List<Choice> Choices = new List<Choice>();
+        public List<Choice> Choices = new();
 
         public DisplayScreen(string name, string text)
         {
@@ -55,25 +55,19 @@ namespace restaurant
         private int TotalFunctionSteps = 0;
         public bool Repeat { get; private set; } = false;
         public bool NoOutput { get; private set;  } = false;
-        public readonly Dictionary<string, dynamic> Variables = new Dictionary<string, dynamic>();
-        public readonly List<Tuple<Func<string, FunctionScreen, dynamic>, string>> Functions = new List<Tuple<Func<string, FunctionScreen, dynamic>, string>>();
+        public readonly Dictionary<string, dynamic> Variables = new();
+        public readonly List<Tuple<Func<string, FunctionScreen, dynamic>, string>> Functions = new();
 
         public FunctionScreen(string name, string text)
         {
-
             Name = name;
             Text = text;
         }
 
-        public void AddFunctionWithMessage(Func<string, FunctionScreen, dynamic> func, string message)
+        public void AddFunction(Func<string, FunctionScreen, dynamic> func, string message = "")
         {
-            Functions.Add(new Tuple<Func<string, FunctionScreen, dynamic>, string>( func, message ));
+            Functions.Add(new Tuple<Func<string, FunctionScreen, dynamic>, string>(func, message));
             TotalFunctionSteps++;
-        }
-
-        public void AddFunction(Func<string, FunctionScreen, dynamic> func)
-        {
-            AddFunctionWithMessage(func, "");
         }
 
         public Func<string, FunctionScreen, dynamic> GetCurrentFunction()
@@ -115,7 +109,7 @@ namespace restaurant
 
     public class Screens
     {
-        public readonly List<BaseScreen> AllScreens = new List<BaseScreen>();
+        public readonly List<BaseScreen> AllScreens = new();
         public BaseScreen CurrentScreen { get; set; }
 
         public BaseScreen GetScreenByName(string name)
@@ -145,19 +139,19 @@ namespace restaurant
     */
     public class Code_Console
     {
-        private readonly Code_Login_menu Code_login = new Code_Login_menu();
+        private readonly Code_Login_menu Code_login = new();
 
-        private readonly restaurant.Code_Eigenaar_menu Code_Eigenaar = new Code_Eigenaar_menu();
+        private readonly restaurant.Code_Eigenaar_menu Code_Eigenaar = new();
 
-        private readonly restaurant.Code_Medewerker_menu Code_Medewerker = new Code_Medewerker_menu();
+        private readonly restaurant.Code_Medewerker_menu Code_Medewerker = new();
 
-        private readonly restaurant.Code_Gebruiker_menu Code_Gebruiker = new Code_Gebruiker_menu();
+        private readonly restaurant.Code_Gebruiker_menu Code_Gebruiker = new();
 
-        private readonly IO IO = new IO();
+        private readonly IO IO = new();
 
-        private readonly restaurant.Testing_class TestingClass = new Testing_class();
+        private readonly restaurant.Testing_class TestingClass = new();
 
-        private readonly Screens screens = new Screens();
+        private readonly Screens screens = new();
 
         private BaseScreen currentScreen;
 
@@ -169,7 +163,7 @@ namespace restaurant
 
         private string input = "0";
 
-        private string GFLogo = @" _____                     _  ______         _         
+        private readonly string GFLogo = @" _____                     _  ______         _         
 |  __ \                   | | |  ___|       (_)            
 | |  \/_ __ __ _ _ __   __| | | |_ _   _ ___ _  ___  _ __  
 | | __| '__/ _` | '_ \ / _` | |  _| | | / __| |/ _ \| '_ \ 
@@ -183,13 +177,12 @@ namespace restaurant
             int BaseSpace = 2;
             int longestStringLength = specifiedLongestStringLength == 0 ? 0 : specifiedLongestStringLength;
 
-            List<string[]> splitStringList = new List<string[]>();
+            List<string[]> splitStringList = new();
 
             // Loop through the inputs, split every input and add it to the splitStringList
             for (int i = 0; i < inputs.Length; i++)
             {
-                inputs[i].Replace("\r\n", "\n");
-                string[] splittedString = inputs[i].Split("\n");
+                string[] splittedString = inputs[i].Replace("\r\n", "\n").Split("\n");
                 splitStringList.Add(splittedString);
             }
 
@@ -213,7 +206,7 @@ namespace restaurant
                 row += sym;
             }
 
-            Func<int, string> makeLine = (length) =>
+            string makeLine(int length)
             {
                 string temp = "";
                 for (int j = 0; j < length; j++)
@@ -221,14 +214,14 @@ namespace restaurant
                     temp += " ";
                 }
                 return temp;
-            };
+            }
 
-            Func<string, string> surroundLine = (line) =>
+            string surroundLine(string line)
             {
                 string sideLeft = makeLine(spacing), sideRight = sideLeft;
 
                 return sym + sideLeft + line + sideRight + sym;
-            };
+            }
 
             int lineCounter = 0;
             for (int j = 0; j < splitStringList.Count; j++)
@@ -300,7 +293,7 @@ namespace restaurant
             string output = "";
             string finalOutput = "";
 
-            List<string> list = new List<string>();
+            List<string> list = new();
 
             List<int> ids = reviews.Select(i => i.Klantnummer).ToList(); 
 
@@ -330,6 +323,7 @@ namespace restaurant
                 {
                     for (int i = 1; i <= maxCharLength / maxCharLengthPerLine; i++)
                     {
+                        // Should check if a word in the message gets cut off, if so go a word back
                         if (reviewMessage.Length > maxCharLengthPerLine)
                         {
                             formattedMessage += reviewMessage.Substring(0, maxCharLengthPerLine) + "\n";
@@ -369,12 +363,12 @@ namespace restaurant
 
         public Code_Console()
         {
-            Func<bool> isGebruiker = () => userLoggedIn && currentUser != null && currentUser.type == "Gebruiker";
-            Func<bool> isMedewerker = () => userLoggedIn && currentUser != null && currentUser.type == "Medewerker";
-            Func<bool> isEigenaar = () => userLoggedIn && currentUser != null && currentUser.type == "Eigenaar";
+            bool isGebruiker() => userLoggedIn && currentUser != null && currentUser.type == "Gebruiker";
+            bool isMedewerker() => userLoggedIn && currentUser != null && currentUser.type == "Medewerker";
+            bool isEigenaar() => userLoggedIn && currentUser != null && currentUser.type == "Eigenaar";
 
             #region startScreens
-            DisplayScreen startScreen = new DisplayScreen("StartMenu", $"{GFLogo}\nKies een optie:");
+            DisplayScreen startScreen = new("StartMenu", $"{GFLogo}\nKies een optie:");
             startScreen.Choices.Add(new Choice("AllMeals", "Laat alle gerechten zien"));
             startScreen.Choices.Add(new Choice("AllReviews", "Laat alle reviews zien"));
             startScreen.Choices.Add(new Choice("RegisterUser", "Registreer", Choice.SCREEN_NEXT, () => !userLoggedIn));
@@ -383,7 +377,7 @@ namespace restaurant
             startScreen.Choices.Add(new Choice("StartScreenOwner", "Eigenaar", Choice.SCREEN_NEXT, isEigenaar));
             startScreen.Choices.Add(new Choice("LoginScreenEmployee", "Inloggen", Choice.SCREEN_NEXT, () => !userLoggedIn));
 
-            DisplayScreen startScreenCustomer = new DisplayScreen("StartScreenCustomer", $"{GFLogo}\nWelkom bij het klanten scherm.");
+            DisplayScreen startScreenCustomer = new("StartScreenCustomer", $"{GFLogo}\nWelkom bij het klanten scherm.");
             startScreenCustomer.Choices.Add(new Choice("CreateReservation", "Maak een reservering aan", Choice.SCREEN_NEXT, isGebruiker));
             startScreenCustomer.Choices.Add(new Choice("CreateReview", "Maak een review aan", Choice.SCREEN_NEXT, isGebruiker));
             startScreenCustomer.Choices.Add(new Choice("EditReview", "Bewerk een review", Choice.SCREEN_NEXT, isGebruiker));
@@ -391,43 +385,43 @@ namespace restaurant
             startScreenCustomer.Choices.Add(new Choice("UserReviews", "Bekijk uw eigen reviews", Choice.SCREEN_NEXT, isGebruiker));
             startScreenCustomer.Choices.Add(new Choice("StartMenu", "Ga terug", Choice.SCREEN_BACK));
 
-            DisplayScreen startScreenEmployee = new DisplayScreen("StartScreenEmployee", $"{GFLogo}\nWelkom bij het medewerkers scherm.");
+            DisplayScreen startScreenEmployee = new("StartScreenEmployee", $"{GFLogo}\nWelkom bij het medewerkers scherm.");
             startScreenEmployee.Choices.Add(new Choice("StartMenu", "Ga terug", Choice.SCREEN_BACK));
 
-            DisplayScreen startScreenOwner = new DisplayScreen("StartScreenOwner", $"{GFLogo}\nWelkom bij het eigenaars Scherm");
+            DisplayScreen startScreenOwner = new("StartScreenOwner", $"{GFLogo}\nWelkom bij het eigenaars Scherm");
             startScreenOwner.Choices.Add(new Choice("StartMenu", "Ga terug", Choice.SCREEN_BACK));
             #endregion
 
             #region userScreens
-            DisplayScreen allMeals = new DisplayScreen("AllMeals", "");
+            DisplayScreen allMeals = new("AllMeals", "");
             allMeals.Choices.Add(new Choice("", "Ga terug", Choice.SCREEN_BACK));
             allMeals.OnDisplay(() =>
             {
                 allMeals.Text = $"{GFLogo}\n" + GerechtenToOutput(Code_Gebruiker.GetMenukaart());
             });
 
-            DisplayScreen allReviews = new DisplayScreen("AllReviews", "");
+            DisplayScreen allReviews = new("AllReviews", "");
             allReviews.Choices.Add(new Choice("", "Ga terug", Choice.SCREEN_BACK));
             allReviews.OnDisplay(() =>
             {
                 allReviews.Text = $"{GFLogo}\nHier zijn alle reviews die zijn achtergelaten door onze klanten.\n" + ReviewsToOutput(IO.GetReviews());
             });
 
-            DisplayScreen userReviews = new DisplayScreen("UserReviews", "");
+            DisplayScreen userReviews = new("UserReviews", "");
             userReviews.Choices.Add(new Choice("", "Ga terug", Choice.SCREEN_BACK));
             userReviews.OnDisplay(() =>
             {
                 userReviews.Text = $"{GFLogo}\nHier zijn je eigen reviews.\n" + ReviewsToOutput(IO.GetReviews(currentUser.klantgegevens));
             });
 
-            FunctionScreen createReview = new FunctionScreen("CreateReview", $"{GFLogo}\nLaat een review achter!");
-            createReview.AddFunctionWithMessage((input, screen) =>
+            FunctionScreen createReview = new("CreateReview", $"{GFLogo}\nLaat een review achter!");
+            createReview.AddFunction((input, screen) =>
             {
                 screen.Variables.Add("customerData", currentUser.klantgegevens);
                 screen.Variables.Add("anonymous", input.ToLower() == "ja");
                 return null;
             }, "Wilt u dat de review liever anoniem blijft? Type 'ja' of 'nee'");
-            createReview.AddFunctionWithMessage((input, screen) =>
+            createReview.AddFunction((input, screen) =>
             {
                 List<Reserveringen> resList = Code_Gebruiker.GetCustomerReservation(currentUser.klantgegevens, false);
 
@@ -442,12 +436,12 @@ namespace restaurant
 
                 return null;
             }, "Kies een reservatie waarvoor u een review voor wilt plaatsen.");
-            createReview.AddFunctionWithMessage((input, screen) =>
+            createReview.AddFunction((input, screen) =>
             {
                 screen.Variables.Add("rating", int.Parse(input));
                 return null;
             }, "Hoe was uw ervaring bij GrandeFusion van 1 tot 5?");
-            createReview.AddFunctionWithMessage((input, screen) =>
+            createReview.AddFunction((input, screen) =>
             {
                 Code_Gebruiker.makeReview(
                     screen.Variables["rating"],
@@ -457,10 +451,7 @@ namespace restaurant
                     screen.Variables["anonymous"]
                 );
 
-                DisplayScreen endScreen = new DisplayScreen(
-                    "",
-                    "Bedankt voor uw review!."
-                );
+                DisplayScreen endScreen = new("", "Bedankt voor uw review!.");
 
                 endScreen.Choices.Add(new Choice("", "Ga terug", Choice.SCREEN_BACK));
 
@@ -471,47 +462,32 @@ namespace restaurant
                 return FunctionScreen.FINISHED;
             }, "Hier kunt u nog een bericht achterlaten.");
 
-            FunctionScreen createReservation = new FunctionScreen("CreateReservation", $"{GFLogo}\nMaak hier een reservatie aan");
-            createReservation.AddFunctionWithMessage((input, screen) => 
+            FunctionScreen createReservation = new("CreateReservation", $"{GFLogo}\nMaak hier een reservatie aan");
+            createReservation.AddFunction((input, screen) => 
             {
                 // Input moet worden geconvert naar datetime
                 screen.Variables.Add("date", DateTime.Parse(input));
                 return null;
             }, "Voeg hier de datum toe wanneer u wilt dat de reservering plaatsneemt. De datum moet aangegeven worden op 'Jaar/Maand/Dag Uur:Minuut' dus als voorbeeld '2021/01/11 18:00'");
-            createReservation.AddFunctionWithMessage((input, screen) =>
+            createReservation.AddFunction((input, screen) =>
             {
                 // Input moet worden geconvert naar datetime
                 screen.Variables.Add("raamTafel", input.ToLower() == "ja");
                 return null;
             }, "Wilt u een tafel aan het raam? type in ja of nee");
-            createReservation.AddFunctionWithMessage((input, screen) =>
+            createReservation.AddFunction((input, screen) =>
             {
-                List<int> list = new List<int>();
-
-                if (input.Trim() == "")
-                {
-                    list.Add(currentUser.klantgegevens.klantnummer);
-                }
-                else
-                {
-                    list.Add(currentUser.klantgegevens.klantnummer);
-                    foreach (string item in input.Split(','))
-                    {
-                        list.Add(int.Parse(item));
-                    }
-                }
+                // Input moet worden geconvert naar datetime
+                screen.Variables.Add("amountPeople", input);
 
                 Code_Gebruiker.MakeCustomerReservation(
                     screen.Variables["date"],
-                    list,
-                    list.Count,
+                    currentUser.klantgegevens.klantnummer,
+                    int.Parse(input),
                     screen.Variables["raamTafel"]
                 );
 
-                DisplayScreen resultScreen = new DisplayScreen(
-                    "",
-                    "Uw reservatie is geplaatst"
-                );
+                DisplayScreen resultScreen = new("", "Uw reservatie is geplaatst");
 
                 resultScreen.Choices.Add(new Choice("", "Ga terug", Choice.SCREEN_BACK));
 
@@ -520,26 +496,26 @@ namespace restaurant
                 currentScreen.PreviousScreen = previousScreen;
 
                 return FunctionScreen.FINISHED;
-            }, "Voeg hier alle klantnummers toe die deelnemen aan de reservering. Gebruik de ',' teken om de nummers te onderscheiden. (Als u voor uw zelf alleen reserveert kunt u het input veld leeg laten)\n LET OP: Type niet uw eigen klantnummer in die wordt automatisch inbegrepen.");
+            }, "Hoeveel mensen gaan er in totaal mee?");
 
-            FunctionScreen editReview = new FunctionScreen("EditReview", $"{GFLogo}\nBewerk een review");
-            editReview.AddFunctionWithMessage((input, screen) =>
+            FunctionScreen editReview = new("EditReview", $"{GFLogo}\nBewerk een review");
+            editReview.AddFunction((input, screen) =>
             {
                 screen.Variables.Add("reviewId", int.Parse(input));
                 screen.Variables.Add("customerData", currentUser.klantgegevens);
                 return null;
             }, "Type in de ID van de review die u wilt bewerken");
-            editReview.AddFunctionWithMessage((input, screen) =>
+            editReview.AddFunction((input, screen) =>
             {
                 screen.Variables.Add("anonymous", input.ToLower() == "ja");
                 return null;
             }, "Wilt u dat de review liever anoniem blijft? Type 'ja' of 'nee'");
-            editReview.AddFunctionWithMessage((input, screen) =>
+            editReview.AddFunction((input, screen) =>
             {
                 screen.Variables.Add("rating", int.Parse(input));
                 return null;
             }, "Hoe was uw ervaring bij GrandeFusion van 1 tot 5?");
-            editReview.AddFunctionWithMessage((input, screen) =>
+            editReview.AddFunction((input, screen) =>
             {
                 Code_Gebruiker.overwriteReview(
                     screen.Variables["reviewId"],
@@ -549,10 +525,7 @@ namespace restaurant
                     screen.Variables["anonymous"]
                 );
 
-                DisplayScreen resultScreen = new DisplayScreen(
-                    "",
-                    "Uw review is aangepast."
-                );
+                DisplayScreen resultScreen = new("", "Uw review is aangepast.");
 
                 resultScreen.Choices.Add(new Choice("", "Ga terug", Choice.SCREEN_BACK));
 
@@ -563,18 +536,15 @@ namespace restaurant
                 return FunctionScreen.FINISHED;
             }, "Hier kunt u nog een bericht achterlaten.");
 
-            FunctionScreen deleteReview = new FunctionScreen("RemoveReview", $"{GFLogo}\nVerwijder een review");
-            deleteReview.AddFunctionWithMessage((input, screen) =>
+            FunctionScreen deleteReview = new("RemoveReview", $"{GFLogo}\nVerwijder een review");
+            deleteReview.AddFunction((input, screen) =>
             {
                 Code_Gebruiker.DeleteReview(
                     int.Parse(input),
                     currentUser.klantgegevens
                 );
 
-                DisplayScreen resultScreen = new DisplayScreen(
-                    "",
-                    "Uw review is verwijderd."
-                );
+                DisplayScreen resultScreen = new("", "Uw review is verwijderd.");
 
                 resultScreen.Choices.Add(new Choice("", "Ga terug", Choice.SCREEN_BACK));
 
@@ -588,28 +558,28 @@ namespace restaurant
 
             #region miscScreens
 
-            DisplayScreen invalidInputScreen = new DisplayScreen("InvalidInputScreen", "Type alstublieft de correcte keuze in.\nCorrecte keuzes zijn gemarkeerd met -> [] met een nummer erin.\nType alleen de nummer van de keuze in.\nVoorbeeld: Met keuze [1] type je in 1");
+            DisplayScreen invalidInputScreen = new("InvalidInputScreen", "Type alstublieft de correcte keuze in.\nCorrecte keuzes zijn gemarkeerd met -> [] met een nummer erin.\nType alleen de nummer van de keuze in.\nVoorbeeld: Met keuze [1] type je in 1");
             invalidInputScreen.Choices.Add(new Choice("", "Ga terug", Choice.SCREEN_BACK));
 
-            FunctionScreen registerScreen = new FunctionScreen("RegisterUser", $"{GFLogo}\nHier kunt u een account maken om reserveringen te plaatsen voor GrandeFusion en meer!");
-            registerScreen.AddFunctionWithMessage((input, screen) => {
+            FunctionScreen registerScreen = new("RegisterUser", $"{GFLogo}\nHier kunt u een account maken om reserveringen te plaatsen voor GrandeFusion en meer!");
+            registerScreen.AddFunction((input, screen) => {
                 screen.Variables.Add("email", input);
                 return null;
             }, "Je email");
-            registerScreen.AddFunctionWithMessage((input, screen) => {
+            registerScreen.AddFunction((input, screen) => {
                 screen.Variables.Add("psw", input);
                 return null;
             }, "Je wachtwoord");
-            registerScreen.AddFunctionWithMessage((input, screen) => {
+            registerScreen.AddFunction((input, screen) => {
                 screen.Variables.Add("vnaam", input);
                 return null;
             }, "Je voornaam");
-            registerScreen.AddFunctionWithMessage((input, screen) => {
+            registerScreen.AddFunction((input, screen) => {
                 screen.Variables.Add("anaam", input);
                 return null;
             }, "Je achternaam");
-            registerScreen.AddFunctionWithMessage((input, screen) => {
-                adres x = new adres();
+            registerScreen.AddFunction((input, screen) => {
+                adres x = new();
                 string[] splitString = input.Split('-');
                 x.land = "NL";
                 x.postcode = splitString[0];
@@ -620,8 +590,8 @@ namespace restaurant
                 screen.Variables.Add("adres", x);
                 return null;
             }, "Je adres in postcode-straatnaam-huisnummer-woonplaats\nVoorbeeld: 1234AB-hondlaan-45-Spijkenisse");
-            registerScreen.AddFunctionWithMessage((input, screen) => {
-                List<long> listLong = new List<long>();
+            registerScreen.AddFunction((input, screen) => {
+                List<long> listLong = new();
 
                 foreach (char item in input)
                 {
@@ -631,8 +601,8 @@ namespace restaurant
                 screen.Variables.Add("phoneNum", listLong);
                 return null;
             }, "Je telefoonnummer");
-            registerScreen.AddFunctionWithMessage((input, screen) => {
-                Login_gegevens lg = new Login_gegevens();
+            registerScreen.AddFunction((input, screen) => {
+                Login_gegevens lg = new();
                 lg.email = registerScreen.Variables["email"];
                 lg.password = registerScreen.Variables["psw"];
                 lg.type = "Gebruiker";
@@ -648,10 +618,7 @@ namespace restaurant
                 userLoggedIn = true;
                 currentUser = lg;
 
-                DisplayScreen endScreen = new DisplayScreen(
-                    "",
-                    "Bedankt voor het registreren en welkom bij de GrandeFusion familie!"
-                );
+                DisplayScreen endScreen = new("", "Bedankt voor het registreren en welkom bij de GrandeFusion familie!");
 
                 endScreen.Choices.Add(new Choice("StartScreenCustomer", "Ga door"));
 
@@ -661,12 +628,12 @@ namespace restaurant
                 return FunctionScreen.FINISHED;
             }, "Je geboortedatum in Y/m/d dus als voorbeeld: 2001/04/23");
 
-            FunctionScreen loginScreen = new FunctionScreen("LoginScreenEmployee", $"{GFLogo}\nLog in met je Email en Wachtwoord");
-            loginScreen.AddFunctionWithMessage((input, screen) => {
+            FunctionScreen loginScreen = new("LoginScreenEmployee", $"{GFLogo}\nLog in met je Email en Wachtwoord");
+            loginScreen.AddFunction((input, screen) => {
                 screen.Variables.Add("email", input);
                 return null;
             }, "Je email");
-            loginScreen.AddFunctionWithMessage((input, screen) => {
+            loginScreen.AddFunction((input, screen) => {
                 screen.Variables.Add("psw", input);
 
                 Login_gegevens funcResult = Code_login.Login_Check(loginScreen.Variables["email"], loginScreen.Variables["psw"]);
@@ -674,20 +641,14 @@ namespace restaurant
 
                 if (funcResult.type == "No account found")
                 {
-                    DisplayScreen noAccountFoundScreen = new DisplayScreen(
-                        "",
-                        "De account met de gespecificeerde mail of wachtwoord is niet juist."
-                    );
+                    DisplayScreen noAccountFoundScreen = new("", "De account met de gespecificeerde mail of wachtwoord is niet juist.");
                     noAccountFoundScreen.Choices.Add(new Choice("StartMenu", "Ga terug", Choice.SCREEN_BACK));
 
                     currentScreen = noAccountFoundScreen;
                 }
                 else
                 {
-                    DisplayScreen loginSuccesfullScreen = new DisplayScreen(
-                        "",
-                        "Login succesvol."
-                    );
+                    DisplayScreen loginSuccesfullScreen = new("", "Login succesvol.");
 
                     string typeScreen = "";
 
@@ -716,7 +677,7 @@ namespace restaurant
                 return FunctionScreen.FINISHED;
             }, "Je wachtwoord");
 
-            FunctionScreen logoutScreen = new FunctionScreen("LogoutScreen", "");
+            FunctionScreen logoutScreen = new("LogoutScreen", "");
             logoutScreen.AddFunction((input, screen) =>
             {
                 userLoggedIn = false;
@@ -764,7 +725,7 @@ namespace restaurant
 
                     // TODO: this is done to represent the choices that are actually displayed on the screen
                     // Integrate this in the displayScreen class as this is more temporary
-                    List<Choice> tempChoicesList = new List<Choice>();
+                    List<Choice> tempChoicesList = new();
 
                     foreach (Choice choice in choices)
                     {
@@ -822,10 +783,7 @@ namespace restaurant
                     {
                         if (funcResult.GetType() == typeof(string) && funcResult == FunctionScreen.CANCELLED)
                         {
-                            DisplayScreen functionCancelledScreen = new DisplayScreen(
-                                "",
-                                "De huidige actie is geannuleerd."
-                            );
+                            DisplayScreen functionCancelledScreen = new("", "De huidige actie is geannuleerd.");
                             functionCancelledScreen.Choices.Add(new Choice("", "Ga terug", Choice.SCREEN_BACK));
 
                             currentScreen = functionCancelledScreen;
@@ -910,7 +868,8 @@ namespace restaurant
                         output += $"\n[{++counter}] {choice.Text}";
                     }
                 }
-            } else if (currentScreen.GetType() == typeof(FunctionScreen))
+            }
+            else if (currentScreen.GetType() == typeof(FunctionScreen))
             {
                 FunctionScreen fs = (FunctionScreen)currentScreen;
 
@@ -946,17 +905,17 @@ namespace restaurant
             }
             else if (input == "105")
             {
-                Login_gegevens dataEigenaar = new Login_gegevens();
+                Login_gegevens dataEigenaar = new();
                 dataEigenaar.email = "eigenaar@gmail.com";
                 dataEigenaar.password = "0000";
                 dataEigenaar.type = "Eigenaar";
 
-                Login_gegevens dataMedewerker = new Login_gegevens();
+                Login_gegevens dataMedewerker = new();
                 dataMedewerker.email = "medewerker@gmail.com";
                 dataMedewerker.password = "0000";
                 dataMedewerker.type = "Medewerker";
 
-                Login_gegevens dataGebruiker = new Login_gegevens();
+                Login_gegevens dataGebruiker = new();
                 dataGebruiker.email = "gebruiker@gmail.com";
                 dataGebruiker.password = "0000";
                 dataGebruiker.type = "Gebruiker";
@@ -965,7 +924,7 @@ namespace restaurant
                 dataGebruiker.klantgegevens.voornaam = "Bob";
                 dataGebruiker.klantgegevens.achternaam = "De Boer";
 
-                DateTime resDate = new DateTime(2050, 3, 1, 7, 0, 0);
+                DateTime resDate = new(2050, 3, 1, 7, 0, 0);
 
                 var list = new List<int>();
                 list.Add(dataGebruiker.klantgegevens.klantnummer);
@@ -973,7 +932,7 @@ namespace restaurant
                 Code_login.Register(dataEigenaar);
                 Code_login.Register(dataMedewerker);
                 Code_login.Register(dataGebruiker);
-                Code_Gebruiker.MakeCustomerReservation(resDate, list, 1, false);
+                Code_Gebruiker.MakeCustomerReservation(resDate, dataGebruiker.klantgegevens.klantnummer, 1, false);
             }
             else if (input == "1000")
             {
