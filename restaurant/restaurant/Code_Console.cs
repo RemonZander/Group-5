@@ -289,8 +289,87 @@ namespace restaurant
                         "Achternaam: " + klantgegevens[a + 1].achternaam + new string(' ', 48 - ("Achternaam: " + klantgegevens[a + 1].achternaam).Length));
                 }
 
-                block.Add("Review: " + new string(' ', 50 - ("Review: ").Length) + "##  " +
-                    "Review: " + new string(' ', 48 - ("Review: ").Length));
+                if (reviews[a].message.Length < 50 - ("Review: ").Length && reviews[a + 1].message.Length < 48 - ("Review: ").Length)
+                {
+                    block.Add("Review: " + reviews[a].message + new string(' ', 50 - ("Review: " + reviews[a].message).Length) + "##  " +
+                        "Review: " + reviews[a].message + new string(' ', 48 - ("Review: " + reviews[a].message).Length));
+                    block.Add(new string(' ', 50) + "##" + new string(' ', 50));
+                    block.Add(new string(' ', 50) + "##" + new string(' ', 50));
+                    block.Add(new string(' ', 50) + "##" + new string(' ', 50));
+                }
+                else
+                {
+                    List<string> msgparts1 = new List<string>();
+                    List<string> msgparts2 = new List<string>();
+                    if (reviews[a].message.Length > 50 - ("Review: ").Length)
+                    {
+                        string message = reviews[a].message;
+
+                        msgparts1.Add(message.Substring(0, message.Substring(0, 50 - ("Review: ").Length).LastIndexOf(' ')));
+                        message = message.Remove(0, msgparts1[0].Length + 1);
+
+                        int count = 1;
+                        while (message.Length > 50)
+                        {
+                            msgparts1.Add(message.Substring(0, message.Substring(0, 50).LastIndexOf(' ')));
+                            message = message.Remove(0, msgparts1[count].Length + 1);
+                            count++;
+                        }
+                        msgparts1.Add(message);
+                    }
+                    else
+                    {
+                        msgparts1.Add(reviews[a].message);
+                    }
+
+                    if (reviews[a + 1].message.Length > 48 - ("Review: ").Length)
+                    {
+                        string message = reviews[a + 1].message;
+
+                        msgparts2.Add(message.Substring(0, message.Substring(0, 48 - ("Review: ").Length).LastIndexOf(' ')));
+                        message = message.Remove(0, msgparts2[0].Length + 1);
+
+                        int count = 1;
+                        while (message.Length > 50)
+                        {
+                            msgparts2.Add(message.Substring(0, message.Substring(0, 48).LastIndexOf(' ')));
+                            message = message.Remove(0, msgparts2[count].Length + 1);
+                            count++;
+                        }
+                        msgparts2.Add(message);
+                    }
+                    else
+                    {
+                        msgparts2.Add(reviews[a + 1].message);
+                    }
+
+                    block.Add("Review: " + msgparts1[0] + new string(' ', 50 - ("Review: " + msgparts1[0]).Length) + "##  " +
+                        "Review: " + msgparts2[0] + new string(' ', 48 - ("Review: " + msgparts2[0]).Length));
+                    for (int b = 1; b < 4; b++)
+                    {
+                        if (msgparts1.Count - 1 >= b && msgparts2.Count - 1 >= b)
+                        {
+                            block.Add(msgparts1[b] + new string(' ', 50 - msgparts1[b].Length) + "##  " +
+                                msgparts2[b] + new string(' ', 48 - msgparts2[b].Length));
+                        }
+                        else if (msgparts1.Count - 1 >= b && msgparts2.Count - 1 < b)
+                        {
+                            block.Add(msgparts1[b] + new string(' ', 50 - msgparts1[b].Length) + "##  " +
+                                new string(' ', 48));
+                        }
+                        else if (msgparts1.Count - 1 < b && msgparts2.Count - 1 >= b)
+                        {
+                            block.Add(new string(' ', 50) + "##  " +
+                                msgparts2[b] + new string(' ', 48 - msgparts2[b].Length));
+                        }
+                        else
+                        {
+                            block.Add(new string(' ', 50) + "##" + new string(' ', 50));
+                        }
+                    }
+                }
+
+
                 block.Add("Rating: " + reviews[a].Rating + new string(' ', 50 - ("Rating: " + reviews[a].Rating).Length) + "##  " +
                     "Rating: " + reviews[a + 1].Rating + new string(' ', 48 - ("Rating: " + reviews[a + 1].Rating).Length));
                 block.Add("Datum: " + reviews[a].datum + new string(' ', 50 - ("Datum: " + reviews[a].datum).Length) + "##  " +
