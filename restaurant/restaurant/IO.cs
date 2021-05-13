@@ -43,7 +43,6 @@ namespace restaurant
             string output = File.ReadAllText(@"..\database\database.Json");
             database = JsonConvert.DeserializeObject<Database>(output);
 
-            /*
             List<Tafels> temp = new List<Tafels>();
             for (int i = 0; i < 100; i++)
             {
@@ -58,7 +57,7 @@ namespace restaurant
                 temp.Add(tafel);
             }
             database.tafels = temp;
-            */
+            
             return database;
         }
 
@@ -99,12 +98,12 @@ namespace restaurant
 
             //45 kwaterieren van 1000 tot 2100
             //661 minuten van 1000 tot 2100
-            for (int i = 0; i < 661; i++)
+            for (int i = 0; i < 45; i++)
             {
                 //voegt een tuple toe voor ieder kwartier
                 beschikbaar.Add(Tuple.Create(possibleTime, database.tafels));
-                //possibleTime = possibleTime.AddMinutes(15);
-                possibleTime = possibleTime.AddMinutes(1);
+                possibleTime = possibleTime.AddMinutes(15);
+                //possibleTime = possibleTime.AddMinutes(1);
             }
 
             //voor elke reservering die gemaakt is
@@ -221,12 +220,12 @@ namespace restaurant
                     possibleTime = new DateTime(DateTime.Now.Year, maanden, days, 10, 0, 0);
                     //45 kwaterieren van 1000 tot 2100
                     //661 minuten van 1000 tot 2100
-                    for (int i = 0; i < 661; i++)
+                    for (int i = 0; i < 45; i++)
                     {
                         //voegt alle beschikbare tijden en tafels aan beschikbaar voor ieder kwartier
                         beschikbaar.Add(Tuple.Create(possibleTime, database.tafels));
-                        //possibleTime = possibleTime.AddMinutes(15);
-                        possibleTime = possibleTime.AddMinutes(1);
+                        possibleTime = possibleTime.AddMinutes(15);
+                        //possibleTime = possibleTime.AddMinutes(1);
                     }
                 }
                 possibleTime = new DateTime(DateTime.Now.Year, maanden, start_dag, 10, 0, 0);
