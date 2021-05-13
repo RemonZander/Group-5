@@ -426,9 +426,15 @@ namespace restaurant
             //zoek voor klantgegevens op ID in de gegeven list
             for (int a = 0; a < ID.Count; a++)
             {
-                klantgegevens.Add(database.login_gegevens[ID[a]].klantgegevens);
+                if (ID[a] != -1)
+                {
+                    klantgegevens.Add(database.login_gegevens[ID[a]].klantgegevens);
+                }
+                else
+                {
+                    klantgegevens.Add(new Klantgegevens());
+                }
             }
-            
             return klantgegevens;
         }
 

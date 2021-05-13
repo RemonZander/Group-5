@@ -324,7 +324,7 @@ namespace restaurant
                 message = message,
                 reservering_ID = -1,
                 annomeme = true,
-                datum = DateTime.Now
+                datum = new DateTime()
             };
             //als er geen reviews zijn zet ID naar 0, else pak het laatste ID en doe die +1
             if (database.reviews.Count == 0)
@@ -414,7 +414,7 @@ namespace restaurant
         /// <param name="klant">De klant die de feedback geeft</param>
         /// <param name="message">Het bericht die de klant achterlaat</param>
         /// <param name="reservering">De reservering van de klant</param>
-        public void MakeFeedback(Werknemer werknemer,Klantgegevens klant, string message, Reserveringen reservering)
+        public void MakeFeedback(Werknemer werknemer,Klantgegevens klant, string message)
         {
             //pakt database
             database = io.GetDatabase();
@@ -433,7 +433,7 @@ namespace restaurant
                 datum = DateTime.Now,
                 Klantnummer = klant.klantnummer,
                 message = message,
-                reservering_ID = reservering.ID,
+                reservering_ID = -1,
             };
             
             //als er geen feedback in de lijst is, zet ID naar 1, anders feebackID is laatste feedbackID+1
@@ -625,7 +625,199 @@ namespace restaurant
     {
         public override int DoWork()
         {
-            throw new NotImplementedException();
+            //checkt of je een review mag maken of niet
+            #region Check1
+            Database database = io.GetDatabase();
+            //pak alle oude reserveringen
+            List<Reserveringen> reserveringen = new List<Reserveringen>(code_gebruiker.GetCustomerReservation(ingelogd.klantgegevens, false));
+            List<Reserveringen> reviewdReservervations = new List<Reserveringen>();
+            //pakt alle reviews van een klant
+            List<Review> klantReviews = new List<Review>(io.GetReviews(ingelogd.klantgegevens));
+            
+            
+            //slaat alle reserveringen die al een review hebben op en except deze uit de lijst zodat je alleen niet reviewde reserveringen overhoudt
+            for (int i = 0; i < reserveringen.Count; i++)
+            {
+                for (int j = 0; j < klantReviews.Count; j++)
+                {
+                    if (reserveringen[i].ID == klantReviews[j].reservering_ID)
+                    {
+                        reviewdReservervations.Add(reserveringen[i]);
+                        break;
+                    }
+                }
+            }
+            reserveringen = reserveringen.Except(reviewdReservervations).ToList();
+            
+            //main logo
+            Console.WriteLine(GetGFLogo());
+            
+            
+            //als er geen open reserveringen meer zijn voor review
+            if (reserveringen.Count == 0)
+            {
+                Console.WriteLine("Er zijn momenteel geen oude reserveringen waarover u een review kunt schrijven.");
+                Console.WriteLine("Druk op een toets om terug te gaan.");
+                Console.ReadKey();
+                //de return key
+                return 5;
+            }
+            #endregion
+            #region Check2
+            else
+            {
+                Console.WriteLine("Hier kunt u een review maken.");
+                Console.WriteLine("U kunt een review schrijven per reservering.");
+                Console.WriteLine("U kunt kiezen uit een van de volgende reserveringen:");
+                
+                //list met alle IDs van reserveringen die nog geen review hebben
+                List<int> reservervationsID = new List<int>();
+                for (int i = 0; i < reserveringen.Count; i++)
+                {
+                    Console.WriteLine(reserveringen[i].ID+ " | "+ reserveringen[i].aantal+ " | "+ reserveringen[i].datum);
+                    reservervationsID.Add(reserveringen[i].ID);
+                }
+                
+                
+                Console.WriteLine("Het formaat van deze weergave is \"ID | aantal mensen | datum\".");
+                Console.WriteLine("Met het ID kunt u selecteren over welk bezoek u een review wilt schrijven.");
+                
+                
+                string choice = Console.ReadLine();
+                if (!reservervationsID.Contains(Convert.ToInt32(choice)))
+                {
+                    //invalid input message here
+                }
+                #endregion
+                #region Check3
+                else
+                {
+                    Console.WriteLine("Er is een mogelijkheid om anoniem een review te geven, anoniem houdt in:");
+                    Console.WriteLine("-> U naam word niet opgeslagen met de review.");
+                    Console.WriteLine("-> De review word niet gekoppeld aan deze reservering.");
+                    Console.WriteLine("-> U kunt deze review niet aanpassen of verwijderen.");
+                    Console.WriteLine("Kies [1] voor het maken voor een anonieme review en kies [2] voor het maken van een normale review.");
+                    Console.WriteLine("[1] Anoniem");
+                    Console.WriteLine("[2] Normaal");
+                    Console.WriteLine("[3] Terug");
+                    choice = Console.ReadLine();
+
+                    List<string> possibleInput = new List<string> { "1", "2", "3" };
+
+                    if (!possibleInput.Contains(choice))
+                    {
+                        Console.WriteLine("U moet wel een juiste keuze maken...");
+                        Console.WriteLine("Druk op en knop om terug te gaan.");
+                        Console.ReadKey();
+                        //naar welk scherm gereturned moet worden als de input incorrect is
+                        //return 0;
+                    }
+                    #endregion
+                    else
+                    {
+                        if (choice == "1")
+                        {
+                            //rating en message
+                            Console.WriteLine("De beoordeling die u dit restaurant wilt geven van 1 tot 5 waarin,");
+                            Console.WriteLine("1 is het slechtste en 5 is het beste");
+
+                            choice = Console.ReadLine();
+
+                            possibleInput = new List<string> { "1", "2", "3", "4", "5" };
+
+                            //typecheck voor de rating
+                            if (!possibleInput.Contains(choice))
+                            {
+                                Console.WriteLine("U heeft een incorrecte beoordeling ingevoerd.");
+                                Console.WriteLine("Druk op een knop om terug te gaan.");
+                                Console.ReadKey();
+
+                                //naar welk scherm gereturned moet worden als de input incorrect is
+                                //return 0;
+                            }
+                            else
+                            {
+                                //zet rating naar een int
+                                int rating = Convert.ToInt32(choice);
+
+                                Console.WriteLine("Als laatste, de inhoud van u review.");
+                                Console.WriteLine("Met Enter gaat u verder op een nieuwe regel.");
+                                Console.WriteLine("Als u klaar bent met het typen van u review, type dan \"klaar\" op een nieuwe regel.");
+                                Console.WriteLine("De inhoud van de review:");
+
+                                string message = "";
+                                string Line = Console.ReadLine();
+                                while (Line != "klaar")
+                                {
+                                    message += "\n" + Line;
+                                    Console.WriteLine("\n");
+                                }
+                                code_gebruiker.MakeReview(rating, message);
+                                Console.WriteLine("Succesvol een review gemaakt.");
+                                Console.WriteLine("Druk op een toets om terug te gaan.");
+                                Console.ReadKey();
+
+                                //return naar het vorige scherm pls
+                                //return
+                            }
+                        }
+                        if (choice == "2")
+                        {
+                            //rating, message en klantgegevens/naam klant
+                            Console.WriteLine("De beoordeling die u dit restaurant wilt geven van 1 tot 5 waarin,");
+                            Console.WriteLine("1 is het slechtste en 5 is het beste");
+
+                            choice = Console.ReadLine();
+
+                            possibleInput = new List<string> { "1", "2", "3", "4", "5" };
+
+                            //typecheck voor de rating
+                            if (!possibleInput.Contains(choice))
+                            {
+                                Console.WriteLine("U heeft een incorrecte beoordeling ingevoerd.");
+                                Console.WriteLine("Druk op een knop om terug te gaan.");
+                                Console.ReadKey();
+
+                                //naar welk scherm gereturned moet worden als de input incorrect is
+                                //return 0;
+                            }
+                            else
+                            {
+                                //zet rating naar een int
+                                int rating = Convert.ToInt32(choice);
+
+                                Console.WriteLine("Als laatste, de inhoud van u review.");
+                                Console.WriteLine("Met Enter gaat u verder op een nieuwe regel.");
+                                Console.WriteLine("Als u klaar bent met het typen van u review, type dan \"klaar\" op een nieuwe regel.");
+                                Console.WriteLine("De inhoud van de review:");
+
+                                string message = "";
+                                string Line = Console.ReadLine();
+                                while (Line != "klaar")
+                                {
+                                    message += "\n" + Line;
+                                    Console.WriteLine("\n");
+                                }
+                                //het aanroepen van de functie
+                                //code_gebruiker.MakeReview(rating, ingelogd.klantgegevens, message);
+
+                                Console.WriteLine("Succesvol een review gemaakt.");
+                                Console.WriteLine("Druk op een toets om terug te gaan.");
+                                Console.ReadKey();
+
+                                //return naar het vorige scherm pls
+                                //return
+                            }
+                        }
+                        if (choice == "3")
+                        {
+                            //return naar vorig scherm
+                            //return 0;
+                        }
+                    }
+                }
+                return 5;
+            }
         }
         public override List<Screen> Update(List<Screen> screens)
         {
