@@ -76,6 +76,141 @@ namespace restaurant
             return output += new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
         }
 
+        protected string ReviewsToString(List<Review> reviews)
+        {
+            List<Klantgegevens> klantgegevens = io.GetCustomer(reviews.Select(i => i.Klantnummer).ToList());
+            List<string> block = new List<string>();
+            string output = "";
+
+            for (int a = 0; a < reviews.Count; a += 2)
+            {
+                block.Add(new string(' ', 50) + "##" + new string(' ', 50));
+                block.Add(new string(' ', 50) + "##" + new string(' ', 50));
+                if (reviews[a].annomeme && reviews[a + 1].annomeme)
+                {
+                    block.Add("Anoniem: " + new string(' ', 50 - ("Anoniem: ").Length) + "##  " +
+                            "Anoniem: " + new string(' ', 48 - ("Anoniem: ").Length));
+                    block.Add(new string(' ', 50) + "##" + new string(' ', 50));
+                }
+                else if (reviews[a].annomeme && !reviews[a + 1].annomeme)
+                {
+                    block.Add("Anoniem: " + new string(' ', 50 - ("Anoniem: ").Length) + "##  " +
+                            "Voornaam: " + klantgegevens[a + 1].voornaam + new string(' ', 48 - ("Voornaam: " + klantgegevens[a + 1].voornaam).Length));
+                    block.Add(new string(' ', 50) + "##  " +
+                        "Achternaam: " + klantgegevens[a + 1].achternaam + new string(' ', 48 - ("Achternaam: " + klantgegevens[a + 1].achternaam).Length));
+                }
+                else if (!reviews[a].annomeme && reviews[a + 1].annomeme)
+                {
+                    block.Add("Voornaam: " + klantgegevens[a].voornaam + new string(' ', 50 - ("Voornaam: " + klantgegevens[a].voornaam).Length) + "##  " +
+                        "Anoniem: " + new string(' ', 48 - ("Anoniem: ").Length));
+                    block.Add("Achternaam: " + klantgegevens[a].achternaam + new string(' ', 50 - ("Achternaam: " + klantgegevens[a].achternaam).Length) + "##  " +
+                        new string(' ', 48));
+                }
+                else
+                {
+                    block.Add("Voornaam: " + klantgegevens[a].voornaam + new string(' ', 50 - ("Voornaam: " + klantgegevens[a].voornaam).Length) + "##  " +
+                                        "Voornaam: " + klantgegevens[a + 1].voornaam + new string(' ', 48 - ("Voornaam: " + klantgegevens[a + 1].voornaam).Length));
+                    block.Add("Achternaam: " + klantgegevens[a].achternaam + new string(' ', 50 - ("Achternaam: " + klantgegevens[a].achternaam).Length) + "##  " +
+                        "Achternaam: " + klantgegevens[a + 1].achternaam + new string(' ', 48 - ("Achternaam: " + klantgegevens[a + 1].achternaam).Length));
+                }
+
+                if (reviews[a].message.Length < 50 - ("Review: ").Length && reviews[a + 1].message.Length < 48 - ("Review: ").Length)
+                {
+                    block.Add("Review: " + reviews[a].message + new string(' ', 50 - ("Review: " + reviews[a].message).Length) + "##  " +
+                        "Review: " + reviews[a].message + new string(' ', 48 - ("Review: " + reviews[a].message).Length));
+                    block.Add(new string(' ', 50) + "##" + new string(' ', 50));
+                    block.Add(new string(' ', 50) + "##" + new string(' ', 50));
+                    block.Add(new string(' ', 50) + "##" + new string(' ', 50));
+                }
+                else
+                {
+                    List<string> msgparts1 = new List<string>();
+                    List<string> msgparts2 = new List<string>();
+                    if (reviews[a].message.Length > 50 - ("Review: ").Length)
+                    {
+                        string message = reviews[a].message;
+
+                        msgparts1.Add(message.Substring(0, message.Substring(0, 50 - ("Review: ").Length).LastIndexOf(' ')));
+                        message = message.Remove(0, msgparts1[0].Length + 1);
+
+                        int count = 1;
+                        while (message.Length > 50)
+                        {
+                            msgparts1.Add(message.Substring(0, message.Substring(0, 50).LastIndexOf(' ')));
+                            message = message.Remove(0, msgparts1[count].Length + 1);
+                            count++;
+                        }
+                        msgparts1.Add(message);
+                    }
+                    else
+                    {
+                        msgparts1.Add(reviews[a].message);
+                    }
+
+                    if (reviews[a + 1].message.Length > 48 - ("Review: ").Length)
+                    {
+                        string message = reviews[a + 1].message;
+
+                        msgparts2.Add(message.Substring(0, message.Substring(0, 48 - ("Review: ").Length).LastIndexOf(' ')));
+                        message = message.Remove(0, msgparts2[0].Length + 1);
+
+                        int count = 1;
+                        while (message.Length > 50)
+                        {
+                            msgparts2.Add(message.Substring(0, message.Substring(0, 48).LastIndexOf(' ')));
+                            message = message.Remove(0, msgparts2[count].Length + 1);
+                            count++;
+                        }
+                        msgparts2.Add(message);
+                    }
+                    else
+                    {
+                        msgparts2.Add(reviews[a + 1].message);
+                    }
+
+                    block.Add("Review: " + msgparts1[0] + new string(' ', 50 - ("Review: " + msgparts1[0]).Length) + "##  " +
+                        "Review: " + msgparts2[0] + new string(' ', 48 - ("Review: " + msgparts2[0]).Length));
+                    for (int b = 1; b < 4; b++)
+                    {
+                        if (msgparts1.Count - 1 >= b && msgparts2.Count - 1 >= b)
+                        {
+                            block.Add(msgparts1[b] + new string(' ', 50 - msgparts1[b].Length) + "##  " +
+                                msgparts2[b] + new string(' ', 48 - msgparts2[b].Length));
+                        }
+                        else if (msgparts1.Count - 1 >= b && msgparts2.Count - 1 < b)
+                        {
+                            block.Add(msgparts1[b] + new string(' ', 50 - msgparts1[b].Length) + "##  " +
+                                new string(' ', 48));
+                        }
+                        else if (msgparts1.Count - 1 < b && msgparts2.Count - 1 >= b)
+                        {
+                            block.Add(new string(' ', 50) + "##  " +
+                                msgparts2[b] + new string(' ', 48 - msgparts2[b].Length));
+                        }
+                        else
+                        {
+                            block.Add(new string(' ', 50) + "##" + new string(' ', 50));
+                        }
+                    }
+                }
+
+
+                block.Add("Rating: " + reviews[a].Rating + new string(' ', 50 - ("Rating: " + reviews[a].Rating).Length) + "##  " +
+                    "Rating: " + reviews[a + 1].Rating + new string(' ', 48 - ("Rating: " + reviews[a + 1].Rating).Length));
+                block.Add("Datum: " + reviews[a].datum + new string(' ', 50 - ("Datum: " + reviews[a].datum).Length) + "##  " +
+                        "Datum: " + reviews[a + 1].datum + new string(' ', 48 - ("Datum: " + reviews[a + 1].datum).Length));
+                block.Add(new string(' ', 50) + "##" + new string(' ', 50));
+                block.Add(new string(' ', 50) + "##" + new string(' ', 50));
+
+                output += BoxAroundText(block, "#", 2, 0, 102, true);
+                block = new List<string>();
+            }
+
+            output += new string('#', 108);
+
+            return output;
+        }
+
         /// <summary>
         /// This is the main function of the current screen. Here is all the logic of that current screen
         /// </summary>
@@ -250,142 +385,6 @@ namespace restaurant
                 reviewstostring = ReviewsToString(io.GetReviews());
             }
         }
-
-        private string ReviewsToString(List<Review> reviews)
-        {
-            List<Klantgegevens> klantgegevens = io.GetCustomer(reviews.Select(i => i.Klantnummer).ToList());
-            List<string> block = new List<string>();
-            string output = "";
-
-            for (int a = 0; a < reviews.Count; a += 2)
-            {
-                block.Add(new string(' ', 50) + "##" + new string(' ', 50));
-                block.Add(new string(' ', 50) + "##" + new string(' ', 50));
-                if (reviews[a].annomeme && reviews[a + 1].annomeme)
-                {
-                    block.Add("Anoniem: " + new string(' ', 50 - ("Anoniem: ").Length) + "##  " +
-                            "Anoniem: " + new string(' ', 48 - ("Anoniem: ").Length));
-                    block.Add(new string(' ', 50) + "##" + new string(' ', 50));
-                }
-                else if (reviews[a].annomeme && !reviews[a + 1].annomeme)
-                {
-                    block.Add("Anoniem: " + new string(' ', 50 - ("Anoniem: ").Length) + "##  " +
-                            "Voornaam: " + klantgegevens[a + 1].voornaam + new string(' ', 48 - ("Voornaam: " + klantgegevens[a + 1].voornaam).Length));
-                    block.Add(new string(' ', 50) + "##  " +
-                        "Achternaam: " + klantgegevens[a + 1].achternaam + new string(' ', 48 - ("Achternaam: " + klantgegevens[a + 1].achternaam).Length));
-                }
-                else if (!reviews[a].annomeme && reviews[a + 1].annomeme)
-                {
-                    block.Add("Voornaam: " + klantgegevens[a].voornaam + new string(' ', 50 - ("Voornaam: " + klantgegevens[a].voornaam).Length) + "##  " +
-                        "Anoniem: " + new string(' ', 48 - ("Anoniem: ").Length));
-                    block.Add("Achternaam: " + klantgegevens[a].achternaam + new string(' ', 50 - ("Achternaam: " + klantgegevens[a].achternaam).Length) + "##  " +
-                        new string(' ', 48));
-                }
-                else
-                {
-                    block.Add("Voornaam: " + klantgegevens[a].voornaam + new string(' ', 50 - ("Voornaam: " + klantgegevens[a].voornaam).Length) + "##  " +
-                                        "Voornaam: " + klantgegevens[a + 1].voornaam + new string(' ', 48 - ("Voornaam: " + klantgegevens[a + 1].voornaam).Length));
-                    block.Add("Achternaam: " + klantgegevens[a].achternaam + new string(' ', 50 - ("Achternaam: " + klantgegevens[a].achternaam).Length) + "##  " +
-                        "Achternaam: " + klantgegevens[a + 1].achternaam + new string(' ', 48 - ("Achternaam: " + klantgegevens[a + 1].achternaam).Length));
-                }
-
-                if (reviews[a].message.Length < 50 - ("Review: ").Length && reviews[a + 1].message.Length < 48 - ("Review: ").Length)
-                {
-                    block.Add("Review: " + reviews[a].message + new string(' ', 50 - ("Review: " + reviews[a].message).Length) + "##  " +
-                        "Review: " + reviews[a].message + new string(' ', 48 - ("Review: " + reviews[a].message).Length));
-                    block.Add(new string(' ', 50) + "##" + new string(' ', 50));
-                    block.Add(new string(' ', 50) + "##" + new string(' ', 50));
-                    block.Add(new string(' ', 50) + "##" + new string(' ', 50));
-                }
-                else
-                {
-                    List<string> msgparts1 = new List<string>();
-                    List<string> msgparts2 = new List<string>();
-                    if (reviews[a].message.Length > 50 - ("Review: ").Length)
-                    {
-                        string message = reviews[a].message;
-
-                        msgparts1.Add(message.Substring(0, message.Substring(0, 50 - ("Review: ").Length).LastIndexOf(' ')));
-                        message = message.Remove(0, msgparts1[0].Length + 1);
-
-                        int count = 1;
-                        while (message.Length > 50)
-                        {
-                            msgparts1.Add(message.Substring(0, message.Substring(0, 50).LastIndexOf(' ')));
-                            message = message.Remove(0, msgparts1[count].Length + 1);
-                            count++;
-                        }
-                        msgparts1.Add(message);
-                    }
-                    else
-                    {
-                        msgparts1.Add(reviews[a].message);
-                    }
-
-                    if (reviews[a + 1].message.Length > 48 - ("Review: ").Length)
-                    {
-                        string message = reviews[a + 1].message;
-
-                        msgparts2.Add(message.Substring(0, message.Substring(0, 48 - ("Review: ").Length).LastIndexOf(' ')));
-                        message = message.Remove(0, msgparts2[0].Length + 1);
-
-                        int count = 1;
-                        while (message.Length > 50)
-                        {
-                            msgparts2.Add(message.Substring(0, message.Substring(0, 48).LastIndexOf(' ')));
-                            message = message.Remove(0, msgparts2[count].Length + 1);
-                            count++;
-                        }
-                        msgparts2.Add(message);
-                    }
-                    else
-                    {
-                        msgparts2.Add(reviews[a + 1].message);
-                    }
-
-                    block.Add("Review: " + msgparts1[0] + new string(' ', 50 - ("Review: " + msgparts1[0]).Length) + "##  " +
-                        "Review: " + msgparts2[0] + new string(' ', 48 - ("Review: " + msgparts2[0]).Length));
-                    for (int b = 1; b < 4; b++)
-                    {
-                        if (msgparts1.Count - 1 >= b && msgparts2.Count - 1 >= b)
-                        {
-                            block.Add(msgparts1[b] + new string(' ', 50 - msgparts1[b].Length) + "##  " +
-                                msgparts2[b] + new string(' ', 48 - msgparts2[b].Length));
-                        }
-                        else if (msgparts1.Count - 1 >= b && msgparts2.Count - 1 < b)
-                        {
-                            block.Add(msgparts1[b] + new string(' ', 50 - msgparts1[b].Length) + "##  " +
-                                new string(' ', 48));
-                        }
-                        else if (msgparts1.Count - 1 < b && msgparts2.Count - 1 >= b)
-                        {
-                            block.Add(new string(' ', 50) + "##  " +
-                                msgparts2[b] + new string(' ', 48 - msgparts2[b].Length));
-                        }
-                        else
-                        {
-                            block.Add(new string(' ', 50) + "##" + new string(' ', 50));
-                        }
-                    }
-                }
-
-
-                block.Add("Rating: " + reviews[a].Rating + new string(' ', 50 - ("Rating: " + reviews[a].Rating).Length) + "##  " +
-                    "Rating: " + reviews[a + 1].Rating + new string(' ', 48 - ("Rating: " + reviews[a + 1].Rating).Length));
-                block.Add("Datum: " + reviews[a].datum + new string(' ', 50 - ("Datum: " + reviews[a].datum).Length) + "##  " +
-                        "Datum: " + reviews[a + 1].datum + new string(' ', 48 - ("Datum: " + reviews[a + 1].datum).Length));
-                block.Add(new string(' ', 50) + "##" + new string(' ', 50));
-                block.Add(new string(' ', 50) + "##" + new string(' ', 50));
-
-                output += BoxAroundText(block, "#", 2, 0, 102, true);
-                block = new List<string>();
-            }
-
-            output += new string('#', 108);
-
-            return output;
-        }
-
         public override int DoWork()
         {
             Console.WriteLine(GFLogo);
