@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="restaurant.Program" Collapsed="true">
-    <Position X="8" Y="6.5" Width="1.5" />
+    <Position X="2.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
       <FileName>Program.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="restaurant.NativeMethods" Collapsed="true">
-    <Position X="6.25" Y="6.5" Width="1.5" />
+    <Position X="0.5" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAABAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Program.cs</FileName>
@@ -58,26 +58,6 @@
       <Field Name="Menu_gebruiker" />
       <Field Name="IO" />
       <Field Name="database" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="restaurant.Code_Console">
-    <Position X="6.5" Y="13.25" Width="2" />
-    <AssociationLine Name="Code_Gebruiker" Type="restaurant.Code_Gebruiker_menu">
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="1.815" Y="-0.354" />
-      </MemberNameLabel>
-    </AssociationLine>
-    <TypeIdentifier>
-      <HashCode>AAAAAAAQAFBBAACAEUAAAQIAAAgAgDIAAAAgAiAAAAA=</HashCode>
-      <FileName>Code_Console.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="Code_login" />
-      <Field Name="Code_Eigenaar" />
-      <Field Name="Code_Medewerker" />
-      <Field Name="Code_Gebruiker" />
-      <Field Name="TestingClass" />
-      <Field Name="screens" />
     </ShowAsAssociation>
   </Class>
   <Class Name="restaurant.Code_Login_menu">
@@ -140,6 +120,9 @@
       <HashCode>CADAAEIAAAAIAKBAiwACQAIAAARAAGCEAAAAAFgAAAE=</HashCode>
       <FileName>Code_Eigenaar_menu.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="instance" />
+    </ShowAsAssociation>
   </Class>
   <Class Name="restaurant.Menu_Medewerker">
     <Position X="17.5" Y="7.75" Width="1.75" />
@@ -153,7 +136,7 @@
         <Position X="0.09" Y="1.81" />
       </MemberNameLabel>
     </AssociationLine>
-    <AssociationLine Name="database" Type="restaurant.Database" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="database" Type="restaurant.Database" ManuallyRouted="true">
       <Path>
         <Point X="19.25" Y="8.375" />
         <Point X="23.911" Y="8.375" />
@@ -183,7 +166,7 @@
   </Class>
   <Class Name="restaurant.Menu_Gebruiker">
     <Position X="14.75" Y="9.25" Width="1.5" />
-    <AssociationLine Name="database" Type="restaurant.Database" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="database" Type="restaurant.Database" ManuallyRouted="true">
       <Path>
         <Point X="15.5" Y="9.25" />
         <Point X="15.5" Y="7.501" />
@@ -215,7 +198,7 @@
   <Class Name="restaurant.IO">
     <Position X="21.25" Y="10.25" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AABAAAAAQQAAIABgAEAAAAJAAAABgAAEACAAQIABAAA=</HashCode>
+      <HashCode>AABAAAAAAQAAIABgAEAAAAJAAAABgAAEACAAQIABAAA=</HashCode>
       <FileName>IO.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -241,8 +224,6 @@
     <AssociationLine Name="login_gegevens" Type="restaurant.Login_gegevens" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="26.312" Y="11.5" />
-        <Point X="26.312" Y="10.724" />
-        <Point X="26.312" Y="10.724" />
         <Point X="26.312" Y="7.988" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
@@ -509,47 +490,6 @@
       <FileName>testing class.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="restaurant.Choice">
-    <Position X="3.25" Y="16" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAACQAAAAAAAAACAACAAAAAAAAAAAAAAAAAACAAAAEA=</HashCode>
-      <FileName>Code_Console.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="restaurant.BaseScreen">
-    <Position X="1.75" Y="11" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAABAAAAAACAAAAQA=</HashCode>
-      <FileName>Code_Console.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="restaurant.DisplayScreen">
-    <Position X="3" Y="13.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Code_Console.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsCollectionAssociation>
-      <Field Name="Choices" />
-    </ShowAsCollectionAssociation>
-  </Class>
-  <Class Name="restaurant.FunctionScreen">
-    <Position X="0.5" Y="13.75" Width="1.75" />
-    <TypeIdentifier>
-      <HashCode>AAQAIAAUAAAIBAAgAABAABIAAABEAAAAAA4AAAgAAAA=</HashCode>
-      <FileName>Code_Console.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="restaurant.Screens">
-    <Position X="4.5" Y="11" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAEAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAgA=</HashCode>
-      <FileName>Code_Console.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsCollectionAssociation>
-      <Field Name="AllScreens" />
-    </ShowAsCollectionAssociation>
-  </Class>
   <Class Name="restaurant.Gerechten">
     <Position X="33.5" Y="8.5" Width="1.5" />
     <TypeIdentifier>
@@ -557,60 +497,91 @@
       <FileName>Gerechten.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="restaurant.remon_code_console">
-    <Position X="18.5" Y="0.5" Width="1.5" />
+  <Class Name="restaurant.Code_Console">
+    <Position X="6" Y="10.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAhAAAAAAAAAAQAAAAAAgAAAAAAgAAAAAAA=</HashCode>
-      <FileName>remon_code_console.cs</FileName>
+      <FileName>Code_Console.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
       <Field Name="screens" />
     </ShowAsCollectionAssociation>
   </Class>
-  <Class Name="restaurant.screens" Collapsed="true">
-    <Position X="6" Y="0.5" Width="1.5" />
+  <Class Name="restaurant.Screen">
+    <Position X="5.75" Y="3.75" Width="2" />
+    <AssociationLine Name="code_gebruiker" Type="restaurant.Code_Gebruiker_menu" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="7.75" Y="5.062" />
+        <Point X="9.858" Y="5.062" />
+        <Point X="9.858" Y="9.969" />
+        <Point X="11.5" Y="9.969" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="code_login" Type="restaurant.Code_Login_menu" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="7.75" Y="5.562" />
+        <Point X="8.425" Y="5.562" />
+        <Point X="8.425" Y="13.413" />
+        <Point X="9.75" Y="13.413" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.276" Y="0.073" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="testing_class" Type="restaurant.Testing_class">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="1.299" Y="0.111" />
+      </MemberNameLabel>
+    </AssociationLine>
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAQAAAAQCAABQAJAIAAAAAAAAAACAAAAAAA=</HashCode>
-      <FileName>remon_code_console.cs</FileName>
+      <FileName>Code_Console.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="code_eigenaar" />
+      <Field Name="code_medewerker" />
+      <Field Name="code_gebruiker" />
+      <Field Name="code_login" />
+      <Field Name="testing_class" />
+    </ShowAsAssociation>
   </Class>
   <Class Name="restaurant.StartScreen">
-    <Position X="9.5" Y="1.75" Width="1.5" />
+    <Position X="9.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>remon_code_console.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="restaurant.GerechtenScreen">
-    <Position X="0.5" Y="1.75" Width="1.5" />
+    <Position X="2.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAQEAAAEAAAAAACAAAAAAAAAAAAAAAAAIAA=</HashCode>
       <FileName>remon_code_console.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="restaurant.ReviewScreen">
-    <Position X="5" Y="1.75" Width="1.5" />
+    <Position X="5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAQAAAQAAAAAAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
       <FileName>remon_code_console.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="restaurant.RegisterScreen">
-    <Position X="11.75" Y="1.75" Width="1.5" />
+    <Position X="11.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>remon_code_console.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="restaurant.LoginScreen">
-    <Position X="2.75" Y="1.75" Width="1.5" />
+    <Position X="0.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>remon_code_console.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="restaurant.ClientMenuScreen">
-    <Position X="7.25" Y="1.75" Width="1.5" />
+    <Position X="7" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAgAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>remon_code_console.cs</FileName>
