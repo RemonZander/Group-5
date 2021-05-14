@@ -186,7 +186,7 @@ namespace restaurant
                 beschikbaar[location] = Tuple.Create(reservering.datum, tempTableList);
                 //1-8 want er zitten 8 kwartieren in 2uur
                 //1-120 want er zitten 120 minuten in 2 uur
-                for (int b = 1; b <= 120; b++)
+                for (int b = 1; b <= 8; b++)
                 {
                     //als location+b out of range gaat, break
                     if ((location + b) >= beschikbaar.Count)
@@ -194,7 +194,7 @@ namespace restaurant
                         break;
                     }
                     //haalt alle tafels uit beschikbaar die in removed_tables staan
-                    beschikbaar[location + b] = Tuple.Create(reservering.datum.AddMinutes(1 * b), beschikbaar[location + b].Item2.Except(removed_tables).ToList());
+                    beschikbaar[location + b] = Tuple.Create(reservering.datum.AddMinutes(15 * b), beschikbaar[location + b].Item2.Except(removed_tables).ToList());
                     //als er helemaal geen tafels meer beschikbaar zijn voor een gegeven tijd, haal die weg
                     if (beschikbaar[location + b].Item2.Count == 0)
                     {

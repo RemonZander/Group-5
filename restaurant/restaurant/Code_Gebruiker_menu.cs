@@ -33,7 +33,7 @@ namespace restaurant
 
         public Code_Gebruiker_menu()
         {
-            database = io.GetDatabase();
+            
         }
 
         #region Reserveringen
@@ -673,11 +673,9 @@ namespace restaurant
                 Console.WriteLine("U kunt kiezen uit een van de volgende reserveringen:");
                 
                 //list met alle IDs van reserveringen die nog geen review hebben
-                List<int> reservervationsID = new List<int>();
                 for (int i = 0; i < reserveringen.Count; i++)
                 {
                     Console.WriteLine(reserveringen[i].ID+ " | "+ reserveringen[i].aantal+ " | "+ reserveringen[i].datum);
-                    reservervationsID.Add(reserveringen[i].ID);
                 }
                 
                 Console.WriteLine("\"ID | aantal mensen | datum\"");
@@ -687,7 +685,7 @@ namespace restaurant
                 
                 string choice = Console.ReadLine();
                 //als de input niet een van de getallen is in de lijst met IDs, invalid input
-                if (!reservervationsID.Contains(Convert.ToInt32(choice)))
+                if (!reserveringen.Select(i => i.ID).ToList().Contains(Convert.ToInt32(choice)))
                 {
                     //invalid input message here
                 }
@@ -730,7 +728,7 @@ namespace restaurant
                         Console.WriteLine("Druk op en knop om terug te gaan.");
                         Console.ReadKey();
                         //naar welk scherm gereturned moet worden als de input incorrect is
-                        return 5;
+                        return 7;
                     }
                     #endregion
                     else
@@ -758,7 +756,7 @@ namespace restaurant
                                 Console.ReadKey();
 
                                 //naar welk scherm gereturned moet worden als de input incorrect is
-                                return 5;
+                                return 7;
                             }
                             else
                             {
@@ -782,7 +780,7 @@ namespace restaurant
                                     }
                                     else
                                     {
-                                        message += "\n" + Line;
+                                        message += " " + Line;
                                     }
                                 }
                                 code_gebruiker.MakeReview(rating, message);
@@ -812,7 +810,7 @@ namespace restaurant
                                 Console.ReadKey();
 
                                 //naar welk scherm gereturned moet worden als de input incorrect is
-                                return 5;
+                                return 7;
                             }
                             else
                             {
@@ -839,7 +837,7 @@ namespace restaurant
                                     }
                                     else
                                     {
-                                        message += "\n" + Line;
+                                        message += " " + Line;
                                     }
                                 }
                                 code_gebruiker.MakeReview(rating, ingelogd.klantgegevens, message, chosenReservation);
