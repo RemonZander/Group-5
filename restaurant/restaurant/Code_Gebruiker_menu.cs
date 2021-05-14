@@ -141,6 +141,70 @@ namespace restaurant
             database.reserveringen.Remove(reserveringen);
             io.Savedatabase(database);
         }
+
+        //mist nog een adres dus nog niet compleet af
+        /// <summary>
+        /// maakt een reservering aan voor bezorging
+        /// </summary>
+        /// <param name="klant">De klantgegevens</param>
+        /// <param name="bestelling">De list met alle gerechten</param>
+        public void ReservationDelivery(Klantgegevens klant, List<Gerechten> bestelling)
+        {
+            database = io.GetDatabase();
+            Reserveringen reservering = new Reserveringen()
+            {
+                datum = DateTime.Now,
+                klantnummer = klant.klantnummer,
+                //adres = klant.adres,
+            };
+
+            if (database.reserveringen.Count == 0)
+            {
+                reservering.ID = 0;
+            }
+            else
+            {
+                reservering.ID = database.reserveringen[database.reserveringen.Count - 1].ID + 1;
+            }
+            List<int> gerechtenID = new List<int>();
+            for (int i = 0; i < bestelling.Count; i++)
+            {
+                gerechtenID.Add(bestelling[i].ID);
+            }
+            database.reserveringen.Add(reservering);
+            io.Savedatabase(database);
+        }
+
+        /// <summary>
+        /// maakt een reservering aan voor afhaal
+        /// </summary>
+        /// <param name="klant">De klantgegevens</param>
+        /// <param name="bestelling">De List met alle gerechten die besteld zijn</param>
+        public void ReservationTakeout(Klantgegevens klant, List<Gerechten> bestelling)
+        {
+            database = io.GetDatabase();
+            Reserveringen reservering = new Reserveringen()
+            {
+                datum = DateTime.Now,
+                klantnummer = klant.klantnummer,
+            };
+
+            if (database.reserveringen.Count == 0)
+            {
+                reservering.ID = 0;
+            }
+            else
+            {
+                reservering.ID = database.reserveringen[database.reserveringen.Count - 1].ID + 1;
+            }
+            List<int> gerechtenID = new List<int>();
+            for (int i = 0; i < bestelling.Count; i++)
+            {
+                gerechtenID.Add(bestelling[i].ID);
+            }
+            database.reserveringen.Add(reservering);
+            io.Savedatabase(database);
+        }
         #endregion
 
         #region Menukaart
