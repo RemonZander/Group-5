@@ -51,6 +51,13 @@ namespace restaurant
 | |_\ \ | | (_| | | | | (_| | | | | |_| \__ \ | (_) | | | |
  \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|";
 
+        protected string GFLogoWithLogin = @" _____                     _  ______         _         
+|  __ \                   | | |  ___|       (_)                         U bent nu ingelogd als {0} {1}
+| |  \/_ __ __ _ _ __   __| | | |_ _   _ ___ _  ___  _ __               [{2}] Log uit
+| | __| '__/ _` | '_ \ / _` | |  _| | | / __| |/ _ \| '_ \ 
+| |_\ \ | | (_| | | | | (_| | | | | |_| \__ \ | (_) | | | |
+ \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|";
+
         protected string BoxAroundText(List<string> input, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom)
         {
             string output = new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
@@ -224,14 +231,19 @@ namespace restaurant
         /// <returns>This returns the same list you just gave as param but now it has been updated with information</returns>
         public abstract List<Screen> Update(List<Screen> screens);
 
-        public string GetGFLogo() => ingelogd.type == null || ingelogd.type == "No account found" ? GFLogo + "\n" : GFLogo + $"\nU bent nu ingelogd als {ingelogd.klantgegevens.voornaam} {ingelogd.klantgegevens.achternaam}\n[4] Log uit\n";
+        /// <summary>
+        /// Returns a variant of the GFLogo string based on wether the user is logged in or not.
+        /// </summary>
+        /// <param name="highestNumber">This is the number to display the logout choice with.</param>
+        /// <returns>GFLogo string</returns>
+        public string GetGFLogo(int highestNumber) => ingelogd.type == null || ingelogd.type == "No account found" ? GFLogo + "\n" : string.Format(GFLogoWithLogin, ingelogd.klantgegevens.voornaam, ingelogd.klantgegevens.achternaam, highestNumber);
     }
 
     public class StartScreen : Screen
     {
         public override int DoWork()
         {
-            Console.WriteLine(GetGFLogo());
+            Console.WriteLine(GetGFLogo(4));
             Console.WriteLine("Kies een optie:");
             Console.WriteLine("[1] Laat alle gerechten zien");
             Console.WriteLine("[2] Laat alle reviews zien");
