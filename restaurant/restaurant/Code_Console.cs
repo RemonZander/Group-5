@@ -51,7 +51,7 @@ namespace restaurant
 | |_\ \ | | (_| | | | | (_| | | | | |_| \__ \ | (_) | | | |
  \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|";
 
-        protected string GFLogoWithLogin = @" _____                     _  ______         _         
+        protected const string GFLogoWithLogin = @" _____                     _  ______         _         
 |  __ \                   | | |  ___|       (_)                         U bent nu ingelogd als {0} {1}
 | |  \/_ __ __ _ _ __   __| | | |_ _   _ ___ _  ___  _ __               [{2}] Log uit
 | | __| '__/ _` | '_ \ / _` | |  _| | | / __| |/ _ \| '_ \ 
