@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -288,6 +289,50 @@ namespace restaurant
         protected static void InvalidInputMessage() => Console.WriteLine("\nU moet wel een juiste keuze maken...\nDruk op en knop om verder te gaan.");
 
         /// <summary>
+        /// With this method you can ask the user for input and add a condition based on what type of characters are allowed in the input
+        /// </summary>
+        /// <param name="condition">The anonymous function that gets called to check if the character in the input string matches a certain condition. Set to null if you accept every input.</param>
+        /// <param name="onFalseMessage">The message to display when the condition failes.</param>
+        /// <returns>True if the user is logged in false if not</returns>
+        protected string AskForInput(Func<char, bool> conditionPerChar, Func<string, bool> conditionInput, string onFalseMessage = "")
+        {
+            string input = Console.ReadLine();
+            bool isValid = true;
+
+            if (conditionPerChar == null && conditionInput == null)
+            {
+                return input;
+            }
+            else if (conditionPerChar != null)
+            {
+                char[] charsOfInput = input.ToCharArray();
+
+                for (int i = 0; i < charsOfInput.Length; i++)
+                {
+                    if (!conditionPerChar(charsOfInput[i]))
+                    {
+                        Console.WriteLine(onFalseMessage);
+                        isValid = false;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                isValid = conditionInput(input);
+            }
+
+            if (isValid)
+            {
+                return input;
+            }
+            else
+            {
+                return AskForInput(conditionPerChar, conditionInput, onFalseMessage);
+            }
+        }
+
+        /// <summary>
         /// Returns a variant of the GFLogo string based on wether the user is logged in or not.
         /// </summary>
         /// <param name="highestNumber">This is the number to display the logout choice with.</param>
@@ -497,32 +542,50 @@ namespace restaurant
             Console.WriteLine("Uw voornaam: ");
             new_gebruiker.klantgegevens = new Klantgegevens
             {
-                voornaam = Console.ReadLine(),
+                voornaam = AskForInput(c => char.IsLetter(c), null, "Alleen maar letters mogen ingevoerd worden!"),
                 klantnummer = login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1
             };
             Console.WriteLine("Uw achternaam: ");
-            new_gebruiker.klantgegevens.achternaam = Console.ReadLine();
-            Console.WriteLine("Uw geboorte datum met het formaat dag-maand-jaar: ");
-            new_gebruiker.klantgegevens.geb_datum = Convert.ToDateTime(Console.ReadLine());
+            new_gebruiker.klantgegevens.achternaam = AskForInput(c => char.IsLetter(c), null, "Alleen maar letters mogen ingevoerd worden!");
+
+            Console.WriteLine("Uw geboorte datum met het formaat d/mm/yyyy: ");
+            
+            dateInput:
+                DateTime resultDateTime;
+                if (DateTime.TryParseExact(Console.ReadLine(), "d/mm/yyyy", new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime))
+                {
+                    new_gebruiker.klantgegevens.geb_datum = resultDateTime;
+                }
+                else
+                {
+                    Console.WriteLine("De datum die u hebt ingevoerd klopt niet, probeer het opnieuw");
+                    goto dateInput;
+                }
+
             Console.WriteLine("Hieronder vult u uw adres in. Dit is in verband met het bestellen van eten. \n");
             Console.WriteLine("Uw woonplaats: ");
             new_gebruiker.klantgegevens.adres = new adres
             {
-                woonplaats = Console.ReadLine(),
+                woonplaats = AskForInput(c => char.IsLetter(c), null, "Alleen maar letters mogen ingevoerd worden!"),
                 land = "NL"
             };
             Console.WriteLine("Uw postcode: ");
-            new_gebruiker.klantgegevens.adres.postcode = Console.ReadLine();
+            new_gebruiker.klantgegevens.adres.postcode = AskForInput(c => char.IsLetter(c) || char.IsDigit(c), null, "Alleen maar letters of cijfers mogen ingevoerd worden!");
+
             Console.WriteLine("Uw straatnaam: ");
-            new_gebruiker.klantgegevens.adres.straatnaam = Console.ReadLine();
+            new_gebruiker.klantgegevens.adres.straatnaam = AskForInput(c => char.IsLetter(c), null, "Alleen maar letters mogen ingevoerd worden!");
+
             Console.WriteLine("Uw huisnummer: ");
             new_gebruiker.klantgegevens.adres.huisnummer = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("\n Hieronder vult u uw login gegevens: ");
+
+            Console.WriteLine("\nHieronder vult u uw login gegevens: ");
             Console.WriteLine("Uw email adres: ");
-            new_gebruiker.email = Console.ReadLine();
+            new_gebruiker.email = AskForInput(null, input => input.Contains('@') && input.Contains('.'), "De email is niet juist er mist een @ of een .");
+
             Console.WriteLine("Het wachtwoord voor uw account: ");
             new_gebruiker.password = Console.ReadLine();
             new_gebruiker.type = "Gebruiker";
+
             Console.WriteLine("\n Kloppen de bovenstaande gegevens?");
             Console.WriteLine("[1] Deze kloppen niet, breng me terug.");
             Console.WriteLine("[2] ja deze kloppen.");
