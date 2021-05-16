@@ -155,7 +155,7 @@ namespace restaurant
             {
                 datum = DateTime.Now,
                 klantnummer = klant.klantnummer,
-                //adres = klant.adres,
+                isBezorging = true,
             };
 
             if (database.reserveringen.Count == 0)
@@ -619,68 +619,6 @@ namespace restaurant
         #endregion
 
         #region Deprecated
-
-        [Obsolete("makeReview is vervangen met MakeReview.")]
-        public void makeReview(int rating, Klantgegevens klant, string message, Reserveringen reservering, bool anoniem)
-        {
-            database = io.GetDatabase();
-            if (database.reviews == null)
-            {
-                database.reviews = new List<Review>();
-            }
-
-            Review review = new Review
-            {
-                Rating = rating,
-                Klantnummer = klant.klantnummer,
-                message = message,
-                reservering_ID = reservering.ID,
-                annomeme = anoniem,
-                datum = DateTime.Now
-            };
-            if (database.reviews.Count == 0)
-            {
-                review.ID = 0;
-            }
-            else
-            {
-                review.ID = database.reviews[database.reviews.Count - 1].ID + 1;
-            }
-
-            database.reviews.Add(review);
-            io.Savedatabase(database);
-        }
-
-        [Obsolete("overwriteReview is vervangen met OverwriteReview.")]
-        public void overwriteReview(int reviewID, int rating, Klantgegevens klant, string message, bool anoniem)
-        {
-            //pakt de database
-            database = io.GetDatabase();
-
-            //voor alle reviews in de database
-            for (int i = 0; i < database.reviews.Count; i++)
-            {
-                //als reviewID in de database gelijk staat aan gegeven reviewID en voor opgegeven klant, moet niet hebben dat mensen andere reviews kunnen aanpassen
-                if (reviewID == database.reviews[i].ID && klant.klantnummer == database.reviews[i].Klantnummer)
-                {
-                    //maakt een nieuwe review op dezelfde locatie als de oude met informatie van de oude en de nieuwe
-                    database.reviews[i] = new Review
-                    {
-                        Rating = rating,
-                        annomeme = anoniem,
-                        datum = database.reviews[i].datum,
-                        ID = database.reviews[i].ID,
-                        Klantnummer = database.reviews[i].Klantnummer,
-                        message = message,
-                        reservering_ID = database.reviews[i].reservering_ID,
-                    };
-                    //stop the count
-                    break;
-                }
-            }
-            //save de database
-            io.Savedatabase(database);
-        }
 
         #endregion
     }
