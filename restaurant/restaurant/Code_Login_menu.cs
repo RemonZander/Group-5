@@ -14,7 +14,6 @@ namespace restaurant
 
         public Code_Login_menu()
         {
-            database = io.Getdatabase();
         }
 
         public void Debug()
@@ -24,6 +23,8 @@ namespace restaurant
 
         public Login_gegevens Login_Check(string email, string password)
         {
+            database = io.GetDatabase();
+
             foreach (var login_Gegevens in database.login_gegevens)
             {
                 if (email == login_Gegevens.email && password == login_Gegevens.password)
