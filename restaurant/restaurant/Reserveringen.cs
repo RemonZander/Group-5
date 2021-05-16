@@ -30,5 +30,7 @@ namespace restaurant
         public List<int> gerechten_ID { get; set; }
 
         public bool tafel_bij_raam { get; set; }
+
+        public bool isBezorging { get; set; }
     }
 }
