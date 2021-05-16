@@ -191,10 +191,26 @@ namespace restaurant
                     //als location+b out of range gaat, break
                     if ((location + b) >= beschikbaar.Count)
                     {
+                        for (int i = 0; i < 8-b; i++)
+                        {
+                            beschikbaar[location - (b+i)] = Tuple.Create(reservering.datum.AddMinutes(15 * (-b-i)), beschikbaar[location - (b+i)].Item2.Except(removed_tables).ToList());
+                            if (beschikbaar[location - (b+i)].Item2.Count == 0)
+                            {
+                                beschikbaar.RemoveAt(location - (b+i));
+                            }
+                        }
                         break;
                     }
                     //haalt alle tafels uit beschikbaar die in removed_tables staan
                     beschikbaar[location + b] = Tuple.Create(reservering.datum.AddMinutes(15 * b), beschikbaar[location + b].Item2.Except(removed_tables).ToList());
+                    if (location- b >= 0)
+                    {
+                        beschikbaar[location - b] = Tuple.Create(reservering.datum.AddMinutes(15 * -b), beschikbaar[location - b].Item2.Except(removed_tables).ToList());
+                        if (beschikbaar[location - b].Item2.Count == 0)
+                        {
+                            beschikbaar.RemoveAt(location - b);
+                        }
+                    }
                     //als er helemaal geen tafels meer beschikbaar zijn voor een gegeven tijd, haal die weg
                     if (beschikbaar[location + b].Item2.Count == 0)
                     {
@@ -439,32 +455,7 @@ namespace restaurant
         }
 
         #region Deprecated
-        [Obsolete("Getdatabase graag vervangen met GetDatabase.")]
-        public Database Getdatabase()
-        {
-            Database database = new Database();
-
-            if (!File.Exists(@"..\database\database.Json")) return database;
-            string output = File.ReadAllText(@"..\database\database.Json");
-            database = JsonConvert.DeserializeObject<Database>(output);
-
-            List<Tafels> temp = new List<Tafels>();
-            for (int i = 0; i < 100; i++)
-            {
-                Tafels tafel = new Tafels
-                {
-                    ID = i,
-                    Zetels = 4
-                };
-
-                if (i % 2 != 0) tafel.isRaam = true;
-
-                temp.Add(tafel);
-            }
-            database.tafels = temp;
-
-            return database;
-        }
+        
         #endregion
     }
 }
