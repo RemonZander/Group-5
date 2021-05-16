@@ -103,16 +103,9 @@ namespace restaurant
 
             Reserveringen reservering = new Reserveringen
             {
-
-                //zet het ID van de reservering naar +1 van het aantal dat al is gemaakt
-                //ID = database.reserveringen.Count + 1,
-
-                //aantal mensen
                 aantal = aantalMensen,
-
-                //voeg alle klantnummers toe
                 klantnummer = klantnummer,
-
+                tafel_bij_raam = raamTafel,
                 datum = date
             };
             //voor de eerste moet het ID 0 zijn, daarna blijven optellen vanaf het laatste ID
