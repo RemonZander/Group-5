@@ -150,14 +150,12 @@ namespace restaurant
                 reserveringen_list.Add(new Reserveringen
                 {
                     datum = beschikbaar[pos].Item1,
-                    ID = a,
+                    ID = reserveringen_list.Count,
                     tafels = tafels,
                     klantnummer = database.login_gegevens[rnd.Next(database.login_gegevens.Count)].klantgegevens.klantnummer,
                     gerechten_ID = gerechten_ID,
                     aantal = aantal,
                 });
-
-
             }
         }
 
@@ -201,8 +199,30 @@ namespace restaurant
                     beschikbaar[location] = Tuple.Create(reserveringen[c].datum, tempTableList);
                     for (int b = 1; b <= 8; b++)
                     {
-                        if ((location + b) >= beschikbaar.Count) break;
+                        if ((location + b) >= beschikbaar.Count)
+                        {
+                            for (int e = 0; e < 8-b; e++)
+                            {
+                                beschikbaar[location - (b+e)] = Tuple.Create(reserveringen[c].datum.AddMinutes(15 * (-b-e)), beschikbaar[location - (b+e)].Item2.Except(removed_tables).ToList());
+                                if (beschikbaar[location - (b+e)].Item2.Count == 0)
+                                {
+                                    beschikbaar.RemoveAt(location - (b+e));
+                                }
+                            }
+                            break;
+                        }
+                        
                         beschikbaar[location + b] = Tuple.Create(reserveringen[c].datum.AddMinutes(15 * b), beschikbaar[location + b].Item2.Except(removed_tables).ToList());
+
+                        if (location - b >= 0)
+                        {
+                            beschikbaar[location - b] = Tuple.Create(reserveringen[c].datum.AddMinutes(15 * -b), beschikbaar[location - b].Item2.Except(removed_tables).ToList());
+                            if (beschikbaar[location - b].Item2.Count == 0)
+                            {
+                                beschikbaar.RemoveAt(location - b);
+                            }
+                        }
+                        
                         if (beschikbaar[location + b].Item2.Count == 0)
                         {
                             beschikbaar.RemoveAt(location + b);
@@ -1059,7 +1079,7 @@ namespace restaurant
             List<Review> reviews = new List<Review>();
             reviews = io.GetReviews(ingelogd.klantgegevens).OrderBy(s => s.datum).ToList();
 
-            Console.WriteLine(GFLogo);
+            Console.WriteLine(GetGFLogo(5));
             Console.WriteLine("Hier kunt u uw eigen reviews zien:");
             Console.WriteLine("[1] Laat al uw reviews zien");
             Console.WriteLine("[2] Laat al uw reviews zien vanaf een datum (genoteerd als 1-1-2000)");
@@ -1084,7 +1104,7 @@ namespace restaurant
                     List<string> pages = MakePages(ReviewsToString(reviews), 3);
                     a:
                     Console.Clear();
-                    Console.WriteLine(GFLogo);
+                    Console.WriteLine(GetGFLogo(3));
                     Console.WriteLine($"Dit zijn uw reviews op pagina {page} van de {pages.Count - 1}:");
                     Console.WriteLine(pages[page] + new string('#', 108));
                     if (page < pages.Count - 1)
@@ -1130,7 +1150,7 @@ namespace restaurant
                         pages = MakePages(ReviewsToString(reviews.Where(d => d.datum >= date).ToList()), 3);
                     b:
                         Console.Clear();
-                        Console.WriteLine(GFLogo);
+                        Console.WriteLine(GetGFLogo(3));
                         Console.WriteLine($"Dit zijn uw reviews op pagina {page} van de {pages.Count - 1}:");
                         Console.WriteLine(pages[page] + new string('#', 108));
                         if (page < pages.Count - 1)
@@ -1189,7 +1209,7 @@ namespace restaurant
                     pages = MakePages(ReviewsToString(reviews.Where(r => r.Rating == Convert.ToInt32(choice)).ToList()), 3);
                 c:
                     Console.Clear();
-                    Console.WriteLine(GFLogo);
+                    Console.WriteLine(GetGFLogo(3));
                     Console.WriteLine($"Dit zijn uw reviews op pagina {page} van de {pages.Count - 1}:");
                     Console.WriteLine(pages[page] + new string('#', 108));
                     if (page < pages.Count - 1)
