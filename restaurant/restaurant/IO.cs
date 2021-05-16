@@ -203,15 +203,18 @@ namespace restaurant
                     }
                     //haalt alle tafels uit beschikbaar die in removed_tables staan
                     beschikbaar[location + b] = Tuple.Create(reservering.datum.AddMinutes(15 * b), beschikbaar[location + b].Item2.Except(removed_tables).ToList());
-                    beschikbaar[location - b] = Tuple.Create(reservering.datum.AddMinutes(15 * -b), beschikbaar[location - b].Item2.Except(removed_tables).ToList());
+                    if (location- b >= 0)
+                    {
+                        beschikbaar[location - b] = Tuple.Create(reservering.datum.AddMinutes(15 * -b), beschikbaar[location - b].Item2.Except(removed_tables).ToList());
+                        if (beschikbaar[location - b].Item2.Count == 0)
+                        {
+                            beschikbaar.RemoveAt(location - b);
+                        }
+                    }
                     //als er helemaal geen tafels meer beschikbaar zijn voor een gegeven tijd, haal die weg
                     if (beschikbaar[location + b].Item2.Count == 0)
                     {
                         beschikbaar.RemoveAt(location + b);
-                    }
-                    if (beschikbaar[location - b].Item2.Count == 0)
-                    {
-                        beschikbaar.RemoveAt(location - b);
                     }
                 }
             }
