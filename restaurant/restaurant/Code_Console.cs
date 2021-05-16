@@ -23,7 +23,7 @@ namespace restaurant
             screens.Add(new MakeReviewScreen());
             screens.Add(new EditReviewScreen());
             screens.Add(new ClientMenuScreen());
-            screens.Add(new ClientMenuScreen());
+            screens.Add(new ViewReviewScreen());
             screens.Add(new OwnerMenuScreen());
             currentScreen = 0;
         }
@@ -573,7 +573,7 @@ namespace restaurant
             List<Review> reviews = io.GetReviews();
             if (reviews.Count > 0)
             {
-      /*          reviewstostring = ReviewsToString(io.GetReviews());*/
+                reviewstostring = string.Join(null, ReviewsToString(io.GetReviews())) + new string('#', 108);
             }
         }
         public override int DoWork()
