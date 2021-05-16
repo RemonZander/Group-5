@@ -10,6 +10,7 @@ namespace restaurant
         private int currentScreen;
         private int lastscreen;
         private List<Screen> screens = new List<Screen>();
+
         public Code_Console()
         {
             screens.Add(new StartScreen());
@@ -18,6 +19,12 @@ namespace restaurant
             screens.Add(new RegisterScreen());
             screens.Add(new LoginScreen());
             screens.Add(new ClientMenuScreen());
+            screens.Add(new ClientMenuScreen());
+            screens.Add(new MakeReviewScreen());
+            screens.Add(new EditReviewScreen());
+            screens.Add(new ClientMenuScreen());
+            screens.Add(new ViewReviewScreen());
+            screens.Add(new OwnerMenuScreen());
             currentScreen = 0;
         }
 
@@ -59,6 +66,10 @@ namespace restaurant
 | | __| '__/ _` | '_ \ / _` | |  _| | | / __| |/ _ \| '_ \ 
 | |_\ \ | | (_| | | | | (_| | | | | |_| \__ \ | (_) | | | |
  \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|";
+
+        protected const string DigitsOnlyMessage = "Alleen maar cijfers mogen ingevoerd worden!";
+        protected const string LettersOnlyMessage = "Alleen maar letters mogen ingevoerd worden!";
+        protected const string DigitsAndLettersOnlyMessage = "Alleen maar letters of cijfers mogen ingevoerd worden!";
 
         protected string BoxAroundText(List<string> input, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom)
         {
@@ -289,38 +300,41 @@ namespace restaurant
         protected static void InvalidInputMessage() => Console.WriteLine("\nU moet wel een juiste keuze maken...\nDruk op en knop om verder te gaan.");
 
         /// <summary>
-        /// With this method you can ask the user for input and add a condition based on what type of characters are allowed in the input
+        /// With this method you can ask the user for input and add a condition based on what type of characters are allowed in the input.
+        /// If you only need to ask the user for input without any checks on the input please use Console.Readline() instead.
         /// </summary>
-        /// <param name="condition">The anonymous function that gets called to check if the character in the input string matches a certain condition. Set to null if you accept every input.</param>
+        /// <param name="conditionPerChar">The lambda that gets called to check if every character in the input string matches a certain condition.</param>
         /// <param name="onFalseMessage">The message to display when the condition failes.</param>
-        /// <returns>True if the user is logged in false if not</returns>
-        protected string AskForInput(Func<char, bool> conditionPerChar, Func<string, bool> conditionInput, string onFalseMessage = "")
+        /// <returns>The input that has been asked</returns>
+        protected string AskForInput(Func<char, bool> conditionPerChar, string onFalseMessage = "")
         {
             string input = Console.ReadLine();
-            bool isValid = true;
 
-            if (conditionPerChar == null && conditionInput == null)
-            {
-                return input;
-            }
-            else if (conditionPerChar != null)
-            {
-                char[] charsOfInput = input.ToCharArray();
+            char[] charsOfInput = input.ToCharArray();
 
-                for (int i = 0; i < charsOfInput.Length; i++)
+            for (int i = 0; i < charsOfInput.Length; i++)
+            {
+                if (!conditionPerChar(charsOfInput[i]))
                 {
-                    if (!conditionPerChar(charsOfInput[i]))
-                    {
-                        Console.WriteLine(onFalseMessage);
-                        isValid = false;
-                        break;
-                    }
+                    Console.WriteLine(onFalseMessage);
+                    return AskForInput(conditionPerChar, onFalseMessage);
                 }
             }
-            else
-            {
-                isValid = conditionInput(input);
-            }
+
+            return input;
+        }
+
+        /// <summary>
+        /// With this method you can ask the user for input and add a condition based on what type of characters are allowed in the input.
+        /// If you only need to ask the user for input without any checks on the input please use Console.Readline() instead.
+        /// </summary>
+        /// <param name="conditionInput">The lambda that gets called to check if the input itself matches a certain condition</param>
+        /// <param name="onFalseMessage">The message to display when the condition failes.</param>
+        /// <returns>The input that has been asked</returns>
+        protected string AskForInput(Func<string, bool> conditionInput, string onFalseMessage = "")
+        {
+            string input = Console.ReadLine();
+            bool isValid = conditionInput(input);
 
             if (isValid)
             {
@@ -328,8 +342,36 @@ namespace restaurant
             }
             else
             {
-                return AskForInput(conditionPerChar, conditionInput, onFalseMessage);
+                Console.WriteLine(onFalseMessage);
+                return AskForInput(conditionInput, onFalseMessage);
             }
+        }
+
+        /// <summary>
+        /// With this method you can ask the user for input and add a condition based on what type of characters are allowed in the input.
+        /// If you only need to ask the user for input without any checks on the input please use Console.Readline() instead.
+        /// </summary>
+        /// <param name="conditionPerChar">The lambda that gets called to check if every character in the input string matches a certain condition.</param>
+        /// <param name="conditionInput">The lambda that gets called to check if the input itself matches a certain condition</param>
+        /// <param name="onFalseMessage">The message to display when the condition failes.</param>
+        /// <returns>The input that has been asked</returns>
+        protected string AskForInput(Func<char, bool> conditionPerChar, Func<string, bool> conditionInput, string onFalseMessage = "")
+        {
+            string input = Console.ReadLine();
+
+            char[] charsOfInput = input.ToCharArray();
+
+            for (int i = 0; i < charsOfInput.Length; i++)
+            {
+                if (!conditionPerChar(charsOfInput[i]))
+                {
+                    Console.WriteLine(onFalseMessage);
+                    input = AskForInput(conditionPerChar, onFalseMessage);
+                    break;
+                }
+            }
+
+            return conditionInput(input) ? input : AskForInput(conditionInput, onFalseMessage);
         }
 
         /// <summary>
@@ -360,7 +402,7 @@ namespace restaurant
 
             string choice = Console.ReadLine();
 
-            if (choice != "0" && choice != "1" && choice != "2" && choice != "3" && choice != "4" && choice != "100" && choice != "101" && choice != "102" && choice != "103" && choice != "104" && choice != "1000")
+            if (choice != "0" && choice != "1" && choice != "2" && choice != "3" && choice != "4" && choice != "100" && choice != "101" && choice != "102" && choice != "103" && choice != "104" && choice != "105" && choice != "1000")
             {
                 InvalidInputMessage();
                 Console.ReadKey();
@@ -407,6 +449,45 @@ namespace restaurant
                         return 0;
                     case 104:
                         testing_class.Debug();
+                        return 0;
+                    case 105:
+                        List<Login_gegevens> login_Gegevens = io.GetDatabase().login_gegevens;
+                        Login_gegevens dataEigenaar = new();
+                        dataEigenaar.email = "eigenaar@gmail.com";
+                        dataEigenaar.password = "0000";
+                        dataEigenaar.type = "Eigenaar";
+                        dataEigenaar.klantgegevens = new Klantgegevens();
+                        dataEigenaar.klantgegevens.klantnummer = login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1;
+                        dataEigenaar.klantgegevens.voornaam = "Bob";
+                        dataEigenaar.klantgegevens.achternaam = "De Boer";
+
+                        Login_gegevens dataMedewerker = new();
+                        dataMedewerker.email = "medewerker@gmail.com";
+                        dataMedewerker.password = "0000";
+                        dataMedewerker.type = "Medewerker";
+                        dataMedewerker.klantgegevens = new Klantgegevens();
+                        dataMedewerker.klantgegevens.klantnummer = login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1;
+                        dataMedewerker.klantgegevens.voornaam = "Bob";
+                        dataMedewerker.klantgegevens.achternaam = "De Wasser";
+
+                        Login_gegevens dataGebruiker = new();
+                        dataGebruiker.email = "gebruiker@gmail.com";
+                        dataGebruiker.password = "0000";
+                        dataGebruiker.type = "Gebruiker";
+                        dataGebruiker.klantgegevens = new Klantgegevens();
+                        dataGebruiker.klantgegevens.klantnummer = login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1;
+                        dataGebruiker.klantgegevens.voornaam = "Bob";
+                        dataGebruiker.klantgegevens.achternaam = "De Bouwer";
+
+                        DateTime resDate = new(2050, 3, 1, 7, 0, 0);
+
+                        var list = new List<int>();
+                        list.Add(dataGebruiker.klantgegevens.klantnummer);
+
+                        code_login.Register(dataEigenaar);
+                        code_login.Register(dataMedewerker);
+                        code_login.Register(dataGebruiker);
+                        code_gebruiker.MakeCustomerReservation(resDate, dataGebruiker.klantgegevens.klantnummer, 1, false);
                         return 0;
                     case 1000:
                         io.ResetFilesystem();
@@ -492,7 +573,7 @@ namespace restaurant
             List<Review> reviews = io.GetReviews();
             if (reviews.Count > 0)
             {
-      /*          reviewstostring = ReviewsToString(io.GetReviews());*/
+                reviewstostring = string.Join(null, ReviewsToString(io.GetReviews())) + new string('#', 108);
             }
         }
         public override int DoWork()
@@ -542,11 +623,11 @@ namespace restaurant
             Console.WriteLine("Uw voornaam: ");
             new_gebruiker.klantgegevens = new Klantgegevens
             {
-                voornaam = AskForInput(c => char.IsLetter(c), null, "Alleen maar letters mogen ingevoerd worden!"),
+                voornaam = AskForInput(c => char.IsLetter(c), "Alleen maar letters mogen ingevoerd worden!"),
                 klantnummer = login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1
             };
             Console.WriteLine("Uw achternaam: ");
-            new_gebruiker.klantgegevens.achternaam = AskForInput(c => char.IsLetter(c), null, "Alleen maar letters mogen ingevoerd worden!");
+            new_gebruiker.klantgegevens.achternaam = AskForInput(c => char.IsLetter(c), "Alleen maar letters mogen ingevoerd worden!");
 
             Console.WriteLine("Uw geboorte datum met het formaat d/mm/yyyy: ");
             
@@ -566,21 +647,21 @@ namespace restaurant
             Console.WriteLine("Uw woonplaats: ");
             new_gebruiker.klantgegevens.adres = new adres
             {
-                woonplaats = AskForInput(c => char.IsLetter(c), null, "Alleen maar letters mogen ingevoerd worden!"),
+                woonplaats = AskForInput(c => char.IsLetter(c), "Alleen maar letters mogen ingevoerd worden!"),
                 land = "NL"
             };
             Console.WriteLine("Uw postcode: ");
-            new_gebruiker.klantgegevens.adres.postcode = AskForInput(c => char.IsLetter(c) || char.IsDigit(c), null, "Alleen maar letters of cijfers mogen ingevoerd worden!");
+            new_gebruiker.klantgegevens.adres.postcode = AskForInput(c => char.IsLetterOrDigit(c), "Alleen maar letters of cijfers mogen ingevoerd worden!");
 
             Console.WriteLine("Uw straatnaam: ");
-            new_gebruiker.klantgegevens.adres.straatnaam = AskForInput(c => char.IsLetter(c), null, "Alleen maar letters mogen ingevoerd worden!");
+            new_gebruiker.klantgegevens.adres.straatnaam = AskForInput(c => char.IsLetter(c), "Alleen maar letters mogen ingevoerd worden!");
 
             Console.WriteLine("Uw huisnummer: ");
-            new_gebruiker.klantgegevens.adres.huisnummer = Convert.ToInt32(Console.ReadLine());
+            new_gebruiker.klantgegevens.adres.huisnummer = Convert.ToInt32(AskForInput(c => char.IsDigit(c), "Alleen maar nummers mogen ingevoerd worden!"));
 
             Console.WriteLine("\nHieronder vult u uw login gegevens: ");
             Console.WriteLine("Uw email adres: ");
-            new_gebruiker.email = AskForInput(null, input => input.Contains('@') && input.Contains('.'), "De email is niet juist er mist een @ of een .");
+            new_gebruiker.email = AskForInput(input => input.Contains('@') && input.Contains('.'), "De email is niet juist er mist een @ of een .");
 
             Console.WriteLine("Het wachtwoord voor uw account: ");
             new_gebruiker.password = Console.ReadLine();
@@ -722,6 +803,121 @@ namespace restaurant
 
 
             return 5;
+        }
+
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            DoLogoutOnEveryScreen(screens);
+            return screens;
+        }
+    }
+
+    public class EditReviewScreen : Screen
+    {
+        public EditReviewScreen()
+        {
+
+        }
+
+        public override int DoWork()
+        {
+            Console.WriteLine(GetGFLogo(2));
+
+            foreach (Review review in io.GetReviews(ingelogd.klantgegevens))
+            {
+                Console.WriteLine("=");
+                Console.WriteLine($"Nummer: {review.ID}\nBericht: {review.message}\nBeoordeling: {review.Rating}\nDatum {review.datum}");
+                Console.WriteLine("=");
+            }
+
+            Console.WriteLine("Hier kunt u een review bewerken. Kies een review uit de lijst met reviews. (Type de nummer van de review in)");
+
+            int id = int.Parse(AskForInput(c => char.IsDigit(c), DigitsOnlyMessage));
+
+            Console.WriteLine("Wat is de nieuwe beoordeling die u wilt geven?");
+            int rating = int.Parse(AskForInput(c => char.IsDigit(c), input => int.Parse(input) > 0 || int.Parse(input) < 6, DigitsOnlyMessage));
+
+            Console.WriteLine("Wat is de nieuwe bericht die u wilt geven?");
+            string message = Console.ReadLine();
+
+            Console.WriteLine("Klopt alles?\n[1] Ja\n[2] Nee");
+
+            if (AskForInput(c => char.IsDigit(c), input => input == "1" || input == "2", DigitsOnlyMessage) == "1")
+            {
+                code_gebruiker.OverwriteReview(id, rating, ingelogd.klantgegevens, message);
+                Console.WriteLine("Review is bewerkt! Klik op een knop om door te gaan.");
+                Console.ReadKey();
+                return 5;
+            }
+
+            return 8;
+        }
+
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            DoLogoutOnEveryScreen(screens);
+            return screens;
+        }
+    }
+
+    public class OwnerMenuScreen : Screen
+    {
+        public OwnerMenuScreen()
+        {
+
+        }
+
+        public override int DoWork()
+        {
+            Console.WriteLine(GetGFLogo(2));
+            Console.WriteLine("Welkom bij het eigenaars menu.");
+            Console.WriteLine("[1] Ga terug");
+
+            return 11;
+        }
+
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            DoLogoutOnEveryScreen(screens);
+            return screens;
+        }
+    }
+
+    public class AddMealScreen : Screen
+    {
+        public AddMealScreen()
+        {
+
+        }
+
+        public override int DoWork()
+        {
+            Console.WriteLine(GetGFLogo());
+            Console.WriteLine("Hier kunt u een gerecht toevoegen.");
+
+            string naam;
+            double prijs;
+            bool speciaal;
+            List<int> ingredienten = new();
+            List<string> allergenen = new();
+
+            Console.WriteLine("Wat is de naam van het gerecht?");
+            naam = AskForInput(c => char.IsLetterOrDigit(c), DigitsAndLettersOnlyMessage);
+            Console.WriteLine("Wat is de prijs van het gerecht?");
+            prijs = double.Parse(AskForInput(c => char.IsDigit(c), DigitsOnlyMessage));
+            Console.WriteLine("Is het gerecht een special?");
+            speciaal = AskForInput(input => input.ToLower() == "ja" || input.ToLower() == "nee", "Type in ja of nee alstublieft.") == "ja";
+            Console.WriteLine("Geef nu aan de allergenen van het gerecht, als u geen allergenen wilt aangeven of als u klaar bent laat dab de invoerveld leeg en klik op enter");
+            string input;
+            do
+            {
+                input = AskForInput(c => char.IsLetter(c), LettersOnlyMessage);
+                if (input.Trim() != "") allergenen.Add(input);
+            } while (input.Trim() != "");
+
+            code_eigenaar.CreateMeal(naam, false, prijs, speciaal, false, ingredienten, allergenen);
+
+            return 8;
         }
 
         public override List<Screen> Update(List<Screen> screens)
