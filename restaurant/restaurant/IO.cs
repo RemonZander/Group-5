@@ -191,14 +191,27 @@ namespace restaurant
                     //als location+b out of range gaat, break
                     if ((location + b) >= beschikbaar.Count)
                     {
+                        for (int i = 0; i < 8-b; i++)
+                        {
+                            beschikbaar[location - (b+i)] = Tuple.Create(reservering.datum.AddMinutes(15 * (-b-i)), beschikbaar[location - (b+i)].Item2.Except(removed_tables).ToList());
+                            if (beschikbaar[location - (b+i)].Item2.Count == 0)
+                            {
+                                beschikbaar.RemoveAt(location - (b+i));
+                            }
+                        }
                         break;
                     }
                     //haalt alle tafels uit beschikbaar die in removed_tables staan
                     beschikbaar[location + b] = Tuple.Create(reservering.datum.AddMinutes(15 * b), beschikbaar[location + b].Item2.Except(removed_tables).ToList());
+                    beschikbaar[location - b] = Tuple.Create(reservering.datum.AddMinutes(15 * -b), beschikbaar[location - b].Item2.Except(removed_tables).ToList());
                     //als er helemaal geen tafels meer beschikbaar zijn voor een gegeven tijd, haal die weg
                     if (beschikbaar[location + b].Item2.Count == 0)
                     {
                         beschikbaar.RemoveAt(location + b);
+                    }
+                    if (beschikbaar[location - b].Item2.Count == 0)
+                    {
+                        beschikbaar.RemoveAt(location - b);
                     }
                 }
             }
