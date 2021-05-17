@@ -616,7 +616,25 @@ namespace restaurant
         #endregion
     }
     #region Screens
-    
+    class FeedbackScreen : Screen
+    {
+        public FeedbackScreen()
+        {
+
+        }
+        public override int DoWork()
+        {
+            Console.WriteLine(GFLogoWithLogin);
+            Console.ReadKey();
+            return 5;
+        }
+
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            return screens;
+        }
+
+    }
 
     #endregion
 }
