@@ -104,11 +104,113 @@ namespace restaurant
             }
             return output += new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
         }
-        protected List<string> ReviewsToString(List<Review> reviews)
+
+        protected List<string> BoxAroundText(List<List<string>> blocks, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom)
+        {
+            List<string> output = new List<string>();
+
+            foreach (var input in blocks)
+            {
+                string block = new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+                for (int a = 0; a < spacingtop; a++)
+                {
+                    block += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+                }
+
+                foreach (var line in input)
+                {
+                    block += sym + new string(' ', spacingside) + line + new string(' ', spacingside) + sym + "\n";
+                }
+
+                for (int a = 0; a < spacingtop; a++)
+                {
+                    block += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+                }
+
+                if (!openbottom)
+                {
+                    block += new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+                }
+
+                output.Add(block);
+            }
+            return output;
+        }
+
+        protected string BoxAroundText(List<string> input, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom, List<string> bottomtext)
+        {
+            string output = new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+            for (int a = 0; a < spacingtop; a++)
+            {
+                output += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+            }
+
+            foreach (var line in input)
+            {
+                output += sym + new string(' ', spacingside) + line + new string(' ', spacingside) + sym + "\n";
+            }
+
+            output += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+            for (int b = 0; b < bottomtext.Count; b++)
+            {
+                output += sym + new string(' ', spacingside) + bottomtext[b] + new string(' ', spacingside) + sym + "\n";
+            }
+
+            for (int a = 0; a < spacingtop; a++)
+            {
+                output += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+            }
+
+            if (openbottom)
+            {
+                return output;
+            }
+            return output += new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+        }
+
+        protected List<string> BoxAroundText(List<List<string>> blocks, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom, List<string> bottomtext)
+        {
+            List<string> output = new List<string>();
+
+            foreach (var input in blocks)
+            {
+                string block = new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+                for (int a = 0; a < spacingtop; a++)
+                {
+                    block += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+                }
+
+                foreach (var line in input)
+                {
+                    block += sym + new string(' ', spacingside) + line + new string(' ', spacingside) + sym + "\n";
+                }
+
+                block += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+                for (int b = 0; b < bottomtext.Count; b++)
+                {
+                    block += sym + new string(' ', spacingside) + bottomtext[b] + new string(' ', spacingside) + sym + "\n";
+                }
+
+                for (int a = 0; a < spacingtop; a++)
+                {
+                    block += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+                }
+
+                if (!openbottom)
+                {
+                    block += new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+                }
+
+                output.Add(block);
+            }
+            return output;
+        }
+
+        protected List<List<string>> ReviewsToString(List<Review> reviews)
         {
             List<Klantgegevens> klantgegevens = io.GetCustomer(reviews.Select(i => i.Klantnummer).ToList());
             List<string> block = new List<string>();
-            List<string> output = new List<string>();
+            List<List<string>> output = new List<List<string>>();
 
             for (int a = 0; a < reviews.Count - 1; a += 2)
             {
@@ -237,12 +339,13 @@ namespace restaurant
                 block.Add(new string(' ', 50) + "##" + new string(' ', 50));
                 block.Add(new string(' ', 50) + "##" + new string(' ', 50));
 
-                output.Add(BoxAroundText(block, "#", 2, 0, 102, true));
+                output.Add(block);
                 block = new List<string>();
             }
 
             return output;
         }
+
         protected List<string> MakePages(List<string> alldata, int maxblocks)
         {
             string[] output = new string[alldata.Count / maxblocks + 1];
