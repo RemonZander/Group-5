@@ -18,13 +18,21 @@ namespace restaurant
             screens.Add(new ReviewScreen());
             screens.Add(new RegisterScreen());
             screens.Add(new LoginScreen());
+            #region Klant
             screens.Add(new ClientMenuScreen());
             screens.Add(new MakeReservationScreen());
             screens.Add(new MakeReviewScreen());
             screens.Add(new EditReviewScreen());
             screens.Add(new DeleteReview());
             screens.Add(new ViewReviewScreen());
+            #endregion
+            #region Eigenaar
             screens.Add(new OwnerMenuScreen());
+            screens.Add(new OwnerMenuScreen());
+            screens.Add(new OwnerMenuScreen());
+            screens.Add(new OwnerMenuScreen());
+            screens.Add(new OwnerMenuScreen());
+            #endregion
             currentScreen = 0;
         }
 
@@ -308,7 +316,7 @@ namespace restaurant
 
             for (int i = 0; i < charsOfInput.Length; i++)
             {
-                if (charsOfInput[i] != ' ') continue;
+                if (charsOfInput[i] == ' ') continue;
                 if (!conditionPerChar(charsOfInput[i])) return false;
             }
 
@@ -337,7 +345,7 @@ namespace restaurant
                 }
             }
 
-            if (ValidateInput(input, conditionPerChar))
+            if (!ValidateInput(input, conditionPerChar))
             {
                 Console.WriteLine(onFalseMessage);
                 return AskForInput(conditionPerChar, onFalseMessage, required);
@@ -366,7 +374,7 @@ namespace restaurant
                 }
             }
 
-            if (ValidateInput(input, conditionInput))
+            if (!ValidateInput(input, conditionInput))
             {
                 Console.WriteLine(onFalseMessage);
                 return AskForInput(conditionInput, onFalseMessage, required);
@@ -396,7 +404,7 @@ namespace restaurant
                 }
             }
 
-            if (ValidateInput(input, conditionPerChar))
+            if (!ValidateInput(input, conditionPerChar))
             {
                 Console.WriteLine(onFalseMessage);
                 return AskForInput(conditionPerChar, onFalseMessage, required);
@@ -421,9 +429,17 @@ namespace restaurant
             Console.WriteLine("Kies een optie:");
             Console.WriteLine("[1] Laat alle gerechten zien");
             Console.WriteLine("[2] Laat alle reviews zien");
-            if (IsLoggedIn())
+            if (IsLoggedIn() && ingelogd.type == "Gebruiker")
             {
                 Console.WriteLine("[3] Klant menu");
+            }
+            else if (IsLoggedIn() && ingelogd.type == "Medewerker")
+            {
+                Console.WriteLine("[3] Medewerker menu");
+            }
+            else if (IsLoggedIn() && ingelogd.type == "Eigenaar")
+            {
+                Console.WriteLine("[3] Eigenaar menu");
             }
             else
             {
@@ -452,9 +468,17 @@ namespace restaurant
                         {
                             return 3;
                         }
-                        else
+                        else if (ingelogd.type == "Gebruiker")
                         {
                             return 5;
+                        }
+                        else if (ingelogd.type == "Medewerker")
+                        {
+                            return 5;
+                        }
+                        else
+                        {
+                            return 11;
                         }
                     case 4:
                         if (!IsLoggedIn())
@@ -662,17 +686,17 @@ namespace restaurant
             Console.WriteLine("Uw achternaam: ");
             new_gebruiker.klantgegevens.achternaam = AskForInput(c => char.IsLetter(c), LettersOnlyMessage);
 
-            Console.WriteLine("Uw geboorte datum met het formaat d/mm/yyyy: ");
+            Console.WriteLine("Uw geboorte datum met het formaat dd/mm/yyyy: ");
             
             dateInput:
                 DateTime resultDateTime;
-                if (DateTime.TryParseExact(Console.ReadLine(), "d/mm/yyyy", new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime))
+                if (DateTime.TryParseExact(Console.ReadLine(), "dd/mm/yyyy", new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime))
                 {
                     new_gebruiker.klantgegevens.geb_datum = resultDateTime;
                 }
                 else
                 {
-                    Console.WriteLine("De datum die u hebt ingevoerd klopt niet, probeer het opnieuw");
+                    Console.WriteLine("De datum die u hebt ingevoerd klopt niet, probeer het opnieuw.");
                     goto dateInput;
                 }
 
@@ -945,10 +969,41 @@ namespace restaurant
 
         public override int DoWork()
         {
-            Console.WriteLine(GetGFLogo(2));
+            Console.WriteLine(GetGFLogo(6));
             Console.WriteLine("Welkom bij het eigenaars menu.");
-            Console.WriteLine("[1] Ga terug");
+            Console.WriteLine("[1] Gerechten");
+            Console.WriteLine("[2] Reservering");
+            Console.WriteLine("[3] Ingredienten");
+            Console.WriteLine("[4] Inkomsten");
+            Console.WriteLine("[5] Ga terug");
 
+            string choice = Console.ReadLine();
+
+            if (!(new string[6] { "1", "2", "3", "4", "5", "6" }).Contains(choice))
+            {
+                InvalidInputMessage();
+                Console.ReadKey();
+                return 11;
+            }
+            else
+            {
+                switch (Convert.ToInt32(choice))
+                {
+                    case 1:
+                        return 12;
+                    case 2:
+                        return 13;
+                    case 3:
+                        return 14;
+                    case 4:
+                        return 15;
+                    case 5:
+                        return 0;
+                    case 6:
+                        logoutUpdate = true;
+                        return 0;
+                }
+            }
             return 11;
         }
 
