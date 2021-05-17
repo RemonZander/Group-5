@@ -41,6 +41,8 @@ namespace restaurant
 
         public string Register(Login_gegevens login_Gegevens)
         {
+            database = io.GetDatabase();
+
             if (database.login_gegevens != null)
             {
                 foreach (var item in database.login_gegevens)
