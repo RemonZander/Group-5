@@ -1089,7 +1089,7 @@ namespace restaurant
             string choice = Console.ReadLine();
 
 
-            if (choice != "1" && choice != "2" && choice != "3" && choice != "4")
+            if (choice != "1" && choice != "2" && choice != "3" && choice != "4" && choice != "5")
             {
                 Console.WriteLine("U moet wel een juiste keuze maken...");
                 Console.WriteLine("Druk op en knop om verder te gaan.");
@@ -1113,7 +1113,7 @@ namespace restaurant
                         Console.WriteLine("[2] Terug");
                         choice = Console.ReadLine();
 
-                        if (!new List<string> { "1", "2" }.Contains(choice))
+                        if (!new List<string> { "1", "2", "3" }.Contains(choice))
                         {
                             Console.WriteLine("U moet wel een juiste keuze maken...");
                             Console.WriteLine("Druk op en knop om verder te gaan.");
@@ -1125,20 +1125,32 @@ namespace restaurant
                             page++;
                             goto a;
                         }
-                        return 10;
+                        else if (choice == "2")
+                        {
+                            return 10;
+                        }
+                        logoutUpdate = true;
+                        Logout();
+                        return 0;
                     }
                     else
                     {
                         Console.WriteLine("[1] Terug");
                         choice = Console.ReadLine();
-                        if (choice != "1")
+                        if (choice != "1" && choice != "3")
                         {
                             Console.WriteLine("U moet wel een juiste keuze maken...");
                             Console.WriteLine("Druk op en knop om verder te gaan.");
                             Console.ReadKey();
                             return 10;
                         }
-                        return 10;
+                        if (choice == "1")
+                        {
+                            return 10;
+                        }
+                        logoutUpdate = true;
+                        Logout();
+                        return 0;
                     }
                 case 2:
                     Console.WriteLine("\n Vul hieronder de datum in vanaf wanneer u uw reviews wilt zien");
@@ -1159,7 +1171,7 @@ namespace restaurant
                             Console.WriteLine("[2] Terug");
                             choice = Console.ReadLine();
 
-                            if (!new List<string> { "1", "2" }.Contains(choice))
+                            if (!new List<string> { "1", "2", "3" }.Contains(choice))
                             {
                                 Console.WriteLine("U moet wel een juiste keuze maken...");
                                 Console.WriteLine("Druk op en knop om verder te gaan.");
@@ -1171,20 +1183,32 @@ namespace restaurant
                                 page++;
                                 goto b;
                             }
-                            return 10;
+                            else if (choice == "2")
+                            {
+                                return 10;
+                            }
+                            logoutUpdate = true;
+                            Logout();
+                            return 0;
                         }
                         else
                         {
                             Console.WriteLine("[1] Terug");
                             choice = Console.ReadLine();
-                            if (choice != "1")
+                            if (choice != "1" && choice != "3")
                             {
                                 Console.WriteLine("U moet wel een juiste keuze maken...");
                                 Console.WriteLine("Druk op en knop om verder te gaan.");
                                 Console.ReadKey();
                                 return 10;
                             }
-                            return 10;
+                            if (choice == "1")
+                            {
+                                return 10;
+                            }
+                            logoutUpdate = true;
+                            Logout();
+                            return 0;
                         }
                     }
                     catch
@@ -1218,7 +1242,7 @@ namespace restaurant
                         Console.WriteLine("[2] Terug");
                         choice = Console.ReadLine();
 
-                        if (!new List<string> { "1", "2" }.Contains(choice))
+                        if (!new List<string> { "1", "2", "3" }.Contains(choice))
                         {
                             Console.WriteLine("U moet wel een juiste keuze maken...");
                             Console.WriteLine("Druk op en knop om verder te gaan.");
@@ -1230,23 +1254,39 @@ namespace restaurant
                             page++;
                             goto c;
                         }
-                        return 10;
+                        else if (choice == "2")
+                        {
+                            return 10;
+                        }
+                        logoutUpdate = true;
+                        Logout();
+                        return 0;
                     }
                     else
                     {
                         Console.WriteLine("[1] Terug");
                         choice = Console.ReadLine();
-                        if (choice != "1")
+                        if (choice != "1" && choice != "3")
                         {
                             Console.WriteLine("U moet wel een juiste keuze maken...");
                             Console.WriteLine("Druk op en knop om verder te gaan.");
                             Console.ReadKey();
                             return 10;
                         }
-                        return 10;
+                        if (choice == "1")
+                        {
+                            return 10;
+                        }
+                        logoutUpdate = true;
+                        Logout();
+                        return 0;
                     }
                 case 4:
                     return 5;
+                case 5:
+                    logoutUpdate = true;
+                    Logout();
+                    return 0;
             }
             
             
@@ -1257,6 +1297,7 @@ namespace restaurant
 
         public override List<Screen> Update(List<Screen> screens)
         {
+            DoLogoutOnEveryScreen(screens);
             return screens;
         }
     }
