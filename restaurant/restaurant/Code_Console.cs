@@ -567,20 +567,22 @@ namespace restaurant
 
     public class ReviewScreen : Screen
     {
-        private string reviewstostring;
         public ReviewScreen()
         {
-            List<Review> reviews = io.GetReviews();
-            if (reviews.Count > 0)
-            {
-                reviewstostring = string.Join(null, ReviewsToString(io.GetReviews())) + new string('#', 108);
-            }
+
         }
         public override int DoWork()
         {
+            List<Review> reviews = io.GetReviews();
+
             Console.WriteLine(GetGFLogo(2));
             Console.WriteLine("Dit zijn alle reviews die zijn achtergelaten door onze klanten: \n");
-            Console.WriteLine(reviewstostring + "\n" + "[1] Ga terug");
+
+            if (reviews.Count > 0)
+            {
+                Console.WriteLine(string.Join(null, ReviewsToString(io.GetReviews())) + new string('#', 108) + "\n" + "[1] Ga terug");
+            }
+
             string choice = Console.ReadLine();
 
             if (choice == "1")
@@ -823,11 +825,54 @@ namespace restaurant
         {
             Console.WriteLine(GetGFLogo(2));
 
+            int maxLength = 55;
+
             foreach (Review review in io.GetReviews(ingelogd.klantgegevens))
             {
-                Console.WriteLine("=");
-                Console.WriteLine($"Nummer: {review.ID}\nBericht: {review.message}\nBeoordeling: {review.Rating}\nDatum {review.datum}");
-                Console.WriteLine("=");
+                List<string> outTemplate = new List<string>();
+                outTemplate.Add($"Datum: {review.datum}");
+                outTemplate.Add("Bericht:");
+
+                string msg = review.message;
+                string tempMsg = review.message;
+
+                char[] arr = msg.ToCharArray();
+
+                int remainingPos = 0;
+                int lastOccurance = 0;
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    if (i == ' ') lastOccurance = i + 1;
+
+                    if (i != 0 && i % maxLength == 0)
+                    {
+                        outTemplate.Add(tempMsg.Substring(0, maxLength).Trim());
+                        tempMsg = tempMsg.Remove(0, maxLength);
+                        remainingPos = i;
+                    }
+                }
+
+                outTemplate.Add(msg.Substring(remainingPos).Trim());
+
+                outTemplate.Add($"Beoordeling: {review.Rating}");
+                outTemplate.Add($"Nummer: {review.ID}");
+
+                for (int i = 0; i < outTemplate.Count; i++)
+                {
+                    if (outTemplate[i].Length != maxLength)
+                    {
+                        outTemplate[i] = outTemplate[i] + new string(' ', maxLength - outTemplate[i].Length);
+                    }
+                }
+
+                Console.Write(BoxAroundText(
+                    outTemplate,
+                    "#",
+                    2,
+                    2,
+                    maxLength,
+                    true
+                ));            
             }
 
             Console.WriteLine("Hier kunt u een review bewerken. Kies een review uit de lijst met reviews. (Type de nummer van de review in)");
