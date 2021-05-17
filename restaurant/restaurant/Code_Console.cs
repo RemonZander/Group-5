@@ -18,13 +18,21 @@ namespace restaurant
             screens.Add(new ReviewScreen());
             screens.Add(new RegisterScreen());
             screens.Add(new LoginScreen());
+            #region Klant
             screens.Add(new ClientMenuScreen());
-            screens.Add(new ClientMenuScreen());
+            screens.Add(new MakeReservationScreen());
             screens.Add(new MakeReviewScreen());
             screens.Add(new EditReviewScreen());
-            screens.Add(new ClientMenuScreen());
+            screens.Add(new DeleteReview());
             screens.Add(new ViewReviewScreen());
+            #endregion
+            #region Eigenaar
             screens.Add(new OwnerMenuScreen());
+            screens.Add(new OwnerMenuScreen());
+            screens.Add(new OwnerMenuScreen());
+            screens.Add(new OwnerMenuScreen());
+            screens.Add(new OwnerMenuScreen());
+            #endregion
             currentScreen = 0;
         }
 
@@ -70,6 +78,7 @@ namespace restaurant
         protected const string DigitsOnlyMessage = "Alleen maar cijfers mogen ingevoerd worden!";
         protected const string LettersOnlyMessage = "Alleen maar letters mogen ingevoerd worden!";
         protected const string DigitsAndLettersOnlyMessage = "Alleen maar letters of cijfers mogen ingevoerd worden!";
+        protected const string InputEmptyMessage = "Vul wat in alsjeblieft.";
 
         protected string BoxAroundText(List<string> input, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom)
         {
@@ -95,11 +104,113 @@ namespace restaurant
             }
             return output += new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
         }
-        protected List<string> ReviewsToString(List<Review> reviews)
+
+        protected List<string> BoxAroundText(List<List<string>> blocks, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom)
+        {
+            List<string> output = new List<string>();
+
+            foreach (var input in blocks)
+            {
+                string block = new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+                for (int a = 0; a < spacingtop; a++)
+                {
+                    block += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+                }
+
+                foreach (var line in input)
+                {
+                    block += sym + new string(' ', spacingside) + line + new string(' ', spacingside) + sym + "\n";
+                }
+
+                for (int a = 0; a < spacingtop; a++)
+                {
+                    block += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+                }
+
+                if (!openbottom)
+                {
+                    block += new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+                }
+
+                output.Add(block);
+            }
+            return output;
+        }
+
+        protected string BoxAroundText(List<string> input, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom, List<string> bottomtext)
+        {
+            string output = new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+            for (int a = 0; a < spacingtop; a++)
+            {
+                output += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+            }
+
+            foreach (var line in input)
+            {
+                output += sym + new string(' ', spacingside) + line + new string(' ', spacingside) + sym + "\n";
+            }
+
+            output += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+            for (int b = 0; b < bottomtext.Count; b++)
+            {
+                output += sym + new string(' ', spacingside) + bottomtext[b] + new string(' ', spacingside) + sym + "\n";
+            }
+
+            for (int a = 0; a < spacingtop; a++)
+            {
+                output += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+            }
+
+            if (openbottom)
+            {
+                return output;
+            }
+            return output += new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+        }
+
+        protected List<string> BoxAroundText(List<List<string>> blocks, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom, List<string> bottomtext)
+        {
+            List<string> output = new List<string>();
+
+            foreach (var input in blocks)
+            {
+                string block = new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+                for (int a = 0; a < spacingtop; a++)
+                {
+                    block += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+                }
+
+                foreach (var line in input)
+                {
+                    block += sym + new string(' ', spacingside) + line + new string(' ', spacingside) + sym + "\n";
+                }
+
+                block += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+                for (int b = 0; b < bottomtext.Count; b++)
+                {
+                    block += sym + new string(' ', spacingside) + bottomtext[b] + new string(' ', spacingside) + sym + "\n";
+                }
+
+                for (int a = 0; a < spacingtop; a++)
+                {
+                    block += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+                }
+
+                if (!openbottom)
+                {
+                    block += new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+                }
+
+                output.Add(block);
+            }
+            return output;
+        }
+
+        protected List<List<string>> ReviewsToString(List<Review> reviews)
         {
             List<Klantgegevens> klantgegevens = io.GetCustomer(reviews.Select(i => i.Klantnummer).ToList());
             List<string> block = new List<string>();
-            List<string> output = new List<string>();
+            List<List<string>> output = new List<List<string>>();
 
             for (int a = 0; a < reviews.Count - 1; a += 2)
             {
@@ -228,12 +339,13 @@ namespace restaurant
                 block.Add(new string(' ', 50) + "##" + new string(' ', 50));
                 block.Add(new string(' ', 50) + "##" + new string(' ', 50));
 
-                output.Add(BoxAroundText(block, "#", 2, 0, 102, true));
+                output.Add(block);
                 block = new List<string>();
             }
 
             return output;
         }
+
         protected List<string> MakePages(List<string> alldata, int maxblocks)
         {
             string[] output = new string[alldata.Count / maxblocks + 1];
@@ -299,6 +411,23 @@ namespace restaurant
 
         protected static void InvalidInputMessage() => Console.WriteLine("\nU moet wel een juiste keuze maken...\nDruk op en knop om verder te gaan.");
 
+        private static bool IsInputEmpty(string input) => input == "";
+
+        private bool ValidateInput(string input, Func<char, bool> conditionPerChar)
+        {
+            char[] charsOfInput = input.ToCharArray();
+
+            for (int i = 0; i < charsOfInput.Length; i++)
+            {
+                if (charsOfInput[i] == ' ') continue;
+                if (!conditionPerChar(charsOfInput[i])) return false;
+            }
+
+            return true;
+        }
+
+        private bool ValidateInput(string input, Func<string, bool> conditionInput) => conditionInput(input);
+
         /// <summary>
         /// With this method you can ask the user for input and add a condition based on what type of characters are allowed in the input.
         /// If you only need to ask the user for input without any checks on the input please use Console.Readline() instead.
@@ -306,19 +435,23 @@ namespace restaurant
         /// <param name="conditionPerChar">The lambda that gets called to check if every character in the input string matches a certain condition.</param>
         /// <param name="onFalseMessage">The message to display when the condition failes.</param>
         /// <returns>The input that has been asked</returns>
-        protected string AskForInput(Func<char, bool> conditionPerChar, string onFalseMessage = "")
+        protected string AskForInput(Func<char, bool> conditionPerChar, string onFalseMessage = "", bool required = true)
         {
             string input = Console.ReadLine();
 
-            char[] charsOfInput = input.ToCharArray();
-
-            for (int i = 0; i < charsOfInput.Length; i++)
+            if (required)
             {
-                if (!conditionPerChar(charsOfInput[i]))
+                if (IsInputEmpty(input))
                 {
-                    Console.WriteLine(onFalseMessage);
-                    return AskForInput(conditionPerChar, onFalseMessage);
+                    Console.WriteLine(InputEmptyMessage);
+                    return AskForInput(conditionPerChar, onFalseMessage, required);
                 }
+            }
+
+            if (!ValidateInput(input, conditionPerChar))
+            {
+                Console.WriteLine(onFalseMessage);
+                return AskForInput(conditionPerChar, onFalseMessage, required);
             }
 
             return input;
@@ -331,20 +464,26 @@ namespace restaurant
         /// <param name="conditionInput">The lambda that gets called to check if the input itself matches a certain condition</param>
         /// <param name="onFalseMessage">The message to display when the condition failes.</param>
         /// <returns>The input that has been asked</returns>
-        protected string AskForInput(Func<string, bool> conditionInput, string onFalseMessage = "")
+        protected string AskForInput(Func<string, bool> conditionInput, string onFalseMessage = "", bool required = true)
         {
             string input = Console.ReadLine();
-            bool isValid = conditionInput(input);
 
-            if (isValid)
+            if (required)
             {
-                return input;
+                if (IsInputEmpty(input))
+                {
+                    Console.WriteLine(InputEmptyMessage);
+                    return AskForInput(conditionInput, onFalseMessage, required);
+                }
             }
-            else
+
+            if (!ValidateInput(input, conditionInput))
             {
                 Console.WriteLine(onFalseMessage);
-                return AskForInput(conditionInput, onFalseMessage);
+                return AskForInput(conditionInput, onFalseMessage, required);
             }
+
+            return input;
         }
 
         /// <summary>
@@ -355,23 +494,26 @@ namespace restaurant
         /// <param name="conditionInput">The lambda that gets called to check if the input itself matches a certain condition</param>
         /// <param name="onFalseMessage">The message to display when the condition failes.</param>
         /// <returns>The input that has been asked</returns>
-        protected string AskForInput(Func<char, bool> conditionPerChar, Func<string, bool> conditionInput, string onFalseMessage = "")
+        protected string AskForInput(Func<char, bool> conditionPerChar, Func<string, bool> conditionInput, string onFalseMessage = "", bool required = true)
         {
             string input = Console.ReadLine();
 
-            char[] charsOfInput = input.ToCharArray();
-
-            for (int i = 0; i < charsOfInput.Length; i++)
+            if (required)
             {
-                if (!conditionPerChar(charsOfInput[i]))
+                if (IsInputEmpty(input))
                 {
-                    Console.WriteLine(onFalseMessage);
-                    input = AskForInput(conditionPerChar, onFalseMessage);
-                    break;
+                    Console.WriteLine(InputEmptyMessage);
+                    return AskForInput(conditionPerChar, conditionInput, onFalseMessage, required);
                 }
             }
 
-            return conditionInput(input) ? input : AskForInput(conditionInput, onFalseMessage);
+            if (!ValidateInput(input, conditionPerChar))
+            {
+                Console.WriteLine(onFalseMessage);
+                return AskForInput(conditionPerChar, onFalseMessage, required);
+            }
+
+            return ValidateInput(input, conditionInput) ? input : AskForInput(conditionInput, onFalseMessage);
         }
 
         /// <summary>
@@ -390,9 +532,17 @@ namespace restaurant
             Console.WriteLine("Kies een optie:");
             Console.WriteLine("[1] Laat alle gerechten zien");
             Console.WriteLine("[2] Laat alle reviews zien");
-            if (IsLoggedIn())
+            if (IsLoggedIn() && ingelogd.type == "Gebruiker")
             {
                 Console.WriteLine("[3] Klant menu");
+            }
+            else if (IsLoggedIn() && ingelogd.type == "Medewerker")
+            {
+                Console.WriteLine("[3] Medewerker menu");
+            }
+            else if (IsLoggedIn() && ingelogd.type == "Eigenaar")
+            {
+                Console.WriteLine("[3] Eigenaar menu");
             }
             else
             {
@@ -421,9 +571,17 @@ namespace restaurant
                         {
                             return 3;
                         }
-                        else
+                        else if (ingelogd.type == "Gebruiker")
                         {
                             return 5;
+                        }
+                        else if (ingelogd.type == "Medewerker")
+                        {
+                            return 5;
+                        }
+                        else
+                        {
+                            return 11;
                         }
                     case 4:
                         if (!IsLoggedIn())
@@ -625,23 +783,23 @@ namespace restaurant
             Console.WriteLine("Uw voornaam: ");
             new_gebruiker.klantgegevens = new Klantgegevens
             {
-                voornaam = AskForInput(c => char.IsLetter(c), "Alleen maar letters mogen ingevoerd worden!"),
+                voornaam = AskForInput(c => char.IsLetter(c), LettersOnlyMessage),
                 klantnummer = login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1
             };
             Console.WriteLine("Uw achternaam: ");
-            new_gebruiker.klantgegevens.achternaam = AskForInput(c => char.IsLetter(c), "Alleen maar letters mogen ingevoerd worden!");
+            new_gebruiker.klantgegevens.achternaam = AskForInput(c => char.IsLetter(c), LettersOnlyMessage);
 
-            Console.WriteLine("Uw geboorte datum met het formaat d/mm/yyyy: ");
+            Console.WriteLine("Uw geboorte datum met het formaat dd/mm/yyyy: ");
             
             dateInput:
                 DateTime resultDateTime;
-                if (DateTime.TryParseExact(Console.ReadLine(), "d/mm/yyyy", new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime))
+                if (DateTime.TryParseExact(Console.ReadLine(), "dd/mm/yyyy", new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime))
                 {
                     new_gebruiker.klantgegevens.geb_datum = resultDateTime;
                 }
                 else
                 {
-                    Console.WriteLine("De datum die u hebt ingevoerd klopt niet, probeer het opnieuw");
+                    Console.WriteLine("De datum die u hebt ingevoerd klopt niet, probeer het opnieuw.");
                     goto dateInput;
                 }
 
@@ -649,17 +807,17 @@ namespace restaurant
             Console.WriteLine("Uw woonplaats: ");
             new_gebruiker.klantgegevens.adres = new adres
             {
-                woonplaats = AskForInput(c => char.IsLetter(c), "Alleen maar letters mogen ingevoerd worden!"),
+                woonplaats = AskForInput(c => char.IsLetter(c), LettersOnlyMessage),
                 land = "NL"
             };
             Console.WriteLine("Uw postcode: ");
-            new_gebruiker.klantgegevens.adres.postcode = AskForInput(c => char.IsLetterOrDigit(c), "Alleen maar letters of cijfers mogen ingevoerd worden!");
+            new_gebruiker.klantgegevens.adres.postcode = AskForInput(c => char.IsLetterOrDigit(c), DigitsAndLettersOnlyMessage);
 
             Console.WriteLine("Uw straatnaam: ");
-            new_gebruiker.klantgegevens.adres.straatnaam = AskForInput(c => char.IsLetter(c), "Alleen maar letters mogen ingevoerd worden!");
+            new_gebruiker.klantgegevens.adres.straatnaam = AskForInput(c => char.IsLetter(c), LettersOnlyMessage);
 
             Console.WriteLine("Uw huisnummer: ");
-            new_gebruiker.klantgegevens.adres.huisnummer = Convert.ToInt32(AskForInput(c => char.IsDigit(c), "Alleen maar nummers mogen ingevoerd worden!"));
+            new_gebruiker.klantgegevens.adres.huisnummer = Convert.ToInt32(AskForInput(c => char.IsDigit(c), DigitsOnlyMessage));
 
             Console.WriteLine("\nHieronder vult u uw login gegevens: ");
             Console.WriteLine("Uw email adres: ");
@@ -914,10 +1072,41 @@ namespace restaurant
 
         public override int DoWork()
         {
-            Console.WriteLine(GetGFLogo(2));
+            Console.WriteLine(GetGFLogo(6));
             Console.WriteLine("Welkom bij het eigenaars menu.");
-            Console.WriteLine("[1] Ga terug");
+            Console.WriteLine("[1] Gerechten");
+            Console.WriteLine("[2] Reservering");
+            Console.WriteLine("[3] Ingredienten");
+            Console.WriteLine("[4] Inkomsten");
+            Console.WriteLine("[5] Ga terug");
 
+            string choice = Console.ReadLine();
+
+            if (!(new string[6] { "1", "2", "3", "4", "5", "6" }).Contains(choice))
+            {
+                InvalidInputMessage();
+                Console.ReadKey();
+                return 11;
+            }
+            else
+            {
+                switch (Convert.ToInt32(choice))
+                {
+                    case 1:
+                        return 12;
+                    case 2:
+                        return 13;
+                    case 3:
+                        return 14;
+                    case 4:
+                        return 15;
+                    case 5:
+                        return 0;
+                    case 6:
+                        logoutUpdate = true;
+                        return 0;
+                }
+            }
             return 11;
         }
 
