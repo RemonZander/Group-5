@@ -1541,6 +1541,87 @@ namespace restaurant
         }
     }
 
+    public class DeleteReview : Screen
+    {
+        public override int DoWork()
+        {
+            Database database = io.GetDatabase();
+            //lijst met alle reviews van een klant
+            //Console.ReadKey();
+            Console.WriteLine(GFLogo);
+            Console.WriteLine("Review verwijderen:");
+            List<Review> klantReviews = new List<Review>(io.GetReviews(ingelogd.klantgegevens));
+
+            for (int i = 0; i < klantReviews.Count; i++)
+            {
+                Console.WriteLine("ID: " + klantReviews[i].ID);
+                if (klantReviews[i].message.Length > 80)
+                {
+                    Console.WriteLine("Message: " + klantReviews[i].message.Substring(0, 80) + "...");
+                }
+                else
+                {
+                    Console.WriteLine("Message: " + klantReviews[i].message);
+                }
+                Console.WriteLine();
+
+            }
+            string choice = Console.ReadLine();
+            string reviewID = choice;
+            //als de input niet een van de getallen is in de lijst met IDs, invalid input
+            if (!klantReviews.Select(i => i.ID).ToList().Contains(Convert.ToInt32(choice)))
+            {
+                Console.WriteLine("Review niet gevonden.");
+                Console.WriteLine("Druk op een toets om verder te gaan.");
+                Console.ReadKey();
+                return 5;
+            }
+            else
+            {
+                bool check = true;
+                while (check)
+                {
+                    Console.Clear();
+                    Console.WriteLine(GFLogo);
+                    Console.WriteLine("Weet u zeker dat u de volgende review wilt verwijderen?");
+                    Console.WriteLine();
+                    Console.WriteLine(klantReviews.Find(x => x.ID == Convert.ToInt32(reviewID)).message);
+                    Console.WriteLine("[1] Ja, dit begrijp ik");
+                    Console.WriteLine("[2] Annuleer");
+                    choice = Console.ReadLine();
+                    if (choice == "1")
+                    {
+                        code_gebruiker.DeleteReview(Convert.ToInt32(reviewID), ingelogd.klantgegevens);
+                        Console.WriteLine("Review succesvol verwijderd!");
+                        Console.WriteLine("Druk op een toets om verder te gaan.");
+                        Console.ReadKey();
+                        return 5;
+                    }
+                    else if (choice == "2")
+                    {
+                        Console.WriteLine("Operatie geannuleerd.");
+                        Console.WriteLine("Druk op een toets om terug naar het vorige scherm te gaan.");
+                        Console.ReadKey();
+                        return 9;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Onjuiste keuze");
+                        Console.Write("Druk op een toets om verder te gaan.");
+                        Console.ReadLine();
+                    }
+                }
+            }
+
+            return 5;
+
+        }
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            return screens;
+        }
+    }
+
 
 
 
