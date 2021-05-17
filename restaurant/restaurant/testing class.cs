@@ -9,6 +9,7 @@ using Microsoft.VisualBasic.FileIO;
 using System.Threading;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.ComponentModel.Design;
 
 namespace restaurant
 {
@@ -1074,13 +1075,61 @@ namespace restaurant
 
     public class ViewReviewScreen : Screen
     {
+        private int Nextpage(int page, int maxpage)
+        {
+            if (page < maxpage)
+            {
+                Console.WriteLine("[1] Volgende pagina");
+                Console.WriteLine("[2] Terug");
+                string choice = Console.ReadLine();
+
+                if (!new List<string> { "1", "2", "3" }.Contains(choice))
+                {
+                    Console.WriteLine("U moet wel een juiste keuze maken...");
+                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.ReadKey();
+                    return page;
+                }
+                else if (choice == "1")
+                {
+                    return page + 1;
+                }
+                else if (choice == "2")
+                {
+                    return -1;
+                }
+                logoutUpdate = true;
+                Logout();
+                return -2;
+            }
+            else
+            {
+                Console.WriteLine("[1] Terug");
+                string choice = Console.ReadLine();
+                if (choice != "1" && choice != "3")
+                {
+                    Console.WriteLine("U moet wel een juiste keuze maken...");
+                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.ReadKey();
+                    return page;
+                }
+                if (choice == "1")
+                {
+                    return -1;
+                }
+                logoutUpdate = true;
+                Logout();
+                return -2;
+            }
+        }
+
         public override int DoWork()
         {
             List<Review> reviews = new List<Review>();
             reviews = io.GetReviews(ingelogd.klantgegevens).OrderBy(s => s.datum).ToList();
 
             Console.WriteLine(GetGFLogo(5));
-            Console.WriteLine("Hier kunt u uw eigen reviews zien:");
+            Console.WriteLine("Hier kunt u uw eigen reviews zien en bewerken:");
             Console.WriteLine("[1] Laat al uw reviews zien");
             Console.WriteLine("[2] Laat al uw reviews zien vanaf een datum (genoteerd als 1-1-2000)");
             Console.WriteLine("[3] Laat al uw reviews zien op rating");
@@ -1089,7 +1138,7 @@ namespace restaurant
             string choice = Console.ReadLine();
 
 
-            if (choice != "1" && choice != "2" && choice != "3" && choice != "4")
+            if (choice != "1" && choice != "2" && choice != "3" && choice != "4" && choice != "5")
             {
                 Console.WriteLine("U moet wel een juiste keuze maken...");
                 Console.WriteLine("Druk op en knop om verder te gaan.");
@@ -1101,45 +1150,27 @@ namespace restaurant
             {
                 case 1:
                     int page = 0;
-                    List<string> pages = MakePages(ReviewsToString(reviews), 3);
-                    a:
-                    Console.Clear();
-                    Console.WriteLine(GetGFLogo(3));
-                    Console.WriteLine($"Dit zijn uw reviews op pagina {page} van de {pages.Count - 1}:");
-                    Console.WriteLine(pages[page] + new string('#', 108));
-                    if (page < pages.Count - 1)
+                    List<string> pages = new List<string>();
+                    do
                     {
-                        Console.WriteLine("[1] Volgende pagina");
-                        Console.WriteLine("[2] Terug");
-                        choice = Console.ReadLine();
+                        pages = new List<string>();
+                        pages = MakePages(BoxAroundText(ReviewsToString(reviews), "#", 2, 0, 102, true), 3);
+                        Console.Clear();
+                        Console.WriteLine(GetGFLogo(3));
+                        Console.WriteLine($"Dit zijn uw reviews op pagina {page} van de {pages.Count - 1}:");
+                        Console.WriteLine(pages[page] + new string('#', 108));
 
-                        if (!new List<string> { "1", "2" }.Contains(choice))
+                        int result = Nextpage(page, pages.Count - 1);
+                        if (result == -1)
                         {
-                            Console.WriteLine("U moet wel een juiste keuze maken...");
-                            Console.WriteLine("Druk op en knop om verder te gaan.");
-                            Console.ReadKey();
                             return 10;
                         }
-                        else if (choice == "1")
+                        else if (result == -2)
                         {
-                            page++;
-                            goto a;
+                            return 0;
                         }
-                        return 10;
-                    }
-                    else
-                    {
-                        Console.WriteLine("[1] Terug");
-                        choice = Console.ReadLine();
-                        if (choice != "1")
-                        {
-                            Console.WriteLine("U moet wel een juiste keuze maken...");
-                            Console.WriteLine("Druk op en knop om verder te gaan.");
-                            Console.ReadKey();
-                            return 10;
-                        }
-                        return 10;
-                    }
+                        page = result;
+                    } while (true);
                 case 2:
                     Console.WriteLine("\n Vul hieronder de datum in vanaf wanneer u uw reviews wilt zien");
                     choice = Console.ReadLine();
@@ -1147,7 +1178,7 @@ namespace restaurant
                     {
                         DateTime date = Convert.ToDateTime(choice);
                         page = 0;
-                        pages = MakePages(ReviewsToString(reviews.Where(d => d.datum >= date).ToList()), 3);
+                        pages = MakePages(BoxAroundText(ReviewsToString(reviews.Where(d => d.datum >= date).ToList()), "#", 2, 0, 102, true), 3);
                     b:
                         Console.Clear();
                         Console.WriteLine(GetGFLogo(3));
@@ -1159,7 +1190,7 @@ namespace restaurant
                             Console.WriteLine("[2] Terug");
                             choice = Console.ReadLine();
 
-                            if (!new List<string> { "1", "2" }.Contains(choice))
+                            if (!new List<string> { "1", "2", "3" }.Contains(choice))
                             {
                                 Console.WriteLine("U moet wel een juiste keuze maken...");
                                 Console.WriteLine("Druk op en knop om verder te gaan.");
@@ -1171,20 +1202,32 @@ namespace restaurant
                                 page++;
                                 goto b;
                             }
-                            return 10;
+                            else if (choice == "2")
+                            {
+                                return 10;
+                            }
+                            logoutUpdate = true;
+                            Logout();
+                            return 0;
                         }
                         else
                         {
                             Console.WriteLine("[1] Terug");
                             choice = Console.ReadLine();
-                            if (choice != "1")
+                            if (choice != "1" && choice != "3")
                             {
                                 Console.WriteLine("U moet wel een juiste keuze maken...");
                                 Console.WriteLine("Druk op en knop om verder te gaan.");
                                 Console.ReadKey();
                                 return 10;
                             }
-                            return 10;
+                            if (choice == "1")
+                            {
+                                return 10;
+                            }
+                            logoutUpdate = true;
+                            Logout();
+                            return 0;
                         }
                     }
                     catch
@@ -1206,7 +1249,7 @@ namespace restaurant
                         return 10;
                     }
                     page = 0;
-                    pages = MakePages(ReviewsToString(reviews.Where(r => r.Rating == Convert.ToInt32(choice)).ToList()), 3);
+                    pages = MakePages(BoxAroundText(ReviewsToString(reviews.Where(r => r.Rating == Convert.ToInt32(choice)).ToList()), "#", 2, 0, 102, true), 3);
                 c:
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(3));
@@ -1218,7 +1261,7 @@ namespace restaurant
                         Console.WriteLine("[2] Terug");
                         choice = Console.ReadLine();
 
-                        if (!new List<string> { "1", "2" }.Contains(choice))
+                        if (!new List<string> { "1", "2", "3" }.Contains(choice))
                         {
                             Console.WriteLine("U moet wel een juiste keuze maken...");
                             Console.WriteLine("Druk op en knop om verder te gaan.");
@@ -1230,31 +1273,368 @@ namespace restaurant
                             page++;
                             goto c;
                         }
-                        return 10;
+                        else if (choice == "2")
+                        {
+                            return 10;
+                        }
+                        logoutUpdate = true;
+                        Logout();
+                        return 0;
                     }
                     else
                     {
                         Console.WriteLine("[1] Terug");
                         choice = Console.ReadLine();
-                        if (choice != "1")
+                        if (choice != "1" && choice != "3")
                         {
                             Console.WriteLine("U moet wel een juiste keuze maken...");
                             Console.WriteLine("Druk op en knop om verder te gaan.");
                             Console.ReadKey();
                             return 10;
                         }
-                        return 10;
+                        if (choice == "1")
+                        {
+                            return 10;
+                        }
+                        logoutUpdate = true;
+                        Logout();
+                        return 0;
                     }
                 case 4:
                     return 5;
-            }
-            
-            
-            
-
+                case 5:
+                    logoutUpdate = true;
+                    Logout();
+                    return 0;
+            }           
             return 10;
         }
 
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            DoLogoutOnEveryScreen(screens);
+            return screens;
+        }
+    }
+
+    public class MakeReviewScreen : Screen
+    {
+        public override int DoWork()
+        {
+            //checkt of je een review mag maken of niet
+            #region Check1
+            Database database = io.GetDatabase();
+            //pak alle oude reserveringen
+            List<Reserveringen> reserveringen = new List<Reserveringen>(code_gebruiker.GetCustomerReservation(ingelogd.klantgegevens, false));
+            //lijst met alle reserveringen die al een review hebben
+            List<Reserveringen> reviewdReservervations = new List<Reserveringen>();
+            //lijst met alle reviews van een klant
+            List<Review> klantReviews = new List<Review>(io.GetReviews(ingelogd.klantgegevens));
+
+
+            //slaat alle reserveringen die al een review hebben op en except deze uit de lijst zodat je alleen niet reviewde reserveringen overhoudt
+            for (int i = 0; i < reserveringen.Count; i++)
+            {
+                for (int j = 0; j < klantReviews.Count; j++)
+                {
+                    if (reserveringen[i].ID == klantReviews[j].reservering_ID)
+                    {
+                        reviewdReservervations.Add(reserveringen[i]);
+                        break;
+                    }
+                }
+            }
+            reserveringen = reserveringen.Except(reviewdReservervations).ToList();
+
+            //main logo
+            Console.WriteLine(GFLogo);
+
+
+            //als er geen open reserveringen meer zijn voor review
+            if (reserveringen.Count == 0)
+            {
+                Console.WriteLine("Er zijn momenteel geen oude reserveringen waarover u een review kunt schrijven.");
+                Console.WriteLine("Druk op een toets om terug te gaan.");
+                Console.ReadKey();
+                //de return key
+                return 5;
+            }
+            #endregion
+            //checkt of de review die je hebt gekozen bestaat
+            #region Check2
+            else
+            {
+                Console.WriteLine("Hier kunt u een review maken.");
+                Console.WriteLine("U kunt een review schrijven per reservering.");
+                Console.WriteLine("U kunt kiezen uit een van de volgende reserveringen:");
+
+                //list met alle IDs van reserveringen die nog geen review hebben
+                for (int i = 0; i < reserveringen.Count; i++)
+                {
+                    Console.WriteLine(reserveringen[i].ID + " | " + reserveringen[i].aantal + " | " + reserveringen[i].datum);
+                }
+
+                Console.WriteLine("\"ID | aantal mensen | datum\"");
+                Console.WriteLine("Is het formaat van deze weergave.\n");
+                Console.WriteLine("Met het ID kunt u selecteren over welk bezoek u een review wilt schrijven.");
+                Console.WriteLine("Het ID van u reservering:");
+
+                string choice = Console.ReadLine();
+                //als de input niet een van de getallen is in de lijst met IDs, invalid input
+                if (!reserveringen.Select(i => i.ID).ToList().Contains(Convert.ToInt32(choice)))
+                {
+                    //invalid input message here
+                }
+                #endregion
+                // checkt input: 1 voor anoniem, 2 voor normaal, 3 voor terug
+                #region Check3
+                else
+                {
+                    //de reservering ophalen waarover een review word geschreven, word later gebruikt
+                    Reserveringen chosenReservation = new Reserveringen();
+                    for (int i = 0; i < reserveringen.Count; i++)
+                    {
+                        if (reserveringen[i].ID == Convert.ToInt32(choice))
+                        {
+                            chosenReservation = reserveringen[i];
+                            break;
+                        }
+                    }
+
+
+                    //begin met een een clear screen hier
+                    Console.Clear();
+                    Console.WriteLine(GFLogo);
+                    Console.WriteLine("Er is een mogelijkheid om anoniem een review te geven, anoniem houdt in:");
+                    Console.WriteLine("-> U naam word niet opgeslagen met de review.");
+                    Console.WriteLine("-> De review word niet gekoppeld aan deze reservering.");
+                    Console.WriteLine("-> U kunt deze review niet aanpassen of verwijderen.");
+                    //Console.WriteLine("Kies [1] voor het maken voor een anonieme review, kies [2] voor het maken van een normale review.");
+                    Console.WriteLine("[1] Anoniem");
+                    Console.WriteLine("[2] Normaal");
+                    Console.WriteLine("[3] Terug");
+                    choice = Console.ReadLine();
+
+                    //list met mogelijke inputs
+                    List<string> possibleInput = new List<string> { "1", "2", "3" };
+
+                    if (!possibleInput.Contains(choice))
+                    {
+                        Console.WriteLine("U moet wel een juiste keuze maken...");
+                        Console.WriteLine("Druk op en knop om terug te gaan.");
+                        Console.ReadKey();
+                        //naar welk scherm gereturned moet worden als de input incorrect is
+                        return 7;
+                    }
+                    #endregion
+                    else
+                    {
+                        //clear screen
+                        Console.Clear();
+                        Console.WriteLine(GFLogo);
+
+
+                        if (choice == "1")
+                        {
+                            //anoniem Review, alleen rating en message
+                            Console.WriteLine("De beoordeling die u dit restaurant wilt geven van 1 tot 5 waarin,");
+                            Console.WriteLine("1 is het slechtste en 5 is het beste");
+
+                            choice = Console.ReadLine();
+
+                            possibleInput = new List<string> { "1", "2", "3", "4", "5" };
+
+                            //check voor de rating
+                            if (!possibleInput.Contains(choice))
+                            {
+                                Console.WriteLine("U heeft een incorrecte beoordeling ingevoerd.");
+                                Console.WriteLine("Druk op een knop om terug te gaan.");
+                                Console.ReadKey();
+
+                                //naar welk scherm gereturned moet worden als de input incorrect is
+                                return 7;
+                            }
+                            else
+                            {
+                                //zet rating naar een int, word later gebruikt
+                                int rating = Convert.ToInt32(choice);
+
+                                Console.WriteLine("Als laatste, de inhoud van u review.");
+                                Console.WriteLine("Met Enter gaat u verder op een nieuwe regel.");
+                                Console.WriteLine("Als u klaar bent met het typen van u review, type dan \"klaar\" op een nieuwe regel.");
+                                Console.WriteLine("De inhoud van de review:");
+
+                                string message = "";
+                                string Line = Console.ReadLine();
+                                message = Line;
+                                while (Line != "klaar")
+                                {
+                                    Line = Console.ReadLine();
+                                    if (Line == "klaar")
+                                    {
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        message += " " + Line;
+                                    }
+                                }
+                                code_gebruiker.MakeReview(rating, message);
+                                Console.WriteLine("Succesvol een review gemaakt.");
+                                Console.WriteLine("Druk op een toets om terug te gaan.");
+                                Console.ReadKey();
+
+                                //return naar het vorige scherm pls
+                                return 5;
+                            }
+                        }
+                        if (choice == "2")
+                        {
+                            //rating, message en klantgegevens/naam klant
+                            Console.WriteLine("De beoordeling die u dit restaurant wilt geven van 1 tot 5 waarin:");
+                            Console.WriteLine("1 het slechtste is en 5 het beste.");
+
+                            choice = Console.ReadLine();
+
+                            possibleInput = new List<string> { "1", "2", "3", "4", "5" };
+
+                            //check voor de rating
+                            if (!possibleInput.Contains(choice))
+                            {
+                                Console.WriteLine("U heeft een incorrecte beoordeling ingevoerd.");
+                                Console.WriteLine("Druk op een knop om terug te gaan.");
+                                Console.ReadKey();
+
+                                //naar welk scherm gereturned moet worden als de input incorrect is
+                                return 7;
+                            }
+                            else
+                            {
+                                //zet rating naar een int, word later gebruikt
+                                int rating = Convert.ToInt32(choice);
+
+                                //nog een clear screen?
+
+
+                                Console.WriteLine("Als laatste, de inhoud van u review.");
+                                Console.WriteLine("Met Enter gaat u verder op een nieuwe regel.");
+                                Console.WriteLine("Als u klaar bent met het typen van u review, type dan \"klaar\" op een nieuwe regel.");
+                                Console.WriteLine("De inhoud van de review:");
+
+                                string message = "";
+                                string Line = Console.ReadLine();
+                                message = Line;
+                                while (Line != "klaar")
+                                {
+                                    Line = Console.ReadLine();
+                                    if (Line == "klaar")
+                                    {
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        message += " " + Line;
+                                    }
+                                }
+                                code_gebruiker.MakeReview(rating, ingelogd.klantgegevens, message, chosenReservation);
+                                Console.WriteLine("Succesvol een review gemaakt.");
+                                Console.WriteLine("Druk op een toets om terug te gaan.");
+                                Console.ReadKey();
+                                //return naar het vorige scherm pls
+                                return 5;
+                            }
+                        }
+                        if (choice == "3")
+                        {
+                            //return naar vorig scherm
+                            return 5;
+                        }
+                    }
+                }
+                return 5;
+            }
+        }
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            return screens;
+        }
+    }
+
+    public class DeleteReview : Screen
+    {
+        public override int DoWork()
+        {
+            Database database = io.GetDatabase();
+            //lijst met alle reviews van een klant
+            //Console.ReadKey();
+            Console.WriteLine(GFLogo);
+            Console.WriteLine("Review verwijderen:");
+            List<Review> klantReviews = new List<Review>(io.GetReviews(ingelogd.klantgegevens));
+
+            for (int i = 0; i < klantReviews.Count; i++)
+            {
+                Console.WriteLine("ID: " + klantReviews[i].ID);
+                if (klantReviews[i].message.Length > 80)
+                {
+                    Console.WriteLine("Message: " + klantReviews[i].message.Substring(0, 80) + "...");
+                }
+                else
+                {
+                    Console.WriteLine("Message: " + klantReviews[i].message);
+                }
+                Console.WriteLine();
+
+            }
+            string choice = Console.ReadLine();
+            string reviewID = choice;
+            //als de input niet een van de getallen is in de lijst met IDs, invalid input
+            if (!klantReviews.Select(i => i.ID).ToList().Contains(Convert.ToInt32(choice)))
+            {
+                Console.WriteLine("Review niet gevonden.");
+                Console.WriteLine("Druk op een toets om verder te gaan.");
+                Console.ReadKey();
+                return 5;
+            }
+            else
+            {
+                bool check = true;
+                while (check)
+                {
+                    Console.Clear();
+                    Console.WriteLine(GFLogo);
+                    Console.WriteLine("Weet u zeker dat u de volgende review wilt verwijderen?");
+                    Console.WriteLine();
+                    Console.WriteLine(klantReviews.Find(x => x.ID == Convert.ToInt32(reviewID)).message);
+                    Console.WriteLine("[1] Ja, dit begrijp ik");
+                    Console.WriteLine("[2] Annuleer");
+                    choice = Console.ReadLine();
+                    if (choice == "1")
+                    {
+                        code_gebruiker.DeleteReview(Convert.ToInt32(reviewID), ingelogd.klantgegevens);
+                        Console.WriteLine("Review succesvol verwijderd!");
+                        Console.WriteLine("Druk op een toets om verder te gaan.");
+                        Console.ReadKey();
+                        return 5;
+                    }
+                    else if (choice == "2")
+                    {
+                        Console.WriteLine("Operatie geannuleerd.");
+                        Console.WriteLine("Druk op een toets om terug naar het vorige scherm te gaan.");
+                        Console.ReadKey();
+                        return 9;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Onjuiste keuze");
+                        Console.Write("Druk op een toets om verder te gaan.");
+                        Console.ReadLine();
+                    }
+                }
+            }
+
+            return 5;
+
+        }
         public override List<Screen> Update(List<Screen> screens)
         {
             return screens;
