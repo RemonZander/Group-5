@@ -1174,65 +1174,43 @@ namespace restaurant
                 case 2:
                     Console.WriteLine("\n Vul hieronder de datum in vanaf wanneer u uw reviews wilt zien");
                     choice = Console.ReadLine();
+                    page = 0;
                     try
                     {
-                        DateTime date = Convert.ToDateTime(choice);
-                        page = 0;
-                        pages = MakePages(BoxAroundText(ReviewsToString(reviews.Where(d => d.datum >= date).ToList()), "#", 2, 0, 102, true), 3);
-                    b:
-                        Console.Clear();
-                        Console.WriteLine(GetGFLogo(3));
-                        Console.WriteLine($"Dit zijn uw reviews op pagina {page} van de {pages.Count - 1}:");
-                        Console.WriteLine(pages[page] + new string('#', 108));
-                        if (page < pages.Count - 1)
-                        {
-                            Console.WriteLine("[1] Volgende pagina");
-                            Console.WriteLine("[2] Terug");
-                            choice = Console.ReadLine();
 
-                            if (!new List<string> { "1", "2", "3" }.Contains(choice))
-                            {
-                                Console.WriteLine("U moet wel een juiste keuze maken...");
-                                Console.WriteLine("Druk op en knop om verder te gaan.");
-                                Console.ReadKey();
-                                return 10;
-                            }
-                            else if (choice == "1")
-                            {
-                                page++;
-                                goto b;
-                            }
-                            else if (choice == "2")
-                            {
-                                return 10;
-                            }
-                            logoutUpdate = true;
-                            Logout();
-                            return 0;
-                        }
-                        else
+                        DateTime date = Convert.ToDateTime(choice);
+                        if (date >= DateTime.Now)
                         {
-                            Console.WriteLine("[1] Terug");
-                            choice = Console.ReadLine();
-                            if (choice != "1" && choice != "3")
-                            {
-                                Console.WriteLine("U moet wel een juiste keuze maken...");
-                                Console.WriteLine("Druk op en knop om verder te gaan.");
-                                Console.ReadKey();
-                                return 10;
-                            }
-                            if (choice == "1")
-                            {
-                                return 10;
-                            }
-                            logoutUpdate = true;
-                            Logout();
-                            return 0;
+                            Console.WriteLine("U moet wel een datum in het verleden invoeren.");
+                            Console.WriteLine("Druk op en knop om verder te gaan.");
+                            Console.ReadKey();
+                            return 10;
                         }
+                        do
+                        {
+                            pages = MakePages(BoxAroundText(ReviewsToString(reviews.Where(d => d.datum >= date).ToList()), "#", 2, 0, 102, true), 3);
+                            if (pages.Count == 0)
+                            {
+
+                            }
+                            Console.Clear();
+                            Console.WriteLine(GetGFLogo(3));
+                            Console.WriteLine($"Dit zijn uw reviews op pagina {page} van de {pages.Count - 1}:");
+                            Console.WriteLine(pages[page] + new string('#', 108));
+                            int result = Nextpage(page, pages.Count - 1);
+                            if (result == -1)
+                            {
+                                return 10;
+                            }
+                            else if (result == -2)
+                            {
+                                return 0;
+                            }
+                            page = result;
+                        } while (true);
                     }
                     catch
                     {
-
                         Console.WriteLine("U moet wel een geldige datum invullen op deze manier: 1-1-2000");
                         Console.WriteLine("Druk op en knop om verder te gaan.");
                         Console.ReadKey();
@@ -1249,57 +1227,24 @@ namespace restaurant
                         return 10;
                     }
                     page = 0;
-                    pages = MakePages(BoxAroundText(ReviewsToString(reviews.Where(r => r.Rating == Convert.ToInt32(choice)).ToList()), "#", 2, 0, 102, true), 3);
-                c:
-                    Console.Clear();
-                    Console.WriteLine(GetGFLogo(3));
-                    Console.WriteLine($"Dit zijn uw reviews op pagina {page} van de {pages.Count - 1}:");
-                    Console.WriteLine(pages[page] + new string('#', 108));
-                    if (page < pages.Count - 1)
+                    do
                     {
-                        Console.WriteLine("[1] Volgende pagina");
-                        Console.WriteLine("[2] Terug");
-                        choice = Console.ReadLine();
-
-                        if (!new List<string> { "1", "2", "3" }.Contains(choice))
-                        {
-                            Console.WriteLine("U moet wel een juiste keuze maken...");
-                            Console.WriteLine("Druk op en knop om verder te gaan.");
-                            Console.ReadKey();
-                            return 10;
-                        }
-                        else if (choice == "1")
-                        {
-                            page++;
-                            goto c;
-                        }
-                        else if (choice == "2")
+                        pages = MakePages(BoxAroundText(ReviewsToString(reviews.Where(r => r.Rating == Convert.ToInt32(choice)).ToList()), "#", 2, 0, 102, true), 3);
+                        Console.Clear();
+                        Console.WriteLine(GetGFLogo(3));
+                        Console.WriteLine($"Dit zijn uw reviews op pagina {page} van de {pages.Count - 1}:");
+                        Console.WriteLine(pages[page] + new string('#', 108));
+                        int result = Nextpage(page, pages.Count - 1);
+                        if (result == -1)
                         {
                             return 10;
                         }
-                        logoutUpdate = true;
-                        Logout();
-                        return 0;
-                    }
-                    else
-                    {
-                        Console.WriteLine("[1] Terug");
-                        choice = Console.ReadLine();
-                        if (choice != "1" && choice != "3")
+                        else if (result == -2)
                         {
-                            Console.WriteLine("U moet wel een juiste keuze maken...");
-                            Console.WriteLine("Druk op en knop om verder te gaan.");
-                            Console.ReadKey();
-                            return 10;
+                            return 0;
                         }
-                        if (choice == "1")
-                        {
-                            return 10;
-                        }
-                        logoutUpdate = true;
-                        Logout();
-                        return 0;
-                    }
+                        page = result;
+                    } while (true);
                 case 4:
                     return 5;
                 case 5:

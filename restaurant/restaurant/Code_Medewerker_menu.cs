@@ -21,6 +21,25 @@ namespace restaurant
 
         }
 
+        #region Feedback
+
+        public List<Feedback> GetFeedbackMedewerker(Werknemer werknemer)
+        {
+            database = io.GetDatabase();
+            var feedbackMedewerker= new List<Feedback>();
+            foreach (var feedback in database.feedback)
+            {
+                if (feedback.recipient == werknemer.ID)
+                {
+                    feedbackMedewerker.Add(feedback);
+                }
+            }
+            return feedbackMedewerker;
+        }
+
+        #endregion
+
+
         #region Reververingen
 
         public List<Reserveringen> getReserveringen(DateTime datum) // Medewerker kan de reserveringen van de huidige dag zien
