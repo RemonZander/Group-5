@@ -19,10 +19,10 @@ namespace restaurant
             screens.Add(new RegisterScreen());
             screens.Add(new LoginScreen());
             screens.Add(new ClientMenuScreen());
-            screens.Add(new ClientMenuScreen());
+            screens.Add(new MakeReservationScreen());
             screens.Add(new MakeReviewScreen());
             screens.Add(new EditReviewScreen());
-            screens.Add(new ClientMenuScreen());
+            screens.Add(new DeleteReview());
             screens.Add(new ViewReviewScreen());
             screens.Add(new OwnerMenuScreen());
             currentScreen = 0;
@@ -70,6 +70,7 @@ namespace restaurant
         protected const string DigitsOnlyMessage = "Alleen maar cijfers mogen ingevoerd worden!";
         protected const string LettersOnlyMessage = "Alleen maar letters mogen ingevoerd worden!";
         protected const string DigitsAndLettersOnlyMessage = "Alleen maar letters of cijfers mogen ingevoerd worden!";
+        protected const string InputEmptyMessage = "Vul wat in alsjeblieft.";
 
         protected string BoxAroundText(List<string> input, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom)
         {
@@ -299,6 +300,23 @@ namespace restaurant
 
         protected static void InvalidInputMessage() => Console.WriteLine("\nU moet wel een juiste keuze maken...\nDruk op en knop om verder te gaan.");
 
+        private static bool IsInputEmpty(string input) => input == "";
+
+        private bool ValidateInput(string input, Func<char, bool> conditionPerChar)
+        {
+            char[] charsOfInput = input.ToCharArray();
+
+            for (int i = 0; i < charsOfInput.Length; i++)
+            {
+                if (charsOfInput[i] != ' ') continue;
+                if (!conditionPerChar(charsOfInput[i])) return false;
+            }
+
+            return true;
+        }
+
+        private bool ValidateInput(string input, Func<string, bool> conditionInput) => conditionInput(input);
+
         /// <summary>
         /// With this method you can ask the user for input and add a condition based on what type of characters are allowed in the input.
         /// If you only need to ask the user for input without any checks on the input please use Console.Readline() instead.
@@ -306,19 +324,23 @@ namespace restaurant
         /// <param name="conditionPerChar">The lambda that gets called to check if every character in the input string matches a certain condition.</param>
         /// <param name="onFalseMessage">The message to display when the condition failes.</param>
         /// <returns>The input that has been asked</returns>
-        protected string AskForInput(Func<char, bool> conditionPerChar, string onFalseMessage = "")
+        protected string AskForInput(Func<char, bool> conditionPerChar, string onFalseMessage = "", bool required = true)
         {
             string input = Console.ReadLine();
 
-            char[] charsOfInput = input.ToCharArray();
-
-            for (int i = 0; i < charsOfInput.Length; i++)
+            if (required)
             {
-                if (!conditionPerChar(charsOfInput[i]))
+                if (IsInputEmpty(input))
                 {
-                    Console.WriteLine(onFalseMessage);
-                    return AskForInput(conditionPerChar, onFalseMessage);
+                    Console.WriteLine(InputEmptyMessage);
+                    return AskForInput(conditionPerChar, onFalseMessage, required);
                 }
+            }
+
+            if (ValidateInput(input, conditionPerChar))
+            {
+                Console.WriteLine(onFalseMessage);
+                return AskForInput(conditionPerChar, onFalseMessage, required);
             }
 
             return input;
@@ -331,20 +353,26 @@ namespace restaurant
         /// <param name="conditionInput">The lambda that gets called to check if the input itself matches a certain condition</param>
         /// <param name="onFalseMessage">The message to display when the condition failes.</param>
         /// <returns>The input that has been asked</returns>
-        protected string AskForInput(Func<string, bool> conditionInput, string onFalseMessage = "")
+        protected string AskForInput(Func<string, bool> conditionInput, string onFalseMessage = "", bool required = true)
         {
             string input = Console.ReadLine();
-            bool isValid = conditionInput(input);
 
-            if (isValid)
+            if (required)
             {
-                return input;
+                if (IsInputEmpty(input))
+                {
+                    Console.WriteLine(InputEmptyMessage);
+                    return AskForInput(conditionInput, onFalseMessage, required);
+                }
             }
-            else
+
+            if (ValidateInput(input, conditionInput))
             {
                 Console.WriteLine(onFalseMessage);
-                return AskForInput(conditionInput, onFalseMessage);
+                return AskForInput(conditionInput, onFalseMessage, required);
             }
+
+            return input;
         }
 
         /// <summary>
@@ -355,23 +383,26 @@ namespace restaurant
         /// <param name="conditionInput">The lambda that gets called to check if the input itself matches a certain condition</param>
         /// <param name="onFalseMessage">The message to display when the condition failes.</param>
         /// <returns>The input that has been asked</returns>
-        protected string AskForInput(Func<char, bool> conditionPerChar, Func<string, bool> conditionInput, string onFalseMessage = "")
+        protected string AskForInput(Func<char, bool> conditionPerChar, Func<string, bool> conditionInput, string onFalseMessage = "", bool required = true)
         {
             string input = Console.ReadLine();
 
-            char[] charsOfInput = input.ToCharArray();
-
-            for (int i = 0; i < charsOfInput.Length; i++)
+            if (required)
             {
-                if (!conditionPerChar(charsOfInput[i]))
+                if (IsInputEmpty(input))
                 {
-                    Console.WriteLine(onFalseMessage);
-                    input = AskForInput(conditionPerChar, onFalseMessage);
-                    break;
+                    Console.WriteLine(InputEmptyMessage);
+                    return AskForInput(conditionPerChar, conditionInput, onFalseMessage, required);
                 }
             }
 
-            return conditionInput(input) ? input : AskForInput(conditionInput, onFalseMessage);
+            if (ValidateInput(input, conditionPerChar))
+            {
+                Console.WriteLine(onFalseMessage);
+                return AskForInput(conditionPerChar, onFalseMessage, required);
+            }
+
+            return ValidateInput(input, conditionInput) ? input : AskForInput(conditionInput, onFalseMessage);
         }
 
         /// <summary>
@@ -625,11 +656,11 @@ namespace restaurant
             Console.WriteLine("Uw voornaam: ");
             new_gebruiker.klantgegevens = new Klantgegevens
             {
-                voornaam = AskForInput(c => char.IsLetter(c), "Alleen maar letters mogen ingevoerd worden!"),
+                voornaam = AskForInput(c => char.IsLetter(c), LettersOnlyMessage),
                 klantnummer = login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1
             };
             Console.WriteLine("Uw achternaam: ");
-            new_gebruiker.klantgegevens.achternaam = AskForInput(c => char.IsLetter(c), "Alleen maar letters mogen ingevoerd worden!");
+            new_gebruiker.klantgegevens.achternaam = AskForInput(c => char.IsLetter(c), LettersOnlyMessage);
 
             Console.WriteLine("Uw geboorte datum met het formaat d/mm/yyyy: ");
             
@@ -649,17 +680,17 @@ namespace restaurant
             Console.WriteLine("Uw woonplaats: ");
             new_gebruiker.klantgegevens.adres = new adres
             {
-                woonplaats = AskForInput(c => char.IsLetter(c), "Alleen maar letters mogen ingevoerd worden!"),
+                woonplaats = AskForInput(c => char.IsLetter(c), LettersOnlyMessage),
                 land = "NL"
             };
             Console.WriteLine("Uw postcode: ");
-            new_gebruiker.klantgegevens.adres.postcode = AskForInput(c => char.IsLetterOrDigit(c), "Alleen maar letters of cijfers mogen ingevoerd worden!");
+            new_gebruiker.klantgegevens.adres.postcode = AskForInput(c => char.IsLetterOrDigit(c), DigitsAndLettersOnlyMessage);
 
             Console.WriteLine("Uw straatnaam: ");
-            new_gebruiker.klantgegevens.adres.straatnaam = AskForInput(c => char.IsLetter(c), "Alleen maar letters mogen ingevoerd worden!");
+            new_gebruiker.klantgegevens.adres.straatnaam = AskForInput(c => char.IsLetter(c), LettersOnlyMessage);
 
             Console.WriteLine("Uw huisnummer: ");
-            new_gebruiker.klantgegevens.adres.huisnummer = Convert.ToInt32(AskForInput(c => char.IsDigit(c), "Alleen maar nummers mogen ingevoerd worden!"));
+            new_gebruiker.klantgegevens.adres.huisnummer = Convert.ToInt32(AskForInput(c => char.IsDigit(c), DigitsOnlyMessage));
 
             Console.WriteLine("\nHieronder vult u uw login gegevens: ");
             Console.WriteLine("Uw email adres: ");
