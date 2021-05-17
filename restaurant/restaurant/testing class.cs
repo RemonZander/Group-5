@@ -9,6 +9,7 @@ using Microsoft.VisualBasic.FileIO;
 using System.Threading;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.ComponentModel.Design;
 
 namespace restaurant
 {
@@ -1074,13 +1075,61 @@ namespace restaurant
 
     public class ViewReviewScreen : Screen
     {
+        private int Nextpage(int page, int maxpage)
+        {
+            if (page < maxpage)
+            {
+                Console.WriteLine("[1] Volgende pagina");
+                Console.WriteLine("[2] Terug");
+                string choice = Console.ReadLine();
+
+                if (!new List<string> { "1", "2", "3" }.Contains(choice))
+                {
+                    Console.WriteLine("U moet wel een juiste keuze maken...");
+                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.ReadKey();
+                    return page;
+                }
+                else if (choice == "1")
+                {
+                    return page + 1;
+                }
+                else if (choice == "2")
+                {
+                    return -1;
+                }
+                logoutUpdate = true;
+                Logout();
+                return -2;
+            }
+            else
+            {
+                Console.WriteLine("[1] Terug");
+                string choice = Console.ReadLine();
+                if (choice != "1" && choice != "3")
+                {
+                    Console.WriteLine("U moet wel een juiste keuze maken...");
+                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.ReadKey();
+                    return page;
+                }
+                if (choice == "1")
+                {
+                    return -1;
+                }
+                logoutUpdate = true;
+                Logout();
+                return -2;
+            }
+        }
+
         public override int DoWork()
         {
             List<Review> reviews = new List<Review>();
             reviews = io.GetReviews(ingelogd.klantgegevens).OrderBy(s => s.datum).ToList();
 
             Console.WriteLine(GetGFLogo(5));
-            Console.WriteLine("Hier kunt u uw eigen reviews zien:");
+            Console.WriteLine("Hier kunt u uw eigen reviews zien en bewerken:");
             Console.WriteLine("[1] Laat al uw reviews zien");
             Console.WriteLine("[2] Laat al uw reviews zien vanaf een datum (genoteerd als 1-1-2000)");
             Console.WriteLine("[3] Laat al uw reviews zien op rating");
@@ -1101,57 +1150,27 @@ namespace restaurant
             {
                 case 1:
                     int page = 0;
-                    List<string> pages = MakePages(ReviewsToString(reviews), 3);
-                    a:
-                    Console.Clear();
-                    Console.WriteLine(GetGFLogo(3));
-                    Console.WriteLine($"Dit zijn uw reviews op pagina {page} van de {pages.Count - 1}:");
-                    Console.WriteLine(pages[page] + new string('#', 108));
-                    if (page < pages.Count - 1)
+                    List<string> pages = new List<string>();
+                    do
                     {
-                        Console.WriteLine("[1] Volgende pagina");
-                        Console.WriteLine("[2] Terug");
-                        choice = Console.ReadLine();
+                        pages = new List<string>();
+                        pages = MakePages(BoxAroundText(ReviewsToString(reviews), "#", 2, 0, 102, true), 3);
+                        Console.Clear();
+                        Console.WriteLine(GetGFLogo(3));
+                        Console.WriteLine($"Dit zijn uw reviews op pagina {page} van de {pages.Count - 1}:");
+                        Console.WriteLine(pages[page] + new string('#', 108));
 
-                        if (!new List<string> { "1", "2", "3" }.Contains(choice))
-                        {
-                            Console.WriteLine("U moet wel een juiste keuze maken...");
-                            Console.WriteLine("Druk op en knop om verder te gaan.");
-                            Console.ReadKey();
-                            return 10;
-                        }
-                        else if (choice == "1")
-                        {
-                            page++;
-                            goto a;
-                        }
-                        else if (choice == "2")
+                        int result = Nextpage(page, pages.Count - 1);
+                        if (result == -1)
                         {
                             return 10;
                         }
-                        logoutUpdate = true;
-                        Logout();
-                        return 0;
-                    }
-                    else
-                    {
-                        Console.WriteLine("[1] Terug");
-                        choice = Console.ReadLine();
-                        if (choice != "1" && choice != "3")
+                        else if (result == -2)
                         {
-                            Console.WriteLine("U moet wel een juiste keuze maken...");
-                            Console.WriteLine("Druk op en knop om verder te gaan.");
-                            Console.ReadKey();
-                            return 10;
+                            return 0;
                         }
-                        if (choice == "1")
-                        {
-                            return 10;
-                        }
-                        logoutUpdate = true;
-                        Logout();
-                        return 0;
-                    }
+                        page = result;
+                    } while (true);
                 case 2:
                     Console.WriteLine("\n Vul hieronder de datum in vanaf wanneer u uw reviews wilt zien");
                     choice = Console.ReadLine();
@@ -1159,7 +1178,7 @@ namespace restaurant
                     {
                         DateTime date = Convert.ToDateTime(choice);
                         page = 0;
-                        pages = MakePages(ReviewsToString(reviews.Where(d => d.datum >= date).ToList()), 3);
+                        pages = MakePages(BoxAroundText(ReviewsToString(reviews.Where(d => d.datum >= date).ToList()), "#", 2, 0, 102, true), 3);
                     b:
                         Console.Clear();
                         Console.WriteLine(GetGFLogo(3));
@@ -1230,7 +1249,7 @@ namespace restaurant
                         return 10;
                     }
                     page = 0;
-                    pages = MakePages(ReviewsToString(reviews.Where(r => r.Rating == Convert.ToInt32(choice)).ToList()), 3);
+                    pages = MakePages(BoxAroundText(ReviewsToString(reviews.Where(r => r.Rating == Convert.ToInt32(choice)).ToList()), "#", 2, 0, 102, true), 3);
                 c:
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(3));
