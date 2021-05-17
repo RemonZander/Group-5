@@ -12,9 +12,6 @@ namespace restaurant
 
         public DateTime datum { get; set; }
 
-        [Obsolete("klantnummers graag vervangen met klantnummer, dit is ook gen list meer")]
-        public List<int> klantnummers { get; set; }
-
         public int klantnummer { get; set; }
 
         //Dit is het aantal mensen
