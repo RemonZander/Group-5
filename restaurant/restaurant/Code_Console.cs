@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
+using System.Text.RegularExpressions;
 
 namespace restaurant
 {
@@ -166,7 +167,6 @@ namespace restaurant
                 output += sym + new string(' ', spacingside) + line + new string(' ', spacingside) + sym + "\n";
             }
 
-            output += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
             for (int b = 0; b < bottomtext.Count; b++)
             {
                 output += sym + new string(' ', spacingside) + bottomtext[b] + new string(' ', spacingside) + sym + "\n";
@@ -201,7 +201,6 @@ namespace restaurant
                     block += sym + new string(' ', spacingside) + line + new string(' ', spacingside) + sym + "\n";
                 }
 
-                block += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
                 for (int b = 0; b < bottomtext.Count; b++)
                 {
                     block += sym + new string(' ', spacingside) + bottomtext[b] + new string(' ', spacingside) + sym + "\n";
@@ -384,6 +383,232 @@ namespace restaurant
             return done;
         }
 
+        protected (int, int, double) Nextpage(int page, int maxpage, double pos, double maxpos, int screenIndex)
+        {
+            if (page < maxpage)
+            {
+                Console.WriteLine("[1] Volgende pagina");
+                Console.WriteLine("[2] Terug");
+                ConsoleKeyInfo key = Console.ReadKey();
+                if (IsKeyPressed(key, ESCAPE_KEY))
+                {
+                    return (page, screenIndex, pos);
+                }
+                else if (IsKeyPressed(key, UP_ARROW))
+                {
+                    if (pos % 2 != 0)
+                    {
+                        if ((pos - 1 > 6 * page && page != 0) || (pos > 2 && page == 0))
+                        {
+                            pos -= 2;
+                        }
+                    }
+                    else
+                    {
+                        if ((pos > 6 * page && page != 0) || (pos > 2 && page == 0))
+                        {
+                            pos -= 2;
+                        }
+                    }
+                    return (page, -1, pos);
+                }
+                else if (IsKeyPressed(key, DOWN_ARROW))
+                {
+                    if (pos % 2 != 0)
+                    {
+                        if ((pos + 1 < 6 * (page + 1) && page != 0) || pos < 4)
+                        {
+                            pos += 2;
+                        }
+                    }
+                    else
+                    {
+                        if ((pos + 2 < 6 * (page + 1) && page != 0) || pos < 4)
+                        {
+                            pos += 2;
+                        }
+                    }
+                    return (page, -1, pos);
+                }
+                else if (IsKeyPressed(key, LEFT_ARROW))
+                {
+                    if (pos % 2 != 0 && pos > 0)
+                    {
+                        pos -= 1;
+                    }
+                    return (page, -1, pos);
+                }
+                else if (IsKeyPressed(key, RIGHT_ARROW))
+                {
+                    if (pos % 2 == 0 || pos == 0)
+                    {
+                        pos += 1;
+                    }
+                    return (page, -1, pos);
+                }
+                else if (IsKeyPressed(key, "D1"))
+                {
+                    return (page + 1, -1, (page + 1) * 6);
+                }
+                else if (IsKeyPressed(key, "D2"))
+                {
+                    return (page, screenIndex, pos);
+                }
+                else if (IsKeyPressed(key, "D3"))
+                {
+                    logoutUpdate = true;
+                    Logout();
+                    return (page, 0, pos);
+                }
+                else
+                {
+                    Console.WriteLine("U moet wel een juiste keuze maken...");
+                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.ReadKey();
+                    return (page, -1, pos);
+                }
+            }
+            else
+            {
+                Console.WriteLine("[1] Terug");
+                ConsoleKeyInfo key = Console.ReadKey();
+                if (IsKeyPressed(key, ESCAPE_KEY))
+                {
+                    return (page, screenIndex, pos);
+                }
+                else if (IsKeyPressed(key, "D1"))
+                {
+                    return (page, screenIndex, pos);
+                }
+                else if (IsKeyPressed(key, "D3"))
+                {
+                    logoutUpdate = true;
+                    Logout();
+                    return (page, 0, pos);
+                }
+                else if (IsKeyPressed(key, UP_ARROW))
+                {
+                    if (pos % 2 != 0)
+                    {
+                        if ((pos - 1 > 6 * page && page != 0) || (pos > 2 && page == 0))
+                        {
+                            pos -= 2;
+                        }
+                    }
+                    else
+                    {
+                        if ((pos > 6 * page && page != 0) || (pos > 2 && page == 0))
+                        {
+                            pos -= 2;
+                        }
+                    }
+                    return (page, -1, pos);
+                }
+                else if (IsKeyPressed(key, DOWN_ARROW))
+                {
+                    if (pos % 2 != 0)
+                    {
+                        if ((pos + 1 < 6 * (page + 1) && page != 0) || pos < 4)
+                        {
+                            pos += 2;
+                        }
+                    }
+                    else
+                    {
+                        if ((pos + 2 < 6 * (page + 1) && page != 0) || pos < 4)
+                        {
+                            pos += 2;
+                        }
+                    }
+                    return (page, -1, pos);
+                }
+                else if (IsKeyPressed(key, LEFT_ARROW))
+                {
+                    if (pos % 2 != 0 && pos > 0)
+                    {
+                        pos -= 1;
+                    }
+                    return (page, -1, pos);
+                }
+                else if (IsKeyPressed(key, RIGHT_ARROW))
+                {
+                    if (pos % 2 == 0 || pos == 0)
+                    {
+                        pos += 1;
+                    }
+                    return (page, -1, pos);
+                }
+                else
+                {
+                    Console.WriteLine("U moet wel een juiste keuze maken...");
+                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.ReadKey();
+                    return (page, -1, pos);
+                }
+            }
+        }
+
+        protected (int, int) Nextpage(int page, int maxpage, int screenIndex)
+        {
+            if (page < maxpage)
+            {
+                Console.WriteLine("[1] Volgende pagina");
+                Console.WriteLine("[2] Terug");
+                ConsoleKeyInfo key = Console.ReadKey();
+                if (IsKeyPressed(key, ESCAPE_KEY))
+                {
+                    return (page, screenIndex);
+                }
+                else if (IsKeyPressed(key, "D1"))
+                {
+                    return (page + 1, (page + 1) * 6);
+                }
+                else if (IsKeyPressed(key, "D2"))
+                {
+                    return (page, screenIndex);
+                }
+                else if (IsKeyPressed(key, "D3"))
+                {
+                    logoutUpdate = true;
+                    Logout();
+                    return (page, 0);
+                }
+                else
+                {
+                    Console.WriteLine("U moet wel een juiste keuze maken...");
+                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.ReadKey();
+                    return (page, -1);
+                }
+            }
+            else
+            {
+                Console.WriteLine("[1] Terug");
+                ConsoleKeyInfo key = Console.ReadKey();
+                if (IsKeyPressed(key, ESCAPE_KEY))
+                {
+                    return (page, screenIndex);
+                }
+                else if (IsKeyPressed(key, "D1"))
+                {
+                    return (page, screenIndex);
+                }
+                else if (IsKeyPressed(key, "D3"))
+                {
+                    logoutUpdate = true;
+                    Logout();
+                    return (page, 0);
+                }
+                else
+                {
+                    Console.WriteLine("U moet wel een juiste keuze maken...");
+                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.ReadKey();
+                    return (page, -1);
+                }
+            }
+        }
+
         /// <summary>
         /// This is the main function of the current screen. Here is all the logic of that current screen
         /// </summary>
@@ -442,7 +667,6 @@ namespace restaurant
 
         private bool ValidateInput(string input, Func<string, bool> conditionInput) => conditionInput(input);
 
-        #region Deprecated
         /// <summary>
         /// Returns true if the key with the specified keycode is pressed.
         /// </summary>
@@ -450,6 +674,7 @@ namespace restaurant
         /// <returns>True if the right key is pressed, false is not</returns>
         protected bool IsKeyPressed(ConsoleKeyInfo cki, string key) => cki.Key.ToString().ToUpper() == key;
 
+        #region Deprecated
         [Obsolete()]
         /// <summary>
         /// With this method you can ask the user for input and add a condition based on what type of characters are allowed in the input.
@@ -572,7 +797,7 @@ namespace restaurant
         protected (string, int) AskForInput(int screenIndex)
         {
             bool AskRepeat = true;
-            string output = "";
+            List<char> output = new();
 
             while (AskRepeat)
             {
@@ -589,20 +814,26 @@ namespace restaurant
                     {
                         Console.SetCursorPosition(curserPos.Item1 - 1, curserPos.Item2);
                         Console.Write(" ");
+                        output.RemoveAt(output.Count - 1);
                     }
                 }
+                else
+                {
+                    output.Add(CKInfo.KeyChar);
+                }
 
-                output += CKInfo.KeyChar;
                 Console.Write(CKInfo.KeyChar);
             }
 
-            return (output, -1);
+            // -1 means no interruptions has been found while asking for input
+            return (string.Join(null, output), -1);
         }
 
         /// <summary>
         /// With this method you can ask the user for input and add a condition based on what type of characters are allowed in the input.
         /// If you only need to ask the user for input without any checks on the input please use AskForInput() without parameters.
         /// </summary>
+        /// <param name="screenIndex">The index of the screen you want to go to.</param>
         /// <param name="conditionPerChar">The lambda that gets called to check if every character in the input string matches a certain condition. Use null for no check.</param>
         /// <param name="conditionInput">The lambda that gets called to check if the input itself matches a certain condition. Use null for no check.</param>
         /// <param name="onFalseMessage">The messages to display when the condition failes.</param>
@@ -611,20 +842,20 @@ namespace restaurant
         {
             (string, int) result = AskForInput(screenIndex);
 
-            if (required)
+            if (result.Item2 == -1 && required)
             {
-                if (result.Item2 == -1 && IsInputEmpty(result.Item1))
+                if (IsInputEmpty(result.Item1.Trim()))
                 {
                     return (result.Item1, screenIndex, InputEmptyMessage);
                 }
             }
 
-            if (conditionPerChar != null && !ValidateInput(result.Item1, conditionPerChar))
+            if (result.Item2 == -1 && conditionPerChar != null && !ValidateInput(result.Item1, conditionPerChar))
             {
                 return (result.Item1, screenIndex, onFalseMessage.Item1);
             }
 
-            if (conditionInput != null && !ValidateInput(result.Item1, conditionInput))
+            if (result.Item2 == -1 && conditionInput != null && !ValidateInput(result.Item1, conditionInput))
             {
                 return (result.Item1, screenIndex, onFalseMessage.Item2);
             }
@@ -883,100 +1114,210 @@ namespace restaurant
 
     public class RegisterScreen : Screen
     {
+        private List<string> steps = new();
+        private List<string> output = new();
+        private Login_gegevens lg;
+        private int currentStep = 0;
+
         public RegisterScreen()
         {
+            steps.Add("Uw voornaam: ");
+            steps.Add("Uw achternaam: ");
+            steps.Add("Uw geboorte datum met het formaat dd/mm/yyyy: ");
+            steps.Add("Hieronder vult u uw adres in. Dit is in verband met het bestellen van eten.\nUw woonplaats: ");
+            steps.Add("Uw postcode: ");
+            steps.Add("Uw straatnaam: ");
+            steps.Add("Uw huisnummer: ");
+            steps.Add("Hieronder vult u uw login gegevens: \nUw email adres: ");
+            steps.Add("Het wachtwoord voor uw account: ");
+            steps.Add("Kloppen de bovenstaande gegevens?\n[1] Deze kloppen niet, breng me terug.\n[2] ja deze kloppen.");
 
+            output.Add(GetGFLogo());
+            output.Add("Hier kunt u een account aanmaken om o.a. reververingen te plaatsen voor GrandFusion!");
+
+            List<Login_gegevens> login_Gegevens = io.GetDatabase().login_gegevens;
+            lg = new Login_gegevens()
+            {
+                type = "Gebruiker",
+                klantgegevens = new Klantgegevens()
+                {
+                    klantnummer = login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1,
+                    adres = new adres()
+                    {
+                        land = "NL",
+                    }
+                }
+            };
         }
 
         public override int DoWork()
         {
-            List<Login_gegevens> login_Gegevens = io.GetDatabase().login_gegevens;
-            Login_gegevens new_gebruiker = new Login_gegevens();
-            Console.WriteLine(GetGFLogo());
-            Console.WriteLine("Hier kunt u een account aanmaken om o.a. reververingen te plaatsen voor GrandFusion!" + "\n");
-            Console.WriteLine("Uw voornaam: ");
-            new_gebruiker.klantgegevens = new Klantgegevens
+            (string, int, string) result;
+
+            Console.WriteLine(string.Join("\n", output));
+
+            int ShowInvalidInput(string msg)
             {
-                voornaam = AskForInput(c => char.IsLetter(c), LettersOnlyMessage),
-                klantnummer = login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1
-            };
-            Console.WriteLine("Uw achternaam: ");
-            new_gebruiker.klantgegevens.achternaam = AskForInput(c => char.IsLetter(c), LettersOnlyMessage);
-
-            Console.WriteLine("Uw geboorte datum met het formaat dd/mm/yyyy: ");
-            
-            dateInput:
-                DateTime resultDateTime;
-                if (DateTime.TryParseExact(Console.ReadLine(), "dd/mm/yyyy", new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime))
-                {
-                    new_gebruiker.klantgegevens.geb_datum = resultDateTime;
-                }
-                else
-                {
-                    Console.WriteLine("De datum die u hebt ingevoerd klopt niet, probeer het opnieuw.");
-                    goto dateInput;
-                }
-
-            Console.WriteLine("Hieronder vult u uw adres in. Dit is in verband met het bestellen van eten. \n");
-            Console.WriteLine("Uw woonplaats: ");
-            new_gebruiker.klantgegevens.adres = new adres
-            {
-                woonplaats = AskForInput(c => char.IsLetter(c), LettersOnlyMessage),
-                land = "NL"
-            };
-            Console.WriteLine("Uw postcode: ");
-            new_gebruiker.klantgegevens.adres.postcode = AskForInput(c => char.IsLetterOrDigit(c), DigitsAndLettersOnlyMessage);
-
-            Console.WriteLine("Uw straatnaam: ");
-            new_gebruiker.klantgegevens.adres.straatnaam = AskForInput(c => char.IsLetter(c), LettersOnlyMessage);
-
-            Console.WriteLine("Uw huisnummer: ");
-            new_gebruiker.klantgegevens.adres.huisnummer = Convert.ToInt32(AskForInput(c => char.IsDigit(c), DigitsOnlyMessage));
-
-            Console.WriteLine("\nHieronder vult u uw login gegevens: ");
-            Console.WriteLine("Uw email adres: ");
-            new_gebruiker.email = AskForInput(input => input.Contains('@') && input.Contains('.'), "De email is niet juist er mist een @ of een .");
-
-            Console.WriteLine("Het wachtwoord voor uw account: ");
-            new_gebruiker.password = Console.ReadLine();
-            new_gebruiker.type = "Gebruiker";
-
-            Console.WriteLine("\n Kloppen de bovenstaande gegevens?");
-            Console.WriteLine("[1] Deze kloppen niet, breng me terug.");
-            Console.WriteLine("[2] ja deze kloppen.");
-
-            string choice = Console.ReadLine();
-
-            if (choice != "1" && choice != "2")
-            {
-                Console.WriteLine(InvalidInputMessage);
-                return 3;
-            }
-            else if (choice == "1")
-            {
-                return 3;
-            }
-
-        a:
-            if (code_login.Register(new_gebruiker) == "Succes!")
-            {
-                Console.WriteLine("U bent succesfull geregistreerd!");
-                Console.WriteLine("Druk op een knop om naar het hoofdmenu te gaan");
+                Console.WriteLine("\n" + result.Item3);
+                Console.WriteLine("Druk op een knop om verder te gaan.");
                 Console.ReadKey();
-                return 0;
+                return result.Item2;
             }
-            else if (code_login.Register(new_gebruiker) == "This email and account type is already in use")
+
+            switch (currentStep)
             {
-                Console.WriteLine("Dit account bestaat al, probeer een ander email adres:");
-                new_gebruiker.email = Console.ReadLine();
-                goto a;
-            }
-            else if (code_login.Register(new_gebruiker) == "Password must contain at least 8 characters, 1 punctuation mark and 1 number.")
-            {
-                Console.WriteLine("Het wachtwoord moet minimaal 8 tekens, 1 leesteken en 1 nummer bevatten.");
-                Console.WriteLine("Het wachtwoord voor uw account: ");
-                new_gebruiker.password = Console.ReadLine();
-                goto a;
+                case 0:
+                    Console.WriteLine(steps[currentStep]);
+                    result = AskForInput(3, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
+
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                    output.Add($"{steps[currentStep]}\n{result.Item1}");
+
+                    lg.klantgegevens.voornaam = result.Item1;
+
+                    currentStep++;
+                    return 3;
+                case 1:
+                    Console.WriteLine(steps[currentStep]);
+                    result = AskForInput(3, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
+
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                    output.Add($"{steps[currentStep]}\n{result.Item1}");
+
+                    lg.klantgegevens.achternaam = result.Item1;
+
+                    currentStep++;
+                    return 3;
+                case 2:
+                    Console.WriteLine(steps[currentStep]);
+                    DateTime resultDateTime = new DateTime();
+
+                    result = AskForInput(
+                        3, 
+                        c => char.IsDigit(c) || c == '/' || c == '-', 
+                        input => DateTime.TryParseExact(input, "dd/mm/yyyy", new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime), 
+                        ("Het formaat van de datum die u heeft ingevoerd klopt niet. Probeer het opnieuw.", "De datum die u hebt ingevoerd klopt niet, probeer het opnieuw.")
+                    );
+
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                    output.Add($"{steps[currentStep]}\n{result.Item1}");
+
+                    lg.klantgegevens.geb_datum = resultDateTime;
+
+                    currentStep++;
+                    return 3;
+                case 3:
+                    Console.WriteLine(steps[currentStep]);
+                    result = AskForInput(3, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
+
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                    output.Add($"{steps[currentStep]}\n{result.Item1}");
+
+                    lg.klantgegevens.adres.woonplaats = result.Item1;
+
+                    currentStep++;
+                    return 3;
+                case 4:
+                    Console.WriteLine(steps[currentStep]);
+                    result = AskForInput(3, c => char.IsLetterOrDigit(c), null, (DigitsAndLettersOnlyMessage, null));
+
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                    output.Add($"{steps[currentStep]}\n{result.Item1}");
+
+                    lg.klantgegevens.adres.postcode = result.Item1;
+
+                    currentStep++;
+                    return 3;
+                case 5:
+                    Console.WriteLine(steps[currentStep]);
+                    result = AskForInput(3, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
+
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                    output.Add($"{steps[currentStep]}\n{result.Item1}");
+
+                    lg.klantgegevens.adres.straatnaam = result.Item1;
+
+                    currentStep++;
+                    return 3;
+                case 6:
+                    Console.WriteLine(steps[currentStep]);
+                    result = AskForInput(3, c => char.IsDigit(c), null, (DigitsOnlyMessage, null));
+
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                    output.Add($"{steps[currentStep]}\n{result.Item1}");
+
+                    lg.klantgegevens.adres.huisnummer = Convert.ToInt32(result.Item1);
+
+                    currentStep++;
+                    return 3;
+                case 7:
+                    Console.WriteLine(steps[currentStep]);
+                    Regex regex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+
+                    result = AskForInput(3, null, input => regex.IsMatch(input), (null, "De email is niet juist er mist een @ of een ."));
+
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                    output.Add($"{steps[currentStep]}\n{result.Item1}");
+
+                    lg.email = result.Item1;
+
+                    currentStep++;
+                    return 3;
+                case 8:
+                    Console.WriteLine(steps[currentStep]);
+                    (string, int) otherResult = AskForInput(3);
+
+                    output.Add($"{steps[currentStep]}\n{otherResult.Item1}");
+
+                    lg.password = otherResult.Item1;
+
+                    currentStep++;
+                    return 3;
+                case 9:
+                    Console.WriteLine(steps[currentStep]);
+                    result = AskForInput(3, c => char.IsDigit(c), input => Convert.ToInt32(input) == 1 || Convert.ToInt32(input) == 2, (DigitsOnlyMessage, InvalidInputMessage));
+
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                    if (result.Item1 == "1")
+                    {
+                        output.Clear();
+                        output.Add(GetGFLogo());
+                        output.Add("Hier kunt u een account aanmaken om o.a. reververingen te plaatsen voor GrandFusion!");
+                        currentStep = 0;
+                        return 3;
+                    }
+
+                    a:
+                        if (code_login.Register(lg) == "Succes!")
+                        {
+                            Console.WriteLine("U bent succesfull geregistreerd!");
+                            Console.WriteLine("Druk op een knop om naar het hoofdmenu te gaan");
+                            Console.ReadKey();
+                            return 0;
+                        }
+                        else if (code_login.Register(lg) == "This email and account type is already in use")
+                        {
+                            Console.WriteLine("Dit account bestaat al, probeer een ander email adres:");
+                            lg.email = Console.ReadLine();
+                            goto a;
+                        }
+                        else if (code_login.Register(lg) == "Password must contain at least 8 characters, 1 punctuation mark and 1 number.")
+                        {
+                            Console.WriteLine("Het wachtwoord moet minimaal 8 tekens, 1 leesteken en 1 nummer bevatten.");
+                            Console.WriteLine("Het wachtwoord voor uw account: ");
+                            lg.password = Console.ReadLine();
+                            goto a;
+                        }
+                    break;
             }
 
             return 3;
