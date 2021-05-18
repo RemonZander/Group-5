@@ -80,7 +80,7 @@ namespace restaurant
         protected const string LettersOnlyMessage = "Alleen maar letters mogen ingevoerd worden!";
         protected const string DigitsAndLettersOnlyMessage = "Alleen maar letters of cijfers mogen ingevoerd worden!";
         protected const string InputEmptyMessage = "Vul wat in alsjeblieft.";
-        protected const string InvalidInputMessage = "U moet wel een juiste keuze maken...\nDruk op en knop om verder te gaan.";
+        protected const string InvalidInputMessage = "U moet wel een juiste keuze maken...";
         protected const string ESCAPE_KEY = "ESCAPE";
         protected const string ENTER_KEY = "ENTER";
         protected const string BACKSPACE_KEY = "BACKSPACE";
@@ -442,34 +442,6 @@ namespace restaurant
         /// <returns>True if the right key is pressed, false is not</returns>
         protected bool IsKeyPressed(ConsoleKeyInfo cki, string key) => cki.Key.ToString().ToUpper() == key;
 
-        private string DoAskForInput()
-        {
-            bool AskRepeat = true;
-            string output = "";
-
-            while (AskRepeat)
-            {
-                ConsoleKeyInfo CKInfo = Console.ReadKey(true);
-
-                if (IsKeyPressed(CKInfo, ENTER_KEY)) break;
-
-                if (IsKeyPressed(CKInfo, BACKSPACE_KEY))
-                {
-                    (int, int) curserPos = Console.GetCursorPosition();
-                    if (curserPos.Item1 > 0)
-                    {
-                        Console.SetCursorPosition(curserPos.Item1 - 1, curserPos.Item2);
-                        Console.Write(" ");
-                    }
-                }
-
-                output += CKInfo.KeyChar;
-                Console.Write(CKInfo.KeyChar);
-            }
-
-            return output;
-        }
-
         [Obsolete()]
         /// <summary>
         /// With this method you can ask the user for input and add a condition based on what type of characters are allowed in the input.
@@ -530,17 +502,45 @@ namespace restaurant
             return input;
         }
 
+        protected string AskForInput()
+        {
+            bool AskRepeat = true;
+            string output = "";
+
+            while (AskRepeat)
+            {
+                ConsoleKeyInfo CKInfo = Console.ReadKey(true);
+
+                if (IsKeyPressed(CKInfo, ENTER_KEY)) break;
+
+                if (IsKeyPressed(CKInfo, BACKSPACE_KEY))
+                {
+                    (int, int) curserPos = Console.GetCursorPosition();
+                    if (curserPos.Item1 > 0)
+                    {
+                        Console.SetCursorPosition(curserPos.Item1 - 1, curserPos.Item2);
+                        Console.Write(" ");
+                    }
+                }
+
+                output += CKInfo.KeyChar;
+                Console.Write(CKInfo.KeyChar);
+            }
+
+            return output;
+        }
+
         /// <summary>
         /// With this method you can ask the user for input and add a condition based on what type of characters are allowed in the input.
-        /// If you only need to ask the user for input without any checks on the input please use Console.Readline() instead.
+        /// If you only need to ask the user for input without any checks on the input please use AskForInput() without parameters.
         /// </summary>
-        /// <param name="conditionPerChar">The lambda that gets called to check if every character in the input string matches a certain condition.</param>
-        /// <param name="conditionInput">The lambda that gets called to check if the input itself matches a certain condition</param>
-        /// <param name="onFalseMessage">The message to display when the condition failes.</param>
+        /// <param name="conditionPerChar">The lambda that gets called to check if every character in the input string matches a certain condition. Use null for no check.</param>
+        /// <param name="conditionInput">The lambda that gets called to check if the input itself matches a certain condition. Use null for no check.</param>
+        /// <param name="onFalseMessage">The messages to display when the condition failes.</param>
         /// <returns>The input that has been asked</returns>
-        protected string AskForInput(Func<char, bool> conditionPerChar = null, Func<string, bool> conditionInput = null, string[] onFalseMessage = null, bool required = true)
+        protected string AskForInput(Func<char, bool> conditionPerChar, Func<string, bool> conditionInput, (string, string) onFalseMessage, bool required = true)
         {
-            string input = DoAskForInput();
+            string input = AskForInput();
 
             if (required)
             {
@@ -553,13 +553,13 @@ namespace restaurant
 
             if (conditionPerChar != null && !ValidateInput(input, conditionPerChar))
             {
-                Console.WriteLine(onFalseMessage[0]);
+                Console.WriteLine(onFalseMessage.Item1);
                 return AskForInput(conditionPerChar, conditionInput, onFalseMessage, required);
             }
 
             if (conditionInput != null && !ValidateInput(input, conditionInput))
             {
-                Console.WriteLine(onFalseMessage[1]);
+                Console.WriteLine(onFalseMessage.Item2);
                 return AskForInput(conditionPerChar, conditionInput, onFalseMessage, required);
             }
 
@@ -603,7 +603,7 @@ namespace restaurant
             string choice = AskForInput(
                 c => char.IsDigit(c),
                 input => (new string[12] { "0", "1", "2", "3", "4", "100", "101", "102", "103", "104", "105", "1000" }).Contains(input),
-                new string[2] { DigitsOnlyMessage, InvalidInputMessage },
+                (DigitsOnlyMessage, InvalidInputMessage),
                 false
             );
 
