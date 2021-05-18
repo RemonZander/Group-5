@@ -434,6 +434,41 @@ namespace restaurant
             //save de database
             io.Savedatabase(database);
         }
+        /// <summary>
+        /// Om een review anoniem te maken
+        /// </summary>
+        /// <param name="reviewID">Het ID van de Review</param>
+        /// <param name="rating">De beoordeling van de review</param>
+        /// <param name="message">De inhoud van de review</param>
+        public void OverwriteReview(int reviewID, int rating, string message)
+        {
+            //pakt de database
+            database = io.GetDatabase();
+
+            //voor alle reviews in de database
+            for (int i = 0; i < database.reviews.Count; i++)
+            {
+                //als reviewID in de database gelijk staat aan gegeven reviewID en voor opgegeven klant, moet niet hebben dat mensen andere reviews kunnen aanpassen
+                if (reviewID == database.reviews[i].ID)
+                {
+                    //maakt een nieuwe review op dezelfde locatie als de oude met informatie van de oude en de nieuwe
+                    database.reviews[i] = new Review
+                    {
+                        Rating = rating,
+                        annomeme = true,
+                        datum = new DateTime(),
+                        ID = database.reviews[i].ID,
+                        Klantnummer = -1,
+                        message = message,
+                        reservering_ID = -1,
+                    };
+                    //stop the count
+                    break;
+                }
+            }
+            //save de database
+            io.Savedatabase(database);
+        }
 
         /// <summary>
         /// Verwijderd een review
@@ -582,6 +617,40 @@ namespace restaurant
             //save de database
             io.Savedatabase(database);
         }
+         /// <summary>
+         /// Overschrijven van feedback naar anoniem
+         /// </summary>
+         /// <param name="feedbackID">Het ID van de feedback</param>
+         /// <param name="message">De inhoud van de feedback</param>
+        public void OverwriteFeedback(int feedbackID, string message)
+        {
+            //pakt de database
+            database = io.GetDatabase();
+
+            //voor alle feedbacks in de database
+            for (int i = 0; i < database.feedback.Count; i++)
+            {
+                //als feedbackID in de database gelijk staat aan gegeven feedbackID en voor opgegeven klant, moet niet hebben dat mensen andere feedback kunnen aanpassen
+                if (feedbackID == database.feedback[i].ID)
+                {
+                    //maakt een nieuwe feeback op dezelfde locatie als de oude met informatie van de oude en de nieuwe
+                    database.feedback[i] = new Feedback
+                    {
+                        recipient = database.feedback[i].recipient,
+                        annomeme = true,
+                        datum = new DateTime(),
+                        ID = database.feedback[i].ID,
+                        Klantnummer = -1,
+                        message = message,
+                        reservering_ID = -1,
+                    };
+                    //stop the count
+                    break;
+                }
+            }
+            //save de database
+            io.Savedatabase(database);
+        }
 
         /// <summary>
         /// delete feedback voor gegeven feedbackID
@@ -624,9 +693,15 @@ namespace restaurant
         }
         public override int DoWork()
         {
-            Console.WriteLine(GFLogoWithLogin);
-            Console.ReadKey();
-            return 5;
+            Console.WriteLine(GetGFLogo(4));
+            Console.WriteLine("Dit is het feedback menu, u kunt kiezen uit:");
+            Console.WriteLine("[1] Feedback inzien");
+            Console.WriteLine("[2] Feedback aanamaken");
+            Console.WriteLine("[3] Terug");
+            string choice = Console.ReadLine();
+            
+            
+            return 16;
         }
 
         public override List<Screen> Update(List<Screen> screens)
