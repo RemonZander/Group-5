@@ -89,6 +89,13 @@ namespace restaurant
         protected const string LEFT_ARROW = "LEFTARROW";
         protected const string RIGHT_ARROW = "RIGHTARROW";
 
+        /// <summary>
+        /// Returns a variant of the GFLogo string based on wether the user is logged in or not.
+        /// </summary>
+        /// <param name="highestNumber">This is the number to display the logout choice with.</param>
+        /// <returns>GFLogo string</returns>
+        protected string GetGFLogo(int highestNumber = -1) => !IsLoggedIn() || highestNumber < 0 ? GFLogo + "\n" : string.Format(GFLogoWithLogin, ingelogd.klantgegevens.voornaam, ingelogd.klantgegevens.achternaam, highestNumber);
+
         protected string BoxAroundText(List<string> input, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom)
         {
             string output = new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
@@ -435,6 +442,7 @@ namespace restaurant
 
         private bool ValidateInput(string input, Func<string, bool> conditionInput) => conditionInput(input);
 
+        #region Deprecated
         /// <summary>
         /// Returns true if the key with the specified keycode is pressed.
         /// </summary>
@@ -502,6 +510,7 @@ namespace restaurant
             return input;
         }
 
+        [Obsolete()]
         protected string AskForInput()
         {
             bool AskRepeat = true;
@@ -530,14 +539,7 @@ namespace restaurant
             return output;
         }
 
-        /// <summary>
-        /// With this method you can ask the user for input and add a condition based on what type of characters are allowed in the input.
-        /// If you only need to ask the user for input without any checks on the input please use AskForInput() without parameters.
-        /// </summary>
-        /// <param name="conditionPerChar">The lambda that gets called to check if every character in the input string matches a certain condition. Use null for no check.</param>
-        /// <param name="conditionInput">The lambda that gets called to check if the input itself matches a certain condition. Use null for no check.</param>
-        /// <param name="onFalseMessage">The messages to display when the condition failes.</param>
-        /// <returns>The input that has been asked</returns>
+        [Obsolete()]
         protected string AskForInput(Func<char, bool> conditionPerChar, Func<string, bool> conditionInput, (string, string) onFalseMessage, bool required = true)
         {
             string input = AskForInput();
@@ -565,13 +567,70 @@ namespace restaurant
 
             return input;
         }
+        #endregion
+
+        protected (string, int) AskForInput(int screenIndex)
+        {
+            bool AskRepeat = true;
+            string output = "";
+
+            while (AskRepeat)
+            {
+                ConsoleKeyInfo CKInfo = Console.ReadKey(true);
+
+                if (IsKeyPressed(CKInfo, ENTER_KEY)) break;
+
+                if (IsKeyPressed(CKInfo, ESCAPE_KEY)) return (null, screenIndex);
+
+                if (IsKeyPressed(CKInfo, BACKSPACE_KEY))
+                {
+                    (int, int) curserPos = Console.GetCursorPosition();
+                    if (curserPos.Item1 > 0)
+                    {
+                        Console.SetCursorPosition(curserPos.Item1 - 1, curserPos.Item2);
+                        Console.Write(" ");
+                    }
+                }
+
+                output += CKInfo.KeyChar;
+                Console.Write(CKInfo.KeyChar);
+            }
+
+            return (output, -1);
+        }
 
         /// <summary>
-        /// Returns a variant of the GFLogo string based on wether the user is logged in or not.
+        /// With this method you can ask the user for input and add a condition based on what type of characters are allowed in the input.
+        /// If you only need to ask the user for input without any checks on the input please use AskForInput() without parameters.
         /// </summary>
-        /// <param name="highestNumber">This is the number to display the logout choice with.</param>
-        /// <returns>GFLogo string</returns>
-        public string GetGFLogo(int highestNumber = -1) => !IsLoggedIn() || highestNumber < 0 ? GFLogo + "\n" : string.Format(GFLogoWithLogin, ingelogd.klantgegevens.voornaam, ingelogd.klantgegevens.achternaam, highestNumber);
+        /// <param name="conditionPerChar">The lambda that gets called to check if every character in the input string matches a certain condition. Use null for no check.</param>
+        /// <param name="conditionInput">The lambda that gets called to check if the input itself matches a certain condition. Use null for no check.</param>
+        /// <param name="onFalseMessage">The messages to display when the condition failes.</param>
+        /// <returns>The input that has been asked</returns>
+        protected (string, int, string) AskForInput(int screenIndex, Func<char, bool> conditionPerChar, Func<string, bool> conditionInput, (string, string) onFalseMessage, bool required = true)
+        {
+            (string, int) result = AskForInput(screenIndex);
+
+            if (required)
+            {
+                if (result.Item2 == -1 && IsInputEmpty(result.Item1))
+                {
+                    return (result.Item1, screenIndex, InputEmptyMessage);
+                }
+            }
+
+            if (conditionPerChar != null && !ValidateInput(result.Item1, conditionPerChar))
+            {
+                return (result.Item1, screenIndex, onFalseMessage.Item1);
+            }
+
+            if (conditionInput != null && !ValidateInput(result.Item1, conditionInput))
+            {
+                return (result.Item1, screenIndex, onFalseMessage.Item2);
+            }
+
+            return (result.Item1, result.Item2, null);
+        }
     }
 
     public class StartScreen : Screen
@@ -600,14 +659,23 @@ namespace restaurant
                 Console.WriteLine("[4] Login");
             }
 
-            string choice = AskForInput(
+            (string, int, string) result = AskForInput(
+                0,
                 c => char.IsDigit(c),
                 input => (new string[12] { "0", "1", "2", "3", "4", "100", "101", "102", "103", "104", "105", "1000" }).Contains(input),
                 (DigitsOnlyMessage, InvalidInputMessage),
                 false
             );
 
-            switch (Convert.ToInt32(choice))
+            if (result.Item3 != null)
+            {
+                Console.WriteLine("\n" + result.Item3);
+                Console.WriteLine("Druk op een knop om verder te gaan.");
+                Console.ReadKey();
+                return result.Item2;
+            }
+
+            switch (Convert.ToInt32(result.Item1))
             {
                 case 1:
                     return 1;
@@ -1081,17 +1149,17 @@ namespace restaurant
 
             Console.WriteLine("Hier kunt u een review bewerken. Kies een review uit de lijst met reviews. (Type de nummer van de review in)");
 
-            int id = int.Parse(AskForInput(c => char.IsDigit(c), null, new string[2] { DigitsOnlyMessage, "" }));
+            int id = int.Parse(AskForInput(c => char.IsDigit(c), null, (DigitsOnlyMessage, "")));
 
             Console.WriteLine("Wat is de nieuwe beoordeling die u wilt geven?");
-            int rating = int.Parse(AskForInput(c => char.IsDigit(c), input => int.Parse(input) > 0 || int.Parse(input) < 6, new string[2] { DigitsOnlyMessage, "Beoordeling moet tussen 1 en 5 zijn." }));
+            int rating = int.Parse(AskForInput(c => char.IsDigit(c), input => int.Parse(input) > 0 || int.Parse(input) < 6, (DigitsOnlyMessage, "Beoordeling moet tussen 1 en 5 zijn.")));
 
             Console.WriteLine("Wat is de nieuwe bericht die u wilt geven?");
             string message = Console.ReadLine();
 
             Console.WriteLine("Klopt alles?\n[1] Ja\n[2] Nee");
 
-            if (AskForInput(c => char.IsDigit(c), input => input == "1" || input == "2", new string[2] { DigitsOnlyMessage, InvalidInputMessage }) == "1")
+            if (AskForInput(c => char.IsDigit(c), input => input == "1" || input == "2", (DigitsOnlyMessage, InvalidInputMessage)) == "1")
             {
                 code_gebruiker.OverwriteReview(id, rating, ingelogd.klantgegevens, message);
                 Console.WriteLine("Review is bewerkt! Klik op een knop om door te gaan.");
