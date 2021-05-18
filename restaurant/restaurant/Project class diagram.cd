@@ -160,7 +160,7 @@
   <Class Name="restaurant.Code_Medewerker_menu">
     <Position X="11.25" Y="6.25" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAIBAABAAQAAIAAQAAAAAAAAEAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAIBAABAAQAAIAEQAAAAAAAAEAAAAAAA=</HashCode>
       <FileName>Code_Medewerker_menu.cs</FileName>
     </TypeIdentifier>
   </Class>
