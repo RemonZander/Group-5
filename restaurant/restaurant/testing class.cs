@@ -1075,171 +1075,6 @@ namespace restaurant
 
     public class ViewReviewScreen : Screen
     {
-        private (int, int, double) Nextpage(int page, int maxpage, double pos, double maxpos)
-        {
-            if (page < maxpage)
-            {
-                Console.WriteLine("[1] Volgende pagina");
-                Console.WriteLine("[2] Terug");
-                ConsoleKeyInfo key = Console.ReadKey();
-                if (IsKeyPressed(key, ESCAPE_KEY))
-                {
-                    return (page, 10, pos);
-                }
-                else if (IsKeyPressed(key, UP_ARROW))
-                {
-                    if (pos % 2 != 0)
-                    {
-                        if ((pos - 1 > 6 * page && page != 0) || (pos > 2 && page == 0))
-                        {
-                            pos -= 2;
-                        }
-                    }
-                    else
-                    {
-                        if ((pos> 6 * page && page != 0) || (pos > 2 && page == 0))
-                        {
-                            pos -= 2;
-                        }
-                    }
-                    return (page, -1, pos);
-                }
-                else if (IsKeyPressed(key, DOWN_ARROW))
-                {
-                    if (pos %2 != 0)
-                    {
-                        if ((pos + 1 < 6 * (page + 1) && page != 0) || pos < 4)
-                        {
-                            pos += 2;
-                        }
-                    }
-                    else
-                    {
-                        if ((pos + 2 < 6 * (page + 1) && page != 0) || pos < 4)
-                        {
-                            pos += 2;
-                        }
-                    }
-                    return (page, -1, pos);
-                }
-                else if (IsKeyPressed(key, LEFT_ARROW))
-                {
-                    if (pos %2 != 0 && pos > 0)
-                    {
-                        pos -= 1;
-                    }
-                    return (page, -1, pos);
-                }
-                else if (IsKeyPressed(key, RIGHT_ARROW))
-                {
-                    if (pos %2 == 0 || pos == 0)
-                    {
-                        pos += 1;
-                    }
-                    return (page, -1, pos);
-                }
-                else if (IsKeyPressed(key, "D1"))
-                {
-                    return (page + 1, -1, (page + 1) * 6);
-                }
-                else if (IsKeyPressed(key, "D2"))
-                {
-                    return (page, 10, pos);
-                }
-                else if (IsKeyPressed(key, "D3"))
-                {
-                    logoutUpdate = true;
-                    Logout();
-                    return (page, 0, pos);
-                }
-                else
-                {
-                    Console.WriteLine("U moet wel een juiste keuze maken...");
-                    Console.WriteLine("Druk op en knop om verder te gaan.");
-                    Console.ReadKey();
-                    return (page, -1, pos);
-                }
-            }
-            else
-            {
-                Console.WriteLine("[1] Terug");
-                ConsoleKeyInfo key = Console.ReadKey();
-                if (IsKeyPressed(key, ESCAPE_KEY))
-                {
-                    return (page, 10, pos);
-                }
-                else if (IsKeyPressed(key, "D1"))
-                {
-                    return (page, 10, pos);
-                }
-                else if (IsKeyPressed(key, "D3"))
-                {
-                    logoutUpdate = true;
-                    Logout();
-                    return (page , 0, pos);
-                }
-                else if (IsKeyPressed(key, UP_ARROW))
-                {
-                    if (pos % 2 != 0)
-                    {
-                        if ((pos - 1 > 6 * page && page != 0) || (pos > 2 && page == 0))
-                        {
-                            pos -= 2;
-                        }
-                    }
-                    else
-                    {
-                        if ((pos > 6 * page && page != 0) || (pos > 2 && page == 0))
-                        {
-                            pos -= 2;
-                        }
-                    }
-                    return (page, -1, pos);
-                }
-                else if (IsKeyPressed(key, DOWN_ARROW))
-                {
-                    if (pos % 2 != 0)
-                    {
-                        if ((pos + 1 < 6 * (page + 1) && page != 0) || pos < 4)
-                        {
-                            pos += 2;
-                        }
-                    }
-                    else
-                    {
-                        if ((pos + 2 < 6 * (page + 1) && page != 0) || pos < 4)
-                        {
-                            pos += 2;
-                        }
-                    }
-                    return (page, -1, pos);
-                }
-                else if (IsKeyPressed(key, LEFT_ARROW))
-                {
-                    if (pos % 2 != 0 && pos > 0)
-                    {
-                        pos -= 1;
-                    }
-                    return (page, -1, pos);
-                }
-                else if (IsKeyPressed(key, RIGHT_ARROW))
-                {
-                    if (pos % 2 == 0 || pos == 0)
-                    {
-                        pos += 1;
-                    }
-                    return (page, -1, pos);
-                }
-                else
-                {
-                    Console.WriteLine("U moet wel een juiste keuze maken...");
-                    Console.WriteLine("Druk op en knop om verder te gaan.");
-                    Console.ReadKey();
-                    return (page, -1, pos);
-                }
-            }
-        }
-
         public override int DoWork()
         {
             List<Review> reviews = new List<Review>();
@@ -1298,11 +1133,54 @@ namespace restaurant
                     Console.WriteLine($"Dit zijn uw reviews op pagina {page} van de {pages.Count - 1}:");
                     Console.WriteLine(pages[page] + new string('#', 108));
 
-                    var result = Nextpage(page, pages.Count - 1, pos, boxes.Count - 1);
+                    var result = Nextpage(page, pages.Count - 1, pos, boxes.Count - 1, 10);
                     pos = result.Item3;
-                    if (result.Item2 != -1)
+                    if (result.Item2 != -1 && result.Item2 != -2)
                     {
                         return result.Item2;
+                    }
+                    if (result.Item1 == -1 && result.Item2 == -1)
+                    {
+                        return EditReview(MakeReviewBox(reviews[Convert.ToInt32(pos)]), reviews[Convert.ToInt32(pos)]);
+                    }
+                    else if (result.Item1 == -2 && result.Item2 == -2)
+                    {
+                        Console.Clear();
+                        Console.WriteLine(GetGFLogo(1));
+                        Console.WriteLine(MakeReviewBox(reviews[Convert.ToInt32(pos)]) + "\n");
+                        Console.WriteLine("Weet u zeker dat u deze review wilt verwijderen? ja | nee");
+
+                        (string, int) input = AskForInput(10);
+                        if (input.Item2 != -1)
+                        {
+                            return input.Item2;
+                        }
+                        else if (input.Item1 == "1")
+                        {
+                            logoutUpdate = true;
+                            Logout();
+                            return 0;
+                        }
+                        else if (input.Item1 == "ja")
+                        {
+                            code_gebruiker.DeleteReview(reviews[Convert.ToInt32(pos)].ID, ingelogd.klantgegevens);
+                            Console.WriteLine("\n Review is verwijdert");
+                            Console.WriteLine("Druk op een knop om verder te gaan...");
+                            Console.ReadKey();
+                            return 10;
+
+                        }
+                        else if (input.Item1 == "nee")
+                        {
+                            return 10;
+                        }
+                        else
+                        {
+                            Console.WriteLine("\n U moet wel een jusite keuze maken");
+                            Console.WriteLine("Druk op een knop om verder te gaan...");
+                            Console.ReadKey();
+                            return 10;
+                        }
                     }
                     page = result.Item1;
                 } while (true);
@@ -1332,7 +1210,8 @@ namespace restaurant
                     do
                     {
                         pages = new List<string>();
-                        List<List<string>> reviewstring = ReviewsToString(reviews.Where(d => d.datum >= date).ToList());
+                        List<Review> reviewsfiler = reviews.Where(d => d.datum >= date).ToList();
+                        List<List<string>> reviewstring = ReviewsToString(reviewsfiler);
                         List<string> boxes = new List<string>();
                         for (int a = 0; a < reviewstring.Count; a++)
                         {
@@ -1371,11 +1250,54 @@ namespace restaurant
                         Console.WriteLine(GetGFLogo(3));
                         Console.WriteLine($"Dit zijn uw reviews op pagina {page} van de {pages.Count - 1}:");
                         Console.WriteLine(pages[page] + new string('#', 108));
-                        var result = Nextpage(page, pages.Count - 1, pos, boxes.Count - 1);
+                        var result = Nextpage(page, pages.Count - 1, pos, boxes.Count - 1, 10);
                         pos = result.Item3;
                         if (result.Item2 != -1)
                         {
                             return result.Item2;
+                        }
+                        if (result.Item1 == -1 && result.Item2 == -1)
+                        {
+                            return EditReview(MakeReviewBox(reviewsfiler[Convert.ToInt32(pos)]), reviewsfiler[Convert.ToInt32(pos)]);
+                        }
+                        else if (result.Item1 == -2 && result.Item2 == -2)
+                        {
+                            Console.Clear();
+                            Console.WriteLine(GetGFLogo(1));
+                            Console.WriteLine(MakeReviewBox(reviewsfiler[Convert.ToInt32(pos)]) + "\n");
+                            Console.WriteLine("Weet u zeker dat u deze review wilt verwijderen? ja | nee");
+
+                            (string, int) input = AskForInput(10);
+                            if (input.Item2 != -1)
+                            {
+                                return input.Item2;
+                            }
+                            else if (input.Item1 == "1")
+                            {
+                                logoutUpdate = true;
+                                Logout();
+                                return 0;
+                            }
+                            else if (input.Item1 == "ja")
+                            {
+                                code_gebruiker.DeleteReview(reviews[Convert.ToInt32(pos)].ID, ingelogd.klantgegevens);
+                                Console.WriteLine("\n Review is verwijdert");
+                                Console.WriteLine("Druk op een knop om verder te gaan...");
+                                Console.ReadKey();
+                                return 10;
+
+                            }
+                            else if (input.Item1 == "nee")
+                            {
+                                return 10;
+                            }
+                            else
+                            {
+                                Console.WriteLine("\n U moet wel een jusite keuze maken");
+                                Console.WriteLine("Druk op een knop om verder te gaan...");
+                                Console.ReadKey();
+                                return 10;
+                            }
                         }
                         page = result.Item1;
                     } while (true);
@@ -1391,11 +1313,12 @@ namespace restaurant
             else if (IsKeyPressed(key, "D3"))
             {
                 Console.WriteLine("\n Vul hieronder de rating in warop u uw reviews wilt filteren.");
-                var choice = AskForInput(10);
+                (string, int) choice = AskForInput(10);
                 if (choice.Item2 != -1)
                 {
                     return choice.Item2;
                 }
+                int page = 0;
                 if (choice.Item1 != "1" && choice.Item1 != "2" && choice.Item1 != "3" && choice.Item1 != "4" && choice.Item1 != "5")
                 {
                     Console.WriteLine("U moet wel een geldige rating invullen tussen de 1 en de 5.");
@@ -1403,24 +1326,53 @@ namespace restaurant
                     Console.ReadKey();
                     return 10;
                 }
-                int page = 0;
+                double pos = 0;
+                List<string> pages = new List<string>();
                 do
                 {
-                    var pages = MakePages(BoxAroundText(ReviewsToString(reviews.Where(r => r.Rating == Convert.ToInt32(choice)).ToList()), "#", 2, 0, 102, true), 3);
+                    pages = new List<string>();
+                    List<Review> reviewsfiler = reviews.Where(r => r.Rating == Convert.ToInt32(choice.Item1)).ToList();
+                    List<List<string>> reviewstring = ReviewsToString(reviewsfiler);
+                    List<string> boxes = new List<string>();
+
+                    for (int a = 0; a < reviewstring.Count; a++)
+                    {
+                        if (a == Convert.ToInt32(Math.Floor(pos / 2)))
+                        {
+                            if (pos % 2 == 0 || pos == 0)
+                            {
+                                boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 102, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length) + "##  " + new string(' ', 48),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length) + "##  " + new string(' ', 48),
+                                    new string(' ', 50) + "##" + new string(' ', 50) }));
+                            }
+                            else
+                            {
+                                boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 102, true, new List<string> {
+                                    new string(' ', 50) + "##  " + "[4] Bewerken" + new string(' ', 48 - "[4] Bewerken".Length),
+                                    new string(' ', 50) + "##  " + "[5] Verwijderen" + new string(' ', 48 - "[5] Verwijderen".Length),
+                                    new string(' ', 50) + "##" + new string(' ', 50)}));
+                            }
+                        }
+                        else
+                        {
+                            boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 102, true));
+                        }
+                    }
+
+                    pages = MakePages(boxes, 3);
+
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(3));
                     Console.WriteLine($"Dit zijn uw reviews op pagina {page} van de {pages.Count - 1}:");
                     Console.WriteLine(pages[page] + new string('#', 108));
-                    int result = Nextpage(page, pages.Count - 1, 0, 0).Item1;
-                    if (result == -1)
+                    var result = Nextpage(page, pages.Count - 1, pos, boxes.Count - 1, 10);
+                    pos = result.Item3;
+                    if (result.Item2 != -1)
                     {
-                        return 10;
+                        return result.Item2;
                     }
-                    else if (result == -2)
-                    {
-                        return 0;
-                    }
-                    page = result;
+                    page = result.Item1;
                 } while (true);
             }
             else if (IsKeyPressed(key, "D4"))
@@ -1440,6 +1392,201 @@ namespace restaurant
                 Console.ReadKey();
                 return 10;
             }
+        }
+
+        private int EditReview(string reviewstr, Review review)
+        {
+            Review newreview = new Review();
+            Console.Clear();
+            Console.WriteLine(GetGFLogo(6));
+            Console.WriteLine("Hier kunt u een review bewerken:");
+            Console.WriteLine(reviewstr + "\n");
+
+            Console.WriteLine("Wilt u deze review anoniem maken? ja | nee");
+            (string, int) input = AskForInput(10);
+            if (input.Item2 != -1)
+            {
+                return input.Item2;
+            }
+            else if (input.Item1 == "ja")
+            {
+                newreview.annomeme = true;
+                newreview.Klantnummer = -1;
+                newreview.ID = review.ID;
+                newreview.reservering_ID = -1;
+                newreview.datum = new DateTime();
+            }
+            else if (input.Item1 == "nee")
+            {
+                newreview.annomeme = false;
+                newreview.Klantnummer = review.Klantnummer;
+                newreview.ID = review.ID;
+                newreview.reservering_ID = review.reservering_ID;
+                newreview.datum = review.datum;
+            }
+            else if (input.Item1 == "6")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+            else
+            {
+                Console.WriteLine("\n U moet wel een jusite keuze maken");
+                Console.WriteLine("Druk op een knop om verder te gaan...");
+                Console.ReadKey();
+                EditReview(reviewstr, review);
+                return 10;
+            }
+
+
+            Console.WriteLine("\n Typ hier uw bericht: ");
+            input = AskForInput(10);
+            if (input.Item2 != -1)
+            {
+                return input.Item2;
+            }
+            else if (input.Item1.Length > 160)
+            {
+                Console.WriteLine("\n Uw bericht mag niet langer zijn dan 160 tekens");
+                Console.WriteLine("Druk op een knop om verder te gaan...");
+                Console.ReadKey();
+                EditReview(reviewstr, review);
+                return 10;
+            }
+            else if (input.Item1.Length == 0)
+            {
+                Console.WriteLine("\n u moet wel een bericht achterlaten");
+                Console.WriteLine("Druk op een knop om verder te gaan...");
+                Console.ReadKey();
+                EditReview(reviewstr, review);
+                return 10;
+            }
+            else if (input.Item1 == "6")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+            newreview.message = input.Item1;
+
+            a:
+            Console.WriteLine("\n Typ hier uw rating: ");
+            input = AskForInput(10);
+            if (input.Item2 != -1)
+            {
+                return input.Item2;
+            }
+            else if (!new List<string>{ "1", "2", "3", "4", "5"}.Contains(input.Item1))
+            {
+                Console.WriteLine($"\n {input.Item1} is geen geldige rating. U kunt 1 t/m 5 invullen.");
+                Console.WriteLine("Druk op een knop om verder te gaan...");
+                Console.ReadKey();
+                goto a;
+            }
+            else if (input.Item1 == "6")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+            newreview.Rating = Convert.ToInt32(input.Item1);
+
+            b:
+            Console.Clear();
+            Console.WriteLine(GetGFLogo(6));
+            Console.WriteLine("Bewerkte review:");
+            if (!newreview.annomeme)
+            {
+                Console.WriteLine("Voornaam: " + ingelogd.klantgegevens.voornaam);
+                Console.WriteLine("Achternaam: " + ingelogd.klantgegevens.achternaam);
+            }
+            Console.WriteLine("Bericht: " + newreview.message);
+            Console.WriteLine("Rating: " + newreview.Rating + "\n");
+
+            Console.WriteLine("Wilt u dit review bewerken en opslaan? ja | nee");
+            input = AskForInput(10);
+            if (input.Item2 != -1)
+            {
+                return input.Item2;
+            }
+            else if (input.Item1 == "ja")
+            {
+                if (!newreview.annomeme)
+                {
+                    code_gebruiker.OverwriteReview(newreview.ID, newreview.Rating, ingelogd.klantgegevens, newreview.message);
+                }
+                else
+                {
+                    code_gebruiker.OverwriteReview(newreview.ID, newreview.Rating, newreview.message);
+                }
+                Console.WriteLine("\n Review is bijgewerkt");
+                Console.WriteLine("Druk op een knop om verder te gaan...");
+                Console.ReadKey();
+                return 10;
+            }
+            else if (input.Item1 == "nee")
+            {
+                return 10;
+            }
+            else if (input.Item1 == "6")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+            else
+            {
+                Console.WriteLine("\n U moet wel een jusite keuze maken");
+                Console.WriteLine("Druk op een knop om verder te gaan...");
+                Console.ReadKey();
+                goto b;
+            }
+        }
+
+        private string MakeReviewBox(Review review)
+        {
+            string output = "";
+            output += new string('#', 56) + "\n";
+            output += "#  " + new string(' ', 50) + "  #\n";
+            output += "#  " + new string(' ', 50) + "  #\n";
+            output += "#  " + "Voornaam: " + ingelogd.klantgegevens.voornaam + new string(' ', 50 - ("Voornaam: " + ingelogd.klantgegevens.voornaam).Length) + "  #\n";
+            output += "#  " + "Achternaam: " + ingelogd.klantgegevens.achternaam + new string(' ', 50 - ("Achternaam: " + ingelogd.klantgegevens.achternaam).Length) + "  #\n";
+            
+            List<string> msgparts1 = new List<string>();
+            string message = review.message;
+
+            if (message.Length > 50 - "Review: ".Length)
+            {
+                msgparts1.Add(message.Substring(0, message.Substring(0, 50 - ("Review: ").Length).LastIndexOf(' ')));
+                message = message.Remove(0, msgparts1[0].Length + 1);
+                int count = 1;
+                while (message.Length > 50)
+                {
+                    msgparts1.Add(message.Substring(0, message.Substring(0, 50).LastIndexOf(' ')));
+                    message = message.Remove(0, msgparts1[count].Length + 1);
+                    count++;
+                }
+                msgparts1.Add(message);
+
+                output += "#  " + "Review: " + msgparts1[0] + new string(' ', 50 - ("Review: " + msgparts1[0]).Length) + "  #\n";
+                for (int a = 1; a < msgparts1.Count; a++)
+                {
+                    output += "#  " + msgparts1[a] + new string(' ', 50 - msgparts1[a].Length) + "  #\n";
+                }
+            }
+            else
+            {
+                output += "#  " + "Review: " + message + new string(' ', 50 - ("Review: " + message).Length) + "  #\n";
+            }
+
+            output += "#  " + "Rating: " + review.Rating + new string(' ', 50 - ("Rating: " + review.Rating).Length) + "  #\n";
+            output += "#  " + "Datum: " + review.datum + new string(' ', 50 - ("Datum: " + review.datum).Length) + "  #\n";
+            output += "#  " + new string(' ', 50) + "  #\n";
+            output += "#  " + new string(' ', 50) + "  #\n";
+            output += new string('#', 56);
+
+            return output;
         }
 
         public override List<Screen> Update(List<Screen> screens)
