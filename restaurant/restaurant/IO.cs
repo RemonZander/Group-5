@@ -299,16 +299,25 @@ namespace restaurant
             //pakt de database
             database = GetDatabase();
             List<Review> reviewList = new List<Review>();
-            //voor iedere review met hetzelfde klantnummer als de gegeven klant, voeg deze toe aan de lijst en return de lijst
-            foreach (var review in database.reviews)
+            if(database.reviews == null)
             {
-                if (review.Klantnummer == klant.klantnummer)
-                {
-                    reviewList.Add(review);
-                }
+                return reviewList;
             }
-            return reviewList;
+            else
+            {
+                foreach (var review in database.reviews)
+                {
+                    if (review.Klantnummer == klant.klantnummer)
+                    {
+                        reviewList.Add(review);
+                    }
+                }
+                return reviewList;
+            }
         }
+            
+            //voor iedere review met hetzelfde klantnummer als de gegeven klant, voeg deze toe aan de lijst en return de lijst
+            
 
         /// <summary>
         /// Ophalen van alle feedback
@@ -360,15 +369,22 @@ namespace restaurant
         {
             database = GetDatabase();
             List<Feedback> feedbackList = new List<Feedback>();
-            //voor iedere feedback met hetzelfde klantnummer als het klantnummer van de klant, voeg deze toe aan een lijst en return de lijst
-            foreach (var feedback in database.feedback)
+            if(database.feedback == null)
             {
-                if (feedback.Klantnummer == klant.klantnummer)
-                {
-                    feedbackList.Add(feedback);
-                }
+                return feedbackList;
             }
-            return feedbackList;
+            else
+            {
+                //voor iedere feedback met hetzelfde klantnummer als het klantnummer van de klant, voeg deze toe aan een lijst en return de lijst
+                foreach (var feedback in database.feedback)
+                {
+                    if (feedback.Klantnummer == klant.klantnummer)
+                    {
+                        feedbackList.Add(feedback);
+                    }
+                }
+                return feedbackList;
+            }
         }
         #endregion
 
@@ -429,31 +445,40 @@ namespace restaurant
         public List<Klantgegevens> GetCustomer(List<int> ID)
         {
             database = GetDatabase();
-
-            //als de login_gegevens niet gesorteerd is, sorteer deze op klantnummer en sla deze op
-            if (database.login_gegevens != database.login_gegevens.OrderBy(s => s.klantgegevens.klantnummer).ToList())
-            {
-                database.login_gegevens = database.login_gegevens.OrderBy(s => s.klantgegevens.klantnummer).ToList();
-                Savedatabase(database);
-            }
-
             List<Klantgegevens> klantgegevens = new List<Klantgegevens>();
-
-            //zoek voor klantgegevens op ID in de gegeven list
-            for (int a = 0; a < ID.Count; a++)
+            if(database.login_gegevens == null)
             {
-                if (ID[a] != -1)
-                {
-                    klantgegevens.Add(database.login_gegevens[ID[a]].klantgegevens);
-                }
-                else
-                {
-                    klantgegevens.Add(new Klantgegevens());
-                }
+                database.login_gegevens = new List<Login_gegevens>();
+                return klantgegevens;
             }
-            return klantgegevens;
-        }
+            else if(database.login_gegevens[0].klantgegevens == null)
+            {
+                return klantgegevens;
+            }
+            else
+            {
+                //als de login_gegevens niet gesorteerd is, sorteer deze op klantnummer en sla deze op
+                if (database.login_gegevens != database.login_gegevens.OrderBy(s => s.klantgegevens.klantnummer).ToList())
+                {
+                    database.login_gegevens = database.login_gegevens.OrderBy(s => s.klantgegevens.klantnummer).ToList();
+                    Savedatabase(database);
+                }
 
+                //zoek voor klantgegevens op ID in de gegeven list
+                for (int a = 0; a < ID.Count; a++)
+                {
+                    if (ID[a] != -1)
+                    {
+                        klantgegevens.Add(database.login_gegevens[ID[a]].klantgegevens);
+                    }
+                    else
+                    {
+                        klantgegevens.Add(new Klantgegevens());
+                    }
+                }
+                return klantgegevens;
+            }
+        }
         #region Deprecated
         
         #endregion
