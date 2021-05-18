@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
+using System.Timers;
 
 namespace restaurant
 {
@@ -79,6 +80,14 @@ namespace restaurant
         protected const string LettersOnlyMessage = "Alleen maar letters mogen ingevoerd worden!";
         protected const string DigitsAndLettersOnlyMessage = "Alleen maar letters of cijfers mogen ingevoerd worden!";
         protected const string InputEmptyMessage = "Vul wat in alsjeblieft.";
+        protected const string InvalidInputMessage = "U moet wel een juiste keuze maken...\nDruk op en knop om verder te gaan.";
+        protected const string ESCAPE_KEY = "ESCAPE";
+        protected const string ENTER_KEY = "ENTER";
+        protected const string BACKSPACE_KEY = "BACKSPACE";
+        protected const string UP_ARROW = "UPARROW";
+        protected const string DOWN_ARROW = "DOWNARROW";
+        protected const string LEFT_ARROW = "LEFTARROW";
+        protected const string RIGHT_ARROW = "RIGHTARROW";
 
         protected string BoxAroundText(List<string> input, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom)
         {
@@ -409,8 +418,6 @@ namespace restaurant
             }
         }
 
-        protected static void InvalidInputMessage() => Console.WriteLine("\nU moet wel een juiste keuze maken...\nDruk op en knop om verder te gaan.");
-
         private static bool IsInputEmpty(string input) => input == "";
 
         private bool ValidateInput(string input, Func<char, bool> conditionPerChar)
@@ -428,6 +435,42 @@ namespace restaurant
 
         private bool ValidateInput(string input, Func<string, bool> conditionInput) => conditionInput(input);
 
+        /// <summary>
+        /// Returns true if the key with the specified keycode is pressed.
+        /// </summary>
+        /// <param name="key">This is the name of the key, use one of the key constants described in the BaseScreen.</param>
+        /// <returns>True if the right key is pressed, false is not</returns>
+        protected bool IsKeyPressed(ConsoleKeyInfo cki, string key) => cki.Key.ToString().ToUpper() == key;
+
+        private string DoAskForInput()
+        {
+            bool AskRepeat = true;
+            string output = "";
+
+            while (AskRepeat)
+            {
+                ConsoleKeyInfo CKInfo = Console.ReadKey(true);
+
+                if (IsKeyPressed(CKInfo, ENTER_KEY)) break;
+
+                if (IsKeyPressed(CKInfo, BACKSPACE_KEY))
+                {
+                    (int, int) curserPos = Console.GetCursorPosition();
+                    if (curserPos.Item1 > 0)
+                    {
+                        Console.SetCursorPosition(curserPos.Item1 - 1, curserPos.Item2);
+                        Console.Write(" ");
+                    }
+                }
+
+                output += CKInfo.KeyChar;
+                Console.Write(CKInfo.KeyChar);
+            }
+
+            return output;
+        }
+
+        [Obsolete()]
         /// <summary>
         /// With this method you can ask the user for input and add a condition based on what type of characters are allowed in the input.
         /// If you only need to ask the user for input without any checks on the input please use Console.Readline() instead.
@@ -457,6 +500,7 @@ namespace restaurant
             return input;
         }
 
+        [Obsolete()]
         /// <summary>
         /// With this method you can ask the user for input and add a condition based on what type of characters are allowed in the input.
         /// If you only need to ask the user for input without any checks on the input please use Console.Readline() instead.
@@ -494,9 +538,9 @@ namespace restaurant
         /// <param name="conditionInput">The lambda that gets called to check if the input itself matches a certain condition</param>
         /// <param name="onFalseMessage">The message to display when the condition failes.</param>
         /// <returns>The input that has been asked</returns>
-        protected string AskForInput(Func<char, bool> conditionPerChar, Func<string, bool> conditionInput, string onFalseMessage = "", bool required = true)
+        protected string AskForInput(Func<char, bool> conditionPerChar = null, Func<string, bool> conditionInput = null, string[] onFalseMessage = null, bool required = true)
         {
-            string input = Console.ReadLine();
+            string input = DoAskForInput();
 
             if (required)
             {
@@ -507,13 +551,19 @@ namespace restaurant
                 }
             }
 
-            if (!ValidateInput(input, conditionPerChar))
+            if (conditionPerChar != null && !ValidateInput(input, conditionPerChar))
             {
-                Console.WriteLine(onFalseMessage);
-                return AskForInput(conditionPerChar, onFalseMessage, required);
+                Console.WriteLine(onFalseMessage[0]);
+                return AskForInput(conditionPerChar, conditionInput, onFalseMessage, required);
             }
 
-            return ValidateInput(input, conditionInput) ? input : AskForInput(conditionInput, onFalseMessage);
+            if (conditionInput != null && !ValidateInput(input, conditionInput))
+            {
+                Console.WriteLine(onFalseMessage[1]);
+                return AskForInput(conditionPerChar, conditionInput, onFalseMessage, required);
+            }
+
+            return input;
         }
 
         /// <summary>
@@ -550,107 +600,103 @@ namespace restaurant
                 Console.WriteLine("[4] Login");
             }
 
-            string choice = Console.ReadLine();
+            string choice = AskForInput(
+                c => char.IsDigit(c),
+                input => (new string[12] { "0", "1", "2", "3", "4", "100", "101", "102", "103", "104", "105", "1000" }).Contains(input),
+                new string[2] { DigitsOnlyMessage, InvalidInputMessage },
+                false
+            );
 
-            if (choice != "0" && choice != "1" && choice != "2" && choice != "3" && choice != "4" && choice != "100" && choice != "101" && choice != "102" && choice != "103" && choice != "104" && choice != "105" && choice != "1000")
+            switch (Convert.ToInt32(choice))
             {
-                InvalidInputMessage();
-                Console.ReadKey();
-                return 0;
-            }
-            else
-            {
-                switch (Convert.ToInt32(choice))
-                {
-                    case 1:
-                        return 1;
-                    case 2:
-                        return 2;
-                    case 3:
-                        if (!IsLoggedIn())
-                        {
-                            return 3;
-                        }
-                        else if (ingelogd.type == "Gebruiker")
-                        {
-                            return 5;
-                        }
-                        else if (ingelogd.type == "Medewerker")
-                        {
-                            return 5;
-                        }
-                        else
-                        {
-                            return 11;
-                        }
-                    case 4:
-                        if (!IsLoggedIn())
-                        {
-                            return 4;
-                        }
-                        else
-                        {
-                            LogoutWithMessage();
-                            return 0;
-                        }
-                    case 100:
-                        code_gebruiker.Debug();
+                case 1:
+                    return 1;
+                case 2:
+                    return 2;
+                case 3:
+                    if (!IsLoggedIn())
+                    {
+                        return 3;
+                    }
+                    else if (ingelogd.type == "Gebruiker")
+                    {
+                        return 5;
+                    }
+                    else if (ingelogd.type == "Medewerker")
+                    {
+                        return 5;
+                    }
+                    else
+                    {
+                        return 11;
+                    }
+                case 4:
+                    if (!IsLoggedIn())
+                    {
+                        return 4;
+                    }
+                    else
+                    {
+                        LogoutWithMessage();
                         return 0;
-                    case 101:
-                        code_eigenaar.Debug();
-                        return 0;
-                    case 102:
-                        code_login.Debug();
-                        return 0;
-                    case 103:
-                        code_medewerker.Debug();
-                        return 0;
-                    case 104:
-                        testing_class.Debug();
-                        return 0;
-                    case 105:
-                        List<Login_gegevens> login_Gegevens = io.GetDatabase().login_gegevens;
-                        Login_gegevens dataEigenaar = new();
-                        dataEigenaar.email = "eigenaar@gmail.com";
-                        dataEigenaar.password = "0000";
-                        dataEigenaar.type = "Eigenaar";
-                        dataEigenaar.klantgegevens = new Klantgegevens();
-                        dataEigenaar.klantgegevens.klantnummer = login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1;
-                        dataEigenaar.klantgegevens.voornaam = "Bob";
-                        dataEigenaar.klantgegevens.achternaam = "De Boer";
+                    }
+                case 100:
+                    code_gebruiker.Debug();
+                    return 0;
+                case 101:
+                    code_eigenaar.Debug();
+                    return 0;
+                case 102:
+                    code_login.Debug();
+                    return 0;
+                case 103:
+                    code_medewerker.Debug();
+                    return 0;
+                case 104:
+                    testing_class.Debug();
+                    return 0;
+                case 105:
+                    List<Login_gegevens> login_Gegevens = io.GetDatabase().login_gegevens;
+                    Login_gegevens dataEigenaar = new();
+                    dataEigenaar.email = "eigenaar@gmail.com";
+                    dataEigenaar.password = "0000";
+                    dataEigenaar.type = "Eigenaar";
+                    dataEigenaar.klantgegevens = new Klantgegevens();
+                    dataEigenaar.klantgegevens.klantnummer = login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1;
+                    dataEigenaar.klantgegevens.voornaam = "Bob";
+                    dataEigenaar.klantgegevens.achternaam = "De Boer";
 
-                        Login_gegevens dataMedewerker = new();
-                        dataMedewerker.email = "medewerker@gmail.com";
-                        dataMedewerker.password = "0000";
-                        dataMedewerker.type = "Medewerker";
-                        dataMedewerker.klantgegevens = new Klantgegevens();
-                        dataMedewerker.klantgegevens.klantnummer = login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1;
-                        dataMedewerker.klantgegevens.voornaam = "Bob";
-                        dataMedewerker.klantgegevens.achternaam = "De Wasser";
+                    Login_gegevens dataMedewerker = new();
+                    dataMedewerker.email = "medewerker@gmail.com";
+                    dataMedewerker.password = "0000";
+                    dataMedewerker.type = "Medewerker";
+                    dataMedewerker.klantgegevens = new Klantgegevens();
+                    dataMedewerker.klantgegevens.klantnummer = login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1;
+                    dataMedewerker.klantgegevens.voornaam = "Bob";
+                    dataMedewerker.klantgegevens.achternaam = "De Wasser";
 
-                        Login_gegevens dataGebruiker = new();
-                        dataGebruiker.email = "gebruiker@gmail.com";
-                        dataGebruiker.password = "0000";
-                        dataGebruiker.type = "Gebruiker";
-                        dataGebruiker.klantgegevens = new Klantgegevens();
-                        dataGebruiker.klantgegevens.klantnummer = login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1;
-                        dataGebruiker.klantgegevens.voornaam = "Bob";
-                        dataGebruiker.klantgegevens.achternaam = "De Bouwer";
+                    Login_gegevens dataGebruiker = new();
+                    dataGebruiker.email = "gebruiker@gmail.com";
+                    dataGebruiker.password = "0000";
+                    dataGebruiker.type = "Gebruiker";
+                    dataGebruiker.klantgegevens = new Klantgegevens();
+                    dataGebruiker.klantgegevens.klantnummer = login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1;
+                    dataGebruiker.klantgegevens.voornaam = "Bob";
+                    dataGebruiker.klantgegevens.achternaam = "De Bouwer";
 
-                        DateTime resDate = new(2050, 3, 1, 7, 0, 0);
+                    DateTime resDate = new(2050, 3, 1, 7, 0, 0);
 
-                        var list = new List<int>();
-                        list.Add(dataGebruiker.klantgegevens.klantnummer);
+                    var list = new List<int>();
+                    list.Add(dataGebruiker.klantgegevens.klantnummer);
 
-                        code_login.Register(dataEigenaar);
-                        code_login.Register(dataMedewerker);
-                        code_login.Register(dataGebruiker);
-                        code_gebruiker.MakeCustomerReservation(resDate, dataGebruiker.klantgegevens.klantnummer, 1, false);
-                        return 0;
-                    case 1000:
-                        io.ResetFilesystem();
-                        return 0;
-                }
+                    code_login.Register(dataEigenaar);
+                    code_login.Register(dataMedewerker);
+                    code_login.Register(dataGebruiker);
+                    code_gebruiker.MakeCustomerReservation(resDate, dataGebruiker.klantgegevens.klantnummer, 1, false);
+                    return 0;
+                case 1000:
+                    io.ResetFilesystem();
+                    return 0;
             }
 
             return 0;
@@ -710,7 +756,7 @@ namespace restaurant
             }
             else
             {
-                InvalidInputMessage();
+                Console.WriteLine(InvalidInputMessage);
                 Console.ReadKey();
                 return 1;
             }
@@ -754,7 +800,7 @@ namespace restaurant
             }
             else
             {
-                InvalidInputMessage();
+                Console.WriteLine(InvalidInputMessage);
                 Console.ReadKey();
                 return 2;
             }
@@ -835,7 +881,7 @@ namespace restaurant
 
             if (choice != "1" && choice != "2")
             {
-                InvalidInputMessage();
+                Console.WriteLine(InvalidInputMessage);
                 return 3;
             }
             else if (choice == "1")
@@ -938,7 +984,7 @@ namespace restaurant
 
             if (choice != "1" && choice != "2" && choice != "3" && choice != "4" && choice != "5" && choice != "6" && choice != "7")
             {
-                InvalidInputMessage();
+                Console.WriteLine(InvalidInputMessage);
                 Console.ReadKey();
                 return 5;
             }
@@ -1035,17 +1081,17 @@ namespace restaurant
 
             Console.WriteLine("Hier kunt u een review bewerken. Kies een review uit de lijst met reviews. (Type de nummer van de review in)");
 
-            int id = int.Parse(AskForInput(c => char.IsDigit(c), DigitsOnlyMessage));
+            int id = int.Parse(AskForInput(c => char.IsDigit(c), null, new string[2] { DigitsOnlyMessage, "" }));
 
             Console.WriteLine("Wat is de nieuwe beoordeling die u wilt geven?");
-            int rating = int.Parse(AskForInput(c => char.IsDigit(c), input => int.Parse(input) > 0 || int.Parse(input) < 6, DigitsOnlyMessage));
+            int rating = int.Parse(AskForInput(c => char.IsDigit(c), input => int.Parse(input) > 0 || int.Parse(input) < 6, new string[2] { DigitsOnlyMessage, "Beoordeling moet tussen 1 en 5 zijn." }));
 
             Console.WriteLine("Wat is de nieuwe bericht die u wilt geven?");
             string message = Console.ReadLine();
 
             Console.WriteLine("Klopt alles?\n[1] Ja\n[2] Nee");
 
-            if (AskForInput(c => char.IsDigit(c), input => input == "1" || input == "2", DigitsOnlyMessage) == "1")
+            if (AskForInput(c => char.IsDigit(c), input => input == "1" || input == "2", new string[2] { DigitsOnlyMessage, InvalidInputMessage }) == "1")
             {
                 code_gebruiker.OverwriteReview(id, rating, ingelogd.klantgegevens, message);
                 Console.WriteLine("Review is bewerkt! Klik op een knop om door te gaan.");
@@ -1084,7 +1130,7 @@ namespace restaurant
 
             if (!(new string[6] { "1", "2", "3", "4", "5", "6" }).Contains(choice))
             {
-                InvalidInputMessage();
+                Console.WriteLine(InvalidInputMessage);
                 Console.ReadKey();
                 return 11;
             }
