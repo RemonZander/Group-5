@@ -271,7 +271,7 @@ namespace restaurant
                     succes = false;
                     do
                     {
-                        Console.WriteLine("\nHeeft u nog voorkeur voor een tafel aan het raam?\n[1] Ja\n[2] Nee"); //Test
+                        Console.WriteLine("\nHeeft u nog voorkeur voor een tafel aan het raam?\n[1] Ja\n[2] Nee");
                         (string, int) antwoord = AskForInput(5);
                         if (antwoord.Item2 != -1)
                         {
