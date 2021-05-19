@@ -1279,7 +1279,7 @@ namespace restaurant
                         pages = MakePages(boxes, 3);
                         if (pages.Count == 0)
                         {
-                            Console.WriteLine("Vanaf deze datum heeft u nog geen reviews geschreven.");
+                            Console.WriteLine("\nVanaf deze datum heeft u nog geen reviews geschreven.");
                             Console.WriteLine("Druk op en knop om verder te gaan.");
                             Console.ReadKey();
                             return 10;
@@ -1523,7 +1523,6 @@ namespace restaurant
 
             Console.WriteLine("\n Typ hier uw bericht: ");
             input = AskForInput(10);
-            Console.ReadKey();
             if (input.Item2 != -1)
             {
                 return input.Item2;
@@ -1555,7 +1554,6 @@ namespace restaurant
         a:
             Console.WriteLine("\n Typ hier uw rating: ");
             input = AskForInput(10);
-            Console.ReadKey();
             if (input.Item2 != -1)
             {
                 return input.Item2;
@@ -1587,9 +1585,8 @@ namespace restaurant
             Console.WriteLine("Bericht: " + newreview.message);
             Console.WriteLine("Rating: " + newreview.Rating + "\n");
 
-            Console.WriteLine("Wilt u dit review bewerken en opslaan? ja | nee");
+            Console.WriteLine("Wilt u deze review bewerken en opslaan? ja | nee");
             input = AskForInput(10);
-            Console.ReadKey();
             if (input.Item2 != -1)
             {
                 return input.Item2;
@@ -1977,14 +1974,15 @@ namespace restaurant
 
         public override int DoWork()
         {
-            Console.WriteLine(GetGFLogo(7));
+            Console.WriteLine(GetGFLogo(8));
             Console.WriteLine("Hier kunt u alle ingredienten zien die u nu heeft");
             Console.WriteLine("[1] Laat alle ingredienten zien");
             Console.WriteLine("[2] Laat aantal ingredienten op naam zien");
             Console.WriteLine("[3] Laat alle ingredienten zien vanaf een datum (genoteerd als 1-1-2000)");
-            Console.WriteLine("[4] Laat alle ingredienten zien op prijs");
-            Console.WriteLine("[5] Laat alle ingredienten zien die bijna verlopen zijn");
-            Console.WriteLine("[6] Ga terug naar eigenaar menu scherm");
+            Console.WriteLine("[4] Laat alle ingredienten duurer dan een prijs");
+            Console.WriteLine("[5] Laat alle ingredienten goedkoper dan een prijs");
+            Console.WriteLine("[6] Laat alle ingredienten zien die bijna verlopen zijn");
+            Console.WriteLine("[7] Ga terug naar eigenaar menu scherm");
 
             (string, int) input = AskForInput(14);
             if (input.Item2 != -1)
@@ -2003,7 +2001,7 @@ namespace restaurant
                 {
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(3));
-                    Console.WriteLine($"Dit zijn uw reviews op pagina {page + 1} van de {pages.Count}:");
+                    Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
                     Console.WriteLine(new string('–', 92) + "\n" + "|Nummer  |Naam                            |Prijs       |Besteldatum  | houdsbaarheidsdatum |");
                     Console.WriteLine(new string('–', 92) + "\n" + pages[page]);
                     Console.WriteLine($"Totaal aantal ingredienten: {code_eigenaar.GetIngredients().Count}");
@@ -2021,39 +2019,194 @@ namespace restaurant
             else if (input.Item1 == "2")
             {
                 List<string> ingredientsString = IngredientsNameToString(code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList());
-                Console.WriteLine(string.Join(null, ingredientsString));
-                Console.ReadKey();
-
-
-                Console.Clear();
-                Console.WriteLine(GetGFLogo(3));
-
+                int page = 0;
+                List<string> pages = MakePages(ingredientsString, 20);
                 do
                 {
-
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(3));
+                    Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
+                    Console.WriteLine(pages[page]);
+                    (int, int) result = Nextpage(page, pages.Count - 1, 14);
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+                    page = result.Item1;
                 } while (true);
             }
             else if (input.Item1 == "3")
             {
-                List<string> ingredientsString = IngredientsToString(code_eigenaar.GetIngredients().OrderBy(d => d.bestel_datum).ToList());
-                Console.WriteLine(string.Join(null, ingredientsString));
-                Console.ReadKey();
+                bool succes = false;
+                DateTime date = new DateTime();
+                do
+                {
+                    try
+                    {
+                        Console.WriteLine("\nVoer hier de datum in:");
+                        input = AskForInput(14);
+                        if (input.Item2 != -1)
+                        {
+                            return input.Item2;
+                        }
+                        date = Convert.ToDateTime(input.Item1);
+                        succes = true;
+                    }
+                    catch
+                    {
+                        Console.WriteLine("\nU moet wel een correcte datum invullen");
+                        Console.WriteLine("Druk op een knop om verder te gaan...");
+                        Console.ReadKey();
+                        
+                    }
+                } while (!succes);
+
+                List<Ingredient> ingredients = code_eigenaar.GetIngredients().OrderBy(d => d.bestel_datum).Where(d => d.bestel_datum > date).ToList();
+                if (ingredients.Count == 0)
+                {
+                    Console.WriteLine("\nU heeft geen ingredienten na deze datum besteld");
+                    Console.WriteLine("Druk op een knop om verder te gaan...");
+                    Console.ReadKey();
+                    return 14;
+                }
+                List<string> ingredientsString = IngredientsToString(ingredients);
+                int page = 0;
+                List<string> pages = MakePages(ingredientsString, 20);
+
+                do
+                {
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(3));
+                    Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
+                    Console.WriteLine(new string('–', 92) + "\n" + pages[page]);
+                    Console.WriteLine($"Totaal aantal ingredienten: {ingredients.Count}");
+                    Console.WriteLine($"totaal waarde ingredienten: €{ Convert.ToInt32(ingredients.Sum(p => p.prijs))},00\n");
+
+                    (int, int) result = Nextpage(page, pages.Count - 1, 14);
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+                    page = result.Item1;
+                } while (true);
             }
             else if (input.Item1 == "4")
             {
-                List<string> ingredientsString = IngredientsToString(code_eigenaar.GetIngredients().OrderBy(d => d.prijs).ToList());
-                Console.WriteLine(string.Join(null, ingredientsString));
-                Console.ReadKey();
+                bool succes = false;
+                double price = 0.0;
+                do
+                {
+                    try
+                    {
+                        Console.WriteLine("\nVoer hier de prijs in:");
+                        input = AskForInput(14);
+                        if (input.Item2 != -1)
+                        {
+                            return input.Item2;
+                        }
+                        price = Convert.ToInt32(input.Item1);
+                        succes = true;
+                    }
+                    catch
+                    {
+                        Console.WriteLine("\nU moet wel een correcte prijs invullen");
+                        Console.WriteLine("Druk op een knop om verder te gaan...");
+                        Console.ReadKey();
+                    }
+                } while (!succes);
+
+                List<Ingredient> ingredients = code_eigenaar.GetIngredients().OrderBy(d => d.prijs).Where(d => d.prijs > price).ToList();
+                if (ingredients.Count == 0)
+                {
+                    Console.WriteLine("\nU heeft geen ingredienten hoger dan deze prijs besteld");
+                    Console.WriteLine("Druk op een knop om verder te gaan...");
+                    Console.ReadKey();
+                    return 14;
+                }
+                List<string> ingredientsString = IngredientsToString(ingredients);
+                int page = 0;
+                List<string> pages = MakePages(ingredientsString, 20);
+
+                do
+                {
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(3));
+                    Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
+                    Console.WriteLine(new string('–', 92) + "\n" + pages[page]);
+                    Console.WriteLine($"Totaal aantal ingredienten: {ingredients.Count}");
+                    Console.WriteLine($"totaal waarde ingredienten: €{ Convert.ToInt32(ingredients.Sum(p => p.prijs))},00\n");
+
+                    (int, int) result = Nextpage(page, pages.Count - 1, 14);
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+                    page = result.Item1;
+                } while (true);
             }
             else if (input.Item1 == "5")
             {
+                bool succes = false;
+                double price = 0.0;
+                do
+                {
+                    try
+                    {
+                        Console.WriteLine("\nVoer hier de prijs in:");
+                        input = AskForInput(14);
+                        if (input.Item2 != -1)
+                        {
+                            return input.Item2;
+                        }
+                        price = Convert.ToInt32(input.Item1);
+                        succes = true;
+                    }
+                    catch
+                    {
+                        Console.WriteLine("\nU moet wel een correcte prijs invullen");
+                        Console.WriteLine("Druk op een knop om verder te gaan...");
+                        Console.ReadKey();
+                    }
+                } while (!succes);
 
+                List<Ingredient> ingredients = code_eigenaar.GetIngredients().OrderBy(d => d.prijs).Where(d => d.prijs < price).ToList();
+                if (ingredients.Count == 0)
+                {
+                    Console.WriteLine("\nU heeft geen ingredienten lager dan deze prijs besteld");
+                    Console.WriteLine("Druk op een knop om verder te gaan...");
+                    Console.ReadKey();
+                    return 14;
+                }
+                List<string> ingredientsString = IngredientsToString(ingredients);
+                int page = 0;
+                List<string> pages = MakePages(ingredientsString, 20);
+
+                do
+                {
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(3));
+                    Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
+                    Console.WriteLine(new string('–', 92) + "\n" + pages[page]);
+                    Console.WriteLine($"Totaal aantal ingredienten: {ingredients.Count}");
+                    Console.WriteLine($"totaal waarde ingredienten: €{ Convert.ToInt32(ingredients.Sum(p => p.prijs))},00\n");
+
+                    (int, int) result = Nextpage(page, pages.Count - 1, 14);
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+                    page = result.Item1;
+                } while (true);
             }
             else if (input.Item1 == "6")
             {
-                return 11;
+
             }
             else if (input.Item1 == "7")
+            {
+                return 11;
+            }
+            else if (input.Item1 == "8")
             {
                 logoutUpdate = true;
                 Logout();
