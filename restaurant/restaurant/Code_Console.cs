@@ -1119,11 +1119,25 @@ namespace restaurant
                 return result.Item2;
             }
 
+            void Reset()
+            {
+                output.Clear();
+                output.Add(GetGFLogo());
+                output.Add("Hier kunt u een account aanmaken om o.a. reververingen te plaatsen voor GrandFusion!");
+                currentStep = 0;
+            }
+
             switch (currentStep)
             {
                 case 0:
                     Console.WriteLine(steps[currentStep]);
-                    result = AskForInput(3, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
+                    result = AskForInput(0, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
+
+                    if (result.Item1 == null)
+                    {
+                        Reset();
+                        return result.Item2;
+                    }
 
                     if (result.Item3 != null) return ShowInvalidInput(result.Item3);
 
@@ -1135,7 +1149,13 @@ namespace restaurant
                     return 3;
                 case 1:
                     Console.WriteLine(steps[currentStep]);
-                    result = AskForInput(3, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
+                    result = AskForInput(0, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
+
+                    if (result.Item1 == null)
+                    {
+                        Reset();
+                        return result.Item2;
+                    }
 
                     if (result.Item3 != null) return ShowInvalidInput(result.Item3);
 
@@ -1150,11 +1170,17 @@ namespace restaurant
                     DateTime resultDateTime = new DateTime();
 
                     result = AskForInput(
-                        3, 
+                        0, 
                         c => char.IsDigit(c) || c == '/' || c == '-', 
                         input => DateTime.TryParseExact(input, "dd/mm/yyyy", new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime), 
                         ("Het formaat van de datum die u heeft ingevoerd klopt niet. Probeer het opnieuw.", "De datum die u hebt ingevoerd klopt niet, probeer het opnieuw.")
                     );
+
+                    if (result.Item1 == null)
+                    {
+                        Reset();
+                        return result.Item2;
+                    }
 
                     if (result.Item3 != null) return ShowInvalidInput(result.Item3);
 
@@ -1166,7 +1192,13 @@ namespace restaurant
                     return 3;
                 case 3:
                     Console.WriteLine(steps[currentStep]);
-                    result = AskForInput(3, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
+                    result = AskForInput(0, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
+
+                    if (result.Item1 == null)
+                    {
+                        Reset();
+                        return result.Item2;
+                    }
 
                     if (result.Item3 != null) return ShowInvalidInput(result.Item3);
 
@@ -1178,7 +1210,13 @@ namespace restaurant
                     return 3;
                 case 4:
                     Console.WriteLine(steps[currentStep]);
-                    result = AskForInput(3, c => char.IsLetterOrDigit(c), null, (DigitsAndLettersOnlyMessage, null));
+                    result = AskForInput(0, c => char.IsLetterOrDigit(c), null, (DigitsAndLettersOnlyMessage, null));
+
+                    if (result.Item1 == null)
+                    {
+                        Reset();
+                        return result.Item2;
+                    }
 
                     if (result.Item3 != null) return ShowInvalidInput(result.Item3);
 
@@ -1190,7 +1228,13 @@ namespace restaurant
                     return 3;
                 case 5:
                     Console.WriteLine(steps[currentStep]);
-                    result = AskForInput(3, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
+                    result = AskForInput(0, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
+
+                    if (result.Item1 == null)
+                    {
+                        Reset();
+                        return result.Item2;
+                    }
 
                     if (result.Item3 != null) return ShowInvalidInput(result.Item3);
 
@@ -1202,13 +1246,20 @@ namespace restaurant
                     return 3;
                 case 6:
                     Console.WriteLine(steps[currentStep]);
-                    result = AskForInput(3, c => char.IsDigit(c), null, (DigitsOnlyMessage, null));
+                    int possibleValue = 0;
+                    result = AskForInput(0, c => char.IsDigit(c), input => int.TryParse(input, out possibleValue), (DigitsOnlyMessage, "De nummer die u heeft ingevoerd is te lang voor een gemiddeld huisnummer"));
+
+                    if (result.Item1 == null)
+                    {
+                        Reset();
+                        return result.Item2;
+                    }
 
                     if (result.Item3 != null) return ShowInvalidInput(result.Item3);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
-                    lg.klantgegevens.adres.huisnummer = Convert.ToInt32(result.Item1);
+                    lg.klantgegevens.adres.huisnummer = possibleValue;
 
                     currentStep++;
                     return 3;
@@ -1216,7 +1267,13 @@ namespace restaurant
                     Console.WriteLine(steps[currentStep]);
                     Regex regex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
 
-                    result = AskForInput(3, null, input => regex.IsMatch(input), (null, "De email is niet juist er mist een @ of een ."));
+                    result = AskForInput(0, null, input => regex.IsMatch(input), (null, "De email is niet juist er mist een @ of een ."));
+
+                    if (result.Item1 == null)
+                    {
+                        Reset();
+                        return result.Item2;
+                    }
 
                     if (result.Item3 != null) return ShowInvalidInput(result.Item3);
 
@@ -1230,6 +1287,12 @@ namespace restaurant
                     Console.WriteLine(steps[currentStep]);
                     (string, int) otherResult = AskForInput(3);
 
+                    if (otherResult.Item1 == null)
+                    {
+                        Reset();
+                        return otherResult.Item2;
+                    }
+
                     output.Add($"{steps[currentStep]}\n{otherResult.Item1}");
 
                     lg.password = otherResult.Item1;
@@ -1238,15 +1301,19 @@ namespace restaurant
                     return 3;
                 case 9:
                     Console.WriteLine(steps[currentStep]);
-                    result = AskForInput(3, c => char.IsDigit(c), input => Convert.ToInt32(input) == 1 || Convert.ToInt32(input) == 2, (DigitsOnlyMessage, InvalidInputMessage));
+                    result = AskForInput(0, c => char.IsDigit(c), input => Convert.ToInt32(input) == 1 || Convert.ToInt32(input) == 2, (DigitsOnlyMessage, InvalidInputMessage));
+
+                    if (result.Item1 == null)
+                    {
+                        Reset();
+                        return result.Item2;
+                    }
 
                     if (result.Item3 != null) return ShowInvalidInput(result.Item3);
 
                     if (result.Item1 == "1")
                     {
-                        output.Clear();
-                        output.Add(GetGFLogo());
-                        output.Add("Hier kunt u een account aanmaken om o.a. reververingen te plaatsen voor GrandFusion!");
+                        Reset();
                         currentStep = 0;
                         return 3;
                     }
@@ -1529,6 +1596,11 @@ namespace restaurant
 
     public class AddMealScreen : Screen
     {
+        private List<string> steps = new();
+        private List<string> output = new();
+        private Gerechten meal;
+        private int currentStep = 0;
+
         public AddMealScreen()
         {
 
@@ -1550,14 +1622,14 @@ namespace restaurant
             Console.WriteLine("Wat is de prijs van het gerecht?");
             prijs = double.Parse(AskForInput(c => char.IsDigit(c), DigitsOnlyMessage));
             Console.WriteLine("Is het gerecht een special?");
-            speciaal = AskForInput(input => input.ToLower() == "ja" || input.ToLower() == "nee", "Type in ja of nee alstublieft.") == "ja";
+            speciaal = AskForInput(8, null, input => input.ToLower() == "ja" || input.ToLower() == "nee", (null, "Type in ja of nee alstublieft.")).Item1 == "ja";
             Console.WriteLine("Geef nu aan de allergenen van het gerecht, als u geen allergenen wilt aangeven of als u klaar bent laat dab de invoerveld leeg en klik op enter");
-            string input;
+            (string, int, string) result;
             do
             {
-                input = AskForInput(c => char.IsLetter(c), LettersOnlyMessage);
-                if (input.Trim() != "") allergenen.Add(input);
-            } while (input.Trim() != "");
+                result = AskForInput(8, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
+                if (result.Item1.Trim() != "") allergenen.Add(result.Item1);
+            } while (result.Item1.Trim() != "");
 
             code_eigenaar.CreateMeal(naam, false, prijs, speciaal, false, ingredienten, allergenen);
 
