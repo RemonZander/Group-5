@@ -52,7 +52,7 @@ namespace restaurant
     }
 
 
-    public abstract class Screen
+    public abstract partial class Screen
     {
         protected readonly Code_Medewerker_menu code_medewerker = new Code_Medewerker_menu();
         protected readonly Code_Gebruiker_menu code_gebruiker = new Code_Gebruiker_menu();
@@ -560,6 +560,67 @@ namespace restaurant
                     Console.WriteLine("Druk op en knop om verder te gaan.");
                     Console.ReadKey();
                     return (page, -1, pos);
+                }
+            }
+        }
+
+        protected (int, int) Nextpage(int page, int maxpage, int screenIndex)
+        {
+            if (page < maxpage)
+            {
+                Console.WriteLine("[1] Volgende pagina");
+                Console.WriteLine("[2] Terug");
+                ConsoleKeyInfo key = Console.ReadKey();
+                if (IsKeyPressed(key, ESCAPE_KEY))
+                {
+                    return (page, screenIndex);
+                }
+                else if (IsKeyPressed(key, "D1"))
+                {
+                    return (page + 1, (page + 1) * 6);
+                }
+                else if (IsKeyPressed(key, "D2"))
+                {
+                    return (page, screenIndex);
+                }
+                else if (IsKeyPressed(key, "D3"))
+                {
+                    logoutUpdate = true;
+                    Logout();
+                    return (page, 0);
+                }
+                else
+                {
+                    Console.WriteLine("U moet wel een juiste keuze maken...");
+                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.ReadKey();
+                    return (page, -1);
+                }
+            }
+            else
+            {
+                Console.WriteLine("[1] Terug");
+                ConsoleKeyInfo key = Console.ReadKey();
+                if (IsKeyPressed(key, ESCAPE_KEY))
+                {
+                    return (page, screenIndex);
+                }
+                else if (IsKeyPressed(key, "D1"))
+                {
+                    return (page, screenIndex);
+                }
+                else if (IsKeyPressed(key, "D3"))
+                {
+                    logoutUpdate = true;
+                    Logout();
+                    return (page, 0);
+                }
+                else
+                {
+                    Console.WriteLine("U moet wel een juiste keuze maken...");
+                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.ReadKey();
+                    return (page, -1);
                 }
             }
         }
