@@ -869,7 +869,7 @@ namespace restaurant
                     {
                         for (int j = 0; j < Medewerkers.Count; j++)
                         {
-                            Console.WriteLine("Naam:  " + Medewerkers[j].Klantgegevens.voornaam + " " + Medewerkers[j].Klantgegevens.achternaam);
+                            Console.WriteLine("Naam:  " + Medewerkers[j].login_gegevens.klantgegevens.voornaam + " " + Medewerkers[j].login_gegevens.klantgegevens.achternaam);
                         }
                         Console.WriteLine("Voer de voornaam en achternaam in van de medewerker en druk op Enter.");
                         Console.WriteLine("Als u geen medewerker wilt invoeren, voer dan niks in en druk dan op Enter.");
@@ -890,7 +890,7 @@ namespace restaurant
                         //als match met werknemer sla deze op
                         for (int i = 0; i < Medewerkers.Count; i++)
                         {
-                            if (Medewerkers[i].Klantgegevens.voornaam + " " + Medewerkers[i].Klantgegevens.achternaam == choiceMedewerker.Item1)
+                            if (Medewerkers[i].login_gegevens.klantgegevens.voornaam + " " + Medewerkers[i].login_gegevens.klantgegevens.achternaam == choiceMedewerker.Item1)
                             {
                                 feedbackMedewerker = Medewerkers[i];
                             }
