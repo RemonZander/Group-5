@@ -407,7 +407,7 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAIAASAAAAQAAQAAAAACAAAABAAAAAAAgAABACABAA=</HashCode>
+      <HashCode>AAAIAAWAAAAQAAQAAAAAAAAAABAAAAAAAgAABACABAA=</HashCode>
       <FileName>Werker.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -529,7 +529,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAQAAAAAAAQAAASQiIABYAJAIAAAQAAAgCgGAAhCACA=</HashCode>
+      <HashCode>AAQAAAAAAASAYASQyIAB4AZBIAAAQAAAgCgGAAhCACQ=</HashCode>
       <FileName>Code_Console.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -564,7 +564,7 @@
   <Class Name="restaurant.RegisterScreen">
     <Position X="9.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAQAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAQAAAAACQQAAAgAAAAAAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Code_Console.cs</FileName>
     </TypeIdentifier>
   </Class>
