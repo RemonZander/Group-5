@@ -33,7 +33,7 @@ namespace restaurant
             Make_menu();
             Fill_Userdata(10);
             Fill_reservations_threading(24, 500, 1, 3, 1, 9);
-            //Maak_werknemer(10);
+            Maak_werknemer(10);
             //Save_expenses();
             Make_reviews();
             //Make_feedback();
@@ -1054,13 +1054,35 @@ namespace restaurant
                     inkomstenbelasting = 0.371,
                     prestatiebeloning = rnd.Next(0, 30) / 100,
                     ID = werknemers.Count,
-                    Klantgegevens = new Klantgegevens
+                    login_gegevens = new Login_gegevens
                     {
-                        voornaam = names[rnd.Next(0, 2)][rnd.Next(0, 20)],
-                        achternaam = names[2][rnd.Next(0, 40)],
+                        email = names[rnd.Next(0, 2)][rnd.Next(0, 20)] + "," + names[2][rnd.Next(0, 40)] + "@gmail.com",
+                        password = "0000",
+                        klantgegevens = new Klantgegevens
+                        {
+                            voornaam = names[rnd.Next(0, 2)][rnd.Next(0, 20)],
+                            achternaam = names[2][rnd.Next(0, 40)],
+                        },
                     },
                 });
             }
+
+            database.eigenaar = new Eigenaar {
+                ID = 0,
+                salaris = 5000,
+                inkomstenbelasting = 0.371,
+                prestatiebeloning = rnd.Next(0, 30) / 100,
+                login_gegevens = new Login_gegevens
+                {
+                    email = "Natnael.Tefera@gmail.com",
+                    password = "0000",
+                    klantgegevens = new Klantgegevens
+                    {
+                        voornaam = "Natnael",
+                        achternaam = "Tefera",
+                    },
+                },
+            };
 
             database.werknemers = werknemers;
             io.Savedatabase(database);
