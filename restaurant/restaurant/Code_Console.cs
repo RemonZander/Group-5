@@ -262,7 +262,7 @@ namespace restaurant
                 if (reviews[a].message.Length < 50 - ("Review: ").Length && reviews[a + 1].message.Length < 48 - ("Review: ").Length)
                 {
                     block.Add("Review: " + reviews[a].message + new string(' ', 50 - ("Review: " + reviews[a].message).Length) + "##  " +
-                        "Review: " + reviews[a].message + new string(' ', 48 - ("Review: " + reviews[a].message).Length));
+                        "Review: " + reviews[a + 1].message + new string(' ', 48 - ("Review: " + reviews[a + 1].message).Length));
                 }
                 else
                 {
@@ -405,7 +405,7 @@ namespace restaurant
                     }
                     else
                     {
-                        if ((pos > 6 * page && page != 0) || (pos > 2 && page == 0))
+                        if ((pos > 6 * page && page != 0) || (pos > 1 && page == 0))
                         {
                             pos -= 2;
                         }
@@ -460,6 +460,14 @@ namespace restaurant
                     Logout();
                     return (page, 0, pos);
                 }
+                else if (IsKeyPressed(key, "D4"))
+                {
+                    return (-1, -1, pos);
+                }
+                else if (IsKeyPressed(key, "D5"))
+                {
+                    return (-2, -2, pos);
+                }
                 else
                 {
                     Console.WriteLine("U moet wel een juiste keuze maken...");
@@ -486,6 +494,14 @@ namespace restaurant
                     Logout();
                     return (page, 0, pos);
                 }
+                else if (IsKeyPressed(key, "D4"))
+                {
+                    return (-1, -1, pos);
+                }
+                else if (IsKeyPressed(key, "D5"))
+                {
+                    return (-2, -2, pos);
+                }
                 else if (IsKeyPressed(key, UP_ARROW))
                 {
                     if (pos % 2 != 0)
@@ -497,7 +513,7 @@ namespace restaurant
                     }
                     else
                     {
-                        if ((pos > 6 * page && page != 0) || (pos > 2 && page == 0))
+                        if ((pos > 6 * page && page != 0) || (pos > 1 && page == 0))
                         {
                             pos -= 2;
                         }
@@ -544,67 +560,6 @@ namespace restaurant
                     Console.WriteLine("Druk op en knop om verder te gaan.");
                     Console.ReadKey();
                     return (page, -1, pos);
-                }
-            }
-        }
-
-        protected (int, int) Nextpage(int page, int maxpage, int screenIndex)
-        {
-            if (page < maxpage)
-            {
-                Console.WriteLine("[1] Volgende pagina");
-                Console.WriteLine("[2] Terug");
-                ConsoleKeyInfo key = Console.ReadKey();
-                if (IsKeyPressed(key, ESCAPE_KEY))
-                {
-                    return (page, screenIndex);
-                }
-                else if (IsKeyPressed(key, "D1"))
-                {
-                    return (page + 1, (page + 1) * 6);
-                }
-                else if (IsKeyPressed(key, "D2"))
-                {
-                    return (page, screenIndex);
-                }
-                else if (IsKeyPressed(key, "D3"))
-                {
-                    logoutUpdate = true;
-                    Logout();
-                    return (page, 0);
-                }
-                else
-                {
-                    Console.WriteLine("U moet wel een juiste keuze maken...");
-                    Console.WriteLine("Druk op en knop om verder te gaan.");
-                    Console.ReadKey();
-                    return (page, -1);
-                }
-            }
-            else
-            {
-                Console.WriteLine("[1] Terug");
-                ConsoleKeyInfo key = Console.ReadKey();
-                if (IsKeyPressed(key, ESCAPE_KEY))
-                {
-                    return (page, screenIndex);
-                }
-                else if (IsKeyPressed(key, "D1"))
-                {
-                    return (page, screenIndex);
-                }
-                else if (IsKeyPressed(key, "D3"))
-                {
-                    logoutUpdate = true;
-                    Logout();
-                    return (page, 0);
-                }
-                else
-                {
-                    Console.WriteLine("U moet wel een juiste keuze maken...");
-                    Console.WriteLine("Druk op en knop om verder te gaan.");
-                    Console.ReadKey();
-                    return (page, -1);
                 }
             }
         }
@@ -1123,7 +1078,7 @@ namespace restaurant
         {
             steps.Add("Uw voornaam: ");
             steps.Add("Uw achternaam: ");
-            steps.Add("Uw geboorte datum met het formaat dd/mm/yyyy: ");
+            steps.Add("Uw geboortedatum genoteerd als dd/mm/yyyy: ");
             steps.Add("Hieronder vult u uw adres in. Dit is in verband met het bestellen van eten.\nUw woonplaats: ");
             steps.Add("Uw postcode: ");
             steps.Add("Uw straatnaam: ");
