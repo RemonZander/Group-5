@@ -1313,8 +1313,7 @@ namespace restaurant
                             {
                                 return input.Item2;
                             }
-                            Console.ReadKey();
-                            if (input.Item1 == "1")
+                            else if (input.Item1 == "1")
                             {
                                 logoutUpdate = true;
                                 Logout();
@@ -1491,7 +1490,6 @@ namespace restaurant
 
             Console.WriteLine("Wilt u deze review anoniem maken? ja | nee");
             (string, int) input = AskForInput(10);
-            Console.ReadKey();
             if (input.Item2 != -1)
             {
                 return input.Item2;
