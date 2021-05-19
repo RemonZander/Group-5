@@ -112,6 +112,52 @@ namespace restaurant
 
     #region Screens
 
+    public class EmployeeMenuScreen : Screen
+    {
+        public override int DoWork()
+        {
+            var database = io.GetDatabase();
+            Console.WriteLine(GetGFLogo(4));
+            Console.WriteLine("Welkom in het medewerkersmenu.");
+            Console.WriteLine("\nKies een optie:");
+            Console.WriteLine("[1] Reserveringen");
+            Console.WriteLine("[2] Tafels koppelen");
+            Console.WriteLine("[3] Ga terug");
+
+            (string, int) antwoord = AskForInput(16);
+            if (antwoord.Item2 != -1)
+            {
+                return antwoord.Item2;
+            }
+
+            else if (antwoord.Item1 == "1")
+            {
+                return 17;
+            }
+            else if (antwoord.Item1 == "2")
+            {
+                return 18;
+            }
+            else if (antwoord.Item1 == "3")
+            {
+                return 0;
+            }
+            else
+            {
+                Console.WriteLine("\nU moet wel een juiste keuze maken...");
+                Console.WriteLine("Druk op een knop om het opnieuw te proberen.");
+                Console.ReadKey();
+                return 16;
+            }
+
+        }
+
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            return screens;
+        }
+    }
+
     public class MakeReservationScreen : Screen
     {
         public override int DoWork()
