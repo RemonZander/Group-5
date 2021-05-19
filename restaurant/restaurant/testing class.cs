@@ -1125,13 +1125,12 @@ namespace restaurant
             Console.WriteLine("[3] Laat al uw reviews zien op rating tussen de 1 en de 5");
             Console.WriteLine("[4] Ga terug naar klant menu scherm");
 
-            ConsoleKeyInfo key = Console.ReadKey();           
-            if (IsKeyPressed(key, ESCAPE_KEY))
+            (string, int) input = AskForInput(5);
+            if (input.Item2 != -1)
             {
-                return 5;
+                return input.Item2;
             }
-            Console.ReadKey();
-            if (IsKeyPressed(key, "D1"))
+            if (input.Item1 == "1")
             {
                 int page = 0;
                 double pos = 0;
@@ -1189,13 +1188,12 @@ namespace restaurant
                         Console.WriteLine(MakeReviewBox(reviews[Convert.ToInt32(pos)]) + "\n");
                         Console.WriteLine("Weet u zeker dat u deze review wilt verwijderen? ja | nee");
 
-                        (string, int) input = AskForInput(10);                      
+                        input = AskForInput(10);                      
                         if (input.Item2 != -1)
                         {
                             return input.Item2;
                         }
-                        Console.ReadKey();
-                        if (input.Item1 == "1")
+                        else if (input.Item1 == "1")
                         {
                             logoutUpdate = true;
                             Logout();
@@ -1225,7 +1223,7 @@ namespace restaurant
                     page = result.Item1;
                 } while (true);
             }
-            else if (IsKeyPressed(key, "D2"))
+            else if (input.Item1 == "2")
             {
                 Console.WriteLine("\n Vul hieronder de datum in vanaf wanneer u uw reviews wilt zien");
                 (string, int) choice = AskForInput(10);              
@@ -1233,7 +1231,6 @@ namespace restaurant
                 {
                     return choice.Item2;
                 }
-                Console.ReadKey();
                 int page = 0;
                 try
                 {
@@ -1241,7 +1238,7 @@ namespace restaurant
                     DateTime date = Convert.ToDateTime(choice.Item1);
                     if (date >= DateTime.Now)
                     {
-                        Console.WriteLine("U moet wel een datum in het verleden invoeren.");
+                        Console.WriteLine("\nU moet wel een datum in het verleden invoeren.");
                         Console.WriteLine("Druk op en knop om verder te gaan.");
                         Console.ReadKey();
                         return 10;
@@ -1289,11 +1286,11 @@ namespace restaurant
                         }
                         Console.Clear();
                         Console.WriteLine(GetGFLogo(3));
-                        Console.WriteLine($"Dit zijn uw reviews op pagina {page} van de {pages.Count - 1}:");
+                        Console.WriteLine($"Dit zijn uw reviews op pagina {page + 1} van de {pages.Count}:");
                         Console.WriteLine(pages[page] + new string('#', 108));
                         var result = Nextpage(page, pages.Count - 1, pos, boxes.Count - 1, 10);
                         pos = result.Item3;
-                        if (result.Item2 != -1)
+                        if (result.Item2 != -1 && result.Item2 != -1)
                         {
                             return result.Item2;
                         }
@@ -1308,7 +1305,7 @@ namespace restaurant
                             Console.WriteLine(MakeReviewBox(reviewsfiler[Convert.ToInt32(pos)]) + "\n");
                             Console.WriteLine("Weet u zeker dat u deze review wilt verwijderen? ja | nee");
 
-                            (string, int) input = AskForInput(10);                          
+                            input = AskForInput(10);                          
                             if (input.Item2 != -1)
                             {
                                 return input.Item2;
@@ -1322,7 +1319,7 @@ namespace restaurant
                             else if (input.Item1 == "ja")
                             {
                                 code_gebruiker.DeleteReview(reviews[Convert.ToInt32(pos)].ID, ingelogd.klantgegevens);
-                                Console.WriteLine("\n Review is verwijdert");
+                                Console.WriteLine("\n Review is verwijderd");
                                 Console.WriteLine("Druk op een knop om verder te gaan...");
                                 Console.ReadKey();
                                 return 10;
@@ -1351,7 +1348,7 @@ namespace restaurant
                     return 10;
                 }
             }
-            else if (IsKeyPressed(key, "D3"))
+            else if (input.Item1 == "3")
             {
                 Console.WriteLine("\n Vul hieronder de rating in warop u uw reviews wilt filteren.");
                 (string, int) choice = AskForInput(10);
@@ -1359,11 +1356,10 @@ namespace restaurant
                 {
                     return choice.Item2;
                 }
-                Console.ReadKey();
                 int page = 0;
                 if (choice.Item1 != "1" && choice.Item1 != "2" && choice.Item1 != "3" && choice.Item1 != "4" && choice.Item1 != "5")
                 {
-                    Console.WriteLine("U moet wel een geldige rating invullen tussen de 1 en de 5.");
+                    Console.WriteLine("\nU moet wel een geldige rating invullen tussen de 1 en de 5.");
                     Console.WriteLine("Druk op en knop om verder te gaan.");
                     Console.ReadKey();
                     return 10;
@@ -1406,11 +1402,11 @@ namespace restaurant
 
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(3));
-                    Console.WriteLine($"Dit zijn uw reviews op pagina {page} van de {pages.Count - 1}:");
+                    Console.WriteLine($"Dit zijn uw reviews op pagina {page + 1} van de {pages.Count}:");
                     Console.WriteLine(pages[page] + new string('#', 108));
                     var result = Nextpage(page, pages.Count - 1, pos, boxes.Count - 1, 10);
                     pos = result.Item3;
-                    if (result.Item2 != -1)
+                    if (result.Item2 != -1 && result.Item2 != -1)
                     {
                         return result.Item2;
                     }
@@ -1425,13 +1421,12 @@ namespace restaurant
                         Console.WriteLine(MakeReviewBox(reviewsfiler[Convert.ToInt32(pos)]) + "\n");
                         Console.WriteLine("Weet u zeker dat u deze review wilt verwijderen? ja | nee");
 
-                        (string, int) input = AskForInput(10);                        
+                        input = AskForInput(10);                        
                         if (input.Item2 != -1)
                         {
                             return input.Item2;
                         }
-                        Console.ReadKey();
-                        if (input.Item1 == "1")
+                        else if (input.Item1 == "1")
                         {
                             logoutUpdate = true;
                             Logout();
@@ -1461,11 +1456,11 @@ namespace restaurant
                     page = result.Item1;
                 } while (true);
             }
-            else if (IsKeyPressed(key, "D4"))
+            else if (input.Item1 == "4")
             {
                 return 5;
             }
-            else if (IsKeyPressed(key, "D5"))
+            else if (input.Item1 == "5")
             {
                 logoutUpdate = true;
                 Logout();
@@ -1991,12 +1986,12 @@ namespace restaurant
             Console.WriteLine("[5] Laat alle ingredienten zien die bijna verlopen zijn");
             Console.WriteLine("[6] Ga terug naar eigenaar menu scherm");
 
-            ConsoleKeyInfo key = Console.ReadKey();           
-            if (IsKeyPressed(key, ESCAPE_KEY))
+            (string, int) input = AskForInput(14);
+            if (input.Item2 != -1)
             {
                 return 11;
             }
-            if (IsKeyPressed(key, "D1"))
+            if (input.Item1 == "1")
             {
                 List<string> ingredientsString = IngredientsToString(code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList());
                 //Console.WriteLine(string.Join(null, ingredientsString));
@@ -2023,38 +2018,42 @@ namespace restaurant
 
                 } while (true);
             }
-            else if (IsKeyPressed(key, "D2"))
+            else if (input.Item1 == "2")
             {
                 List<string> ingredientsString = IngredientsNameToString(code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList());
                 Console.WriteLine(string.Join(null, ingredientsString));
                 Console.ReadKey();
+
+
+                Console.Clear();
+                Console.WriteLine(GetGFLogo(3));
 
                 do
                 {
 
                 } while (true);
             }
-            else if (IsKeyPressed(key, "D3"))
+            else if (input.Item1 == "3")
             {
                 List<string> ingredientsString = IngredientsToString(code_eigenaar.GetIngredients().OrderBy(d => d.bestel_datum).ToList());
                 Console.WriteLine(string.Join(null, ingredientsString));
                 Console.ReadKey();
             }
-            else if (IsKeyPressed(key, "D4"))
+            else if (input.Item1 == "4")
             {
                 List<string> ingredientsString = IngredientsToString(code_eigenaar.GetIngredients().OrderBy(d => d.prijs).ToList());
                 Console.WriteLine(string.Join(null, ingredientsString));
                 Console.ReadKey();
             }
-            else if (IsKeyPressed(key, "D5"))
+            else if (input.Item1 == "5")
             {
 
             }
-            else if (IsKeyPressed(key, "D6"))
+            else if (input.Item1 == "6")
             {
                 return 11;
             }
-            else if (IsKeyPressed(key, "D7"))
+            else if (input.Item1 == "7")
             {
                 logoutUpdate = true;
                 Logout();
