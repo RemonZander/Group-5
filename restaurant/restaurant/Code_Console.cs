@@ -25,15 +25,15 @@ namespace restaurant
             screens.Add(new MakeReservationScreen());
             screens.Add(new MakeReviewScreen());
             screens.Add(new EditReviewScreen());
-            screens.Add(new DeleteReview());
+            screens.Add(new ClientMenuScreen()); // Lege plek
             screens.Add(new ViewReviewScreen());
             #endregion
             #region Eigenaar
             screens.Add(new OwnerMenuScreen());
-            screens.Add(new OwnerMenuScreen());
-            screens.Add(new OwnerMenuScreen());
-            screens.Add(new OwnerMenuScreen());
-            screens.Add(new OwnerMenuScreen());
+            screens.Add(new OwnerMenuScreen()); // Gerechten
+            screens.Add(new OwnerMenuScreen()); // Reservering
+            screens.Add(new OwnerMenuScreen()); // Ingredienten
+            screens.Add(new OwnerMenuScreen()); // Inkomsten
             #endregion
             currentScreen = 0;
         }
@@ -390,6 +390,7 @@ namespace restaurant
                 Console.WriteLine("[1] Volgende pagina");
                 Console.WriteLine("[2] Terug");
                 ConsoleKeyInfo key = Console.ReadKey();
+                Console.ReadKey();
                 if (IsKeyPressed(key, ESCAPE_KEY))
                 {
                     return (page, screenIndex, pos);
@@ -480,6 +481,7 @@ namespace restaurant
             {
                 Console.WriteLine("[1] Terug");
                 ConsoleKeyInfo key = Console.ReadKey();
+                Console.ReadKey();
                 if (IsKeyPressed(key, ESCAPE_KEY))
                 {
                     return (page, screenIndex, pos);
@@ -571,6 +573,7 @@ namespace restaurant
                 Console.WriteLine("[1] Volgende pagina");
                 Console.WriteLine("[2] Terug");
                 ConsoleKeyInfo key = Console.ReadKey();
+                Console.ReadKey();
                 if (IsKeyPressed(key, ESCAPE_KEY))
                 {
                     return (page, screenIndex);
@@ -601,6 +604,7 @@ namespace restaurant
             {
                 Console.WriteLine("[1] Terug");
                 ConsoleKeyInfo key = Console.ReadKey();
+                Console.ReadKey();
                 if (IsKeyPressed(key, ESCAPE_KEY))
                 {
                     return (page, screenIndex);
@@ -880,6 +884,13 @@ namespace restaurant
         }
     }
 
+    public abstract class StepScreen : Screen
+    {
+        protected List<string> steps = new();
+        protected List<string> output = new();
+        protected int currentStep = 0;
+    }
+
     public class StartScreen : Screen
     {
         public override int DoWork()
@@ -1099,7 +1110,18 @@ namespace restaurant
 
             if (reviews.Count > 0)
             {
+                List<List<string>> reviewsString = ReviewsToString(io.GetReviews());
+                List<string> boxes = new List<string>();
+
+                for (int i = 0; i < reviewsString.Count; i++)
+                {
+
+                }
                 Console.WriteLine(string.Join(null, ReviewsToString(io.GetReviews())) + new string('#', 108) + "\n" + "[1] Ga terug");
+            }
+            else
+            {
+                Console.WriteLine("Er zijn nog geen reviews achtergelaten.");
             }
 
             string choice = Console.ReadLine();
@@ -1128,12 +1150,9 @@ namespace restaurant
         }
     }
 
-    public class RegisterScreen : Screen
+    public class RegisterScreen : StepScreen
     {
-        private List<string> steps = new();
-        private List<string> output = new();
         private Login_gegevens lg;
-        private int currentStep = 0;
 
         public RegisterScreen()
         {
@@ -1655,12 +1674,9 @@ namespace restaurant
         }
     }
 
-    public class AddMealScreen : Screen
+    public class AddMealScreen : StepScreen
     {
-        private List<string> steps = new();
-        private List<string> output = new();
         private Gerechten meal;
-        private int currentStep = 0;
 
         public AddMealScreen()
         {
