@@ -1117,6 +1117,8 @@ namespace restaurant
                 {
 
                 }
+
+                var pages = MakePages(boxes, 3);
                 Console.WriteLine(string.Join(null, ReviewsToString(io.GetReviews())) + new string('#', 108) + "\n" + "[1] Ga terug");
             }
             else
@@ -1250,7 +1252,7 @@ namespace restaurant
                     DateTime resultDateTime = new DateTime();
 
                     result = AskForInput(
-                        0, 
+                        0,
                         c => char.IsDigit(c) || c == '/' || c == '-', 
                         input => DateTime.TryParseExact(input, "dd/mm/yyyy", new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime), 
                         ("Het formaat van de datum die u heeft ingevoerd klopt niet. Probeer het opnieuw.", "De datum die u hebt ingevoerd klopt niet, probeer het opnieuw.")
@@ -1326,7 +1328,7 @@ namespace restaurant
                     return 3;
                 case 6:
                     Console.WriteLine(steps[currentStep]);
-                    int possibleValue = 0;
+                    int possibleValue = -1;
                     result = AskForInput(0, c => char.IsDigit(c), input => int.TryParse(input, out possibleValue), (DigitsOnlyMessage, "De nummer die u heeft ingevoerd is te lang voor een gemiddeld huisnummer"));
 
                     if (result.Item1 == null)
@@ -1365,7 +1367,7 @@ namespace restaurant
                     return 3;
                 case 8:
                     Console.WriteLine(steps[currentStep]);
-                    (string, int) otherResult = AskForInput(3);
+                    (string, int) otherResult = AskForInput(0);
 
                     if (otherResult.Item1 == null)
                     {
@@ -1708,7 +1710,7 @@ namespace restaurant
                 if (result.Item1.Trim() != "") allergenen.Add(result.Item1);
             } while (result.Item1.Trim() != "");
 
-            code_eigenaar.CreateMeal(naam, false, prijs, speciaal, false, ingredienten, allergenen);
+/*            code_eigenaar.CreateMeal(naam, false, prijs, speciaal, false, ingredienten, allergenen);*/
 
             return 8;
         }
