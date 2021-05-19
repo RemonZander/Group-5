@@ -454,7 +454,8 @@ namespace restaurant
                             is_gearchiveerd = false,
                             special = true,
                             prijs = 15.0,
-                            ingredienten = Maak_gerechten("Pizza Salami", bestel_Datum, ingredient_temp).ToList()
+                            ingredienten = Maak_gerechten("Pizza Salami", bestel_Datum, ingredient_temp).ToList(),
+                            diner = true
                         });
                         break;
                     case 1:
@@ -466,7 +467,9 @@ namespace restaurant
                             is_gearchiveerd = false,
                             special = true,
                             prijs = 8.0,
-                            ingredienten = Maak_gerechten("Vla", bestel_Datum, ingredient_temp).ToList()
+                            ingredienten = Maak_gerechten("Vla", bestel_Datum, ingredient_temp).ToList(),
+                            ontbijt = true,
+                            diner = true
                         });
                         break;
                     case 2:
@@ -478,7 +481,9 @@ namespace restaurant
                             is_gearchiveerd = false,
                             special = false,
                             prijs = 13.0,
-                            ingredienten = Maak_gerechten("Hamburger", bestel_Datum, ingredient_temp).ToList()
+                            ingredienten = Maak_gerechten("Hamburger", bestel_Datum, ingredient_temp).ToList(),
+                            lunch = true,
+                            diner = true
                         });
                         break;
                     case 3:
@@ -502,7 +507,8 @@ namespace restaurant
                             is_gearchiveerd = true,
                             special = false,
                             prijs = 9.5,
-                            ingredienten = Maak_gerechten("IJs", bestel_Datum, ingredient_temp).ToList()
+                            ingredienten = Maak_gerechten("IJs", bestel_Datum, ingredient_temp).ToList(),
+                            diner = true
                         });
                         break;
                     case 5:
@@ -514,7 +520,9 @@ namespace restaurant
                             is_gearchiveerd = false,
                             special = false,
                             prijs = 11.5,
-                            ingredienten = Maak_gerechten("Patat", bestel_Datum, ingredient_temp).ToList()
+                            ingredienten = Maak_gerechten("Patat", bestel_Datum, ingredient_temp).ToList(),
+                            lunch = true,
+                            diner = true
                         });
                         break;
                 }
