@@ -1238,7 +1238,7 @@ namespace restaurant
                     DateTime date = Convert.ToDateTime(choice.Item1);
                     if (date >= DateTime.Now)
                     {
-                        Console.WriteLine("U moet wel een datum in het verleden invoeren.");
+                        Console.WriteLine("\nU moet wel een datum in het verleden invoeren.");
                         Console.WriteLine("Druk op en knop om verder te gaan.");
                         Console.ReadKey();
                         return 10;
@@ -1286,11 +1286,11 @@ namespace restaurant
                         }
                         Console.Clear();
                         Console.WriteLine(GetGFLogo(3));
-                        Console.WriteLine($"Dit zijn uw reviews op pagina {page} van de {pages.Count - 1}:");
+                        Console.WriteLine($"Dit zijn uw reviews op pagina {page + 1} van de {pages.Count}:");
                         Console.WriteLine(pages[page] + new string('#', 108));
                         var result = Nextpage(page, pages.Count - 1, pos, boxes.Count - 1, 10);
                         pos = result.Item3;
-                        if (result.Item2 != -1)
+                        if (result.Item2 != -1 && result.Item2 != -1)
                         {
                             return result.Item2;
                         }
@@ -1319,7 +1319,7 @@ namespace restaurant
                             else if (input.Item1 == "ja")
                             {
                                 code_gebruiker.DeleteReview(reviews[Convert.ToInt32(pos)].ID, ingelogd.klantgegevens);
-                                Console.WriteLine("\n Review is verwijdert");
+                                Console.WriteLine("\n Review is verwijderd");
                                 Console.WriteLine("Druk op een knop om verder te gaan...");
                                 Console.ReadKey();
                                 return 10;
@@ -1359,7 +1359,7 @@ namespace restaurant
                 int page = 0;
                 if (choice.Item1 != "1" && choice.Item1 != "2" && choice.Item1 != "3" && choice.Item1 != "4" && choice.Item1 != "5")
                 {
-                    Console.WriteLine("U moet wel een geldige rating invullen tussen de 1 en de 5.");
+                    Console.WriteLine("\nU moet wel een geldige rating invullen tussen de 1 en de 5.");
                     Console.WriteLine("Druk op en knop om verder te gaan.");
                     Console.ReadKey();
                     return 10;
@@ -1402,11 +1402,11 @@ namespace restaurant
 
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(3));
-                    Console.WriteLine($"Dit zijn uw reviews op pagina {page} van de {pages.Count - 1}:");
+                    Console.WriteLine($"Dit zijn uw reviews op pagina {page + 1} van de {pages.Count}:");
                     Console.WriteLine(pages[page] + new string('#', 108));
                     var result = Nextpage(page, pages.Count - 1, pos, boxes.Count - 1, 10);
                     pos = result.Item3;
-                    if (result.Item2 != -1)
+                    if (result.Item2 != -1 && result.Item2 != -1)
                     {
                         return result.Item2;
                     }
@@ -2023,6 +2023,10 @@ namespace restaurant
                 List<string> ingredientsString = IngredientsNameToString(code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList());
                 Console.WriteLine(string.Join(null, ingredientsString));
                 Console.ReadKey();
+
+
+                Console.Clear();
+                Console.WriteLine(GetGFLogo(3));
 
                 do
                 {
