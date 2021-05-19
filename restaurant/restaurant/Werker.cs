@@ -13,7 +13,7 @@ namespace restaurant
 
         public double onkostenvergoeding { get; set; }
 
-        public double pentioenpremie { get; set; }
+        public double pensioenpremie { get; set; }
 
         public double prestatiebeloning { get; set; }
 
