@@ -1986,12 +1986,12 @@ namespace restaurant
             Console.WriteLine("[5] Laat alle ingredienten zien die bijna verlopen zijn");
             Console.WriteLine("[6] Ga terug naar eigenaar menu scherm");
 
-            ConsoleKeyInfo key = Console.ReadKey();           
-            if (IsKeyPressed(key, ESCAPE_KEY))
+            (string, int) input = AskForInput(14);
+            if (input.Item2 != -1)
             {
                 return 11;
             }
-            if (IsKeyPressed(key, "D1"))
+            if (input.Item1 == "1")
             {
                 List<string> ingredientsString = IngredientsToString(code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList());
                 //Console.WriteLine(string.Join(null, ingredientsString));
@@ -2018,7 +2018,7 @@ namespace restaurant
 
                 } while (true);
             }
-            else if (IsKeyPressed(key, "D2"))
+            else if (input.Item1 == "2")
             {
                 List<string> ingredientsString = IngredientsNameToString(code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList());
                 Console.WriteLine(string.Join(null, ingredientsString));
@@ -2029,27 +2029,27 @@ namespace restaurant
 
                 } while (true);
             }
-            else if (IsKeyPressed(key, "D3"))
+            else if (input.Item1 == "3")
             {
                 List<string> ingredientsString = IngredientsToString(code_eigenaar.GetIngredients().OrderBy(d => d.bestel_datum).ToList());
                 Console.WriteLine(string.Join(null, ingredientsString));
                 Console.ReadKey();
             }
-            else if (IsKeyPressed(key, "D4"))
+            else if (input.Item1 == "4")
             {
                 List<string> ingredientsString = IngredientsToString(code_eigenaar.GetIngredients().OrderBy(d => d.prijs).ToList());
                 Console.WriteLine(string.Join(null, ingredientsString));
                 Console.ReadKey();
             }
-            else if (IsKeyPressed(key, "D5"))
+            else if (input.Item1 == "5")
             {
 
             }
-            else if (IsKeyPressed(key, "D6"))
+            else if (input.Item1 == "6")
             {
                 return 11;
             }
-            else if (IsKeyPressed(key, "D7"))
+            else if (input.Item1 == "7")
             {
                 logoutUpdate = true;
                 Logout();
