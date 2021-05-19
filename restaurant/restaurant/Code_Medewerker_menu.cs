@@ -188,11 +188,15 @@ namespace restaurant
                             return aantalPersonen.Item2;
                         }
                         int.Parse(aantalPersonen.Item1);
-                        succes = true;
+                        if (int.Parse(aantalPersonen.Item1) > 0 && int.Parse(aantalPersonen.Item1) <= 400)
+                        {
+                            succes = true;
+                        }
                     }
                     catch
                     {
                         Console.WriteLine("U heeft een ongeldig antwoord gegeven voor het aantal personen waarvoor u wilt reserveren.");
+                        Console.WriteLine("Het aantal personen moet worden aangegeven door middel van een cijfer (1 t/m 400)");
                         Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
                         Console.ReadKey();
                     }
