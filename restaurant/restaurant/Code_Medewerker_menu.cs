@@ -133,13 +133,13 @@ namespace restaurant
             bool succes = false;
             do
             {
-                Console.WriteLine("De dag waarop u wilt reserveren (genoteerd als 'dag-maand-jaar'): ");
+                Console.WriteLine("\nDe dag waarop u wilt reserveren (genoteerd als 'dag-maand-jaar'): ");
                 (string, int) dag = AskForInput(6);
                 if (dag.Item2 != -1)
                 {
                     return dag.Item2;
                 }
-                Console.WriteLine("Het tijdstip waarop u wilt reserveren (genoteerd als '18:30'): ");
+                Console.WriteLine("\nHet tijdstip waarop u wilt reserveren (genoteerd als '18:30'): ");
                 tijd = AskForInput(6);
                 if (tijd.Item2 != -1)
                 {
@@ -152,7 +152,7 @@ namespace restaurant
                 }
                 catch
                 {
-                    Console.WriteLine("U heeft een ongeldig antwoord gegeven voor de datum en/of tijd.");
+                    Console.WriteLine("\nU heeft een ongeldig antwoord gegeven voor de datum en/of tijd.");
                     Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
                     Console.ReadKey();
                 }
@@ -160,26 +160,26 @@ namespace restaurant
 
             if (dagtijd < DateTime.Today)
             {
-                Console.WriteLine("Sorry, het lijkt erop dat uw gekozen datum en tijdstip al is verlopen.");
+                Console.WriteLine("\nSorry, het lijkt erop dat uw gekozen datum en tijdstip al is verlopen.");
                 Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
                 Console.ReadKey();
-                return tijd.Item2;
+                return 6;
             }
             else if (Convert.ToDateTime(tijd.Item1) < starttijd || Convert.ToDateTime(tijd.Item1) > eindtijd)
             {
-                Console.WriteLine("Sorry, het lijkt erop dat uw gekozen tijdstip buiten onze openingstijden valt.");
+                Console.WriteLine("\nSorry, het lijkt erop dat uw gekozen tijdstip buiten onze openingstijden valt.");
                 Console.WriteLine("Wij zijn dagelijks van 10:00 tot en met 22:00 geopend.");
                 Console.WriteLine("U kunt van 10:00 tot en met 21:00 een reservering plaatsen.");
                 Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
                 Console.ReadKey();
-                return tijd.Item2;
+                return 6;
             }
             else
             {
                 succes = false;
                 do
                 {
-                    Console.WriteLine("Voor hoeveel personen wilt u reserveren?");
+                    Console.WriteLine("\nVoor hoeveel personen wilt u reserveren?");
                     try
                     {
                         aantalPersonen = AskForInput(6);
@@ -192,10 +192,17 @@ namespace restaurant
                         {
                             succes = true;
                         }
+                        else
+                        {
+                            Console.WriteLine("\nU heeft een ongeldig antwoord gegeven voor het aantal personen waarvoor u wilt reserveren.");
+                            Console.WriteLine("Het aantal personen moet worden aangegeven door middel van een cijfer (1 t/m 400)");
+                            Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
+                            Console.ReadKey();
+                        }
                     }
                     catch
                     {
-                        Console.WriteLine("U heeft een ongeldig antwoord gegeven voor het aantal personen waarvoor u wilt reserveren.");
+                        Console.WriteLine("\nU heeft een ongeldig antwoord gegeven voor het aantal personen waarvoor u wilt reserveren.");
                         Console.WriteLine("Het aantal personen moet worden aangegeven door middel van een cijfer (1 t/m 400)");
                         Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
                         Console.ReadKey();
@@ -207,7 +214,7 @@ namespace restaurant
                 var beschikbareTafels = io.ReserveringBeschikbaarheid(dagtijd);
                 if (beschikbareTafels == null || beschikbareTafels[0].Item2.Count < minimaalAantalTafels)
                 {
-                    Console.WriteLine("Sorry, het lijkt erop dat er geen tafels beschikbaar zijn op uw gekozen datum en tijdstip.");
+                    Console.WriteLine("\nSorry, het lijkt erop dat er geen tafels beschikbaar zijn op uw gekozen datum en tijdstip.");
                     Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
                     Console.ReadKey();
                     return 6;
@@ -217,7 +224,7 @@ namespace restaurant
                     succes = false;
                     do
                     {
-                        Console.WriteLine("Heeft u nog voorkeur voor een tafel aan het raam?\n[1] Ja\n[2] Nee");
+                        Console.WriteLine("\nHeeft u nog voorkeur voor een tafel aan het raam?\n[1] Ja\n[2] Nee");
                         (string, int) antwoord = AskForInput(6);
                         if (antwoord.Item2 != -1)
                         {
@@ -235,7 +242,7 @@ namespace restaurant
                         }
                         else
                         {
-                            Console.WriteLine("U moet wel een juiste keuze maken...");
+                            Console.WriteLine("\nU moet wel een juiste keuze maken...");
                             Console.WriteLine("Druk op een knop om verder te gaan.");
                             Console.ReadKey();
                         }
@@ -244,7 +251,7 @@ namespace restaurant
 
                 code_gebruiker.MakeCustomerReservation(dagtijd, account.klantnummer, int.Parse(aantalPersonen.Item1), tafelBijRaam);
 
-                Console.WriteLine("Uw reservering wordt verwerkt.");
+                Console.WriteLine("\nUw reservering wordt verwerkt.");
                 Console.WriteLine("Druk op een knop om terug te keren naar het klantenscherm.");
                 Console.ReadKey();
                 return 5;
