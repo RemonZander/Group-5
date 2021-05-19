@@ -257,7 +257,7 @@ namespace restaurant
                 } while (!succes);
 
                 //check of de gekozen tijd en datum beschikbaar zijn
-                var minimaalAantalTafels = (int)(int.Parse(aantalPersonen.Item1) / 4.0);
+                var minimaalAantalTafels = (int)(int.Parse(aantalPersonen.Item1) / 4.0);//d
                 var beschikbareTafels = io.ReserveringBeschikbaarheid(dagtijd);
                 if (beschikbareTafels == null || beschikbareTafels[0].Item2.Count < minimaalAantalTafels)
                 {
