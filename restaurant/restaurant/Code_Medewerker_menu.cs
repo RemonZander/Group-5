@@ -180,13 +180,13 @@ namespace restaurant
             do
             {
                 Console.WriteLine("\nDe dag waarop u wilt reserveren (genoteerd als 'dag-maand-jaar'): ");
-                (string, int) dag = AskForInput(6);
+                (string, int) dag = AskForInput(5);
                 if (dag.Item2 != -1)
                 {
                     return dag.Item2;
                 }
                 Console.WriteLine("\nHet tijdstip waarop u wilt reserveren (genoteerd als '18:30'): ");
-                tijd = AskForInput(6);
+                tijd = AskForInput(5);
                 if (tijd.Item2 != -1)
                 {
                     return tijd.Item2;
@@ -229,7 +229,7 @@ namespace restaurant
                     Console.WriteLine("\nVoor hoeveel personen wilt u reserveren?");
                     try
                     {
-                        aantalPersonen = AskForInput(6);
+                        aantalPersonen = AskForInput(5);
                         if (aantalPersonen.Item2 != -1)
                         {
                             return aantalPersonen.Item2;
@@ -272,7 +272,7 @@ namespace restaurant
                     do
                     {
                         Console.WriteLine("\nHeeft u nog voorkeur voor een tafel aan het raam?\n[1] Ja\n[2] Nee");
-                        (string, int) antwoord = AskForInput(6);
+                        (string, int) antwoord = AskForInput(5);
                         if (antwoord.Item2 != -1)
                         {
                             return antwoord.Item2;
