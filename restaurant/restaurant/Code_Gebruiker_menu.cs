@@ -774,7 +774,9 @@ namespace restaurant
     #region Screens
     class FeedbackScreen : Screen
     {
+        //het ID van dit scherm
         private readonly int huidigScherm = 9;
+        //het ID van klanten menu
         private readonly int vorigScherm = 5;
         public FeedbackScreen()
         {
@@ -823,8 +825,13 @@ namespace restaurant
             Console.WriteLine("[2] Feedback aanmaken");
             Console.WriteLine("[3] Terug");
 
-            ConsoleKeyInfo key = Console.ReadKey(true);
-            if(IsKeyPressed(key, "D1"))
+            (string, int) key = AskForInput(vorigScherm);
+            if (key.Item2 != -1)
+            {
+                return key.Item2;
+            }
+            
+            if(key.Item1 == "1")
             {
                 //screen voor feedback inzien
                 Console.Clear();
@@ -834,7 +841,7 @@ namespace restaurant
                 Console.ReadKey();
                 return huidigScherm;
             }
-            else if(IsKeyPressed(key, "D2"))
+            else if(key.Item1 == "2")
             {
                 //screen voor feedback maken
                 Console.Clear();
@@ -848,14 +855,18 @@ namespace restaurant
                 Console.WriteLine("[1] Normaal");
                 Console.WriteLine("[2] Anoniem");
                 Console.WriteLine("[3] Terug");
-                key = Console.ReadKey();
+                key = AskForInput(huidigScherm);
                 
+                if(key.Item2 != -1)
+                {
+                    return huidigScherm;
+                }
                 
                 //reservering ID heb ik later nodig buiten de scope
                 int ReserveringID = -1;
                 
                 //feedback normaal
-                if (IsKeyPressed(key, "D1"))
+                if (key.Item1 == "1")
                 {
                     //bool voor de do-while loop
                     bool repeat = false;
@@ -875,12 +886,17 @@ namespace restaurant
                         Console.WriteLine("Met het ID kunt u selecteren over welk bezoek u een review wilt schrijven.");
                         Console.WriteLine("Het ID van u reservering:");
 
-                        string choice = Console.ReadLine();
+                        key = AskForInput(huidigScherm);
+                        if(key.Item2 != -1)
+                        {
+                            return huidigScherm;
+                        }
+                        
                         //is om te kijken of choice een int is
                         try
                         {
                             //kijkt of de invoer in de lijst is, zo niet dan invalid input
-                            if (!reserveringen.Select(i => i.ID).ToList().Contains(Convert.ToInt32(choice)))
+                            if (!reserveringen.Select(i => i.ID).ToList().Contains(Convert.ToInt32(key.Item1)))
                             {
                                 Console.WriteLine("U moet wel een reservering invoeren.");
                                 Console.WriteLine("Druk op een toets om verder te gaan.");
@@ -889,7 +905,7 @@ namespace restaurant
                             else
                             {
                                 //ID van reservering
-                                ReserveringID = Convert.ToInt32(choice);
+                                ReserveringID = Convert.ToInt32(key.Item1);
                                 //breek de loop
                                 repeat = true;
                             }
@@ -933,7 +949,7 @@ namespace restaurant
                             Console.WriteLine("LET OP! het is hoofdletter gevoelig.");
 
                             //item 1 is de naam van de medewerker
-                            (string, int) choiceMedewerker = AskForInput(vorigScherm);
+                            (string, int) choiceMedewerker = AskForInput(huidigScherm);
                             //als escape, ga terug
                             if (choiceMedewerker.Item2 != -1)
                             {
@@ -1004,7 +1020,7 @@ namespace restaurant
                 }
 
                 //feedback anoniem
-                else if(IsKeyPressed(key, "D2"))
+                else if(key.Item1 == "2")
                 {
                     //zolang feedback geen recipient heeft voer dit uit
                     do
@@ -1036,7 +1052,7 @@ namespace restaurant
                             Console.WriteLine("LET OP! het is hoofdletter gevoelig.");
 
                             //item 1 is de naam van de medewerker
-                            (string, int) choiceMedewerker = AskForInput(vorigScherm);
+                            (string, int) choiceMedewerker = AskForInput(huidigScherm);
                             //als escape, ga terug
                             if (choiceMedewerker.Item2 != -1)
                             {
@@ -1107,13 +1123,13 @@ namespace restaurant
                 }
                 
                 //terug
-                else if(IsKeyPressed(key, "D3"))
+                else if(key.Item1 == "3")
                 {
                     //een scherm terug
                     return huidigScherm;
                 }                
                 
-                else if(IsKeyPressed(key, "D4"))
+                else if(key.Item1 == "4")
                 {
                     //logout sequence
                     logoutUpdate = true;
@@ -1130,11 +1146,11 @@ namespace restaurant
                     return huidigScherm;
                 }
             }
-            else if(IsKeyPressed(key, "D3"))
+            else if(key.Item1 == "3")
             {
                 return vorigScherm;
             }
-            else if (IsKeyPressed(key, "D4"))
+            else if (key.Item1 == "4")
             {
                 //logout sequence
                 logoutUpdate = true;
