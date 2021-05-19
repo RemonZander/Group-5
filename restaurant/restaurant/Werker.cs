@@ -27,6 +27,6 @@ namespace restaurant
 
         public double ziektekostenverzekering { get; set; }
 
-        public Klantgegevens Klantgegevens { get; set; }
+        public Login_gegevens login_gegevens { get; set; }
     }
 }

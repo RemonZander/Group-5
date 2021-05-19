@@ -5,23 +5,15 @@ using System.Text;
 
 namespace restaurant
 {
-    public class Gerechten
+    public class Dranken
     {
         public string naam { get; set; }
 
         public int ID { get; set; }
 
-        public List<int> ingredienten { get; set; }
+        public bool isGearchiveerd { get; set; }
 
-        public bool is_populair { get; set; }
-
-        public double prijs { get; set; }
-
-        public bool special { get; set; }
-
-        public bool is_gearchiveerd { get; set; }
-
-        public List<string> allergenen { get; set; }
+        public bool heeftAlcohol { get; set; }
 
         public bool diner { get; set; }
 

@@ -8,5 +8,7 @@ namespace restaurant
     public class Menukaart
     {
         public List<Gerechten> gerechten { get; set; }
+
+        public List<Dranken> dranken { get; set; }
     }
 }

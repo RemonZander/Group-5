@@ -18,33 +18,14 @@ namespace restaurant
 
         public void Debug()
         {
-            database = io.GetDatabase();
-            Menukaart menukaart = new Menukaart();
-            menukaart.gerechten = instance.Get_standard_dishes();
-
-            database.menukaart = menukaart;
-            io.Savedatabase(database);
-
-            /*instance.Fill_Userdata(100);
-            instance.Fill_reservations_threading(24, 1000, 1, 3, 1, 9);
-            instance.Make_reviews();
-            instance.Maak_werknemer(10);
-            instance.Make_feedback();*/
-            database = io.GetDatabase();
-
-            List<int> ingredients = new List<int>();
-            ingredients.Add(0);
-            List<string> allergens = new List<string>();
-            allergens.Add("Lactose");
-            CreateMeal("Tomatensoep", true, 10.00, true, false, ingredients, allergens);
-            ArchiveMeal(database.menukaart.gerechten.Count - 1);
-            DeleteMeal(database.menukaart.gerechten.Count - 1);
 
         }
         #region Meal
 
         public void DeleteMeal(int ID)
         {
+            database = io.GetDatabase();
+
             List<Gerechten> gerechten = new List<Gerechten>(GetMeals());
             for (int i = 0; i < gerechten.Count; i++)
             {
@@ -61,6 +42,7 @@ namespace restaurant
 
         public void ArchiveMeal(int ID)
         {
+            database = io.GetDatabase();
             List<Gerechten> gerechten = new List<Gerechten>(GetMeals());
             for (int i = 0; i < gerechten.Count; i++)
             {
@@ -74,8 +56,9 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        public void EditMeal(int ID, string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<int> ingredients, List<string> allergens)
+        public void EditMeal(int ID, string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<int> ingredients, List<string> allergens, bool isDiner, bool isLunch, bool isOntbijt)
         {
+            database = io.GetDatabase();
             List<Gerechten> gerechten = new List<Gerechten>(GetMeals());
             for (int i = 0; i < gerechten.Count; i++)
             {
@@ -88,6 +71,9 @@ namespace restaurant
                     gerechten[i].is_gearchiveerd = isArchived;
                     gerechten[i].ingredienten = ingredients;
                     gerechten[i].allergenen = allergens;
+                    gerechten[i].diner = isDiner;
+                    gerechten[i].lunch = isLunch;
+                    gerechten[i].ontbijt = isOntbijt;
                     break;
                 }
             }
@@ -95,8 +81,9 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        public void CreateMeal(string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<int> ingredients, List<string> allergens)
+        public void CreateMeal(string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<int> ingredients, List<string> allergens, bool isDiner, bool isLunch, bool isOntbijt)
         {
+            database = io.GetDatabase();
             List<Gerechten> gerechten = new List<Gerechten>(GetMeals());
 
             Gerechten gerecht = new Gerechten();
@@ -108,13 +95,17 @@ namespace restaurant
             gerecht.is_gearchiveerd = isArchived;
             gerecht.ingredienten = ingredients;
             gerecht.allergenen = allergens;
+            gerecht.diner = isDiner;
+            gerecht.lunch = isLunch;
+            gerecht.ontbijt = isOntbijt;
             gerechten.Add(gerecht);
             database.menukaart.gerechten = gerechten;
             io.Savedatabase(database);
         }
 
-    public List<Gerechten> GetMeals()
+        public List<Gerechten> GetMeals()
         {
+            database = io.GetDatabase();
             return database.menukaart.gerechten;
         }
         #endregion
@@ -122,6 +113,7 @@ namespace restaurant
         #region Ingredients
         public List<Ingredient> GetIngredients()
         {
+            database = io.GetDatabase();
             return database.ingredienten;
         }
 
@@ -172,6 +164,7 @@ namespace restaurant
         #region Feedback
         public List<Feedback> GetFeedback()
         {
+            database = io.GetDatabase();
             return database.feedback;
         }
 
@@ -191,6 +184,7 @@ namespace restaurant
 
         public void DeleteFeedback(int feedbackID)
         {
+            database = io.GetDatabase();
             List<Feedback> feedback = new List<Feedback>(GetFeedback());
             for (int i = 0; i < feedback.Count; i++)
             {
@@ -209,6 +203,7 @@ namespace restaurant
         #region Review
         public List<Review> GetReviews()
         {
+            database = io.GetDatabase();
             return database.reviews;
         }
 
@@ -246,6 +241,7 @@ namespace restaurant
 
         public void DeleteReview(int reviewID)
         {
+            database = io.GetDatabase();
             List<Review> reviews = new List<Review>(GetReviews());
             for (int i = 0; i < reviews.Count; i++)
             {
@@ -264,6 +260,7 @@ namespace restaurant
 
         private bool IfDishExists(int id)
         {
+            database = io.GetDatabase();
             for (int i = 0; i < database.menukaart.gerechten.Count; i++)
             {
                 if (database.menukaart.gerechten[i].ID == id)
@@ -276,18 +273,23 @@ namespace restaurant
         
         public void MakeDishPopular(int id)
         {
+            database = io.GetDatabase();
             if (IfDishExists(id))
             {
                 int dishIndex = database.menukaart.gerechten.FindIndex(x => x.ID == id);
                 database.menukaart.gerechten[dishIndex] = new Gerechten
                 {
+                    naam = database.menukaart.gerechten[dishIndex].naam,
                     ID = database.menukaart.gerechten[dishIndex].ID,
                     ingredienten = database.menukaart.gerechten[dishIndex].ingredienten,
-                    is_gearchiveerd = database.menukaart.gerechten[dishIndex].is_gearchiveerd,
                     is_populair = true,
-                    naam = database.menukaart.gerechten[dishIndex].naam,
                     prijs = database.menukaart.gerechten[dishIndex].prijs,
                     special = database.menukaart.gerechten[dishIndex].special,
+                    is_gearchiveerd = database.menukaart.gerechten[dishIndex].is_gearchiveerd,
+                    allergenen = database.menukaart.gerechten[dishIndex].allergenen,
+                    diner = database.menukaart.gerechten[dishIndex].diner,
+                    lunch = database.menukaart.gerechten[dishIndex].lunch,
+                    ontbijt = database.menukaart.gerechten[dishIndex].ontbijt,
                 };
                 io.Savedatabase(database);
             }
@@ -295,6 +297,7 @@ namespace restaurant
 
         public List<Tuple<Gerechten, int>> GetUserOrderInfo(DateTime beginDate, DateTime endDate)
         {
+            database = io.GetDatabase();
             List<Tuple<Gerechten, int>> populaireGerechten = new List<Tuple<Gerechten, int>>();
             //hier komt een loop waarbij populaire gerechten gevuld wordt met alle bestaande gerechten.
             //als de reservering plaats heeft gevonden binnen de gestelde tijd.
