@@ -201,6 +201,7 @@ namespace restaurant
                     Console.WriteLine("\nU heeft een ongeldig antwoord gegeven voor de datum en/of tijd.");
                     Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
                     Console.ReadKey();
+                    return 6;
                 }
             } while (!succes);
 
