@@ -24,8 +24,8 @@ namespace restaurant
             screens.Add(new ClientMenuScreen());
             screens.Add(new MakeReservationScreen());
             screens.Add(new MakeReviewScreen());
-            screens.Add(new ClientMenuScreen());// Wordt ViewReviewScreen
-            screens.Add(new FeedbackScreen()); // Wordt MakeFeedBackScreen
+            screens.Add(new ClientMenuScreen());// Wordt ViewFeedbackScreen
+            screens.Add(new MakeFeedbackScreen()); // Wordt MakeFeedBackScreen
             screens.Add(new ViewReviewScreen());
             #endregion
             #region Eigenaar
@@ -34,6 +34,11 @@ namespace restaurant
             screens.Add(new OwnerMenuScreen()); // Reservering
             screens.Add(new OwnerMenuScreen()); // Ingredienten
             screens.Add(new OwnerMenuScreen()); // Inkomsten
+            #endregion
+            #region Medewerker
+            screens.Add(new EmployeeMenuScreen());
+            screens.Add(new EmployeeMenuScreen()); // Reserveringen
+            screens.Add(new EmployeeMenuScreen()); // Tafels koppelen
             #endregion
             currentScreen = 0;
         }
@@ -121,7 +126,7 @@ namespace restaurant
         protected void LogoutWithMessage()
         {
             logoutUpdate = true;
-            Console.WriteLine("U bent nu uitgelogd.");
+            Console.WriteLine("\nU bent nu uitgelogd.");
             Console.WriteLine("Druk op een knop om verder te gaan.");
             Console.ReadKey();
         }
@@ -581,13 +586,13 @@ namespace restaurant
                 List<List<string>> reviewsString = ReviewsToString(io.GetReviews());
                 List<string> boxes = new List<string>();
 
-                for (int i = 0; i < reviewsString.Count; i++)
+                foreach (List<string> review in reviewsString)
                 {
-
+                    boxes.Add(BoxAroundText(review, "#", 2, 2, 40, true));
                 }
 
                 var pages = MakePages(boxes, 3);
-                Console.WriteLine(string.Join(null, ReviewsToString(io.GetReviews())) + new string('#', 108) + "\n" + "[1] Ga terug");
+                Console.WriteLine(pages[0]);
             }
             else
             {
