@@ -290,6 +290,7 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Deeg",
                     prijs = 1,
+                    houdbaarheids_datum = bestel_Datum.AddDays(60)
                 };
 
                 ingredient_temp.Add(ingredient);
@@ -301,6 +302,7 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Salami",
                     prijs = 0.80,
+                    houdbaarheids_datum = bestel_Datum.AddDays(30)
                 };
 
                 ingredient_temp.Add(ingredient);
@@ -312,6 +314,7 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Tomaten saus",
                     prijs = 0.60,
+                    houdbaarheids_datum = bestel_Datum.AddDays(15)
                 };
 
                 ingredient_temp.Add(ingredient);
@@ -326,6 +329,7 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Vanille vla",
                     prijs = 1.5,
+                    houdbaarheids_datum = bestel_Datum.AddDays(40)
                 };
 
                 ingredient_temp.Add(ingredient);
@@ -340,6 +344,7 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Broodjes",
                     prijs = 0.10,
+                    houdbaarheids_datum = bestel_Datum.AddDays(10)
                 };
 
                 ingredient_temp.Add(ingredient);
@@ -351,6 +356,7 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Vlees",
                     prijs = 0.85,
+                    houdbaarheids_datum = bestel_Datum.AddDays(12)
                 };
 
                 ingredient_temp.Add(ingredient);
@@ -362,6 +368,7 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Sla",
                     prijs = 0.05,
+                    houdbaarheids_datum = bestel_Datum.AddDays(35)
                 };
 
                 ingredient_temp.Add(ingredient);
@@ -376,6 +383,7 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Yoghurt",
                     prijs = 1.8,
+                    houdbaarheids_datum = bestel_Datum.AddDays(65)
                 };
 
                 ingredient_temp.Add(ingredient);
@@ -390,6 +398,7 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Vanille ijs",
                     prijs = 1.85,
+                    houdbaarheids_datum = bestel_Datum.AddDays(25)
                 };
 
                 ingredient_temp.Add(ingredient);
@@ -404,6 +413,7 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Frituur vet",
                     prijs = 0.10,
+                    houdbaarheids_datum = bestel_Datum.AddDays(300)
                 };
 
                 ingredient_temp.Add(ingredient);
@@ -415,6 +425,7 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Aardappelen",
                     prijs = 0.15,
+                    houdbaarheids_datum = bestel_Datum.AddDays(100)
                 };
 
                 ingredient_temp.Add(ingredient);
@@ -426,6 +437,7 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Friet saus",
                     prijs = 0.30,
+                    houdbaarheids_datum = bestel_Datum.AddDays(60)
                 };
 
                 ingredient_temp.Add(ingredient);
@@ -1520,7 +1532,7 @@ namespace restaurant
                 if (message.Length > 50 - "Review: ".Length)
                 {
                     Console.WriteLine(message.LastIndexOf(' '));
-                    if (message.LastIndexOf(' ') > 50 || message.LastIndexOf(' ') == -1)
+                    if (message.IndexOf(' ') > 50 || message.IndexOf(' ') == -1)
                     {
                         msgparts1.Add(message.Substring(0, 50 - "Review: ".Length));
                     }
@@ -1533,7 +1545,7 @@ namespace restaurant
                     int count = 1;
                     while (message.Length > 50)
                     {
-                        if (message.LastIndexOf(' ') > 50 || message.LastIndexOf(' ') == -1)
+                        if (message.IndexOf(' ') > 50 || message.IndexOf(' ') == -1)
                         {
                             msgparts1.Add(message.Substring(0, 50));
                         }
@@ -1804,30 +1816,65 @@ namespace restaurant
                     {
                         pages = new List<string>();
                         List<Review> reviewsfiler = reviews.Where(d => d.datum >= date).ToList();
-                        List<List<string>> reviewstring = ReviewsToString(reviewsfiler);
+                        List<List<string>> reviewstring = Makedubbelboxes(ReviewsToString(reviews));
                         List<string> boxes = new List<string>();
                         for (int a = 0; a < reviewstring.Count; a++)
                         {
-                            if (a == Convert.ToInt32(Math.Floor(pos / 2)))
+                            if (a == reviewstring.Count - 1 && reviewstring[a][1].Length < 70)
                             {
-                                if (pos % 2 == 0 || pos == 0)
+                                if (a == Convert.ToInt32(Math.Floor(pos / 2)))
                                 {
-                                    boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 102, true, new List<string>{
-                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length) + "##  " + new string(' ', 48),
-                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length) + "##  " + new string(' ', 48),
-                                    new string(' ', 50) + "##" + new string(' ', 50) }));
+                                    if (a != 0 && a % 6 != 0)
+                                    {
+                                        boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50)}));
+                                    }
+                                    else
+                                    {
+                                        boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 50, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50)}));
+                                    }
                                 }
                                 else
                                 {
-                                    boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 102, true, new List<string> {
-                                    new string(' ', 50) + "##  " + "[4] Bewerken" + new string(' ', 48 - "[4] Bewerken".Length),
-                                    new string(' ', 50) + "##  " + "[5] Verwijderen" + new string(' ', 48 - "[5] Verwijderen".Length),
-                                    new string(' ', 50) + "##" + new string(' ', 50)}));
+                                    if (a != 0 && a % 6 != 0)
+                                    {
+                                        boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true));
+                                    }
+                                    else
+                                    {
+                                        boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 50, true));
+                                    }
+
                                 }
                             }
                             else
                             {
-                                boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 102, true));
+                                if (a == Convert.ToInt32(Math.Floor(pos / 2)))
+                                {
+                                    if (pos % 2 == 0 || pos == 0)
+                                    {
+                                        boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length) + "##  " + new string(' ', 50),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length) + "##  " + new string(' ', 50),
+                                    new string(' ', 50) + "##  " + new string(' ', 50) }));
+                                    }
+                                    else
+                                    {
+                                        boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true, new List<string> {
+                                    new string(' ', 50) + "##  " + "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
+                                    new string(' ', 50) + "##  " + "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50) + "##  " + new string(' ', 50)}));
+                                    }
+                                }
+                                else
+                                {
+                                    boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true));
+                                }
                             }
                         }
 
@@ -1842,8 +1889,15 @@ namespace restaurant
                         Console.Clear();
                         Console.WriteLine(GetGFLogo(3));
                         Console.WriteLine($"Dit zijn uw reviews op pagina {page + 1} van de {pages.Count}:");
-                        Console.WriteLine(pages[page] + new string('#', 108));
-                        var result = Nextpage(page, pages.Count - 1, pos, boxes.Count - 1, 10);
+                        if (reviewstring[reviewstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
+                        {
+                            Console.WriteLine(pages[page] + new string('#', 56));
+                        }
+                        else
+                        {
+                            Console.WriteLine(pages[page] + new string('#', 110));
+                        }
+                        var result = Nextpage(page, pages.Count - 1, pos, (boxes.Count - 1) * 2, 10);
                         pos = result.Item3;
                         if (result.Item2 != -1 && result.Item2 != -1)
                         {
@@ -1925,31 +1979,66 @@ namespace restaurant
                 {
                     pages = new List<string>();
                     List<Review> reviewsfiler = reviews.Where(r => r.Rating == Convert.ToInt32(choice.Item1)).ToList();
-                    List<List<string>> reviewstring = ReviewsToString(reviewsfiler);
+                    List<List<string>> reviewstring = Makedubbelboxes(ReviewsToString(reviews));
                     List<string> boxes = new List<string>();
 
                     for (int a = 0; a < reviewstring.Count; a++)
                     {
-                        if (a == Convert.ToInt32(Math.Floor(pos / 2)))
+                        if (a == reviewstring.Count - 1 && reviewstring[a][1].Length < 70)
                         {
-                            if (pos % 2 == 0 || pos == 0)
+                            if (a == Convert.ToInt32(Math.Floor(pos / 2)))
                             {
-                                boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 102, true, new List<string>{
-                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length) + "##  " + new string(' ', 48),
-                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length) + "##  " + new string(' ', 48),
-                                    new string(' ', 50) + "##" + new string(' ', 50) }));
+                                if (a != 0 && a % 6 != 0)
+                                {
+                                    boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50)}));
+                                }
+                                else
+                                {
+                                    boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 50, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50)}));
+                                }
                             }
                             else
                             {
-                                boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 102, true, new List<string> {
-                                    new string(' ', 50) + "##  " + "[4] Bewerken" + new string(' ', 48 - "[4] Bewerken".Length),
-                                    new string(' ', 50) + "##  " + "[5] Verwijderen" + new string(' ', 48 - "[5] Verwijderen".Length),
-                                    new string(' ', 50) + "##" + new string(' ', 50)}));
+                                if (a != 0 && a % 6 != 0)
+                                {
+                                    boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true));
+                                }
+                                else
+                                {
+                                    boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 50, true));
+                                }
+
                             }
                         }
                         else
                         {
-                            boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 102, true));
+                            if (a == Convert.ToInt32(Math.Floor(pos / 2)))
+                            {
+                                if (pos % 2 == 0 || pos == 0)
+                                {
+                                    boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length) + "##  " + new string(' ', 50),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length) + "##  " + new string(' ', 50),
+                                    new string(' ', 50) + "##  " + new string(' ', 50) }));
+                                }
+                                else
+                                {
+                                    boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true, new List<string> {
+                                    new string(' ', 50) + "##  " + "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
+                                    new string(' ', 50) + "##  " + "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50) + "##  " + new string(' ', 50)}));
+                                }
+                            }
+                            else
+                            {
+                                boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true));
+                            }
                         }
                     }
 
@@ -1958,8 +2047,15 @@ namespace restaurant
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(3));
                     Console.WriteLine($"Dit zijn uw reviews op pagina {page + 1} van de {pages.Count}:");
-                    Console.WriteLine(pages[page] + new string('#', 108));
-                    var result = Nextpage(page, pages.Count - 1, pos, boxes.Count - 1, 10);
+                    if (reviewstring[reviewstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
+                    {
+                        Console.WriteLine(pages[page] + new string('#', 56));
+                    }
+                    else
+                    {
+                        Console.WriteLine(pages[page] + new string('#', 110));
+                    }
+                    var result = Nextpage(page, pages.Count - 1, pos, (boxes.Count - 1) * 2, 10);
                     pos = result.Item3;
                     if (result.Item2 != -1 && result.Item2 != -1)
                     {
