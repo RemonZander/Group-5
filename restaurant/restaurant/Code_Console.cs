@@ -24,8 +24,8 @@ namespace restaurant
             screens.Add(new ClientMenuScreen());
             screens.Add(new MakeReservationScreen());
             screens.Add(new MakeReviewScreen());
-            screens.Add(new ClientMenuScreen());// Wordt ViewReviewScreen
-            screens.Add(new FeedbackScreen()); // Wordt MakeFeedBackScreen
+            screens.Add(new ClientMenuScreen());// Wordt ViewFeedbackScreen
+            screens.Add(new MakeFeedbackScreen()); // Wordt MakeFeedBackScreen
             screens.Add(new ViewReviewScreen());
             #endregion
             #region Eigenaar
