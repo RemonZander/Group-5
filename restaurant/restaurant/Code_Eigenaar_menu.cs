@@ -117,16 +117,19 @@ namespace restaurant
             return database.ingredienten;
         }
 
-        public List<Ingredient> GetAlmostExpiredIngredients(DateTime date)
+        public List<Ingredient> GetAlmostExpiredIngredients(int dag)
         {
             List<Ingredient> ingredients = new List<Ingredient>(GetIngredients());
+            DateTime compareDate = DateTime.Now;
+            compareDate.AddDays(-dag);
             for (int i = 0; i < ingredients.Count; i++)
             {
-                if (ingredients[i].houdbaarheids_datum < date)
+                if (ingredients[i].houdbaarheids_datum > compareDate)
                 {
                     ingredients.RemoveAt(i);
                 }
             }
+            ingredients.RemoveAll(x => x.Equals(null));
             return ingredients;
         }
 
