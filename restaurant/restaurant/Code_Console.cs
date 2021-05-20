@@ -35,6 +35,11 @@ namespace restaurant
             screens.Add(new OwnerMenuScreen()); // Ingredienten
             screens.Add(new OwnerMenuScreen()); // Inkomsten
             #endregion
+            #region Medewerker
+            screens.Add(new EmployeeMenuScreen());
+            screens.Add(new EmployeeMenuScreen()); // Reserveringen
+            screens.Add(new EmployeeMenuScreen()); // Tafels koppelen
+            #endregion
             currentScreen = 0;
         }
 
@@ -121,7 +126,7 @@ namespace restaurant
         protected void LogoutWithMessage()
         {
             logoutUpdate = true;
-            Console.WriteLine("U bent nu uitgelogd.");
+            Console.WriteLine("\nU bent nu uitgelogd.");
             Console.WriteLine("Druk op een knop om verder te gaan.");
             Console.ReadKey();
         }
@@ -581,13 +586,13 @@ namespace restaurant
                 List<List<string>> reviewsString = ReviewsToString(io.GetReviews());
                 List<string> boxes = new List<string>();
 
-                for (int i = 0; i < reviewsString.Count; i++)
+                foreach (List<string> review in reviewsString)
                 {
-
+                    boxes.Add(BoxAroundText(review, "#", 2, 2, 40, true));
                 }
 
                 var pages = MakePages(boxes, 3);
-                Console.WriteLine(string.Join(null, ReviewsToString(io.GetReviews())) + new string('#', 108) + "\n" + "[1] Ga terug");
+                Console.WriteLine(pages[0]);
             }
             else
             {
@@ -1017,13 +1022,16 @@ namespace restaurant
 
         public override int DoWork()
         {
-            Console.WriteLine(GetGFLogo(6));
+            Console.WriteLine(GetGFLogo(9));
             Console.WriteLine("Welkom bij het eigenaars menu.");
             Console.WriteLine("[1] Gerechten");
             Console.WriteLine("[2] Reservering");
             Console.WriteLine("[3] Ingredienten");
             Console.WriteLine("[4] Inkomsten");
-            Console.WriteLine("[5] Ga terug");
+            Console.WriteLine("[5] Inkomsten");
+            Console.WriteLine("[6] Inkomsten");
+            Console.WriteLine("[7] Inkomsten");
+            Console.WriteLine("[8] Ga terug");
 
             string choice = Console.ReadLine();
 
@@ -1046,8 +1054,14 @@ namespace restaurant
                     case 4:
                         return 15;
                     case 5:
-                        return 0;
+                        return 16;
                     case 6:
+                        return 17;
+                    case 7:
+                        return 18;
+                    case 8:
+                        return 0;
+                    case 9:
                         logoutUpdate = true;
                         return 0;
                 }
