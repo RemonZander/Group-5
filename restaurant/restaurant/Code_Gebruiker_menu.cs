@@ -538,6 +538,7 @@ namespace restaurant
             {
                 feedback.ID = database.feedback[database.feedback.Count - 1].ID + 1;
             }
+            database.feedback.Add(feedback);
             //slaat de database op
             io.Savedatabase(database);
         }
@@ -580,15 +581,57 @@ namespace restaurant
             {
                 feedback.ID = database.feedback[database.feedback.Count - 1].ID + 1;
             }
+            database.feedback.Add(feedback);
             //slaat de database op
             io.Savedatabase(database);
         }
 
         /// <summary>
-        /// Maakt anoniem feedback aan
+        /// Maakt anoniem feedback aan gericht aan de eigenaar
         /// </summary>
-        /// <param name="werknemer">De werknemer voor wie de feedback is bedoeld</param>
+        /// <param name="werknemer">De eigenaar</param>
         /// <param name="message">De feedback</param>
+        public void MakeFeedback(Eigenaar eigenaar, string message)
+        {
+            //pakt database
+            database = io.GetDatabase();
+
+            //als feedback lijst nog niet bestaat maak die aan
+            if (database.feedback == null)
+            {
+                database.feedback = new List<Feedback>();
+            }
+
+            //maakt feedback
+            Feedback feedback = new Feedback
+            {
+                recipient = eigenaar.ID,
+                annomeme = false,
+                datum = DateTime.Now,
+                Klantnummer = -1,
+                message = message,
+                reservering_ID = -1,
+            };
+
+            //als er geen feedback in de lijst is, zet ID naar 1, anders feebackID is laatste feedbackID+1
+            if (database.feedback.Count == 0)
+            {
+                feedback.ID = 0;
+            }
+            else
+            {
+                feedback.ID = database.feedback[database.feedback.Count - 1].ID + 1;
+            }
+            database.feedback.Add(feedback);
+            //slaat de database op
+            io.Savedatabase(database);
+        }
+
+        /// <summary>
+        /// Maakt anoniem feedback aan gericht aan een werknemer
+        /// </summary>
+        /// <param name="werknemer">De werknemer voor wie de feedback is</param>
+        /// <param name="message">De inhoud van de feedback</param>
         public void MakeFeedback(Werknemer werknemer, string message)
         {
             //pakt database
@@ -620,6 +663,7 @@ namespace restaurant
             {
                 feedback.ID = database.feedback[database.feedback.Count - 1].ID + 1;
             }
+            database.feedback.Add(feedback);
             //slaat de database op
             io.Savedatabase(database);
         }
@@ -730,12 +774,19 @@ namespace restaurant
     #region Screens
     class FeedbackScreen : Screen
     {
+        //het ID van dit scherm
+        private readonly int huidigScherm = 9;
+        //het ID van klanten menu
+        private readonly int vorigScherm = 5;
         public FeedbackScreen()
         {
 
         }
         public override int DoWork()
         {
+            bool feedbackVoorEigenaar = false;
+            Werknemer feedbackMedewerker = new Werknemer();
+
             #region Check1
             Database database = io.GetDatabase();
             //pak alle oude reserveringen
@@ -763,18 +814,24 @@ namespace restaurant
                 Console.WriteLine("Er staan momenteel geen Reserveringen open voor feedback.");
                 Console.WriteLine("Druk op een toets om terug te gaan.");
                 Console.ReadKey();
-                return 16;
+                return vorigScherm;
             }
             #endregion
 
+
             Console.WriteLine(GetGFLogo(4));
             Console.WriteLine("Dit is het feedback menu, u kunt kiezen uit:");
-            Console.WriteLine("[1] Feedback inzien");
-            Console.WriteLine("[2] Feedback aanamaken");
+            Console.WriteLine("[1] Feedback bekijken");
+            Console.WriteLine("[2] Feedback aanmaken");
             Console.WriteLine("[3] Terug");
 
-            ConsoleKeyInfo key = Console.ReadKey();
-            if(IsKeyPressed(key, "D1"))
+            (string, int) key = AskForInput(vorigScherm);
+            if (key.Item2 != -1)
+            {
+                return key.Item2;
+            }
+            
+            if(key.Item1 == "1")
             {
                 //screen voor feedback inzien
                 Console.Clear();
@@ -782,31 +839,38 @@ namespace restaurant
                 Console.WriteLine("Nothing to see here for now");
                 Console.WriteLine("druk op een toets om terug te gaan");
                 Console.ReadKey();
-                return 16;
+                return huidigScherm;
             }
-            else if(IsKeyPressed(key, "D2"))
+            else if(key.Item1 == "2")
             {
                 //screen voor feedback maken
                 Console.Clear();
-                Console.WriteLine(GetGFLogo());
+                Console.WriteLine(GetGFLogo(4));
                 Console.WriteLine("Hier kunt u feedback aanmaken.");
                 Console.WriteLine("U kunt kiezen tussen of u anoniem feedback wilt geven.");
                 Console.WriteLine("Anoniem houdt in:");
                 Console.WriteLine("-> U naam word niet opgeslagen met feedback.");
                 Console.WriteLine("-> feedback word niet gekoppeld aan een reservering.");
-                Console.WriteLine("-> U kunt feedback dan niet aanpassen of verwijderen.");
+                Console.WriteLine("-> U kunt feedback niet aanpassen of verwijderen.");
                 Console.WriteLine("[1] Normaal");
                 Console.WriteLine("[2] Anoniem");
                 Console.WriteLine("[3] Terug");
-                key = Console.ReadKey();
+                key = AskForInput(huidigScherm);
                 
-                //bool voor de do-while loop
-                bool repeat = true;
+                if(key.Item2 != -1)
+                {
+                    return huidigScherm;
+                }
+                
                 //reservering ID heb ik later nodig buiten de scope
                 int ReserveringID = -1;
                 
-                if (IsKeyPressed(key, "D1"))
+                //feedback normaal
+                if (key.Item1 == "1")
                 {
+                    //bool voor de do-while loop
+                    bool repeat = false;
+                    
                     //voor het kiezen van een reservering en krijgen van ReserveringID
                     do
                     {
@@ -822,23 +886,29 @@ namespace restaurant
                         Console.WriteLine("Met het ID kunt u selecteren over welk bezoek u een review wilt schrijven.");
                         Console.WriteLine("Het ID van u reservering:");
 
-                        string choice = Console.ReadLine();
-                        //als de input niet een van de getallen is in de lijst met IDs, invalid input
+                        key = AskForInput(huidigScherm);
+                        if(key.Item2 != -1)
+                        {
+                            return huidigScherm;
+                        }
+                        
                         //is om te kijken of choice een int is
                         try
                         {
-                            //kijkt of de invoer in de lijst is
-                            if (!reserveringen.Select(i => i.ID).ToList().Contains(Convert.ToInt32(choice)))
+                            //kijkt of de invoer in de lijst is, zo niet dan invalid input
+                            if (!reserveringen.Select(i => i.ID).ToList().Contains(Convert.ToInt32(key.Item1)))
                             {
                                 Console.WriteLine("U moet wel een reservering invoeren.");
                                 Console.WriteLine("Druk op een toets om verder te gaan.");
                                 Console.ReadKey();
                             }
-
-                            //ID van reservering
-                            ReserveringID = Convert.ToInt32(choice);
-                            repeat = false;
-
+                            else
+                            {
+                                //ID van reservering
+                                ReserveringID = Convert.ToInt32(key.Item1);
+                                //breek de loop
+                                repeat = true;
+                            }
                         }
                         //geen int ingevoerd
                         catch
@@ -849,53 +919,64 @@ namespace restaurant
                         }
                     } while (!repeat);
 
-                    Console.Clear();
-                    Console.WriteLine(GetGFLogo());
-                    //maak lijst met medewerkers en voeg alle medewerkers toe
-                    List<Werknemer> Medewerkers = new List<Werknemer>(database.werknemers);
+                    //zolang feedback geen recipient heeft voer dit uit
+                    do
+                    {
+                        Console.Clear();
+                        Console.WriteLine(GetGFLogo());
+                        //maak lijst met medewerkers en voeg alle medewerkers toe
+                        List<Werknemer> Medewerkers = new List<Werknemer>(database.werknemers);
 
 
-                    bool feedbackVoorEigenaar = false;
-                    Werknemer feedbackMedewerker = new Werknemer();
-                    //als er geen medewerkers zijn, is feedback voor eigenaar
-                    if (Medewerkers.Count == 0)
-                    {
-                        Console.WriteLine("Er zijn geen medewerkers");
-                        Console.WriteLine("De feedback zal naar de eigenaar gaan.");
-                        feedbackVoorEigenaar = true;
-                    }
-                    //als er wel medewerkers zijn
-                    else
-                    {
-                        for (int j = 0; j < Medewerkers.Count; j++)
-                        {
-                            Console.WriteLine("Naam:  " + Medewerkers[j].login_gegevens.klantgegevens.voornaam + " " + Medewerkers[j].login_gegevens.klantgegevens.achternaam);
-                        }
-                        Console.WriteLine("Voer de voornaam en achternaam in van de medewerker en druk op Enter.");
-                        Console.WriteLine("Als u geen medewerker wilt invoeren, voer dan niks in en druk dan op Enter.");
-                        Console.WriteLine("LET OP! het is hoofdletter gevoelig.");
                         
-                        //item 1 is de naam van de medewerker
-                        (string, int) choiceMedewerker = AskForInput(16);
-                        //als escape, ga terug
-                        if (choiceMedewerker.Item2 != -1)
+                        //als er geen medewerkers zijn, is feedback voor eigenaar
+                        if (Medewerkers.Count == 0)
                         {
-                            return choiceMedewerker.Item2;
-                        }
-                        //als leeg, is voor eigenaar
-                        if(choiceMedewerker.Item1 == "")
-                        {
+                            Console.WriteLine("Er zijn geen medewerkers");
+                            Console.WriteLine("De feedback zal naar de eigenaar gaan.");
+                            Console.WriteLine("Druk op een toets om verder te gaan");
                             feedbackVoorEigenaar = true;
                         }
-                        //als match met werknemer sla deze op
-                        for (int i = 0; i < Medewerkers.Count; i++)
+                        //als er wel medewerkers zijn
+                        else
                         {
-                            if (Medewerkers[i].login_gegevens.klantgegevens.voornaam + " " + Medewerkers[i].login_gegevens.klantgegevens.achternaam == choiceMedewerker.Item1)
+                            for (int j = 0; j < Medewerkers.Count; j++)
                             {
-                                feedbackMedewerker = Medewerkers[i];
+                                Console.WriteLine("Naam:  " + Medewerkers[j].login_gegevens.klantgegevens.voornaam + " " + Medewerkers[j].login_gegevens.klantgegevens.achternaam);
+                            }
+                            Console.WriteLine("Voer de voornaam en achternaam in van de medewerker en druk op Enter.");
+                            Console.WriteLine("Als u geen medewerker wilt invoeren, voer dan niks in en druk dan op Enter.");
+                            Console.WriteLine("LET OP! het is hoofdletter gevoelig.");
+
+                            //item 1 is de naam van de medewerker
+                            (string, int) choiceMedewerker = AskForInput(huidigScherm);
+                            //als escape, ga terug
+                            if (choiceMedewerker.Item2 != -1)
+                            {
+                                return choiceMedewerker.Item2;
+                            }
+                            //als leeg, is voor eigenaar
+                            if (choiceMedewerker.Item1 == "")
+                            {
+                                feedbackVoorEigenaar = true;
+                            }
+                            //als match met werknemer sla deze op
+                            for (int i = 0; i < Medewerkers.Count; i++)
+                            {
+                                if (Medewerkers[i].login_gegevens.klantgegevens.voornaam + " " + Medewerkers[i].login_gegevens.klantgegevens.achternaam == choiceMedewerker.Item1)
+                                {
+                                    feedbackMedewerker = Medewerkers[i];
+                                    break;
+                                }
                             }
                         }
-                    }
+                        if (feedbackVoorEigenaar == false && feedbackMedewerker.login_gegevens == null)
+                        {
+                            Console.WriteLine("\nEr is geen medewerker met deze naam.");
+                            Console.WriteLine("druk op een toets om opnieuw te proberen.");
+                            Console.ReadKey();
+                        }
+                    } while (!((feedbackVoorEigenaar != false && feedbackMedewerker.login_gegevens == null) || (feedbackVoorEigenaar == false && feedbackMedewerker.login_gegevens != null)));
 
                     Console.Clear();
                     Console.WriteLine(GetGFLogo());
@@ -926,7 +1007,7 @@ namespace restaurant
                         Console.WriteLine("Succesvol feedback gemaakt.");
                         Console.WriteLine("druk op een toets om terug te gaan.");
                         Console.ReadKey();
-                        return 16;
+                        return vorigScherm;
                     }
                     else
                     {
@@ -934,33 +1015,142 @@ namespace restaurant
                         Console.WriteLine("Succesvol feedback gemaakt.");
                         Console.WriteLine("druk op een toets om terug te gaan.");
                         Console.ReadKey();
-                        return 16;
+                        return vorigScherm;
                     }
                 }
 
-                else if(IsKeyPressed(key, "D2"))
+                //feedback anoniem
+                else if(key.Item1 == "2")
                 {
+                    //zolang feedback geen recipient heeft voer dit uit
+                    do
+                    {
+                        Console.Clear();
+                        Console.WriteLine(GetGFLogo());
+                        //maak lijst met medewerkers en voeg alle medewerkers toe
+                        List<Werknemer> Medewerkers = new List<Werknemer>(database.werknemers);
 
+
+
+                        //als er geen medewerkers zijn, is feedback voor eigenaar
+                        if (Medewerkers.Count == 0)
+                        {
+                            Console.WriteLine("Er zijn geen medewerkers");
+                            Console.WriteLine("De feedback zal naar de eigenaar gaan.");
+                            Console.WriteLine("Druk op een toets om verder te gaan");
+                            feedbackVoorEigenaar = true;
+                        }
+                        //als er wel medewerkers zijn
+                        else
+                        {
+                            for (int j = 0; j < Medewerkers.Count; j++)
+                            {
+                                Console.WriteLine("Naam:  " + Medewerkers[j].login_gegevens.klantgegevens.voornaam + " " + Medewerkers[j].login_gegevens.klantgegevens.achternaam);
+                            }
+                            Console.WriteLine("Voer de voornaam en achternaam in van de medewerker en druk op Enter.");
+                            Console.WriteLine("Als u geen medewerker wilt invoeren, voer dan niks in en druk dan op Enter.");
+                            Console.WriteLine("LET OP! het is hoofdletter gevoelig.");
+
+                            //item 1 is de naam van de medewerker
+                            (string, int) choiceMedewerker = AskForInput(huidigScherm);
+                            //als escape, ga terug
+                            if (choiceMedewerker.Item2 != -1)
+                            {
+                                return choiceMedewerker.Item2;
+                            }
+                            //als leeg, is voor eigenaar
+                            if (choiceMedewerker.Item1 == "")
+                            {
+                                feedbackVoorEigenaar = true;
+                            }
+                            //als match met werknemer sla deze op
+                            for (int i = 0; i < Medewerkers.Count; i++)
+                            {
+                                if (Medewerkers[i].login_gegevens.klantgegevens.voornaam + " " + Medewerkers[i].login_gegevens.klantgegevens.achternaam == choiceMedewerker.Item1)
+                                {
+                                    feedbackMedewerker = Medewerkers[i];
+                                    break;
+                                }
+                            }
+                        }
+                        if (feedbackVoorEigenaar == false && feedbackMedewerker.login_gegevens == null)
+                        {
+                            Console.WriteLine("\nEr is geen medewerker met deze naam.");
+                            Console.WriteLine("druk op een toets om opnieuw te proberen.");
+                            Console.ReadKey();
+                        }
+                    } while (!((feedbackVoorEigenaar != false && feedbackMedewerker.login_gegevens == null) || (feedbackVoorEigenaar == false && feedbackMedewerker.login_gegevens != null)));
+
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo());
+
+                    Console.WriteLine("Als laatste, de inhoud van u feedback.");
+                    Console.WriteLine("Met Enter gaat u verder op een nieuwe regel.");
+                    Console.WriteLine("Als u klaar bent met het typen, type dan \"klaar\" op een nieuwe regel om het feedback aan te maken.");
+                    Console.WriteLine("De inhoud van u feedback:");
+
+                    string message = "";
+                    string Line = Console.ReadLine();
+                    message = Line;
+                    while (Line != "klaar")
+                    {
+                        Line = Console.ReadLine();
+                        if (Line == "klaar")
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            message += " " + Line;
+                        }
+                    }
+                    if (feedbackVoorEigenaar)
+                    {
+                        code_gebruiker.MakeFeedback(database.eigenaar, message);
+                        Console.WriteLine("Succesvol feedback gemaakt.");
+                        Console.WriteLine("druk op een toets om terug te gaan.");
+                        Console.ReadKey();
+                        return vorigScherm;
+                    }
+                    else
+                    {
+                        code_gebruiker.MakeFeedback(feedbackMedewerker, message);
+                        Console.WriteLine("Succesvol feedback gemaakt.");
+                        Console.WriteLine("druk op een toets om terug te gaan.");
+                        Console.ReadKey();
+                        return vorigScherm;
+                    }
                 }
-                else if(IsKeyPressed(key, "D3"))
+                
+                //terug
+                else if(key.Item1 == "3")
                 {
                     //een scherm terug
-                    return 16;
+                    return huidigScherm;
                 }                
+                
+                else if(key.Item1 == "4")
+                {
+                    //logout sequence
+                    logoutUpdate = true;
+                    Logout();
+                    return 0;
+                }
+                
                 else
                 {
                     //error message
                     Console.WriteLine("U moet wel een juiste keuze maken...");
-                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.WriteLine("Druk op een knop om opniew te kiezen.");
                     Console.ReadKey();
-                    return 16;
+                    return huidigScherm;
                 }
             }
-            else if(IsKeyPressed(key, "D3"))
+            else if(key.Item1 == "3")
             {
-                return 16;
+                return vorigScherm;
             }
-            else if (IsKeyPressed(key, "D4"))
+            else if (key.Item1 == "4")
             {
                 //logout sequence
                 logoutUpdate = true;
@@ -972,9 +1162,8 @@ namespace restaurant
                 Console.WriteLine("U moet wel een juiste keuze maken...");
                 Console.WriteLine("Druk op en knop om verder te gaan.");
                 Console.ReadKey();
-                return 16;
+                return huidigScherm;
             }
-            return 16;
         }
 
         public override List<Screen> Update(List<Screen> screens)
