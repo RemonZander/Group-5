@@ -1100,7 +1100,519 @@ namespace restaurant
         #endregion
     }
 
+    public abstract partial class Screen
+    {
+        protected string BoxAroundText(List<string> input, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom)
+        {
+            string output = new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+            for (int a = 0; a < spacingtop; a++)
+            {
+                output += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+            }
 
+            foreach (var line in input)
+            {
+                output += sym + new string(' ', spacingside) + line + new string(' ', spacingside) + sym + "\n";
+            }
+
+            for (int a = 0; a < spacingtop; a++)
+            {
+                output += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+            }
+
+            if (openbottom)
+            {
+                return output;
+            }
+            return output += new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+        }
+
+        protected List<string> BoxAroundText(List<List<string>> blocks, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom)
+        {
+            List<string> output = new List<string>();
+
+            foreach (var input in blocks)
+            {
+                string block = new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+                for (int a = 0; a < spacingtop; a++)
+                {
+                    block += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+                }
+
+                foreach (var line in input)
+                {
+                    block += sym + new string(' ', spacingside) + line + new string(' ', spacingside) + sym + "\n";
+                }
+
+                for (int a = 0; a < spacingtop; a++)
+                {
+                    block += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+                }
+
+                if (!openbottom)
+                {
+                    block += new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+                }
+
+                output.Add(block);
+            }
+            return output;
+        }
+
+        protected string BoxAroundText(List<string> input, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom, List<string> bottomtext)
+        {
+            string output = new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+            for (int a = 0; a < spacingtop; a++)
+            {
+                output += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+            }
+
+            foreach (var line in input)
+            {
+                output += sym + new string(' ', spacingside) + line + new string(' ', spacingside) + sym + "\n";
+            }
+
+            for (int b = 0; b < bottomtext.Count; b++)
+            {
+                output += sym + new string(' ', spacingside) + bottomtext[b] + new string(' ', spacingside) + sym + "\n";
+            }
+
+            for (int a = 0; a < spacingtop; a++)
+            {
+                output += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+            }
+
+            if (openbottom)
+            {
+                return output;
+            }
+            return output += new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+        }
+
+        protected List<string> BoxAroundText(List<List<string>> blocks, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom, List<string> bottomtext)
+        {
+            List<string> output = new List<string>();
+
+            foreach (var input in blocks)
+            {
+                string block = new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+                for (int a = 0; a < spacingtop; a++)
+                {
+                    block += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+                }
+
+                foreach (var line in input)
+                {
+                    block += sym + new string(' ', spacingside) + line + new string(' ', spacingside) + sym + "\n";
+                }
+
+                for (int b = 0; b < bottomtext.Count; b++)
+                {
+                    block += sym + new string(' ', spacingside) + bottomtext[b] + new string(' ', spacingside) + sym + "\n";
+                }
+
+                for (int a = 0; a < spacingtop; a++)
+                {
+                    block += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
+                }
+
+                if (!openbottom)
+                {
+                    block += new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
+                }
+
+                output.Add(block);
+            }
+            return output;
+        }
+
+        protected List<string> MakePages(List<string> alldata, int maxblocks)
+        {
+            string[] output = new string[alldata.Count / maxblocks + 1];
+
+            for (int a = 0, b = 1; a < alldata.Count; a++)
+            {
+                if (a < maxblocks * b)
+                {
+                    output[b - 1] += alldata[a];
+                }
+                else
+                {
+                    b++;
+                    output[b - 1] += alldata[a];
+                }
+            }
+
+            List<string> done = output.ToList();
+            done.RemoveAll(x => x == null);
+            return done;
+        }
+
+        protected (int, int, double) Nextpage(int page, int maxpage, double pos, double maxpos, int screenIndex)
+        {
+            if (page < maxpage)
+            {
+                Console.WriteLine("[1] Volgende pagina");
+                Console.WriteLine("[2] Terug");
+                ConsoleKeyInfo key = Console.ReadKey();
+                if (IsKeyPressed(key, ESCAPE_KEY))
+                {
+                    return (page, screenIndex, pos);
+                }
+                if (IsKeyPressed(key, UP_ARROW))
+                {
+                    if (pos % 2 != 0)
+                    {
+                        if ((pos - 1 > 6 * page && page != 0) || (pos > 2 && page == 0))
+                        {
+                            pos -= 2;
+                        }
+                    }
+                    else
+                    {
+                        if ((pos > 6 * page && page != 0) || (pos > 1 && page == 0))
+                        {
+                            pos -= 2;
+                        }
+                    }
+                    return (page, -1, pos);
+                }
+                else if (IsKeyPressed(key, DOWN_ARROW))
+                {
+                    if (pos % 2 != 0)
+                    {
+                        if (((pos + 1 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 2)
+                        {
+                            pos += 2;
+                        }
+                    }
+                    else
+                    {
+                        if (((pos + 2 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 1)
+                        {
+                            pos += 2;
+                        }
+                    }
+                    return (page, -1, pos);
+                }
+                else if (IsKeyPressed(key, LEFT_ARROW))
+                {
+                    if (pos % 2 != 0 && pos > 0)
+                    {
+                        pos -= 1;
+                    }
+                    return (page, -1, pos);
+                }
+                else if (IsKeyPressed(key, RIGHT_ARROW))
+                {
+                    if (pos % 2 == 0 || pos == 0)
+                    {
+                        pos += 1;
+                    }
+                    return (page, -1, pos);
+                }
+                Console.ReadKey();
+                if (IsKeyPressed(key, "D1"))
+                {
+                    return (page + 1, -1, (page + 1) * 6);
+                }
+                else if (IsKeyPressed(key, "D2"))
+                {
+                    return (page, screenIndex, pos);
+                }
+                else if (IsKeyPressed(key, "D3"))
+                {
+                    logoutUpdate = true;
+                    Logout();
+                    return (page, 0, pos);
+                }
+                else if (IsKeyPressed(key, "D4"))
+                {
+                    return (-1, -1, pos);
+                }
+                else if (IsKeyPressed(key, "D5"))
+                {
+                    return (-2, -2, pos);
+                }
+                else
+                {
+                    Console.WriteLine("U moet wel een juiste keuze maken...");
+                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.ReadKey();
+                    return (page, -1, pos);
+                }
+            }
+            else
+            {
+                Console.WriteLine("[1] Terug");
+                ConsoleKeyInfo key = Console.ReadKey();
+                if (IsKeyPressed(key, ESCAPE_KEY))
+                {
+                    return (page, screenIndex, pos);
+                }
+                if (IsKeyPressed(key, UP_ARROW))
+                {
+                    if (pos % 2 != 0)
+                    {
+                        if ((pos - 1 > 6 * page && page != 0) || (pos > 2 && page == 0))
+                        {
+                            pos -= 2;
+                        }
+                    }
+                    else
+                    {
+                        if ((pos > 6 * page && page != 0) || (pos > 1 && page == 0))
+                        {
+                            pos -= 2;
+                        }
+                    }
+                    return (page, -1, pos);
+                }
+                else if (IsKeyPressed(key, DOWN_ARROW))
+                {
+                    if (pos % 2 != 0)
+                    {
+                        if (((pos + 1 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 2)
+                        {
+                            pos += 2;
+                        }
+                    }
+                    else
+                    {
+                        if (((pos + 2 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 1)
+                        {
+                            pos += 2;
+                        }
+                    }
+                    return (page, -1, pos);
+                }
+                else if (IsKeyPressed(key, LEFT_ARROW))
+                {
+                    if (pos % 2 != 0 && pos > 0)
+                    {
+                        pos -= 1;
+                    }
+                    return (page, -1, pos);
+                }
+                else if (IsKeyPressed(key, RIGHT_ARROW))
+                {
+                    if (pos % 2 == 0 || pos == 0)
+                    {
+                        pos += 1;
+                    }
+                    return (page, -1, pos);
+                }
+                Console.ReadKey();
+                if (IsKeyPressed(key, "D1"))
+                {
+                    return (page, screenIndex, pos);
+                }
+                else if (IsKeyPressed(key, "D3"))
+                {
+                    logoutUpdate = true;
+                    Logout();
+                    return (page, 0, pos);
+                }
+                else if (IsKeyPressed(key, "D4"))
+                {
+                    return (-1, -1, pos);
+                }
+                else if (IsKeyPressed(key, "D5"))
+                {
+                    return (-2, -2, pos);
+                }
+                else
+                {
+                    Console.WriteLine("U moet wel een juiste keuze maken...");
+                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.ReadKey();
+                    return (page, -1, pos);
+                }
+            }
+        }
+
+        protected (int, int) Nextpage(int page, int maxpage, int screenIndex)
+        {
+            if (page < maxpage)
+            {
+                Console.WriteLine("[1] Volgende pagina");
+                Console.WriteLine("[2] Terug");
+                ConsoleKeyInfo key = Console.ReadKey();
+                if (IsKeyPressed(key, ESCAPE_KEY))
+                {
+                    return (page, screenIndex);
+                }
+                Console.ReadKey();
+                if (IsKeyPressed(key, "D1"))
+                {
+                    return (page + 1, -1);
+                }
+                else if (IsKeyPressed(key, "D2"))
+                {
+                    return (page, screenIndex);
+                }
+                else if (IsKeyPressed(key, "D3"))
+                {
+                    logoutUpdate = true;
+                    Logout();
+                    return (page, 0);
+                }
+                else
+                {
+                    Console.WriteLine("U moet wel een juiste keuze maken...");
+                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.ReadKey();
+                    return (page, -1);
+                }
+            }
+            else
+            {
+                Console.WriteLine("[1] Terug");
+                ConsoleKeyInfo key = Console.ReadKey();
+                if (IsKeyPressed(key, ESCAPE_KEY))
+                {
+                    return (page, screenIndex);
+                }
+                Console.ReadKey();
+                if (IsKeyPressed(key, "D1"))
+                {
+                    return (page, screenIndex);
+                }
+                else if (IsKeyPressed(key, "D3"))
+                {
+                    logoutUpdate = true;
+                    Logout();
+                    return (page, 0);
+                }
+                else
+                {
+                    Console.WriteLine("U moet wel een juiste keuze maken...");
+                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.ReadKey();
+                    return (page, -1);
+                }
+            }
+        }
+
+        protected List<List<string>> ReviewsToString(List<Review> reviews)
+        {
+            List<List<string>> output = new List<List<string>>();
+            for (int a = 0; a < reviews.Count; a++)
+            {
+                List<string> block = new List<string>();
+                //block += new string('#', 56);
+                block.Add(new string(' ', 50));
+                block.Add(new string(' ', 50));
+                if (!reviews[a].annomeme)
+                {
+                    block.Add("Voornaam: " + ingelogd.klantgegevens.voornaam + new string(' ', 50 - ("Voornaam: " + ingelogd.klantgegevens.voornaam).Length));
+                    block.Add("Achternaam: " + ingelogd.klantgegevens.achternaam + new string(' ', 50 - ("Achternaam: " + ingelogd.klantgegevens.achternaam).Length));
+                }
+                else
+                {
+                    block.Add("Anoniem" + new string(' ', 50 - "Anoniem".Length));
+                    block.Add(new string(' ', 50));
+                }
+
+                List<string> msgparts1 = new List<string>();
+                string message = reviews[a].message;
+
+                if (message.Length > 50 - "Review: ".Length)
+                {
+                    Console.WriteLine(message.LastIndexOf(' '));
+                    if (message.LastIndexOf(' ') > 50 || message.LastIndexOf(' ') == -1)
+                    {
+                        msgparts1.Add(message.Substring(0, 50 - "Review: ".Length));
+                    }
+                    else
+                    {
+                        msgparts1.Add(message.Substring(0, message.Substring(0, 50 - ("Review: ").Length).LastIndexOf(' ')));
+                    }
+
+                    message = message.Remove(0, msgparts1[0].Length + 1);
+                    int count = 1;
+                    while (message.Length > 50)
+                    {
+                        if (message.LastIndexOf(' ') > 50 || message.LastIndexOf(' ') == -1)
+                        {
+                            msgparts1.Add(message.Substring(0, 50));
+                        }
+                        else
+                        {
+                            msgparts1.Add(message.Substring(0, message.Substring(0, 50).LastIndexOf(' ')));
+                        }
+
+                        message = message.Remove(0, msgparts1[count].Length + 1);
+                        count++;
+                    }
+                    msgparts1.Add(message);
+
+                    block.Add("Review: " + msgparts1[0] + new string(' ', 50 - ("Review: " + msgparts1[0]).Length));
+                    for (int b = 1; b < 4; b++)
+                    {
+                        if (b < msgparts1.Count)
+                        {
+                            block.Add(msgparts1[b] + new string(' ', 50 - msgparts1[b].Length));
+                        }
+                        else
+                        {
+                            block.Add(new string(' ', 50));
+                        }
+                    }
+                }
+                else
+                {
+                    block.Add("Review: " + message + new string(' ', 50 - ("Review: " + message).Length));
+                    block.Add(new string(' ', 50));
+                    block.Add(new string(' ', 50));
+                    block.Add(new string(' ', 50));
+                }
+
+                block.Add("Rating: " + reviews[a].Rating + new string(' ', 50 - ("Rating: " + reviews[a].Rating).Length));
+                if (!reviews[a].annomeme)
+                {
+                    block.Add("Datum: " + reviews[a].datum + new string(' ', 50 - ("Datum: " + reviews[a].datum).Length));
+                }
+                else
+                {
+                    block.Add(new string(' ', 50));
+                }
+
+                block.Add(new string(' ', 50));
+                block.Add(new string(' ', 50));
+                //block += new string('#', 56);
+
+                output.Add(block);
+            }
+
+
+            return output;
+        }
+
+        protected List<List<string>> Makedubbelboxes(List<List<string>> input)
+        {
+            List<List<string>> output = new List<List<string>>();
+            for (int a = 0; a < input.Count; a += 2)
+            {
+                if (a == input.Count - 1)
+                {
+                    output.Add(input[a]);
+                    break;
+                }
+                List<string> blocknew = new List<string>();
+                List<string> blockold1 = input[a];
+                List<string> blockold2 = input[a + 1];
+
+                for (int b = 0; b < blockold1.Count; b++)
+                {
+                    blocknew.Add(blockold1[b] + "##  " + blockold2[b]);
+                }
+                output.Add(blocknew);
+            }
+
+            return output;
+        }
+    }
 
 
 
@@ -1138,30 +1650,66 @@ namespace restaurant
                 do
                 {
                     pages = new List<string>();
-                    List<List<string>> reviewstring = ReviewsToString(reviews);
+                    //List<List<string>> reviewstring = ReviewsToString(reviews);
+                    List<List<string>> reviewstring = Makedubbelboxes(ReviewsToString(reviews));
                     List<string> boxes = new List<string>();
                     for (int a = 0; a < reviewstring.Count; a++)
                     {
-                        if (a == Convert.ToInt32(Math.Floor(pos / 2)))
+                        if (a == reviewstring.Count - 1 && reviewstring[a][1].Length < 70)
                         {
-                            if (pos % 2 == 0 || pos == 0)
+                            if (a == Convert.ToInt32(Math.Floor(pos / 2)))
                             {
-                                boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 102, true, new List<string>{
-                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length) + "##  " + new string(' ', 48),
-                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length) + "##  " + new string(' ', 48),
-                                    new string(' ', 50) + "##" + new string(' ', 50) }));
+                                if (a != 0 && a % 6 != 0)
+                                {
+                                boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50)}));
+                                }
+                                else
+                                {
+                                boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 50, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50)}));
+                                }                                
                             }
                             else
                             {
-                                boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 102, true, new List<string> {
-                                    new string(' ', 50) + "##  " + "[4] Bewerken" + new string(' ', 48 - "[4] Bewerken".Length),
-                                    new string(' ', 50) + "##  " + "[5] Verwijderen" + new string(' ', 48 - "[5] Verwijderen".Length),
-                                    new string(' ', 50) + "##" + new string(' ', 50)}));
+                                if (a != 0 && a %6 != 0)
+                                {
+                                    boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true));
+                                }
+                                else
+                                {
+                                    boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 50, true));
+                                }
+                                
                             }
                         }
                         else
                         {
-                            boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 102, true));
+                            if (a == Convert.ToInt32(Math.Floor(pos / 2)))
+                            {
+                                if (pos % 2 == 0 || pos == 0)
+                                {
+                                    boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length) + "##  " + new string(' ', 50),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length) + "##  " + new string(' ', 50),
+                                    new string(' ', 50) + "##  " + new string(' ', 50) }));
+                                }
+                                else
+                                {
+                                    boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true, new List<string> {
+                                    new string(' ', 50) + "##  " + "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
+                                    new string(' ', 50) + "##  " + "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50) + "##  " + new string(' ', 50)}));
+                                }
+                            }
+                            else
+                            {
+                                boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true));
+                            }
                         }
                     }
 
@@ -1169,9 +1717,16 @@ namespace restaurant
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(3));
                     Console.WriteLine($"Dit zijn uw reviews op pagina {page + 1} van de {pages.Count}:");
-                    Console.WriteLine(pages[page] + new string('#', 108));
+                    if (reviewstring[reviewstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
+                    {
+                        Console.WriteLine(pages[page] + new string('#', 56));
+                    }
+                    else
+                    {
+                        Console.WriteLine(pages[page] + new string('#', 110));
+                    }                    
 
-                    var result = Nextpage(page, pages.Count - 1, pos, boxes.Count - 1, 10);
+                    var result = Nextpage(page, pages.Count - 1, pos, (boxes.Count - 1) * 2, 10);
                     pos = result.Item3;
                     if (result.Item2 != -1 && result.Item2 != -2)
                     {
@@ -1639,12 +2194,28 @@ namespace restaurant
 
             if (message.Length > 50 - "Review: ".Length)
             {
-                msgparts1.Add(message.Substring(0, message.Substring(0, 50 - ("Review: ").Length).LastIndexOf(' ')));
+                if (message.LastIndexOf(' ') > 50 || message.LastIndexOf(' ') == -1)
+                {
+                    msgparts1.Add(message.Substring(0, 50 - "Review: ".Length));
+                }
+                else
+                {
+                    msgparts1.Add(message.Substring(0, message.Substring(0, 50 - ("Review: ").Length).LastIndexOf(' ')));
+                }
+                    
                 message = message.Remove(0, msgparts1[0].Length + 1);
                 int count = 1;
                 while (message.Length > 50)
                 {
-                    msgparts1.Add(message.Substring(0, message.Substring(0, 50).LastIndexOf(' ')));
+                    if (message.LastIndexOf(' ') > 50 || message.LastIndexOf(' ') == -1)
+                    {
+                        msgparts1.Add(message.Substring(0, 50));
+                    }
+                    else
+                    {
+                        msgparts1.Add(message.Substring(0, message.Substring(0, 50).LastIndexOf(' ')));
+                    }
+                        
                     message = message.Remove(0, msgparts1[count].Length + 1);
                     count++;
                 }
@@ -1668,7 +2239,7 @@ namespace restaurant
             output += new string('#', 56);
 
             return output;
-        }
+        }  
 
         public override List<Screen> Update(List<Screen> screens)
         {
