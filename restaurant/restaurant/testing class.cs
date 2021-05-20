@@ -1769,7 +1769,7 @@ namespace restaurant
                         else if (input.Item1 == "ja")
                         {
                             code_gebruiker.DeleteReview(reviews[Convert.ToInt32(pos)].ID, ingelogd.klantgegevens);
-                            Console.WriteLine("\n Review is verwijdert");
+                            Console.WriteLine("\n Review is verwijderd");
                             Console.WriteLine("Druk op een knop om verder te gaan...");
                             Console.ReadKey();
                             return 10;
@@ -2086,7 +2086,7 @@ namespace restaurant
                         else if (input.Item1 == "ja")
                         {
                             code_gebruiker.DeleteReview(reviews[Convert.ToInt32(pos)].ID, ingelogd.klantgegevens);
-                            Console.WriteLine("\n Review is verwijdert");
+                            Console.WriteLine("\n Review is verwijderd");
                             Console.WriteLine("Druk op een knop om verder te gaan...");
                             Console.ReadKey();
                             return 10;
@@ -2400,21 +2400,21 @@ namespace restaurant
                 Console.WriteLine("\"ID | aantal mensen | datum\"");
                 Console.WriteLine("Is het formaat van deze weergave.\n");
                 Console.WriteLine("Met het ID kunt u selecteren over welk bezoek u een review wilt schrijven.");
-                Console.WriteLine("Het ID van u reservering:");
 
                 (string, int) choice = ("", -1);
                 bool succes = false;
                 do
                 {
+                    Console.WriteLine("Het ID van u reservering:");
                     choice = AskForInput(5);
                     if (choice.Item2 != -1)
                     {
                         return choice.Item2;
                     }
                     //als de input niet een van de getallen is in de lijst met IDs, invalid input
-                    if (!reserveringen.Select(i => i.ID).ToList().Contains(Convert.ToInt32(choice.Item1)) && !int.TryParse(choice.Item1, out int test2))
+                    if (!new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" }.Contains(choice.Item1) || !reserveringen.Select(i => i.ID).ToList().Contains(Convert.ToInt32(choice.Item1)))
                     {
-                        Console.WriteLine("U moet wel een juist ID selecteren");
+                        Console.WriteLine("\nU moet wel een juist ID selecteren");
                         Console.WriteLine("Druk op een knop om verder te gaan...");
                         Console.ReadKey();
                     }
