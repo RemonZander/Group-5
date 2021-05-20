@@ -1022,16 +1022,13 @@ namespace restaurant
 
         public override int DoWork()
         {
-            Console.WriteLine(GetGFLogo(9));
+            Console.WriteLine(GetGFLogo(6));
             Console.WriteLine("Welkom bij het eigenaars menu.");
             Console.WriteLine("[1] Gerechten");
             Console.WriteLine("[2] Reservering");
             Console.WriteLine("[3] Ingredienten");
             Console.WriteLine("[4] Inkomsten");
-            Console.WriteLine("[5] Inkomsten");
-            Console.WriteLine("[6] Inkomsten");
-            Console.WriteLine("[7] Inkomsten");
-            Console.WriteLine("[8] Ga terug");
+            Console.WriteLine("[5] Ga terug");
 
             string choice = Console.ReadLine();
 
@@ -1054,14 +1051,8 @@ namespace restaurant
                     case 4:
                         return 15;
                     case 5:
-                        return 16;
-                    case 6:
-                        return 17;
-                    case 7:
-                        return 18;
-                    case 8:
                         return 0;
-                    case 9:
+                    case 6:
                         logoutUpdate = true;
                         return 0;
                 }
