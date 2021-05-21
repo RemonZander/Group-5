@@ -315,9 +315,6 @@ namespace restaurant
                 return reviewList;
             }
         }
-            
-            //voor iedere review met hetzelfde klantnummer als de gegeven klant, voeg deze toe aan de lijst en return de lijst
-            
 
         /// <summary>
         /// Ophalen van alle feedback
@@ -385,6 +382,24 @@ namespace restaurant
                 }
                 return feedbackList;
             }
+        }
+
+        /// <summary>
+        ///  for getting the firstname and lastname of an emploYEET
+        /// </summary>
+        /// <param name="employeeID">The ID of the employee</param>
+        /// <returns>the firstname and lastname of the employee</returns>
+        public (string, string) GetEmployee(int employeeID)
+        {
+            Database database = GetDatabase();
+            for (int i = 0; i < database.werknemers.Count; i++)
+            {
+                if (database.werknemers[i].ID == employeeID)
+                {
+                    return (database.werknemers[i].login_gegevens.klantgegevens.voornaam, database.werknemers[i].login_gegevens.klantgegevens.achternaam);
+                }
+            }
+            return (null, null);
         }
         #endregion
 

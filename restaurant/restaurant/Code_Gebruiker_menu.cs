@@ -819,14 +819,11 @@ namespace restaurant
             }
             #endregion
 
-
-            Console.WriteLine(GetGFLogo(4));
-
             //screen voor feedback maken
             Console.Clear();
-            Console.WriteLine(GetGFLogo(4));
+            Console.WriteLine(GetGFLogo());
             Console.WriteLine("Hier kunt u feedback aanmaken.");
-            Console.WriteLine("U kunt kiezen tussen of u anoniem feedback wilt geven.");
+            Console.WriteLine("U kunt kiezen of u anoniem feedback wilt geven.");
             Console.WriteLine("Anoniem houdt in:");
             Console.WriteLine("-> U naam word niet opgeslagen met feedback.");
             Console.WriteLine("-> feedback word niet gekoppeld aan een reservering.");
@@ -858,7 +855,7 @@ namespace restaurant
 
                     for (int i = 0; i < reserveringen.Count; i++)
                     {
-                        Console.WriteLine(reserveringen[i].ID + " | " + reserveringen[i].aantal + " | " + reserveringen[i].datum);
+                        Console.WriteLine(reserveringen[i].ID + new string(' ', 8 - reserveringen[i].ID.ToString().Length) + "| " + reserveringen[i].aantal + new string(' ', 5 - reserveringen[i].aantal.ToString().Length) + "| " + reserveringen[i].datum);
                     }
                     Console.WriteLine("\"ID | aantal mensen | datum\"");
                     Console.WriteLine("Is het formaat van deze weergave.");
@@ -1108,7 +1105,7 @@ namespace restaurant
                 return huidigScherm;
             }
 
-            else if (key.Item1 == "4")
+            else if (key.Item1 == "0")
             {
                 Console.WriteLine("\nSuccesvol uitgelogd");
                 Console.WriteLine("Druk op een toets om terug te gaan.");
@@ -1129,6 +1126,825 @@ namespace restaurant
             }
         }
             
+
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            DoLogoutOnEveryScreen(screens);
+            return screens;
+        }
+    }
+
+    class ViewFeedbackScreen : Screen
+    {
+        public ViewFeedbackScreen()
+        {
+
+        }
+        public override int DoWork()
+        {
+            List<Feedback> feedback = new List<Feedback>();
+            feedback = io.GetFeedback(ingelogd.klantgegevens).OrderBy(s => s.datum).ToList();
+            if (feedback.Count == 0)
+            {
+                Console.WriteLine("U heeft nog geen feedback");
+                Console.WriteLine("druk op een knop om terug te gaan");
+                Console.ReadKey();
+                return 5;
+            }
+
+            Console.WriteLine(GetGFLogo());
+            Console.WriteLine("Hier kunt u uw eigen feedback zien en bewerken:");
+            Console.WriteLine("[1] Laat al uw feedback zien");
+            Console.WriteLine("[2] Laat al uw feedback zien vanaf een datum (genoteerd als 1-1-2000)");
+            //Console.WriteLine("[3] Laat al uw feedback zien op beoordeling, tussen de 1 en de 5");
+            Console.WriteLine("[4] Ga terug naar klant menu scherm");
+
+            //als escape, ga terug naar scherm 5
+            (string, int) input = AskForInput(5);
+            if (input.Item2 != -1)
+            {
+                return input.Item2;
+            }
+            if (input.Item1 == "1")
+            {
+                int page = 0;
+                double pos = 0;
+                List<string> pages = new List<string>();
+                do
+                {
+                    pages = new List<string>();
+                    List<List<string>> feedbackstring = Makedubbelboxes(FeedbackToString(feedback));
+                    List<string> boxes = new List<string>();
+                    for (int a = 0; a < feedbackstring.Count; a++)
+                    {
+                        if (a == feedbackstring.Count - 1 && feedbackstring[a][1].Length < 70)
+                        {
+                            if (a == Convert.ToInt32(Math.Floor(pos / 2)))
+                            {
+                                if (a != 0 && a % 6 != 0)
+                                {
+                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50)}));
+                                }
+                                else
+                                {
+                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 50, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50)}));
+                                }
+                            }
+                            else
+                            {
+                                if (a != 0 && a % 6 != 0)
+                                {
+                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true));
+                                }
+                                else
+                                {
+                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 50, true));
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            if (a == Convert.ToInt32(Math.Floor(pos / 2)))
+                            {
+                                if (pos % 2 == 0 || pos == 0)
+                                {
+                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length) + "##  " + new string(' ', 50),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length) + "##  " + new string(' ', 50),
+                                    new string(' ', 50) + "##  " + new string(' ', 50) }));
+                                }
+                                else
+                                {
+                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string> {
+                                    new string(' ', 50) + "##  " + "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
+                                    new string(' ', 50) + "##  " + "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50) + "##  " + new string(' ', 50)}));
+                                }
+                            }
+                            else
+                            {
+                                boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true));
+                            }
+                        }
+                    }
+
+                    pages = MakePages(boxes, 3);
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(3));
+                    Console.WriteLine($"Dit is uw feedback op pagina {page + 1} van de {pages.Count}:");
+                    if (feedbackstring[feedbackstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
+                    {
+                        Console.WriteLine(pages[page] + new string('#', 56));
+                    }
+                    else
+                    {
+                        Console.WriteLine(pages[page] + new string('#', 110));
+                    }
+
+                    var result = Nextpage(page, pages.Count - 1, pos, (boxes.Count - 1) * 2, 10);
+                    pos = result.Item3;
+                    if (result.Item2 != -1 && result.Item2 != -2)
+                    {
+                        return result.Item2;
+                    }
+                    else if (result.Item1 == -1 && result.Item2 == -1)
+                    {
+                        return EditFeedback(MakeFeedbackBox(feedback[Convert.ToInt32(pos)]), feedback[Convert.ToInt32(pos)]);
+                    }
+                    else if (result.Item1 == -2 && result.Item2 == -2)
+                    {
+                        Console.Clear();
+                        Console.WriteLine(GetGFLogo());
+                        Console.WriteLine(MakeFeedbackBox(feedback[Convert.ToInt32(pos)]) + "\n");
+                        Console.WriteLine("Weet u zeker dat u deze feedback wilt verwijderen? ja | nee");
+
+                        input = AskForInput(10);
+                        if (input.Item2 != -1)
+                        {
+                            return input.Item2;
+                        }
+                        else if (input.Item1 == "0")
+                        {
+                            logoutUpdate = true;
+                            Logout();
+                            return 0;
+                        }
+                        else if (input.Item1 == "ja")
+                        {
+                            code_gebruiker.DeleteReview(feedback[Convert.ToInt32(pos)].ID, ingelogd.klantgegevens);
+                            Console.WriteLine("\n Feedback is verwijderd");
+                            Console.WriteLine("Druk op een knop om verder te gaan...");
+                            Console.ReadKey();
+                            return 10;
+
+                        }
+                        else if (input.Item1 == "nee")
+                        {
+                            return 10;
+                        }
+                        else
+                        {
+                            Console.WriteLine("\n U moet wel een jusite keuze maken");
+                            Console.WriteLine("Druk op een knop om verder te gaan...");
+                            Console.ReadKey();
+                            return 10;
+                        }
+                    }
+                    page = result.Item1;
+                } while (true);
+            }
+            else if (input.Item1 == "2")
+            {
+                Console.WriteLine("\n Vul hieronder de datum in vanaf wanneer u uw reviews wilt zien");
+                (string, int) choice = AskForInput(10);
+                if (choice.Item2 != -1)
+                {
+                    return choice.Item2;
+                }
+                int page = 0;
+                try
+                {
+
+                    DateTime date = Convert.ToDateTime(choice.Item1);
+                    if (date >= DateTime.Now)
+                    {
+                        Console.WriteLine("\nU moet wel een datum in het verleden invoeren.");
+                        Console.WriteLine("Druk op en knop om verder te gaan.");
+                        Console.ReadKey();
+                        return 10;
+                    }
+                    double pos = 0;
+                    List<string> pages = new List<string>();
+                    do
+                    {
+                        pages = new List<string>();
+                        List<Feedback> feedbackfiler = feedback.Where(d => d.datum >= date).ToList();
+                        List<List<string>> feedbackstring = Makedubbelboxes(FeedbackToString(feedback));
+                        List<string> boxes = new List<string>();
+                        for (int a = 0; a < feedbackstring.Count; a++)
+                        {
+                            if (a == feedbackstring.Count - 1 && feedbackstring[a][1].Length < 70)
+                            {
+                                if (a == Convert.ToInt32(Math.Floor(pos / 2)))
+                                {
+                                    if (a != 0 && a % 6 != 0)
+                                    {
+                                        boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50)}));
+                                    }
+                                    else
+                                    {
+                                        boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 50, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50)}));
+                                    }
+                                }
+                                else
+                                {
+                                    if (a != 0 && a % 6 != 0)
+                                    {
+                                        boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true));
+                                    }
+                                    else
+                                    {
+                                        boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 50, true));
+                                    }
+
+                                }
+                            }
+                            else
+                            {
+                                if (a == Convert.ToInt32(Math.Floor(pos / 2)))
+                                {
+                                    if (pos % 2 == 0 || pos == 0)
+                                    {
+                                        boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length) + "##  " + new string(' ', 50),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length) + "##  " + new string(' ', 50),
+                                    new string(' ', 50) + "##  " + new string(' ', 50) }));
+                                    }
+                                    else
+                                    {
+                                        boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string> {
+                                    new string(' ', 50) + "##  " + "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
+                                    new string(' ', 50) + "##  " + "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50) + "##  " + new string(' ', 50)}));
+                                    }
+                                }
+                                else
+                                {
+                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true));
+                                }
+                            }
+                        }
+
+                        pages = MakePages(boxes, 3);
+                        if (pages.Count == 0)
+                        {
+                            Console.WriteLine("\nVanaf deze datum heeft u nog geen feedback geschreven.");
+                            Console.WriteLine("Druk op en knop om verder te gaan.");
+                            Console.ReadKey();
+                            return 10;
+                        }
+                        Console.Clear();
+                        Console.WriteLine(GetGFLogo(3));
+                        Console.WriteLine($"Dit is uw feedback op pagina {page + 1} van de {pages.Count}:");
+                        if (feedbackstring[feedbackstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
+                        {
+                            Console.WriteLine(pages[page] + new string('#', 56));
+                        }
+                        else
+                        {
+                            Console.WriteLine(pages[page] + new string('#', 110));
+                        }
+                        var result = Nextpage(page, pages.Count - 1, pos, (boxes.Count - 1) * 2, 10);
+                        pos = result.Item3;
+                        if (result.Item2 != -1 && result.Item2 != -1)
+                        {
+                            return result.Item2;
+                        }
+                        else if (result.Item1 == -1 && result.Item2 == -1)
+                        {
+                            return EditFeedback(MakeFeedbackBox(feedbackfiler[Convert.ToInt32(pos)]), feedbackfiler[Convert.ToInt32(pos)]);
+                        }
+                        else if (result.Item1 == -2 && result.Item2 == -2)
+                        {
+                            Console.Clear();
+                            Console.WriteLine(GetGFLogo());
+                            Console.WriteLine(MakeFeedbackBox(feedbackfiler[Convert.ToInt32(pos)]) + "\n");
+                            Console.WriteLine("Weet u zeker dat u deze feedback wilt verwijderen? ja | nee");
+
+                            input = AskForInput(10);
+                            if (input.Item2 != -1)
+                            {
+                                return input.Item2;
+                            }
+                            else if (input.Item1 == "0")
+                            {
+                                logoutUpdate = true;
+                                Logout();
+                                return 0;
+                            }
+                            else if (input.Item1 == "ja")
+                            {
+                                code_gebruiker.DeleteReview(feedback[Convert.ToInt32(pos)].ID, ingelogd.klantgegevens);
+                                Console.WriteLine("\n Feedback is verwijderd");
+                                Console.WriteLine("Druk op een knop om verder te gaan...");
+                                Console.ReadKey();
+                                return 10;
+
+                            }
+                            else if (input.Item1 == "nee")
+                            {
+                                return 10;
+                            }
+                            else
+                            {
+                                Console.WriteLine("\n U moet wel een jusite keuze maken");
+                                Console.WriteLine("Druk op een knop om verder te gaan...");
+                                Console.ReadKey();
+                                return 10;
+                            }
+                        }
+                        page = result.Item1;
+                    } while (true);
+                }
+                catch
+                {
+                    Console.WriteLine("U moet wel een geldige datum invullen op deze manier: 1-1-2000");
+                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.ReadKey();
+                    return 10;
+                }
+            }
+            /**
+            else if (input.Item1 == "3")
+            {
+                Console.WriteLine("\n Vul hieronder de beoordeling in waarop u uw reviews wilt filteren.");
+                (string, int) choice = AskForInput(10);
+                if (choice.Item2 != -1)
+                {
+                    return choice.Item2;
+                }
+                int page = 0;
+                if (choice.Item1 != "1" && choice.Item1 != "2" && choice.Item1 != "3" && choice.Item1 != "4" && choice.Item1 != "5")
+                {
+                    Console.WriteLine("\nU moet wel een geldige beoordeling invullen tussen de 1 en de 5.");
+                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.ReadKey();
+                    return 10;
+                }
+                double pos = 0;
+                List<string> pages = new List<string>();
+                do
+                {
+                    pages = new List<string>();
+                    List<Feedback> feedbackfiler = feedback.Where(r => r.Rating == Convert.ToInt32(choice.Item1)).ToList();
+                    List<List<string>> feedbackstring = Makedubbelboxes(FeedbackToString(feedback));
+                    List<string> boxes = new List<string>();
+
+                    for (int a = 0; a < feedbackstring.Count; a++)
+                    {
+                        if (a == feedbackstring.Count - 1 && feedbackstring[a][1].Length < 70)
+                        {
+                            if (a == Convert.ToInt32(Math.Floor(pos / 2)))
+                            {
+                                if (a != 0 && a % 6 != 0)
+                                {
+                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50)}));
+                                }
+                                else
+                                {
+                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 50, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50)}));
+                                }
+                            }
+                            else
+                            {
+                                if (a != 0 && a % 6 != 0)
+                                {
+                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true));
+                                }
+                                else
+                                {
+                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 50, true));
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            if (a == Convert.ToInt32(Math.Floor(pos / 2)))
+                            {
+                                if (pos % 2 == 0 || pos == 0)
+                                {
+                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string>{
+                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length) + "##  " + new string(' ', 50),
+                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length) + "##  " + new string(' ', 50),
+                                    new string(' ', 50) + "##  " + new string(' ', 50) }));
+                                }
+                                else
+                                {
+                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string> {
+                                    new string(' ', 50) + "##  " + "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
+                                    new string(' ', 50) + "##  " + "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50) + "##  " + new string(' ', 50)}));
+                                }
+                            }
+                            else
+                            {
+                                boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true));
+                            }
+                        }
+                    }
+
+                    pages = MakePages(boxes, 3);
+
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(3));
+                    Console.WriteLine($"Dit zijn uw reviews op pagina {page + 1} van de {pages.Count}:");
+                    if (feedbackstring[feedbackstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
+                    {
+                        Console.WriteLine(pages[page] + new string('#', 56));
+                    }
+                    else
+                    {
+                        Console.WriteLine(pages[page] + new string('#', 110));
+                    }
+                    var result = Nextpage(page, pages.Count - 1, pos, (boxes.Count - 1) * 2, 10);
+                    pos = result.Item3;
+                    if (result.Item2 != -1 && result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+                    else if (result.Item1 == -1 && result.Item2 == -1)
+                    {
+                        return EditFeedback(MakeFeedbackBox(reviewsfiler[Convert.ToInt32(pos)]), reviewsfiler[Convert.ToInt32(pos)]);
+                    }
+                    else if (result.Item1 == -2 && result.Item2 == -2)
+                    {
+                        Console.Clear();
+                        Console.WriteLine(GetGFLogo(1));
+                        Console.WriteLine(MakeFeedbackBox(reviewsfiler[Convert.ToInt32(pos)]) + "\n");
+                        Console.WriteLine("Weet u zeker dat u deze review wilt verwijderen? ja | nee");
+
+                        input = AskForInput(10);
+                        if (input.Item2 != -1)
+                        {
+                            return input.Item2;
+                        }
+                        else if (input.Item1 == "1")
+                        {
+                            logoutUpdate = true;
+                            Logout();
+                            return 0;
+                        }
+                        else if (input.Item1 == "ja")
+                        {
+                            code_gebruiker.DeleteReview(reviews[Convert.ToInt32(pos)].ID, ingelogd.klantgegevens);
+                            Console.WriteLine("\n Review is verwijderd");
+                            Console.WriteLine("Druk op een knop om verder te gaan...");
+                            Console.ReadKey();
+                            return 10;
+
+                        }
+                        else if (input.Item1 == "nee")
+                        {
+                            return 10;
+                        }
+                        else
+                        {
+                            Console.WriteLine("\n U moet wel een jusite keuze maken");
+                            Console.WriteLine("Druk op een knop om verder te gaan...");
+                            Console.ReadKey();
+                            return 10;
+                        }
+                    }
+                    page = result.Item1;
+                } while (true);
+            }
+            **/
+            else if (input.Item1 == "4")
+            {
+                return 5;
+            }
+            else if (input.Item1 == "0")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+            else
+            {
+                Console.WriteLine("U moet wel een juiste keuze maken...");
+                Console.WriteLine("Druk op en knop om verder te gaan.");
+                Console.ReadKey();
+                return 10;
+            }
+        }
+
+        private int EditFeedback(string feedbackstr, Feedback feedback)
+        {
+            Feedback newfeedback = new Feedback();
+            Console.Clear();
+            Console.WriteLine(GetGFLogo());
+            Console.WriteLine("Hier kunt u uw feedback bewerken:");
+            Console.WriteLine(feedbackstr + "\n");
+
+            Console.WriteLine("Wilt u uw feedback anoniem maken? ja | nee");
+            (string, int) input = AskForInput(10);
+            if (input.Item2 != -1)
+            {
+                return input.Item2;
+            }
+            else if (input.Item1 == "ja")
+            {
+                newfeedback.annomeme = true;
+                newfeedback.Klantnummer = -1;
+                newfeedback.ID = feedback.ID;
+                newfeedback.reservering_ID = -1;
+                newfeedback.datum = new DateTime();
+            }
+            else if (input.Item1 == "nee")
+            {
+                newfeedback.annomeme = false;
+                newfeedback.Klantnummer = feedback.Klantnummer;
+                newfeedback.ID = feedback.ID;
+                newfeedback.reservering_ID = feedback.reservering_ID;
+                newfeedback.datum = feedback.datum;
+            }
+            else if (input.Item1 == "0")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+            else
+            {
+                Console.WriteLine("\n U moet wel een juiste keuze maken");
+                Console.WriteLine("Druk op een knop om verder te gaan...");
+                Console.ReadKey();
+                EditFeedback(feedbackstr, feedback);
+                return 10;
+            }
+
+            Console.WriteLine("U Feedback mag niet langer zijn dan 160 tekens.");
+            Console.WriteLine("\n Type hier uw bericht: ");
+            input = AskForInput(10);
+            if (input.Item2 != -1)
+            {
+                return input.Item2;
+            }
+            else if (input.Item1.Length > 160)
+            {
+                Console.WriteLine("\n Uw bericht mag niet langer zijn dan 160 tekens");
+                Console.WriteLine("Druk op een knop om verder te gaan...");
+                Console.ReadKey();
+                EditFeedback(feedbackstr, feedback);
+                return 10;
+            }
+            else if (input.Item1.Length == 0)
+            {
+                Console.WriteLine("\n u moet wel een bericht achterlaten");
+                Console.WriteLine("Druk op een knop om verder te gaan...");
+                Console.ReadKey();
+                EditFeedback(feedbackstr, feedback);
+                return 10;
+            }
+            else if (input.Item1 == "6")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+            newfeedback.message = input.Item1;
+
+            /*
+            //a:
+            Console.WriteLine("\n Typ hier uw rating: ");
+            input = AskForInput(10);
+            if (input.Item2 != -1)
+            {
+                return input.Item2;
+            }
+            else if (!new List<string> { "1", "2", "3", "4", "5" }.Contains(input.Item1))
+            {
+                Console.WriteLine($"\n {input.Item1} is geen geldige rating. U kunt 1 t/m 5 invullen.");
+                Console.WriteLine("Druk op een knop om verder te gaan...");
+                Console.ReadKey();
+                goto a;
+            }
+            else if (input.Item1 == "6")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+            newfeedback.Rating = Convert.ToInt32(input.Item1);
+            */
+
+        b:
+            Console.Clear();
+            Console.WriteLine(GetGFLogo());
+            Console.WriteLine("Bewerkte review:");
+            if (!newfeedback.annomeme)
+            {
+                Console.WriteLine("Voornaam: " + ingelogd.klantgegevens.voornaam);
+                Console.WriteLine("Achternaam: " + ingelogd.klantgegevens.achternaam);
+            }
+            Console.WriteLine("Bericht: " + newfeedback.message);
+
+            Console.WriteLine("\nWilt u deze bewerking en opslaan? ja | nee");
+            input = AskForInput(10);
+            if (input.Item2 != -1)
+            {
+                return input.Item2;
+            }
+            else if (input.Item1 == "ja")
+            {
+                if (!newfeedback.annomeme)
+                {
+                    code_gebruiker.OverwriteFeedback(newfeedback.ID, ingelogd.klantgegevens, newfeedback.message);
+                }
+                else
+                {
+                    code_gebruiker.OverwriteFeedback(newfeedback.ID, newfeedback.message);
+                }
+                Console.WriteLine("\n Feedback is bijgewerkt");
+                Console.WriteLine("Druk op een knop om verder te gaan...");
+                Console.ReadKey();
+                return 10;
+            }
+            else if (input.Item1 == "nee")
+            {
+                return 10;
+            }
+            else if (input.Item1 == "0")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+            else
+            {
+                Console.WriteLine("\n U moet wel een jusite keuze maken");
+                Console.WriteLine("Druk op een knop om verder te gaan...");
+                Console.ReadKey();
+                goto b;
+            }
+        }
+
+        private string MakeFeedbackBox(Feedback feedback)
+        {
+            (string, string) employeeName = io.GetEmployee(feedback.ID);
+            string output = "";
+            output += new string('#', 56) + "\n";
+            output += "#  " + new string(' ', 50) + "  #\n";
+            output += "#  " + new string(' ', 50) + "  #\n";
+            output += "#  " + "Voornaam: " + ingelogd.klantgegevens.voornaam + new string(' ', 50 - ("Voornaam: " + ingelogd.klantgegevens.voornaam).Length) + "  #\n";
+            output += "#  " + "Achternaam: " + ingelogd.klantgegevens.achternaam + new string(' ', 50 - ("Achternaam: " + ingelogd.klantgegevens.achternaam).Length) + "  #\n";
+
+            List<string> msgparts1 = new List<string>();
+            string message = feedback.message;
+
+            if (message.Length > 50 - "Feedback: ".Length)
+            {
+                if (message.LastIndexOf(' ') > 50 || message.LastIndexOf(' ') == -1)
+                {
+                    msgparts1.Add(message.Substring(0, 50 - "Feedback: ".Length));
+                }
+                else
+                {
+                    msgparts1.Add(message.Substring(0, message.Substring(0, 50 - ("Feedback: ").Length).LastIndexOf(' ')));
+                }
+
+                message = message.Remove(0, msgparts1[0].Length + 1);
+                int count = 1;
+                while (message.Length > 50)
+                {
+                    if (message.LastIndexOf(' ') > 50 || message.LastIndexOf(' ') == -1)
+                    {
+                        msgparts1.Add(message.Substring(0, 50));
+                    }
+                    else
+                    {
+                        msgparts1.Add(message.Substring(0, message.Substring(0, 50).LastIndexOf(' ')));
+                    }
+
+                    message = message.Remove(0, msgparts1[count].Length + 1);
+                    count++;
+                }
+                msgparts1.Add(message);
+
+                output += "#  " + "Feedback: " + msgparts1[0] + new string(' ', 50 - ("Feedback: " + msgparts1[0]).Length) + "  #\n";
+                for (int a = 1; a < msgparts1.Count; a++)
+                {
+                    output += "#  " + msgparts1[a] + new string(' ', 50 - msgparts1[a].Length) + "  #\n";
+                }
+            }
+            else
+            {
+                output += "#  " + "Feedback: " + message + new string(' ', 50 - ("Feedback: " + message).Length) + "  #\n";
+            }
+
+            output += "#  " + "Ontvanger: " + employeeName.Item1+ " "+ employeeName.Item2  + new string(' ', 50 - ("Ontvanger: " + employeeName.Item1 + " " + employeeName.Item2).Length) + "  #\n";
+            output += "#  " + "Datum: " + feedback.datum + new string(' ', 50 - ("Datum: " + feedback.datum).Length) + "  #\n";
+            output += "#  " + new string(' ', 50) + "  #\n";
+            output += "#  " + new string(' ', 50) + "  #\n";
+            output += new string('#', 56);
+
+            return output;
+        }
+
+        private List<List<string>> FeedbackToString(List<Feedback> feedback)
+        {
+            List<List<string>> output = new List<List<string>>();
+            for (int a = 0; a < feedback.Count; a++)
+            {
+                List<string> block = new List<string>();
+                //block += new string('#', 56);
+                block.Add(new string(' ', 50));
+                block.Add(new string(' ', 50));
+                if (!feedback[a].annomeme)
+                {
+                    block.Add("Voornaam: " + ingelogd.klantgegevens.voornaam + new string(' ', 50 - ("Voornaam: " + ingelogd.klantgegevens.voornaam).Length));
+                    block.Add("Achternaam: " + ingelogd.klantgegevens.achternaam + new string(' ', 50 - ("Achternaam: " + ingelogd.klantgegevens.achternaam).Length));
+                }
+                else
+                {
+                    block.Add("Anoniem" + new string(' ', 50 - "Anoniem".Length));
+                    block.Add(new string(' ', 50));
+                }
+
+                List<string> msgparts1 = new List<string>();
+                string message = feedback[a].message;
+
+                if (message.Length > 50 - "Feedback: ".Length)
+                {
+                    Console.WriteLine(message.LastIndexOf(' '));
+                    if (message.IndexOf(' ') > 50 || message.IndexOf(' ') == -1)
+                    {
+                        msgparts1.Add(message.Substring(0, 50 - "Feedback: ".Length));
+                    }
+                    else
+                    {
+                        msgparts1.Add(message.Substring(0, message.Substring(0, 50 - ("Feedback: ").Length).LastIndexOf(' ')));
+                    }
+
+                    message = message.Remove(0, msgparts1[0].Length + 1);
+                    int count = 1;
+                    while (message.Length > 50)
+                    {
+                        if (message.IndexOf(' ') > 50 || message.IndexOf(' ') == -1)
+                        {
+                            msgparts1.Add(message.Substring(0, 50));
+                        }
+                        else
+                        {
+                            msgparts1.Add(message.Substring(0, message.Substring(0, 50).LastIndexOf(' ')));
+                        }
+
+                        message = message.Remove(0, msgparts1[count].Length + 1);
+                        count++;
+                    }
+                    msgparts1.Add(message);
+
+                    block.Add("Feedback: " + msgparts1[0] + new string(' ', 50 - ("Feedback: " + msgparts1[0]).Length));
+                    for (int b = 1; b < 4; b++)
+                    {
+                        if (b < msgparts1.Count)
+                        {
+                            block.Add(msgparts1[b] + new string(' ', 50 - msgparts1[b].Length));
+                        }
+                        else
+                        {
+                            block.Add(new string(' ', 50));
+                        }
+                    }
+                }
+                else
+                {
+                    block.Add("Feedback: " + message + new string(' ', 50 - ("Feedback: " + message).Length));
+                    block.Add(new string(' ', 50));
+                    block.Add(new string(' ', 50));
+                    block.Add(new string(' ', 50));
+                }
+
+                block.Add("Ontvanger: " + io.GetEmployee(feedback[a].recipient).Item1 + " "+ io.GetEmployee(feedback[a].recipient).Item2 + new string(' ', 50 - ("Ontvanger: " + io.GetEmployee(feedback[a].recipient).Item1 + " " + io.GetEmployee(feedback[a].recipient).Item2).Length));
+                if (!feedback[a].annomeme)
+                {
+                    block.Add("Datum: " + feedback[a].datum + new string(' ', 50 - ("Datum: " + feedback[a].datum).Length));
+                }
+                else
+                {
+                    block.Add(new string(' ', 50));
+                }
+
+                block.Add(new string(' ', 50));
+                block.Add(new string(' ', 50));
+                //block += new string('#', 56);
+
+                output.Add(block);
+            }
+
+
+            return output;
+        }
 
         public override List<Screen> Update(List<Screen> screens)
         {
