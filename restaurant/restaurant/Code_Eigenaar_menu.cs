@@ -146,17 +146,14 @@ namespace restaurant
             return ingredients;
         }
 
-        public void DeleteExpiredIngredients(List<Ingredient> ingredient)
+        public void DeleteExpiredIngredients()
         {
             database = io.GetDatabase();
             for (int i = 0; i < database.ingredienten.Count; i++)
             {
-                for (int j = 0; j < ingredient.Count; j++)
+                if (database.ingredienten[i].houdbaarheids_datum <= DateTime.Now)
                 {
-                    if (database.ingredienten[i].Equals(ingredient[j]))
-                    {
-                        database.ingredienten.RemoveAt(i);
-                    }
+                    database.ingredienten.RemoveAt(i);
                 }
             }
             io.Savedatabase(database);
