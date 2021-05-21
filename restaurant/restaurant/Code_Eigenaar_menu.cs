@@ -140,9 +140,10 @@ namespace restaurant
             {
                 if (ingredients[i].houdbaarheids_datum > DateTime.Now)
                 {
-                    ingredients.RemoveAt(i);
+                    ingredients[i] = new Ingredient();
                 }
             }
+            ingredients.RemoveAll(x => x.Equals(new Ingredient()));
             return ingredients;
         }
 
@@ -153,9 +154,10 @@ namespace restaurant
             {
                 if (database.ingredienten[i].houdbaarheids_datum <= DateTime.Now)
                 {
-                    database.ingredienten.RemoveAt(i);
+                    database.ingredienten[i] = new Ingredient();
                 }
             }
+            database.ingredienten.RemoveAll(x => x.Equals(new Ingredient()));
             io.Savedatabase(database);
         }
 
