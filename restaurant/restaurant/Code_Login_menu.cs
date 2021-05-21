@@ -32,6 +32,20 @@ namespace restaurant
                     return login_Gegevens;
                 }
             }
+
+            foreach (var werknemer in database.werknemers)
+            {
+                if (email == werknemer.login_gegevens.email && password == werknemer.login_gegevens.password)
+                {
+                    return werknemer.login_gegevens;
+                }
+            }
+
+            if (email == database.eigenaar.login_gegevens.email && password == database.eigenaar.login_gegevens.password)
+            {
+                return database.eigenaar.login_gegevens;
+            }
+
             return new Login_gegevens
             {
                 type = "No account found"
