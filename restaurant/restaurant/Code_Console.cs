@@ -32,13 +32,13 @@ namespace restaurant
             screens.Add(new OwnerMenuScreen());
             screens.Add(new OwnerMenuScreen()); // Gerechten
             screens.Add(new OwnerMenuScreen()); // Reservering
-            screens.Add(new OwnerMenuScreen()); // Ingredienten
+            screens.Add(new IngredientsScreen()); // Ingredienten
             screens.Add(new OwnerMenuScreen()); // Inkomsten
             #endregion
             #region Medewerker
             screens.Add(new EmployeeMenuScreen());
-            screens.Add(new EmployeeMenuScreen()); // Reserveringen
-            screens.Add(new EmployeeMenuScreen()); // Tafels koppelen
+            screens.Add(new GetReservationsScreen()); // Reserveringen
+            screens.Add(new AddTableToReservationScreen()); // Tafels koppelen
             #endregion
             currentScreen = 0;
         }
@@ -69,17 +69,17 @@ namespace restaurant
         protected bool logoutUpdate = false;
 
         protected const string GFLogo = @" _____                     _  ______         _         
-|  __ \                   | | |  ___|       (_)            
+|  __ \                   | | |  ___|       (_)                      Druk op de esc knop om een scherm terug te gaan.
 | |  \/_ __ __ _ _ __   __| | | |_ _   _ ___ _  ___  _ __  
 | | __| '__/ _` | '_ \ / _` | |  _| | | / __| |/ _ \| '_ \ 
 | |_\ \ | | (_| | | | | (_| | | | | |_| \__ \ | (_) | | | |
  \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|";
 
         protected const string GFLogoWithLogin = @" _____                     _  ______         _         
-|  __ \                   | | |  ___|       (_)                         U bent nu ingelogd als {0} {1}
-| |  \/_ __ __ _ _ __   __| | | |_ _   _ ___ _  ___  _ __               [{2}] Log uit
+|  __ \                   | | |  ___|       (_)                       U bent nu ingelogd als {0} {1}
+| |  \/_ __ __ _ _ __   __| | | |_ _   _ ___ _  ___  _ __             [0] Log uit
 | | __| '__/ _` | '_ \ / _` | |  _| | | / __| |/ _ \| '_ \ 
-| |_\ \ | | (_| | | | | (_| | | | | |_| \__ \ | (_) | | | |
+| |_\ \ | | (_| | | | | (_| | | | | |_| \__ \ | (_) | | | |           Druk op de esc knop om een scherm terug te gaan.
  \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|";
 
         protected const string DigitsOnlyMessage = "Alleen maar cijfers mogen ingevoerd worden!";
@@ -95,12 +95,20 @@ namespace restaurant
         protected const string LEFT_ARROW = "LEFTARROW";
         protected const string RIGHT_ARROW = "RIGHTARROW";
 
+        [Obsolete()]
         /// <summary>
         /// Returns a variant of the GFLogo string based on wether the user is logged in or not.
         /// </summary>
         /// <param name="highestNumber">This is the number to display the logout choice with.</param>
         /// <returns>GFLogo string</returns>
-        protected string GetGFLogo(int highestNumber = -1) => !IsLoggedIn() || highestNumber < 0 ? GFLogo + "\n" : string.Format(GFLogoWithLogin, ingelogd.klantgegevens.voornaam, ingelogd.klantgegevens.achternaam, highestNumber);
+        protected string GetGFLogo(int highestNumber = -1) => !IsLoggedIn() || highestNumber < 0 ? GFLogo + "\n" : string.Format(GFLogoWithLogin, ingelogd.klantgegevens.voornaam, ingelogd.klantgegevens.achternaam);
+
+        /// <summary>
+        /// Returns a variant of the GFLogo string based on wether the user is logged in or not.
+        /// </summary>
+        /// <param name="highestNumber">This is the number to display the logout choice with.</param>
+        /// <returns>GFLogo string</returns>
+        protected string GetGFLogo() => !IsLoggedIn() ? GFLogo + "\n" : string.Format(GFLogoWithLogin, ingelogd.klantgegevens.voornaam, ingelogd.klantgegevens.achternaam);
 
         /// <summary>
         /// This is the main function of the current screen. Here is all the logic of that current screen
@@ -393,7 +401,7 @@ namespace restaurant
             (string, int, string) result = AskForInput(
                 0,
                 c => char.IsDigit(c),
-                input => (new string[12] { "0", "1", "2", "3", "4", "100", "101", "102", "103", "104", "105", "1000" }).Contains(input),
+                input => (new string[11] { "1", "2", "3", "4", "100", "101", "102", "103", "104", "105", "1000" }).Contains(input),
                 (DigitsOnlyMessage, InvalidInputMessage),
                 false
             );
@@ -423,7 +431,7 @@ namespace restaurant
                     }
                     else if (ingelogd.type == "Medewerker")
                     {
-                        return 5;
+                        return 16;
                     }
                     else
                     {
@@ -578,28 +586,29 @@ namespace restaurant
         {
             List<Review> reviews = io.GetReviews();
 
-            Console.WriteLine(GetGFLogo(2));
+            Console.WriteLine(GetGFLogo());
             Console.WriteLine("Dit zijn alle reviews die zijn achtergelaten door onze klanten: \n");
+
+            int maxLength = 40;
 
             if (reviews.Count > 0)
             {
-                List<List<string>> reviewsString = ReviewsToString(io.GetReviews());
+                List<List<string>> reviewsString = ReviewsToString(reviews);
                 List<string> boxes = new List<string>();
 
                 foreach (List<string> review in reviewsString)
                 {
-                    boxes.Add(BoxAroundText(review, "#", 2, 2, 40, true));
+                    boxes.Add(BoxAroundText(review, "#", 2, 2, maxLength, true));
                 }
 
                 var pages = MakePages(boxes, 3);
-                Console.WriteLine(pages[0]);
             }
             else
             {
                 Console.WriteLine("Er zijn nog geen reviews achtergelaten.");
             }
 
-            string choice = Console.ReadLine();
+            string choice = AskForInput();
 
             if (choice == "1")
             {
@@ -633,7 +642,7 @@ namespace restaurant
         {
             steps.Add("Uw voornaam: ");
             steps.Add("Uw achternaam: ");
-            steps.Add("Uw geboortedatum genoteerd als dd/mm/yyyy: ");
+            steps.Add("Uw geboortedatum genoteerd als dag-maand-jaar: ");
             steps.Add("Hieronder vult u uw adres in. Dit is in verband met het bestellen van eten.\nUw woonplaats: ");
             steps.Add("Uw postcode: ");
             steps.Add("Uw straatnaam: ");
@@ -645,13 +654,21 @@ namespace restaurant
             output.Add(GetGFLogo());
             output.Add("Hier kunt u een account aanmaken om o.a. reververingen te plaatsen voor GrandFusion!");
 
+            
             List<Login_gegevens> login_Gegevens = io.GetDatabase().login_gegevens;
+
+            if (login_Gegevens == null)
+            {
+                login_Gegevens = new List<Login_gegevens>();
+                io.GetDatabase().login_gegevens = login_Gegevens;
+            }
+
             lg = new Login_gegevens()
             {
                 type = "Gebruiker",
                 klantgegevens = new Klantgegevens()
                 {
-                    klantnummer = login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1,
+                    klantnummer = login_Gegevens.Count == 0 ? 0 : login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1,
                     adres = new adres()
                     {
                         land = "NL",
@@ -671,7 +688,7 @@ namespace restaurant
                 Console.WriteLine("\n" + result.Item3);
                 Console.WriteLine("Druk op een knop om verder te gaan.");
                 Console.ReadKey();
-                return result.Item2;
+                return 3;
             }
 
             void Reset()
@@ -727,7 +744,7 @@ namespace restaurant
                     result = AskForInput(
                         0,
                         c => char.IsDigit(c) || c == '/' || c == '-', 
-                        input => DateTime.TryParseExact(input, "dd/mm/yyyy", new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime), 
+                        input => DateTime.TryParse(input, out resultDateTime), 
                         ("Het formaat van de datum die u heeft ingevoerd klopt niet. Probeer het opnieuw.", "De datum die u hebt ingevoerd klopt niet, probeer het opnieuw.")
                     );
 
@@ -884,14 +901,19 @@ namespace restaurant
                         else if (code_login.Register(lg) == "This email and account type is already in use")
                         {
                             Console.WriteLine("Dit account bestaat al, probeer een ander email adres:");
-                            lg.email = Console.ReadLine();
+
+                            result = AskForInput(0, null, input => (new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")).IsMatch(input), (null, "De email is niet juist er mist een @ of een ."));
+
+                            if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                            lg.email = result.Item1;
                             goto a;
                         }
                         else if (code_login.Register(lg) == "Password must contain at least 8 characters, 1 punctuation mark and 1 number.")
                         {
                             Console.WriteLine("Het wachtwoord moet minimaal 8 tekens, 1 leesteken en 1 nummer bevatten.");
                             Console.WriteLine("Het wachtwoord voor uw account: ");
-                            lg.password = Console.ReadLine();
+                            lg.password = AskForInput(0).Item1;
                             goto a;
                         }
                     break;
@@ -933,7 +955,7 @@ namespace restaurant
                 Console.WriteLine("U bent ingelogd!");
                 Console.WriteLine("Druk op een toets om terug naar het hoofdmenu te gaan.");
                 Console.ReadKey();
-                return 0;
+                return 5;
             }
         }
 
@@ -957,17 +979,18 @@ namespace restaurant
 
         public override int DoWork()
         {
-            Console.WriteLine(GetGFLogo(7));
+            Console.WriteLine(GetGFLogo());
             Console.WriteLine("Welkom in het klanten menu.");
-            Console.WriteLine("[1] Maak een reservering aan");
-            Console.WriteLine("[2] Maak een review aan");
-            Console.WriteLine("[3] Bekijk en bewerk uw eigen reviews");
-            Console.WriteLine("[4] Maak feedback aan");
-            Console.WriteLine("[5] Bekijk en bewerk uw eigen feedback");
-            Console.WriteLine("[6] Ga terug");
+            Console.WriteLine("[1] Laat alle gerechten zien");
+            Console.WriteLine("[2] Laat alle reviews zien");
+            Console.WriteLine("[3] Maak een reservering aan");
+            Console.WriteLine("[4] Maak een review aan");
+            Console.WriteLine("[5] Bekijk en bewerk uw eigen reviews");
+            Console.WriteLine("[6] Maak feedback aan");
+            Console.WriteLine("[7] Bekijk en bewerk uw eigen feedback");
 
             int possibleValue = -1;
-            int[] choices = new int[7] { 1, 2, 3, 4, 5, 6, 7 };
+            int[] choices = new int[8] { 0, 1, 2, 3, 4, 5, 6, 7 };
 
             (string, int, string) result = AskForInput(
                 0,
@@ -985,21 +1008,23 @@ namespace restaurant
 
             switch (result.Item1)
             {
-                case "1":
-                    return 6;
-                case "2":
-                    return 7;
-                case "3":
-                    return 10;
-                case "4":
-                    return 9;
-                case "5":
-                    return 8;
-                case "6":
-                    return 0;
-                case "7":
+                case "0":
                     LogoutWithMessage();
                     return 0;
+                case "1":
+                    return 1;
+                case "2":
+                    return 2;
+                case "3":
+                    return 6;
+                case "4":
+                    return 7;
+                case "5":
+                    return 10;
+                case "6":
+                    return 9;
+                case "7":
+                    return 8;
             }
 
 
@@ -1022,7 +1047,7 @@ namespace restaurant
 
         public override int DoWork()
         {
-            Console.WriteLine(GetGFLogo(6));
+            Console.WriteLine(GetGFLogo());
             Console.WriteLine("Welkom bij het eigenaars menu.");
             Console.WriteLine("[1] Gerechten");
             Console.WriteLine("[2] Reservering");
