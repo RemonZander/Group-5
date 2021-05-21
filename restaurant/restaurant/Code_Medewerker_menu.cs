@@ -157,6 +157,24 @@ namespace restaurant
         }
     }
 
+    public class AddTableToReservationScreen : Screen
+    {
+        public override int DoWork()
+        {
+            var database = io.GetDatabase();
+            Console.WriteLine(GetGFLogo());
+            Console.WriteLine("Haha nog niks dit, geefme ff");
+            Console.WriteLine("Druk op iets en ik yeet je terug naar de HomeScreen :)");
+            Console.ReadKey();
+            return 0;
+        }
+
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            return screens;
+        }
+    }
+
     public class MakeReservationScreen : Screen
     {
         public override int DoWork()
