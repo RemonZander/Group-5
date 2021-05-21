@@ -1078,6 +1078,7 @@ namespace restaurant
                     {
                         email = names[rnd.Next(0, 2)][rnd.Next(0, 20)] + "," + names[2][rnd.Next(0, 40)] + "@gmail.com",
                         password = "0000",
+                        type = "Medewerker",
                         klantgegevens = new Klantgegevens
                         {
                             voornaam = names[rnd.Next(0, 2)][rnd.Next(0, 20)],
@@ -1097,6 +1098,7 @@ namespace restaurant
                 {
                     email = "Natnael.Tefera@gmail.com",
                     password = "0000",
+                    type = "Eigenaar",
                     klantgegevens = new Klantgegevens
                     {
                         voornaam = "Natnael",
@@ -2496,15 +2498,14 @@ namespace restaurant
                 Console.WriteLine("Hier kunt u een review maken.");
                 Console.WriteLine("U kunt een review schrijven per reservering.");
                 Console.WriteLine("U kunt kiezen uit een van de volgende reserveringen:");
+                Console.WriteLine("\"ID    | aantal mensen    | datum\"");
 
                 //list met alle IDs van reserveringen die nog geen review hebben
                 for (int i = 0; i < reserveringen.Count; i++)
                 {
                     Console.WriteLine(reserveringen[i].ID + new string(' ', 8 - reserveringen[i].ID.ToString().Length) + "| " + reserveringen[i].aantal + new string(' ', 5 - reserveringen[i].aantal.ToString().Length) + "| " + reserveringen[i].datum);
                 }
-
-                Console.WriteLine("\"ID | aantal mensen | datum\"");
-                Console.WriteLine("Is het formaat van deze weergave.\n");
+               
                 Console.WriteLine("Met het ID kunt u selecteren over welk bezoek u een review wilt schrijven.");
 
                 (string, int) choice = ("", -1);
@@ -2518,7 +2519,7 @@ namespace restaurant
                         return choice.Item2;
                     }
                     //als de input niet een van de getallen is in de lijst met IDs, invalid input
-                    if (!new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" }.Contains(choice.Item1) || !reserveringen.Select(i => i.ID).ToList().Contains(Convert.ToInt32(choice.Item1)))
+                    if (!new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" }.Contains(choice.Item1) && !reserveringen.Select(i => i.ID).ToList().Contains(Convert.ToInt32(choice.Item1)))
                     {
                         Console.WriteLine("\nU moet wel een juist ID selecteren");
                         Console.WriteLine("Druk op een knop om verder te gaan...");
