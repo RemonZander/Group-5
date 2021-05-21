@@ -48,7 +48,7 @@ namespace restaurant
             var reserveringenVandaag = new List<Reserveringen>();
             foreach (var reservering in database.reserveringen)
             {
-                if (reservering.datum == datum)
+                if (reservering.datum.ToShortDateString() == datum.ToShortDateString())
                 {
                     reserveringenVandaag.Add(reservering);
                 }
@@ -116,7 +116,6 @@ namespace restaurant
     {
         public override int DoWork()
         {
-            var database = io.GetDatabase();
             Console.WriteLine(GetGFLogo(4));
             Console.WriteLine("Welkom in het medewerkersmenu.");
             Console.WriteLine("\nKies een optie:");
