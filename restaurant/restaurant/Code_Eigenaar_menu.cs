@@ -329,5 +329,22 @@ namespace restaurant
             return populaireGerechten;
         }
     }
-    
+    public class GetReservationsScreen : Screen
+    {
+        public override int DoWork()
+        {
+            Console.WriteLine("Test");
+            List<Reserveringen> reserveringen = code_medewerker.getReserveringen(Convert.ToDateTime("5/1/2021"));
+            foreach (var reservering in reserveringen)
+            {
+                Console.WriteLine(reservering.ID);
+            }
+            Console.ReadKey();
+            return 17;
+        }
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            return screens;
+        }
+    }
 }
