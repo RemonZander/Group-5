@@ -361,6 +361,10 @@ namespace restaurant
                     tafels[i] = reserveringen[a].tafels[i].ID;
                 }
                 block.Add("Gereserveerde Tafels" + new string(' ', 50 - ("Gereserveerde Tafels").Length));
+                if (tafels.Length < 1) 
+                { 
+                    block.Add("Nog geen tafels gekoppeld" + new string(' ', 50 - ("Nog geen tafels gekoppeld").Length)); 
+                }
                 block.Add(string.Join(", ", tafels) + new string(' ', 50 - (string.Join(", ", tafels)).Length));
                 block.Add(new string(' ', 50));
                 output.Add(block);
@@ -383,47 +387,138 @@ namespace restaurant
         public override int DoWork()
         {
             Database database = io.GetDatabase();
-            //List<Reserveringen> reserveringen = database.reserveringen;
             int maxLength = 104;
-            DateTime date = DateTime.Now;
-            List <Reserveringen> reserveringen = code_medewerker.getReserveringen(date);
-            if (reserveringen.Count > 0)
+
+            string date = DateTime.Now.ToShortDateString();
+            Dictionary<string, List<Reserveringen>> reserveringen = new Dictionary<string, List<Reserveringen>>();
+            Dictionary<string, List<Reserveringen>> reserveringenWithoutTables = new Dictionary<string, List<Reserveringen>>();
+            //Add todays reservations to the reservations dictionary
+            reserveringen.Add(date, code_medewerker.getReserveringen(DateTime.Parse(date)));
+            reserveringenWithoutTables.Add(date, code_medewerker.getReserveringenZonderTafel(DateTime.Parse(date)));
+
+            var boxText = BoxAroundText(Makedubbelboxes(code_eigenaar.ReserveringenToString(reserveringen[date])), "#", 2, 0, maxLength, true);
+            var pages = MakePages(boxText, 3);
+            int pageNum = 0;
+            bool onlyWithoutTables = false;
+            do
             {
-                var boxText = BoxAroundText(Makedubbelboxes(code_eigenaar.ReserveringenToString(reserveringen)), "#", 2, 0, maxLength, true);
-                var pages = MakePages(boxText, 3);
-                int pageNum = 0;
-                do
+                Console.Clear();
+                Console.WriteLine(GetGFLogo(true));
+                if (pages.Count > 0)
                 {
-                    Console.Clear();
-                    Console.WriteLine(GetGFLogo(true));
-                    Console.WriteLine("Reserveringen van: " + date);
+                    Console.WriteLine("Reserveringen van: " + date + (date == DateTime.Now.ToShortDateString() ? " (vandaag)" : ""));
+                    Console.WriteLine($"Pagina {pageNum + 1} van de {pages.Count}:");
                     Console.WriteLine(pages[pageNum] + new string('#', maxLength + 6));
-                    var result = Nextpage(pageNum, pages.Count - 1, 16);
+                }
+                else
+                {
+                    Console.WriteLine("Geen reserveringen gevonden op " + date);
+                }
+                Console.WriteLine("Volgende pagina [1]          Vorige pagina [2]");
+                Console.WriteLine("Volgende dag    [3]          Vorige dag    [4]          Naar vandaag [5]");
+                Console.WriteLine();
+                Console.WriteLine(onlyWithoutTables ? "Toon alle reserveringen van deze dag       [6]" : "Toon alleen de reserveringen zonder tafel  [6]");
+                
+                (string, int) choice = AskForInput(16);
+                if (choice.Item1 == null)
+                {
+                    return 16;
+                }
+                if (choice.Item1 == "" || !choice.Item1.All(char.IsDigit))
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Voer een geldige waarde in. Druk een toets in om verder te gaan");
+                    Console.ReadKey();
+                }
+                else
+                {
+                    string newDate = DateTime.Now.ToShortDateString();
 
-                    //if (result.Item1 == 0 && result.Item1 != -1)
-                    //{
-                    //    return 0;
-                    //}
-
-                    reserveringen = code_medewerker.getReserveringen(date.AddDays(-1));
-
-                    if (result.Item2 != -1)
+                    //Check if int is not too big
+                    int inputInt;
+                    bool success = Int32.TryParse(choice.Item1, out inputInt);
+                    if (!success)
                     {
-                        return result.Item2;
+                        inputInt = 0;
                     }
 
-                    pageNum = result.Item1;
-                } while (true);
-            }
-            else
-            {
-                Console.WriteLine(GetGFLogo(true));
-                Console.WriteLine("Er zijn nog geen reserveringen geplaatst (vandaag).");
-                Console.WriteLine("Ga naar vorige dag [1]");
-                Console.WriteLine("Druk op een knop om terug te gaan");
-                Console.ReadKey();
-                return 17;
-            }
+                    switch (inputInt)
+                    {
+                        case 1:
+                            //go to the next page
+                            if (pages.Count > pageNum+1)
+                            {
+                                pageNum++;
+                            }
+                            else
+                            {
+                                Console.WriteLine();
+                                Console.WriteLine("Er is geen volgende pagina beschikbaar. Druk een toets in om verder te gaan.");
+                                Console.ReadKey();
+                            }
+                            break;
+                        case 2:
+                            //go to the previous page
+                            if (pageNum - 1 >= 0)
+                            {
+                                pageNum--;
+                            }
+                            else
+                            {
+                                Console.WriteLine();
+                                Console.WriteLine("Er is geen vorige pagina beschikbaar. Druk een toets in om verder te gaan.");
+                                Console.ReadKey();
+                            }
+                            break;
+                        case 3:
+                            newDate = DateTime.Parse(date).AddDays(1).ToShortDateString();
+                            break;
+                        case 4:
+                            newDate = DateTime.Parse(date).AddDays(-1).ToShortDateString();
+                            break;
+                        case 5:
+                            //go to today
+                            newDate = DateTime.Now.ToShortDateString();
+                            break;
+                        case 6:
+                            onlyWithoutTables = !onlyWithoutTables;
+                            break;
+                        default:
+                            Console.WriteLine();
+                            Console.WriteLine("Voer een geldige waarde in. Druk een toets in om verder te gaan.");
+                            Console.ReadKey();
+                            break;
+                    }
+                    //If the input changes the current visible reserveringen list
+                    if (inputInt == 3 || inputInt == 4 || inputInt == 5 || inputInt == 6)
+                    {
+                        pageNum = 0;
+                        if (inputInt == 3 || inputInt == 4 || inputInt == 5)
+                        {
+                            date = newDate;
+                        }
+                        if (onlyWithoutTables)
+                        {
+                            if (!reserveringenWithoutTables.ContainsKey(date))
+                            {
+                                reserveringenWithoutTables.Add(date, code_medewerker.getReserveringenZonderTafel(DateTime.Parse(date)));
+                            }
+                            boxText = BoxAroundText(Makedubbelboxes(code_eigenaar.ReserveringenToString(reserveringenWithoutTables[date])), "#", 2, 0, maxLength, true);
+                            
+                        }
+                        else
+                        {
+                            if (!reserveringen.ContainsKey(date))
+                            {
+                                reserveringen.Add(date, code_medewerker.getReserveringenZonderTafel(DateTime.Parse(date)));
+                            }
+                            boxText = BoxAroundText(Makedubbelboxes(code_eigenaar.ReserveringenToString(reserveringen[date])), "#", 2, 0, maxLength, true);
+                        }
+                        pages = MakePages(boxText, 3);
+                    }
+                }
+            } while (true);
+            
         }
         public override List<Screen> Update(List<Screen> screens)
         {
