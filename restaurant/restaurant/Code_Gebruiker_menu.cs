@@ -1768,6 +1768,7 @@ namespace restaurant
 
         private List<List<string>> FeedbackToString(List<Feedback> feedback)
         {
+            List<Werknemer> werknemers = new List<Werknemer>(io.GetEmployee());
             List<List<string>> output = new List<List<string>>();
             for (int a = 0; a < feedback.Count; a++)
             {
@@ -1839,7 +1840,14 @@ namespace restaurant
                     block.Add(new string(' ', 50));
                 }
 
-                block.Add("Ontvanger: " + io.GetEmployee(feedback[a].recipient).Item1 + " "+ io.GetEmployee(feedback[a].recipient).Item2 + new string(' ', 50 - ("Ontvanger: " + io.GetEmployee(feedback[a].recipient).Item1 + " " + io.GetEmployee(feedback[a].recipient).Item2).Length));
+                for (int i = 0; i < werknemers.Count; i++)
+                {
+                    if (werknemers[i].ID == feedback[a].recipient)
+                    {
+                        block.Add("Ontvanger: " + werknemers[i].login_gegevens.klantgegevens.voornaam + " " + werknemers[i].login_gegevens.klantgegevens.achternaam + new string(' ', 50 - ("Ontvanger: " + werknemers[i].login_gegevens.klantgegevens.voornaam + " " + werknemers[i].login_gegevens.klantgegevens.achternaam).Length));
+                    }
+                }
+                
                 if (!feedback[a].annomeme)
                 {
                     block.Add("Datum: " + feedback[a].datum + new string(' ', 50 - ("Datum: " + feedback[a].datum).Length));
