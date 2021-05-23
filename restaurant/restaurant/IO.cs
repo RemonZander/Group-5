@@ -250,7 +250,7 @@ namespace restaurant
         }
         #endregion
 
-        #region Get Reviews&Feedback
+        #region Gettters
         /// <summary>
         /// Ophalen van alle reviews, gesorteerd op datum
         /// </summary>
@@ -385,10 +385,10 @@ namespace restaurant
         }
 
         /// <summary>
-        ///  for getting the firstname and lastname of an emploYEET
+        ///  Voor het ophalen van de naam van een medewerker met een ID
         /// </summary>
-        /// <param name="employeeID">The ID of the employee</param>
-        /// <returns>the firstname and lastname of the employee</returns>
+        /// <param name="employeeID">Het ID van de medewerker</param>
+        /// <returns>De voornaam(Item1) en achternaam(Item2) van de medewerker</returns>
         public (string, string) GetEmployee(int employeeID)
         {
             Database database = GetDatabase();
@@ -400,6 +400,45 @@ namespace restaurant
                 }
             }
             return (null, null);
+        }
+
+        /// <summary>
+        /// Voor het ophalen van alle medewerkers
+        /// </summary>
+        /// <returns>Een list met alle medewerkers</returns>
+        public List<Werknemer> GetEmployee()
+        {
+            Database database = GetDatabase();
+            List<Werknemer> werknemers = new List<Werknemer>();
+            if (database.werknemers == null)
+            {
+                return werknemers;
+            }
+            else
+            {
+                foreach (Werknemer werknemer in database.werknemers)
+                {
+                    werknemers.Add(werknemer);
+                }
+            }
+            return werknemers;
+        }
+
+        /// <summary>
+        /// Voor het krijgen van de eigenaar
+        /// </summary>
+        /// <returns>De eigenaar</returns>
+        public Eigenaar GetEigenaar()
+        {
+            Database database = GetDatabase();
+            if(database.eigenaar == null)
+            {
+                return new Eigenaar();
+            }
+            else
+            {
+                return database.eigenaar;
+            }
         }
         #endregion
 

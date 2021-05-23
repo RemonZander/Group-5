@@ -788,7 +788,6 @@ namespace restaurant
             Werknemer feedbackMedewerker = new Werknemer();
 
             #region Check1
-            Database database = io.GetDatabase();
             //pak alle oude reserveringen
             List<Reserveringen> reserveringen = new List<Reserveringen>(code_gebruiker.GetCustomerReservation(ingelogd.klantgegevens, false));
             //lijst met alle reserveringen die al een review hebben
@@ -811,7 +810,7 @@ namespace restaurant
             reserveringen = reserveringen.Except(feedbackReservervations).ToList();
             if (reserveringen.Count == 0)
             {
-                Console.WriteLine(GetGFLogo());
+                Console.WriteLine(GFLogo);
                 Console.WriteLine("Er staan momenteel geen Reserveringen open voor feedback.");
                 Console.WriteLine("Druk op een toets om terug te gaan.");
                 Console.ReadKey();
@@ -821,7 +820,7 @@ namespace restaurant
 
             //screen voor feedback maken
             Console.Clear();
-            Console.WriteLine(GetGFLogo());
+            Console.WriteLine(GetGFLogo(true));
             Console.WriteLine("Hier kunt u feedback aanmaken.");
             Console.WriteLine("U kunt kiezen of u anoniem feedback wilt geven.");
             Console.WriteLine("Anoniem houdt in:");
@@ -851,14 +850,14 @@ namespace restaurant
                 do
                 {
                     Console.Clear();
-                    Console.WriteLine(GetGFLogo());
+                    Console.WriteLine(GetGFLogo(true));
 
                     for (int i = 0; i < reserveringen.Count; i++)
                     {
                         Console.WriteLine(reserveringen[i].ID + new string(' ', 8 - reserveringen[i].ID.ToString().Length) + "| " + reserveringen[i].aantal + new string(' ', 5 - reserveringen[i].aantal.ToString().Length) + "| " + reserveringen[i].datum);
                     }
-                    Console.WriteLine("\"ID | aantal mensen | datum\"");
-                    Console.WriteLine("Is het formaat van deze weergave.");
+                    Console.WriteLine("Hier ziet u alle reserveringen waarover u nog feedback kunt geven.");
+                    Console.WriteLine("het formaat van deze weergave is:  ID | aantal mensen | datum");
                     Console.WriteLine("Met het ID kunt u selecteren over welk bezoek u een review wilt schrijven.");
                     Console.WriteLine("Het ID van u reservering:");
 
@@ -868,14 +867,26 @@ namespace restaurant
                         return huidigScherm;
                     }
 
+                    //als input is 0, logout
+                    if (key.Item1 == "0")
+                    {
+                        Console.WriteLine("\nSuccesvol uitgelogd");
+                        Console.WriteLine("Druk op een toets om terug te gaan.");
+                        Console.ReadKey();
+                        //logout sequence
+                        logoutUpdate = true;
+                        Logout();
+                        return 0;
+                    }
+
                     //is om te kijken of choice een int is
                     try
                     {
                         //kijkt of de invoer in de lijst is, zo niet dan invalid input
                         if (!reserveringen.Select(i => i.ID).ToList().Contains(Convert.ToInt32(key.Item1)))
                         {
-                            Console.WriteLine("\nU moet wel een reservering invoeren.");
-                            Console.WriteLine("Druk op een toets om verder te gaan.");
+                            Console.WriteLine("\nU moet wel geldige Reservering invoeren.");
+                            Console.WriteLine("Druk op een toets om opnieuw te kiezen.");
                             Console.ReadKey();
                         }
                         else
@@ -885,6 +896,7 @@ namespace restaurant
                             //breek de loop
                             repeat = true;
                         }
+
                     }
                     //geen int ingevoerd
                     catch
@@ -899,9 +911,9 @@ namespace restaurant
                 do
                 {
                     Console.Clear();
-                    Console.WriteLine(GetGFLogo());
+                    Console.WriteLine(GetGFLogo(true));
                     //maak lijst met medewerkers en voeg alle medewerkers toe
-                    List<Werknemer> Medewerkers = new List<Werknemer>(database.werknemers);
+                    List<Werknemer> Medewerkers = new List<Werknemer>(io.GetEmployee());
 
 
 
@@ -936,6 +948,16 @@ namespace restaurant
                         {
                             feedbackVoorEigenaar = true;
                         }
+                        if(choiceMedewerker.Item1 == "0")
+                        {
+                            Console.WriteLine("\nSuccesvol uitgelogd");
+                            Console.WriteLine("Druk op een toets om terug te gaan.");
+                            Console.ReadKey();
+                            //logout sequence
+                            logoutUpdate = true;
+                            Logout();
+                            return 0;
+                        }
                         //als match met werknemer sla deze op
                         for (int i = 0; i < Medewerkers.Count; i++)
                         {
@@ -955,12 +977,21 @@ namespace restaurant
                 } while (!((feedbackVoorEigenaar != false && feedbackMedewerker.login_gegevens == null) || (feedbackVoorEigenaar == false && feedbackMedewerker.login_gegevens != null)));
 
                 Console.Clear();
-                Console.WriteLine(GetGFLogo());
+                Console.WriteLine(GFLogo);
 
-                Console.WriteLine("Als laatste, de inhoud van u feedback.");
+                if (feedbackVoorEigenaar)
+                {
+                    Eigenaar eigenaar = io.GetEigenaar();
+                    Console.WriteLine($"De feedback die u gaat maken is voor  {eigenaar.login_gegevens.klantgegevens.voornaam} {eigenaar.login_gegevens.klantgegevens.achternaam}");
+                }
+                else
+                {
+                    Console.WriteLine("De feedback die u gaat maken is voor  " + feedbackMedewerker.login_gegevens.klantgegevens.voornaam + " " + feedbackMedewerker.login_gegevens.klantgegevens.achternaam);
+                }
+                Console.WriteLine("De inhoud van uw feedback.");
                 Console.WriteLine("Met Enter gaat u verder op een nieuwe regel.");
-                Console.WriteLine("Als u klaar bent met het typen, type dan \"klaar\" op een nieuwe regel om het feedback aan te maken.");
-                Console.WriteLine("De inhoud van u feedback:");
+                Console.WriteLine("Als u klaar bent met het typen, type dan  klaar  op een nieuwe regel om het feedback aan te maken.");
+                Console.WriteLine("De inhoud van uw feedback:\n");
 
                 string message = "";
                 string Line = Console.ReadLine();
@@ -979,11 +1010,11 @@ namespace restaurant
                 }
                 if (feedbackVoorEigenaar)
                 {
-                    code_gebruiker.MakeFeedback(database.eigenaar, ingelogd.klantgegevens, message, ReserveringID);
+                    code_gebruiker.MakeFeedback(io.GetEigenaar(), ingelogd.klantgegevens, message, ReserveringID);
                     Console.WriteLine("Succesvol feedback gemaakt.");
                     Console.WriteLine("druk op een toets om terug te gaan.");
                     Console.ReadKey();
-                    return vorigScherm;
+                    return huidigScherm;
                 }
                 else
                 {
@@ -991,7 +1022,7 @@ namespace restaurant
                     Console.WriteLine("Succesvol feedback gemaakt.");
                     Console.WriteLine("druk op een toets om terug te gaan.");
                     Console.ReadKey();
-                    return vorigScherm;
+                    return huidigScherm;
                 }
             }
 
@@ -1002,9 +1033,9 @@ namespace restaurant
                 do
                 {
                     Console.Clear();
-                    Console.WriteLine(GetGFLogo());
+                    Console.WriteLine(GetGFLogo(true));
                     //maak lijst met medewerkers en voeg alle medewerkers toe
-                    List<Werknemer> Medewerkers = new List<Werknemer>(database.werknemers);
+                    List<Werknemer> Medewerkers = new List<Werknemer>(io.GetEmployee());
 
 
 
@@ -1039,6 +1070,16 @@ namespace restaurant
                         {
                             feedbackVoorEigenaar = true;
                         }
+                        if (choiceMedewerker.Item1 == "0")
+                        {
+                            Console.WriteLine("\nSuccesvol uitgelogd");
+                            Console.WriteLine("Druk op een toets om terug te gaan.");
+                            Console.ReadKey();
+                            //logout sequence
+                            logoutUpdate = true;
+                            Logout();
+                            return 0;
+                        }
                         //als match met werknemer sla deze op
                         for (int i = 0; i < Medewerkers.Count; i++)
                         {
@@ -1058,12 +1099,21 @@ namespace restaurant
                 } while (!((feedbackVoorEigenaar != false && feedbackMedewerker.login_gegevens == null) || (feedbackVoorEigenaar == false && feedbackMedewerker.login_gegevens != null)));
 
                 Console.Clear();
-                Console.WriteLine(GetGFLogo());
-
-                Console.WriteLine("Als laatste, de inhoud van u feedback.");
+                Console.WriteLine(GFLogo);
+                
+                if (feedbackVoorEigenaar)
+                {
+                    Eigenaar eigenaar = io.GetEigenaar();
+                    Console.WriteLine($"De feedback die u gaat maken is voor  {eigenaar.login_gegevens.klantgegevens.voornaam} {eigenaar.login_gegevens.klantgegevens.achternaam}");
+                }
+                else
+                {
+                    Console.WriteLine("De feedback die u gaat maken is voor  " + feedbackMedewerker.login_gegevens.klantgegevens.voornaam + " " + feedbackMedewerker.login_gegevens.klantgegevens.achternaam);
+                }
+                Console.WriteLine("De inhoud van uw feedback.");
                 Console.WriteLine("Met Enter gaat u verder op een nieuwe regel.");
-                Console.WriteLine("Als u klaar bent met het typen, type dan \"klaar\" op een nieuwe regel om het feedback aan te maken.");
-                Console.WriteLine("De inhoud van u feedback:");
+                Console.WriteLine("Als u klaar bent met het typen, type dan  klaar  op een nieuwe regel om het feedback aan te maken.");
+                Console.WriteLine("De inhoud van uw feedback:\n");
 
                 string message = "";
                 string Line = Console.ReadLine();
@@ -1082,11 +1132,11 @@ namespace restaurant
                 }
                 if (feedbackVoorEigenaar)
                 {
-                    code_gebruiker.MakeFeedback(database.eigenaar, message);
+                    code_gebruiker.MakeFeedback(io.GetEigenaar(), message);
                     Console.WriteLine("\nSuccesvol feedback gemaakt.");
                     Console.WriteLine("druk op een toets om terug te gaan.");
                     Console.ReadKey();
-                    return vorigScherm;
+                    return huidigScherm;
                 }
                 else
                 {
@@ -1094,7 +1144,7 @@ namespace restaurant
                     Console.WriteLine("\nSuccesvol feedback gemaakt.");
                     Console.WriteLine("druk op een toets om terug te gaan.");
                     Console.ReadKey();
-                    return vorigScherm;
+                    return huidigScherm;
                 }
             }
 
@@ -1104,7 +1154,7 @@ namespace restaurant
                 //een scherm terug
                 return huidigScherm;
             }
-
+            //logout
             else if (key.Item1 == "0")
             {
                 Console.WriteLine("\nSuccesvol uitgelogd");
@@ -1125,8 +1175,7 @@ namespace restaurant
                 return huidigScherm;
             }
         }
-            
-
+        
         public override List<Screen> Update(List<Screen> screens)
         {
             DoLogoutOnEveryScreen(screens);
@@ -1146,18 +1195,20 @@ namespace restaurant
             feedback = io.GetFeedback(ingelogd.klantgegevens).OrderBy(s => s.datum).ToList();
             if (feedback.Count == 0)
             {
+                Console.Clear();
+                Console.WriteLine(GFLogo);
                 Console.WriteLine("U heeft nog geen feedback");
                 Console.WriteLine("druk op een knop om terug te gaan");
                 Console.ReadKey();
                 return 5;
             }
 
-            Console.WriteLine(GetGFLogo());
+            Console.WriteLine(GetGFLogo(true));
             Console.WriteLine("Hier kunt u uw eigen feedback zien en bewerken:");
             Console.WriteLine("[1] Laat al uw feedback zien");
             Console.WriteLine("[2] Laat al uw feedback zien vanaf een datum (genoteerd als 1-1-2000)");
             //Console.WriteLine("[3] Laat al uw feedback zien op beoordeling, tussen de 1 en de 5");
-            Console.WriteLine("[4] Ga terug naar klant menu scherm");
+            Console.WriteLine("[3] Ga terug naar klant menu scherm");
 
             //als escape, ga terug naar scherm 5
             (string, int) input = AskForInput(5);
@@ -1181,6 +1232,7 @@ namespace restaurant
                         {
                             if (a == Convert.ToInt32(Math.Floor(pos / 2)))
                             {
+                                //for making the boxes around the text together with adding the bottom text
                                 if (a != 0 && a % 6 != 0)
                                 {
                                     boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string>{
@@ -1237,8 +1289,13 @@ namespace restaurant
 
                     pages = MakePages(boxes, 3);
                     Console.Clear();
-                    Console.WriteLine(GetGFLogo(3));
+                    Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit is uw feedback op pagina {page + 1} van de {pages.Count}:");
+                    Console.WriteLine("De Feedback die is geselecteerd is de feedback met de tekst \"Bewerken\" en \"verwijderen\"");
+                    Console.WriteLine("U kunt met de pijltestoetsen navigeren door uw feedback,");
+                    Console.WriteLine("De tekst \"Bewerken\" en \"verwijderen\" zal dan van positie veranderen in de richting van welke toets u indrukte");
+
+                    //schrijft de pagina samen met de bottom symbols
                     if (feedbackstring[feedbackstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
                     {
                         Console.WriteLine(pages[page] + new string('#', 56));
@@ -1248,7 +1305,7 @@ namespace restaurant
                         Console.WriteLine(pages[page] + new string('#', 110));
                     }
 
-                    var result = Nextpage(page, pages.Count - 1, pos, (boxes.Count - 1) * 2, 10);
+                    var result = Nextpage(page, pages.Count - 1, pos, (boxes.Count - 1) * 2, 8);
                     pos = result.Item3;
                     if (result.Item2 != -1 && result.Item2 != -2)
                     {
@@ -1261,17 +1318,21 @@ namespace restaurant
                     else if (result.Item1 == -2 && result.Item2 == -2)
                     {
                         Console.Clear();
-                        Console.WriteLine(GetGFLogo());
+                        Console.WriteLine(GetGFLogo(true));
                         Console.WriteLine(MakeFeedbackBox(feedback[Convert.ToInt32(pos)]) + "\n");
                         Console.WriteLine("Weet u zeker dat u deze feedback wilt verwijderen? ja | nee");
 
-                        input = AskForInput(10);
+                        input = AskForInput(5);
                         if (input.Item2 != -1)
                         {
                             return input.Item2;
                         }
                         else if (input.Item1 == "0")
                         {
+                            Console.WriteLine("\nSuccesvol uitgelogd");
+                            Console.WriteLine("Druk op een toets om terug te gaan.");
+                            Console.ReadKey();
+                            //logout sequence
                             logoutUpdate = true;
                             Logout();
                             return 0;
@@ -1282,19 +1343,19 @@ namespace restaurant
                             Console.WriteLine("\n Feedback is verwijderd");
                             Console.WriteLine("Druk op een knop om verder te gaan...");
                             Console.ReadKey();
-                            return 10;
+                            return 5;
 
                         }
                         else if (input.Item1 == "nee")
                         {
-                            return 10;
+                            return 5;
                         }
                         else
                         {
                             Console.WriteLine("\n U moet wel een jusite keuze maken");
                             Console.WriteLine("Druk op een knop om verder te gaan...");
                             Console.ReadKey();
-                            return 10;
+                            return 5;
                         }
                     }
                     page = result.Item1;
@@ -1303,7 +1364,7 @@ namespace restaurant
             else if (input.Item1 == "2")
             {
                 Console.WriteLine("\n Vul hieronder de datum in vanaf wanneer u uw reviews wilt zien");
-                (string, int) choice = AskForInput(10);
+                (string, int) choice = AskForInput(5);
                 if (choice.Item2 != -1)
                 {
                     return choice.Item2;
@@ -1318,7 +1379,7 @@ namespace restaurant
                         Console.WriteLine("\nU moet wel een datum in het verleden invoeren.");
                         Console.WriteLine("Druk op en knop om verder te gaan.");
                         Console.ReadKey();
-                        return 10;
+                        return 5;
                     }
                     double pos = 0;
                     List<string> pages = new List<string>();
@@ -1394,11 +1455,14 @@ namespace restaurant
                             Console.WriteLine("\nVanaf deze datum heeft u nog geen feedback geschreven.");
                             Console.WriteLine("Druk op en knop om verder te gaan.");
                             Console.ReadKey();
-                            return 10;
+                            return 5;
                         }
                         Console.Clear();
-                        Console.WriteLine(GetGFLogo(3));
+                        Console.WriteLine(GetGFLogo(true));
                         Console.WriteLine($"Dit is uw feedback op pagina {page + 1} van de {pages.Count}:");
+                        Console.WriteLine("De Feedback die is geselecteerd is de feedback met de tekst \"Bewerken\" en \"verwijderen\"");
+                        Console.WriteLine("U kunt met de pijltestoetsen navigeren door uw feedback,");
+                        Console.WriteLine("De tekst \"Bewerken\" en \"verwijderen\" zal dan van positie veranderen in de richting van welke toets u indrukte");
                         if (feedbackstring[feedbackstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
                         {
                             Console.WriteLine(pages[page] + new string('#', 56));
@@ -1407,7 +1471,7 @@ namespace restaurant
                         {
                             Console.WriteLine(pages[page] + new string('#', 110));
                         }
-                        var result = Nextpage(page, pages.Count - 1, pos, (boxes.Count - 1) * 2, 10);
+                        var result = Nextpage(page, pages.Count - 1, pos, (boxes.Count - 1) * 2, 8);
                         pos = result.Item3;
                         if (result.Item2 != -1 && result.Item2 != -1)
                         {
@@ -1420,17 +1484,21 @@ namespace restaurant
                         else if (result.Item1 == -2 && result.Item2 == -2)
                         {
                             Console.Clear();
-                            Console.WriteLine(GetGFLogo());
+                            Console.WriteLine(GetGFLogo(true));
                             Console.WriteLine(MakeFeedbackBox(feedbackfiler[Convert.ToInt32(pos)]) + "\n");
                             Console.WriteLine("Weet u zeker dat u deze feedback wilt verwijderen? ja | nee");
 
-                            input = AskForInput(10);
+                            input = AskForInput(5);
                             if (input.Item2 != -1)
                             {
                                 return input.Item2;
                             }
                             else if (input.Item1 == "0")
                             {
+                                Console.WriteLine("\nSuccesvol uitgelogd");
+                                Console.WriteLine("Druk op een toets om terug te gaan.");
+                                Console.ReadKey();
+                                //logout sequence
                                 logoutUpdate = true;
                                 Logout();
                                 return 0;
@@ -1441,19 +1509,19 @@ namespace restaurant
                                 Console.WriteLine("\n Feedback is verwijderd");
                                 Console.WriteLine("Druk op een knop om verder te gaan...");
                                 Console.ReadKey();
-                                return 10;
+                                return 8;
 
                             }
                             else if (input.Item1 == "nee")
                             {
-                                return 10;
+                                return 8;
                             }
                             else
                             {
                                 Console.WriteLine("\n U moet wel een jusite keuze maken");
                                 Console.WriteLine("Druk op een knop om verder te gaan...");
                                 Console.ReadKey();
-                                return 10;
+                                return 8;
                             }
                         }
                         page = result.Item1;
@@ -1464,162 +1532,10 @@ namespace restaurant
                     Console.WriteLine("U moet wel een geldige datum invullen op deze manier: 1-1-2000");
                     Console.WriteLine("Druk op en knop om verder te gaan.");
                     Console.ReadKey();
-                    return 10;
+                    return 8;
                 }
             }
-            /**
             else if (input.Item1 == "3")
-            {
-                Console.WriteLine("\n Vul hieronder de beoordeling in waarop u uw reviews wilt filteren.");
-                (string, int) choice = AskForInput(10);
-                if (choice.Item2 != -1)
-                {
-                    return choice.Item2;
-                }
-                int page = 0;
-                if (choice.Item1 != "1" && choice.Item1 != "2" && choice.Item1 != "3" && choice.Item1 != "4" && choice.Item1 != "5")
-                {
-                    Console.WriteLine("\nU moet wel een geldige beoordeling invullen tussen de 1 en de 5.");
-                    Console.WriteLine("Druk op en knop om verder te gaan.");
-                    Console.ReadKey();
-                    return 10;
-                }
-                double pos = 0;
-                List<string> pages = new List<string>();
-                do
-                {
-                    pages = new List<string>();
-                    List<Feedback> feedbackfiler = feedback.Where(r => r.Rating == Convert.ToInt32(choice.Item1)).ToList();
-                    List<List<string>> feedbackstring = Makedubbelboxes(FeedbackToString(feedback));
-                    List<string> boxes = new List<string>();
-
-                    for (int a = 0; a < feedbackstring.Count; a++)
-                    {
-                        if (a == feedbackstring.Count - 1 && feedbackstring[a][1].Length < 70)
-                        {
-                            if (a == Convert.ToInt32(Math.Floor(pos / 2)))
-                            {
-                                if (a != 0 && a % 6 != 0)
-                                {
-                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string>{
-                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
-                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
-                                    new string(' ', 50)}));
-                                }
-                                else
-                                {
-                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 50, true, new List<string>{
-                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
-                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
-                                    new string(' ', 50)}));
-                                }
-                            }
-                            else
-                            {
-                                if (a != 0 && a % 6 != 0)
-                                {
-                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true));
-                                }
-                                else
-                                {
-                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 50, true));
-                                }
-
-                            }
-                        }
-                        else
-                        {
-                            if (a == Convert.ToInt32(Math.Floor(pos / 2)))
-                            {
-                                if (pos % 2 == 0 || pos == 0)
-                                {
-                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string>{
-                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length) + "##  " + new string(' ', 50),
-                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length) + "##  " + new string(' ', 50),
-                                    new string(' ', 50) + "##  " + new string(' ', 50) }));
-                                }
-                                else
-                                {
-                                    boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string> {
-                                    new string(' ', 50) + "##  " + "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
-                                    new string(' ', 50) + "##  " + "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
-                                    new string(' ', 50) + "##  " + new string(' ', 50)}));
-                                }
-                            }
-                            else
-                            {
-                                boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true));
-                            }
-                        }
-                    }
-
-                    pages = MakePages(boxes, 3);
-
-                    Console.Clear();
-                    Console.WriteLine(GetGFLogo(3));
-                    Console.WriteLine($"Dit zijn uw reviews op pagina {page + 1} van de {pages.Count}:");
-                    if (feedbackstring[feedbackstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
-                    {
-                        Console.WriteLine(pages[page] + new string('#', 56));
-                    }
-                    else
-                    {
-                        Console.WriteLine(pages[page] + new string('#', 110));
-                    }
-                    var result = Nextpage(page, pages.Count - 1, pos, (boxes.Count - 1) * 2, 10);
-                    pos = result.Item3;
-                    if (result.Item2 != -1 && result.Item2 != -1)
-                    {
-                        return result.Item2;
-                    }
-                    else if (result.Item1 == -1 && result.Item2 == -1)
-                    {
-                        return EditFeedback(MakeFeedbackBox(reviewsfiler[Convert.ToInt32(pos)]), reviewsfiler[Convert.ToInt32(pos)]);
-                    }
-                    else if (result.Item1 == -2 && result.Item2 == -2)
-                    {
-                        Console.Clear();
-                        Console.WriteLine(GetGFLogo(1));
-                        Console.WriteLine(MakeFeedbackBox(reviewsfiler[Convert.ToInt32(pos)]) + "\n");
-                        Console.WriteLine("Weet u zeker dat u deze review wilt verwijderen? ja | nee");
-
-                        input = AskForInput(10);
-                        if (input.Item2 != -1)
-                        {
-                            return input.Item2;
-                        }
-                        else if (input.Item1 == "1")
-                        {
-                            logoutUpdate = true;
-                            Logout();
-                            return 0;
-                        }
-                        else if (input.Item1 == "ja")
-                        {
-                            code_gebruiker.DeleteReview(reviews[Convert.ToInt32(pos)].ID, ingelogd.klantgegevens);
-                            Console.WriteLine("\n Review is verwijderd");
-                            Console.WriteLine("Druk op een knop om verder te gaan...");
-                            Console.ReadKey();
-                            return 10;
-
-                        }
-                        else if (input.Item1 == "nee")
-                        {
-                            return 10;
-                        }
-                        else
-                        {
-                            Console.WriteLine("\n U moet wel een jusite keuze maken");
-                            Console.WriteLine("Druk op een knop om verder te gaan...");
-                            Console.ReadKey();
-                            return 10;
-                        }
-                    }
-                    page = result.Item1;
-                } while (true);
-            }
-            **/
-            else if (input.Item1 == "4")
             {
                 return 5;
             }
@@ -1634,7 +1550,7 @@ namespace restaurant
                 Console.WriteLine("U moet wel een juiste keuze maken...");
                 Console.WriteLine("Druk op en knop om verder te gaan.");
                 Console.ReadKey();
-                return 10;
+                return 5;
             }
         }
 
@@ -1642,17 +1558,24 @@ namespace restaurant
         {
             Feedback newfeedback = new Feedback();
             Console.Clear();
-            Console.WriteLine(GetGFLogo());
+            Console.WriteLine(GetGFLogo(true));
             Console.WriteLine("Hier kunt u uw feedback bewerken:");
             Console.WriteLine(feedbackstr + "\n");
 
-            Console.WriteLine("Wilt u uw feedback anoniem maken? ja | nee");
-            (string, int) input = AskForInput(10);
+            Console.WriteLine("U kunt kiezen of u anoniem feedback wilt geven.");
+            Console.WriteLine("Anoniem houdt in:");
+            Console.WriteLine("-> U naam word niet opgeslagen met feedback.");
+            Console.WriteLine("-> Feedback word niet gekoppeld aan een reservering.");
+            Console.WriteLine("-> U kunt feedback niet aanpassen of verwijderen.");
+            Console.WriteLine("Wilt u anoniem feedback geven?");
+            Console.WriteLine("[1] Ja");
+            Console.WriteLine("[2] Nee");
+            (string, int) input = AskForInput(8);
             if (input.Item2 != -1)
             {
                 return input.Item2;
             }
-            else if (input.Item1 == "ja")
+            else if (input.Item1 == "1")
             {
                 newfeedback.annomeme = true;
                 newfeedback.Klantnummer = -1;
@@ -1660,7 +1583,7 @@ namespace restaurant
                 newfeedback.reservering_ID = -1;
                 newfeedback.datum = new DateTime();
             }
-            else if (input.Item1 == "nee")
+            else if (input.Item1 == "2")
             {
                 newfeedback.annomeme = false;
                 newfeedback.Klantnummer = feedback.Klantnummer;
@@ -1670,6 +1593,10 @@ namespace restaurant
             }
             else if (input.Item1 == "0")
             {
+                Console.WriteLine("\nSuccesvol uitgelogd");
+                Console.WriteLine("Druk op een toets om terug te gaan.");
+                Console.ReadKey();
+                //logout sequence
                 logoutUpdate = true;
                 Logout();
                 return 0;
@@ -1680,68 +1607,46 @@ namespace restaurant
                 Console.WriteLine("Druk op een knop om verder te gaan...");
                 Console.ReadKey();
                 EditFeedback(feedbackstr, feedback);
-                return 10;
+                return 8;
             }
 
-            Console.WriteLine("U Feedback mag niet langer zijn dan 160 tekens.");
-            Console.WriteLine("\n Type hier uw bericht: ");
-            input = AskForInput(10);
-            if (input.Item2 != -1)
+            Console.Clear();
+            Console.WriteLine(GFLogo);
+            Console.WriteLine("Hier kunt u uw feedback bewerken:");
+            Console.WriteLine(feedbackstr + "\n");
+            Console.WriteLine("Hier schrijft u de inhoud van uw feedback.");
+            Console.WriteLine("Met Enter gaat u verder op een nieuwe regel.");
+            Console.WriteLine("Als u klaar bent met het typen, type dan  klaar  op een nieuwe regel om uw bericht op te slaan.");
+            Console.WriteLine("De inhoud van uw feedback:\n");
+            string message = "";
+            string Line = Console.ReadLine();
+            message = Line;
+            while (Line != "klaar")
             {
-                return input.Item2;
+                Line = Console.ReadLine();
+                if (Line == "klaar")
+                {
+                    break;
+                }
+                else
+                {
+                    message += " " + Line;
+                }
             }
-            else if (input.Item1.Length > 160)
-            {
-                Console.WriteLine("\n Uw bericht mag niet langer zijn dan 160 tekens");
-                Console.WriteLine("Druk op een knop om verder te gaan...");
-                Console.ReadKey();
-                EditFeedback(feedbackstr, feedback);
-                return 10;
-            }
-            else if (input.Item1.Length == 0)
+            if (message.Length == 0)
             {
                 Console.WriteLine("\n u moet wel een bericht achterlaten");
                 Console.WriteLine("Druk op een knop om verder te gaan...");
                 Console.ReadKey();
                 EditFeedback(feedbackstr, feedback);
-                return 10;
+                return 8;
             }
-            else if (input.Item1 == "6")
-            {
-                logoutUpdate = true;
-                Logout();
-                return 0;
-            }
-            newfeedback.message = input.Item1;
-
-            /*
-            //a:
-            Console.WriteLine("\n Typ hier uw rating: ");
-            input = AskForInput(10);
-            if (input.Item2 != -1)
-            {
-                return input.Item2;
-            }
-            else if (!new List<string> { "1", "2", "3", "4", "5" }.Contains(input.Item1))
-            {
-                Console.WriteLine($"\n {input.Item1} is geen geldige rating. U kunt 1 t/m 5 invullen.");
-                Console.WriteLine("Druk op een knop om verder te gaan...");
-                Console.ReadKey();
-                goto a;
-            }
-            else if (input.Item1 == "6")
-            {
-                logoutUpdate = true;
-                Logout();
-                return 0;
-            }
-            newfeedback.Rating = Convert.ToInt32(input.Item1);
-            */
+            newfeedback.message = message;
 
         b:
             Console.Clear();
-            Console.WriteLine(GetGFLogo());
-            Console.WriteLine("Bewerkte review:");
+            Console.WriteLine(GetGFLogo(true));
+            Console.WriteLine("Bewerkte Feedback:");
             if (!newfeedback.annomeme)
             {
                 Console.WriteLine("Voornaam: " + ingelogd.klantgegevens.voornaam);
@@ -1749,13 +1654,15 @@ namespace restaurant
             }
             Console.WriteLine("Bericht: " + newfeedback.message);
 
-            Console.WriteLine("\nWilt u deze bewerking en opslaan? ja | nee");
-            input = AskForInput(10);
+            Console.WriteLine("\nWilt u deze bewerking en opslaan?");
+            Console.WriteLine("[1] Ja");
+            Console.WriteLine("[2] Nee");
+            input = AskForInput(8);
             if (input.Item2 != -1)
             {
                 return input.Item2;
             }
-            else if (input.Item1 == "ja")
+            else if (input.Item1 == "1")
             {
                 if (!newfeedback.annomeme)
                 {
@@ -1768,14 +1675,20 @@ namespace restaurant
                 Console.WriteLine("\n Feedback is bijgewerkt");
                 Console.WriteLine("Druk op een knop om verder te gaan...");
                 Console.ReadKey();
-                return 10;
+                return 5;
             }
-            else if (input.Item1 == "nee")
+            else if (input.Item1 == "2")
             {
-                return 10;
+                Console.WriteLine("\nDruk op een toets om terug te gaan naar het beginscherm.");
+                Console.ReadKey();
+                return 5;
             }
             else if (input.Item1 == "0")
             {
+                Console.WriteLine("\nSuccesvol uitgelogd");
+                Console.WriteLine("Druk op een toets om terug te gaan.");
+                Console.ReadKey();
+                //logout sequence
                 logoutUpdate = true;
                 Logout();
                 return 0;
