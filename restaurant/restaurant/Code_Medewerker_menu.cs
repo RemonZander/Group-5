@@ -116,12 +116,12 @@ namespace restaurant
     {
         public override int DoWork()
         {
-            Console.WriteLine(GetGFLogo(4));
+            Console.WriteLine(GetGFLogo(false));
             Console.WriteLine("Welkom in het medewerkersmenu.");
             Console.WriteLine("\nKies een optie:");
-            Console.WriteLine("[1] Reserveringen");
+            Console.WriteLine("[1] Reserveringen bekijken");
             Console.WriteLine("[2] Tafels koppelen");
-            Console.WriteLine("[3] Ga terug");
+            Console.WriteLine("[3] Feedback bekijken");
 
             (string, int) antwoord = AskForInput(16);
             if (antwoord.Item2 != -1)
@@ -139,7 +139,7 @@ namespace restaurant
             }
             else if (antwoord.Item1 == "3")
             {
-                return 0;
+                return 20;
             }
             else
             {
@@ -157,14 +157,30 @@ namespace restaurant
         }
     }
 
+    public class EmployeeFeedbackScreen : Screen
+    {
+        public override int DoWork()
+        {
+            var database = io.GetDatabase();
+            Console.WriteLine(GetGFLogo(true));
+            Console.WriteLine("Work in progress!");
+            Console.ReadKey();
+            return 0;
+        }
+
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            return screens;
+        }
+    }
+
     public class AddTableToReservationScreen : Screen
     {
         public override int DoWork()
         {
             var database = io.GetDatabase();
-            Console.WriteLine(GetGFLogo());
-            Console.WriteLine("Haha nog niks dit, geefme ff");
-            Console.WriteLine("Druk op iets en ik yeet je terug naar de HomeScreen :)");
+            Console.WriteLine(GetGFLogo(true));
+            Console.WriteLine("Work in progress!");
             Console.ReadKey();
             return 0;
         }
@@ -183,7 +199,7 @@ namespace restaurant
             List<Reserveringen> reserveringen = database.reserveringen;
             var account = ingelogd.klantgegevens;
 
-            Console.WriteLine(GetGFLogo());
+            Console.WriteLine(GetGFLogo(true));
             Console.WriteLine("Hier kunt u een nieuwe reservering plaatsen.");
 
             DateTime dagtijd = new DateTime();
