@@ -341,19 +341,89 @@ namespace restaurant
             }
             return populaireGerechten;
         }
+
+        public List<List<string>> ReserveringenToString(List<Reserveringen> reserveringen)
+        {
+            List<Klantgegevens> klantgegevens = io.GetCustomer(reserveringen.Select(i => i.klantnummer).ToList());
+            List<List<string>> output = new List<List<string>>();
+            for (int a = 0; a < reserveringen.Count; a++)
+            {
+                List<string> block = new List<string>();
+                block.Add(new string(' ', 50));
+                block.Add(new string(' ', 50));
+
+                block.Add("Voornaam: " + klantgegevens[a].voornaam + new string(' ', 50 - ("Voornaam: " + klantgegevens[a].voornaam).Length));
+                block.Add("Achternaam: " + klantgegevens[a].achternaam + new string(' ', 50 - ("Achternaam: " + klantgegevens[a].achternaam).Length));
+
+                int[] tafels = new int[reserveringen[a].tafels.Count];
+                for (int i = 0; i < tafels.Length; i++)
+                {
+                    tafels[i] = reserveringen[a].tafels[i].ID;
+                }
+                block.Add("Gereserveerde Tafels" + new string(' ', 50 - ("Gereserveerde Tafels").Length));
+                block.Add(string.Join(", ", tafels) + new string(' ', 50 - (string.Join(", ", tafels)).Length));
+                block.Add(new string(' ', 50));
+                output.Add(block);
+            }
+
+
+            return output;
+        }
+
+        public void DeleteIngredients(List<Ingredient> ingredients)
+        {
+            database = io.GetDatabase();
+            database.ingredienten = database.ingredienten.Except(ingredients).ToList();
+            io.Savedatabase(database);
+        }
     }
+
     public class GetReservationsScreen : Screen
     {
         public override int DoWork()
         {
-            Console.WriteLine("Test");
-            List<Reserveringen> reserveringen = code_medewerker.getReserveringen(Convert.ToDateTime("5/1/2021"));
-            foreach (var reservering in reserveringen)
+            Database database = io.GetDatabase();
+            //List<Reserveringen> reserveringen = database.reserveringen;
+            int maxLength = 104;
+            DateTime date = DateTime.Now;
+            List <Reserveringen> reserveringen = code_medewerker.getReserveringen(date);
+            if (reserveringen.Count > 0)
             {
-                Console.WriteLine(reservering.ID);
+                var boxText = BoxAroundText(Makedubbelboxes(code_eigenaar.ReserveringenToString(reserveringen)), "#", 2, 0, maxLength, true);
+                var pages = MakePages(boxText, 3);
+                int pageNum = 0;
+                do
+                {
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(true));
+                    Console.WriteLine("Reserveringen van: " + date);
+                    Console.WriteLine(pages[pageNum] + new string('#', maxLength + 6));
+                    var result = Nextpage(pageNum, pages.Count - 1, 16);
+
+                    //if (result.Item1 == 0 && result.Item1 != -1)
+                    //{
+                    //    return 0;
+                    //}
+
+                    reserveringen = code_medewerker.getReserveringen(date.AddDays(-1));
+
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+
+                    pageNum = result.Item1;
+                } while (true);
             }
-            Console.ReadKey();
-            return 17;
+            else
+            {
+                Console.WriteLine(GetGFLogo(true));
+                Console.WriteLine("Er zijn nog geen reserveringen geplaatst (vandaag).");
+                Console.WriteLine("Ga naar vorige dag [1]");
+                Console.WriteLine("Druk op een knop om terug te gaan");
+                Console.ReadKey();
+                return 17;
+            }
         }
         public override List<Screen> Update(List<Screen> screens)
         {
