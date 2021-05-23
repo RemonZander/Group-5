@@ -26,7 +26,7 @@ namespace restaurant
         {
             Make_menu();
             Fill_Userdata(10);
-            Fill_reservations_threading(24, 500, 1, 3, 1, 9);
+            Fill_reservations_threading(24, 500, 4, 6, 1, 9);
             Maak_werknemer(10);
             //Save_expenses();
             Make_reviews();
@@ -2934,7 +2934,7 @@ namespace restaurant
                     }
                     else if (result.Item1 == -1 && result.Item2 == -1)
                     {
-                        //code_eigenaar.dele(ingredients[Convert.ToInt32(pos)].ID);
+                        code_eigenaar.DeleteIngredients(ingredients.Where(n => n.name == names[Convert.ToInt32(pos)]).ToList());
                         ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.name).ToList();
                         names = ingredients.Select(n => n.name).Distinct().ToList();
                         page = 0;
@@ -3259,6 +3259,67 @@ namespace restaurant
                 Console.ReadKey();
                 return 14;
             }
+        }
+
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            DoLogoutOnEveryScreen(screens);
+            return screens;
+        }
+    }
+
+    public class IncomeScreen : Screen
+    {
+        public override int DoWork()
+        {
+            Console.WriteLine(GetGFLogo(true));
+            Console.WriteLine("Hier kunt u alle inkomsten zien die u nu heeft");
+            Console.WriteLine("[1] Laat al uw inkomsten zien");
+            Console.WriteLine("[2] Laat de inkomsten zien vanaf een datum (genoteerd als 1-1-2000)");
+            Console.WriteLine("[3] Laat de inkomsten zien voor een datum (genoteerd als 1-1-2000)");
+            Console.WriteLine("[4] Laat de inkomsten zien vanaf een bepaalde prijs");
+            Console.WriteLine("[5] Laat de inkomsten zien onder een bepaalde prijs");
+
+            (string, int) input = AskForInput(15);
+            if (input.Item2 != -1)
+            {
+                return 11;
+            }
+            if (input.Item1 == "1")
+            {
+                Console.Clear();
+            }
+            else if (input.Item1 == "2")
+            {
+
+            }
+            else if(input.Item1 == "3")
+            {
+
+            }
+            else if(input.Item1 == "4")
+            {
+
+            }
+            else if (input.Item1 == "5")
+            {
+
+            }
+            else if (input.Item1 == "0")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+            else
+            {
+                Console.WriteLine("\nU moet wel een juiste keuze maken...");
+                Console.WriteLine("Druk op en knop om verder te gaan.");
+                Console.ReadKey();
+                return 15;
+            }
+
+            return 15;
         }
 
         public override List<Screen> Update(List<Screen> screens)
