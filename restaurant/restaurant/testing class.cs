@@ -2,14 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Windows.Forms;
-using Microsoft.VisualBasic.FileIO;
 using System.Threading;
 using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.ComponentModel.Design;
 
 namespace restaurant
 {
@@ -25,7 +19,7 @@ namespace restaurant
 
         public Testing_class()
         {
-            //database = io.GetDatabase();
+
         }
 
         public void Debug()
@@ -38,11 +32,6 @@ namespace restaurant
             Make_reviews();
             //Make_feedback();
             //Save_Sales();
-
-            //Inkomsten inkomsten = Sales(new DateTime(DateTime.Now.Year, 9, 9, 10, 0, 0), new DateTime(DateTime.Now.Year, 9, 9, 22, 59, 0));
-            //database.inkomsten = inkomsten;
-
-            //List<Tuple<DateTime, List<Tafels>>> test = Reservering_beschikbaarheid(Calc_totale_beschikbaarheid(9, 9, 9, 9), database.reserveringen);
         }
 
         #region Reserveringen
@@ -978,7 +967,7 @@ namespace restaurant
                     reviews.Add(new Review
                     {
                         ID = reviews.Count,
-                        Klantnummer = reservering.klantnummer,
+                        klantnummer = reservering.klantnummer,
                         reservering_ID = reservering.ID,
                         Rating = rnd.Next(1, 6),
                         datum = reservering.datum.AddDays(rnd.Next(0, 50))
@@ -987,7 +976,7 @@ namespace restaurant
                     if (rnd.Next(5) == 3)
                     {
                         reviews[reviews.Count - 1].annomeme = true;
-                        reviews[reviews.Count - 1].Klantnummer = -1;
+                        reviews[reviews.Count - 1].klantnummer = -1;
                         reviews[reviews.Count - 1].reservering_ID = -1;
                         reviews[reviews.Count - 1].datum = new DateTime();
                     }
@@ -1036,7 +1025,7 @@ namespace restaurant
                     feedback.Add(new Feedback
                     {
                         ID = feedback.Count,
-                        Klantnummer = reservering.klantnummer,
+                        klantnummer = reservering.klantnummer,
                         reservering_ID = reservering.ID,
                         message = "",
                         recipient = database.werknemers[rnd.Next(0, database.werknemers.Count)].ID,
@@ -1203,43 +1192,6 @@ namespace restaurant
             return output += new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
         }
 
-        protected List<string> BoxAroundText(List<List<string>> blocks, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom, List<string> bottomtext)
-        {
-            List<string> output = new List<string>();
-
-            foreach (var input in blocks)
-            {
-                string block = new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
-                for (int a = 0; a < spacingtop; a++)
-                {
-                    block += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
-                }
-
-                foreach (var line in input)
-                {
-                    block += sym + new string(' ', spacingside) + line + new string(' ', spacingside) + sym + "\n";
-                }
-
-                for (int b = 0; b < bottomtext.Count; b++)
-                {
-                    block += sym + new string(' ', spacingside) + bottomtext[b] + new string(' ', spacingside) + sym + "\n";
-                }
-
-                for (int a = 0; a < spacingtop; a++)
-                {
-                    block += sym + new string(' ', maxlength + spacingside * 2) + sym + "\n";
-                }
-
-                if (!openbottom)
-                {
-                    block += new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
-                }
-
-                output.Add(block);
-            }
-            return output;
-        }
-
         protected List<string> MakePages(List<string> alldata, int maxblocks)
         {
             string[] output = new string[alldata.Count / maxblocks + 1];
@@ -1334,7 +1286,7 @@ namespace restaurant
                 {
                     return (page, screenIndex, pos);
                 }
-                else if (IsKeyPressed(key, "D3"))
+                else if (IsKeyPressed(key, "D0"))
                 {
                     logoutUpdate = true;
                     Logout();
@@ -1421,7 +1373,7 @@ namespace restaurant
                 {
                     return (page, screenIndex, pos);
                 }
-                else if (IsKeyPressed(key, "D3"))
+                else if (IsKeyPressed(key, "D0"))
                 {
                     logoutUpdate = true;
                     Logout();
@@ -1465,7 +1417,7 @@ namespace restaurant
                 {
                     return (page, screenIndex);
                 }
-                else if (IsKeyPressed(key, "D3"))
+                else if (IsKeyPressed(key, "D0"))
                 {
                     logoutUpdate = true;
                     Logout();
@@ -1492,7 +1444,7 @@ namespace restaurant
                 {
                     return (page, screenIndex);
                 }
-                else if (IsKeyPressed(key, "D3"))
+                else if (IsKeyPressed(key, "D0"))
                 {
                     logoutUpdate = true;
                     Logout();
@@ -1508,12 +1460,12 @@ namespace restaurant
             }
         }
 
-        protected (int, int, double) NextpageTabel(int page, int maxpage, double pos, double maxpos, int screenIndex)
+        protected (int, int, double) NextpageTable(int page, int maxpage, double pos, double maxpos, int screenIndex)
         {
             if (page < maxpage)
             {
                 Console.WriteLine("[1] Volgende pagina");
-                Console.WriteLine("[2] Terug");
+                Console.WriteLine("[2] Terug"); 
                 ConsoleKeyInfo key = Console.ReadKey();
                 if (IsKeyPressed(key, ESCAPE_KEY))
                 {
@@ -1551,6 +1503,10 @@ namespace restaurant
                     return (page, screenIndex, pos);
                 }
                 else if (IsKeyPressed(key, "D3"))
+                {
+                    return (-1, -1, 0);
+                }
+                else if (IsKeyPressed(key, "D0"))
                 {
                     logoutUpdate = true;
                     Logout();
@@ -1601,6 +1557,10 @@ namespace restaurant
                 }
                 else if (IsKeyPressed(key, "D3"))
                 {
+                    return (-1, -1, 0);
+                }
+                else if (IsKeyPressed(key, "D0"))
+                {
                     logoutUpdate = true;
                     Logout();
                     return (page, 0, pos);
@@ -1617,7 +1577,7 @@ namespace restaurant
 
         protected List<List<string>> ReviewsToString(List<Review> reviews)
         {
-            List<Klantgegevens> klantgegevens = io.GetCustomer(reviews.Select(i => i.Klantnummer).ToList());
+            List<Klantgegevens> klantgegevens = io.GetCustomer(reviews.Select(i => i.klantnummer).ToList());
             List<List<string>> output = new List<List<string>>();
             for (int a = 0; a < reviews.Count; a++)
             {
@@ -1749,7 +1709,7 @@ namespace restaurant
                 return 5;
             }
 
-            Console.WriteLine(GetGFLogo(5));
+            Console.WriteLine(GetGFLogo(true));
             Console.WriteLine("Hier kunt u uw eigen reviews zien en bewerken:");
             Console.WriteLine("[1] Laat al uw reviews zien");
             Console.WriteLine("[2] Laat al uw reviews zien vanaf een datum (genoteerd als 1-1-2000)");
@@ -1834,7 +1794,7 @@ namespace restaurant
 
                     pages = MakePages(boxes, 3);
                     Console.Clear();
-                    Console.WriteLine(GetGFLogo(3));
+                    Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit zijn uw reviews op pagina {page + 1} van de {pages.Count}:");
                     if (reviewstring[reviewstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
                     {
@@ -1843,7 +1803,7 @@ namespace restaurant
                     else
                     {
                         Console.WriteLine(pages[page] + new string('#', 110));
-                    }                    
+                    }
 
                     var result = Nextpage(page, pages.Count - 1, pos, (boxes.Count - 1) * 2, 10);
                     pos = result.Item3;
@@ -1858,7 +1818,7 @@ namespace restaurant
                     else if (result.Item1 == -2 && result.Item2 == -2)
                     {
                         Console.Clear();
-                        Console.WriteLine(GetGFLogo(1));
+                        Console.WriteLine(GetGFLogo(true));
                         Console.WriteLine(MakeReviewBox(reviews[Convert.ToInt32(pos)]) + "\n");
                         Console.WriteLine("Weet u zeker dat u deze review wilt verwijderen? ja | nee");
 
@@ -1867,7 +1827,7 @@ namespace restaurant
                         {
                             return input.Item2;
                         }
-                        else if (input.Item1 == "1")
+                        else if (input.Item1 == "0")
                         {
                             logoutUpdate = true;
                             Logout();
@@ -1994,7 +1954,7 @@ namespace restaurant
                             return 10;
                         }
                         Console.Clear();
-                        Console.WriteLine(GetGFLogo(3));
+                        Console.WriteLine(GetGFLogo(true));
                         Console.WriteLine($"Dit zijn uw reviews op pagina {page + 1} van de {pages.Count}:");
                         if (reviewstring[reviewstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
                         {
@@ -2017,7 +1977,7 @@ namespace restaurant
                         else if (result.Item1 == -2 && result.Item2 == -2)
                         {
                             Console.Clear();
-                            Console.WriteLine(GetGFLogo(1));
+                            Console.WriteLine(GetGFLogo(true));
                             Console.WriteLine(MakeReviewBox(reviewsfiler[Convert.ToInt32(pos)]) + "\n");
                             Console.WriteLine("Weet u zeker dat u deze review wilt verwijderen? ja | nee");
 
@@ -2026,7 +1986,7 @@ namespace restaurant
                             {
                                 return input.Item2;
                             }
-                            else if (input.Item1 == "1")
+                            else if (input.Item1 == "0")
                             {
                                 logoutUpdate = true;
                                 Logout();
@@ -2152,7 +2112,7 @@ namespace restaurant
                     pages = MakePages(boxes, 3);
 
                     Console.Clear();
-                    Console.WriteLine(GetGFLogo(3));
+                    Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit zijn uw reviews op pagina {page + 1} van de {pages.Count}:");
                     if (reviewstring[reviewstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
                     {
@@ -2175,7 +2135,7 @@ namespace restaurant
                     else if (result.Item1 == -2 && result.Item2 == -2)
                     {
                         Console.Clear();
-                        Console.WriteLine(GetGFLogo(1));
+                        Console.WriteLine(GetGFLogo(true));
                         Console.WriteLine(MakeReviewBox(reviewsfiler[Convert.ToInt32(pos)]) + "\n");
                         Console.WriteLine("Weet u zeker dat u deze review wilt verwijderen? ja | nee");
 
@@ -2184,7 +2144,7 @@ namespace restaurant
                         {
                             return input.Item2;
                         }
-                        else if (input.Item1 == "1")
+                        else if (input.Item1 == "0")
                         {
                             logoutUpdate = true;
                             Logout();
@@ -2218,7 +2178,7 @@ namespace restaurant
             {
                 return 5;
             }
-            else if (input.Item1 == "5")
+            else if (input.Item1 == "0")
             {
                 logoutUpdate = true;
                 Logout();
@@ -2237,7 +2197,7 @@ namespace restaurant
         {
             Review newreview = new Review();
             Console.Clear();
-            Console.WriteLine(GetGFLogo(6));
+            Console.WriteLine(GetGFLogo(true));
             Console.WriteLine("Hier kunt u een review bewerken:");
             Console.WriteLine(reviewstr + "\n");
 
@@ -2250,7 +2210,7 @@ namespace restaurant
             else if (input.Item1 == "ja")
             {
                 newreview.annomeme = true;
-                newreview.Klantnummer = -1;
+                newreview.klantnummer = -1;
                 newreview.ID = review.ID;
                 newreview.reservering_ID = -1;
                 newreview.datum = new DateTime();
@@ -2258,12 +2218,12 @@ namespace restaurant
             else if (input.Item1 == "nee")
             {
                 newreview.annomeme = false;
-                newreview.Klantnummer = review.Klantnummer;
+                newreview.klantnummer = review.klantnummer;
                 newreview.ID = review.ID;
                 newreview.reservering_ID = review.reservering_ID;
                 newreview.datum = review.datum;
             }
-            else if (input.Item1 == "6")
+            else if (input.Item1 == "0")
             {
                 logoutUpdate = true;
                 Logout();
@@ -2333,7 +2293,7 @@ namespace restaurant
 
         b:
             Console.Clear();
-            Console.WriteLine(GetGFLogo(6));
+            Console.WriteLine(GetGFLogo(true));
             Console.WriteLine("Bewerkte review:");
             if (!newreview.annomeme)
             {
@@ -2368,7 +2328,7 @@ namespace restaurant
             {
                 return 10;
             }
-            else if (input.Item1 == "6")
+            else if (input.Item1 == "0")
             {
                 logoutUpdate = true;
                 Logout();
@@ -2479,7 +2439,7 @@ namespace restaurant
             reserveringen = reserveringen.Except(reviewdReservervations).ToList();
 
             //main logo
-            Console.WriteLine(GetGFLogo(0));
+            Console.WriteLine(GetGFLogo(true));
 
 
             //als er geen open reserveringen meer zijn voor review
@@ -2551,7 +2511,7 @@ namespace restaurant
 
                 //begin met een een clear screen hier
                 Console.Clear();
-                Console.WriteLine(GetGFLogo(6));
+                Console.WriteLine(GetGFLogo(true));
                 Console.WriteLine("Er is een mogelijkheid om anoniem een review te geven, anoniem houdt in:");
                 Console.WriteLine("-> U naam word niet opgeslagen met de review.");
                 Console.WriteLine("-> De review word niet gekoppeld aan deze reservering.");
@@ -2567,7 +2527,7 @@ namespace restaurant
                 }
 
                 //list met mogelijke inputs
-                List<string> possibleInput = new List<string> { "1", "2", "3", "6" };
+                List<string> possibleInput = new List<string> { "1", "2", "3"};
 
                 if (!possibleInput.Contains(choice.Item1) || !Int32.TryParse(choice.Item1, out int test))
                 {
@@ -2580,7 +2540,7 @@ namespace restaurant
 
                 //clear screen
                 Console.Clear();
-                Console.WriteLine(GetGFLogo(6));
+                Console.WriteLine(GetGFLogo(true));
 
 
                 if (choice.Item1 == "1")
@@ -2595,7 +2555,7 @@ namespace restaurant
                         return choice.Item2;
                     }
 
-                    possibleInput = new List<string> { "1", "2", "3", "4", "5", "6" };
+                    possibleInput = new List<string> { "1", "2", "3", "4", "5"};
 
                     //check voor de rating
                     if (!possibleInput.Contains(choice.Item1) || !Int32.TryParse(choice.Item1, out test))
@@ -2640,7 +2600,6 @@ namespace restaurant
                     return 5;
 
                 }
-
                 else if (choice.Item1 == "2")
                 {
                     //rating, message en klantgegevens/naam klant
@@ -2649,7 +2608,7 @@ namespace restaurant
 
                     choice = AskForInput(7);
 
-                    possibleInput = new List<string> { "1", "2", "3", "4", "5", "6" };
+                    possibleInput = new List<string> { "1", "2", "3", "4", "5"};
 
                     //check voor de rating
                     if (!possibleInput.Contains(choice.Item1) || !Int32.TryParse(choice.Item1, out test))
@@ -2698,7 +2657,7 @@ namespace restaurant
                     //return naar vorig scherm
                     return 5;
                 }
-                else if (choice.Item1 == "6")
+                else if (choice.Item1 == "0")
                 {
                     logoutUpdate = true;
                     Logout();
@@ -2717,8 +2676,7 @@ namespace restaurant
 
     public class IngredientsScreen : Screen
     {
-
-        private List<string> IngredientsToString(List<Ingredient> ingredients, double pos)
+        private List<string> IngredientsToString(List<Ingredient> ingredients, double pos, string optionMessage)
         {
             List<string> output = new List<string>();
 
@@ -2730,7 +2688,7 @@ namespace restaurant
                         " | " + ingredients[a].name + new string(' ', 30 - ingredients[a].name.Length) +
                         " | € " + ingredients[a].prijs + new string(' ', 8 - ingredients[a].prijs.ToString().Length) +
                         " | " + ingredients[a].bestel_datum.ToShortDateString() + new string(' ', 12 - ingredients[a].bestel_datum.ToShortDateString().ToString().Length) +
-                        " | " + ingredients[a].houdbaarheids_datum.ToShortDateString() + new string(' ', 11 - ingredients[a].houdbaarheids_datum.ToShortDateString().ToString().Length) + " [4] Verwijderen|\n" +
+                        " | " + ingredients[a].houdbaarheids_datum.ToShortDateString() + new string(' ', 11 - ingredients[a].houdbaarheids_datum.ToShortDateString().ToString().Length) + $" {optionMessage}|\n" +
                         new string('–', 100) + "\n");
                 }
                 else
@@ -2739,7 +2697,7 @@ namespace restaurant
                         " | " + ingredients[a].name + new string(' ', 30 - ingredients[a].name.Length) +
                         " | € " + ingredients[a].prijs + new string(' ', 8 - ingredients[a].prijs.ToString().Length) +
                         " | " + ingredients[a].bestel_datum.ToShortDateString() + new string(' ', 12 - ingredients[a].bestel_datum.ToShortDateString().ToString().Length) +
-                        " | " + ingredients[a].houdbaarheids_datum.ToShortDateString() + new string(' ', 11 - ingredients[a].houdbaarheids_datum.ToShortDateString().ToString().Length) + "                |\n" +
+                        " | " + ingredients[a].houdbaarheids_datum.ToShortDateString() + new string(' ', 11 - ingredients[a].houdbaarheids_datum.ToShortDateString().ToString().Length) + new string(' ', optionMessage.Length) + " |\n" +
                         new string('–', 100) + "\n");
                 }
             }
@@ -2757,7 +2715,7 @@ namespace restaurant
                 {
                     output.Add("| " + names[a] + new string(' ', 30 - names[a].Length) +
                         " | " + ingredients.Select(n => n.name).Where(n => n == names[a]).ToList().Count + new string(' ', 11 - ingredients.Select(n => n.name == names[a]).ToList().Count.ToString().Length) +
-                        " | € " + Convert.ToInt32(ingredients.Where(n => n.name == names[a]).Sum(p => p.prijs)) + ",00" + new string(' ', 8 - Convert.ToInt32(ingredients.Where(n => n.name == names[a]).Sum(p => p.prijs)).ToString().Length) + " [4] Verwijderen|\n" +
+                        " | € " + Convert.ToInt32(ingredients.Where(n => n.name == names[a]).Sum(p => p.prijs)) + ",00" + new string(' ', 8 - Convert.ToInt32(ingredients.Where(n => n.name == names[a]).Sum(p => p.prijs)).ToString().Length) + " [3] Verwijderen|\n" +
                         new string('–', 78) + "\n");
                 }
                 else
@@ -2771,9 +2729,135 @@ namespace restaurant
             return output;
         }
 
+        private (int, int, double) NextpageTableExpitedIngredients(int page, int maxpage, double pos, double maxpos, int screenIndex)
+        {
+            if (page < maxpage)
+            {
+                Console.WriteLine("[1] Volgende pagina");
+                Console.WriteLine("[2] Alle verlopen ingredienten verwijderen");
+                Console.WriteLine("[3] Terug");
+
+                ConsoleKeyInfo key = Console.ReadKey();
+                if (IsKeyPressed(key, ESCAPE_KEY))
+                {
+                    return (page, screenIndex, pos);
+                }
+                else if (IsKeyPressed(key, UP_ARROW))
+                {
+                    if (pos > 0 && pos > page * 20)
+                    {
+                        return (page, -1, pos - 1);
+                    }
+                    else
+                    {
+                        return (page, -1, pos);
+                    }
+                }
+                else if (IsKeyPressed(key, DOWN_ARROW))
+                {
+                    if (pos < maxpos && pos < 20 * (page + 1) - 1)
+                    {
+                        return (page, -1, pos + 1);
+                    }
+                    else
+                    {
+                        return (page, -1, pos);
+                    }
+                }
+                Console.ReadKey();
+                if (IsKeyPressed(key, "D1"))
+                {
+                    return (page + 1, -1, (page + 1) * 20);
+                }
+                else if (IsKeyPressed(key, "D3"))
+                {
+                    return (page, screenIndex, pos);
+                }
+                else if (IsKeyPressed(key, "D4"))
+                {
+                    return (-1, -1, 0);
+                }
+                else if (IsKeyPressed(key, "D2"))
+                {
+                    return (-2, -2, 0);
+                }
+                else if (IsKeyPressed(key, "D0"))
+                {
+                    logoutUpdate = true;
+                    Logout();
+                    return (page, 0, pos);
+                }
+                else
+                {
+                    Console.WriteLine("U moet wel een juiste keuze maken...");
+                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.ReadKey();
+                    return (page, -1, pos);
+                }
+            }
+            else
+            {
+                Console.WriteLine("[1] Terug");
+                Console.WriteLine("[2] Alle verlopen ingredienten verwijderen");
+                ConsoleKeyInfo key = Console.ReadKey();
+                if (IsKeyPressed(key, ESCAPE_KEY))
+                {
+                    return (page, screenIndex, pos);
+                }
+                else if (IsKeyPressed(key, UP_ARROW))
+                {
+                    if (pos > 0 && pos > page * 20)
+                    {
+                        return (page, -1, pos - 1);
+                    }
+                    else
+                    {
+                        return (page, -1, pos);
+                    }
+                }
+                else if (IsKeyPressed(key, DOWN_ARROW))
+                {
+                    if (pos < maxpos && pos < 20 * (page + 1) - 1)
+                    {
+                        return (page, -1, pos + 1);
+                    }
+                    else
+                    {
+                        return (page, -1, pos);
+                    }
+                }
+                Console.ReadKey();
+                if (IsKeyPressed(key, "D1"))
+                {
+                    return (page, screenIndex, pos);
+                }
+                else if (IsKeyPressed(key, "D2"))
+                {
+                    return (-2, -2, 0);
+                }
+                else if (IsKeyPressed(key, "D3"))
+                {
+                    return (-1, -1, 0);
+                }
+                else if (IsKeyPressed(key, "D0"))
+                {
+                    logoutUpdate = true;
+                    Logout();
+                    return (page, 0, pos);
+                }
+                else
+                {
+                    Console.WriteLine("U moet wel een juiste keuze maken...");
+                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.ReadKey();
+                    return (page, -1, pos);
+                }
+            }
+        }
+
         public override int DoWork()
         {
-            Console.WriteLine(GetGFLogo(9));
+            Console.WriteLine(GetGFLogo(true));
             Console.WriteLine("Hier kunt u alle ingredienten zien die u nu heeft");
             Console.WriteLine("[1] Laat alle ingredienten zien");
             Console.WriteLine("[2] Laat aantal ingredienten op naam zien");
@@ -2791,31 +2875,40 @@ namespace restaurant
             }
             if (input.Item1 == "1")
             {
-                List<Ingredient> ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList();                
+                List<Ingredient> ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList();
                 int page = 0;
-                double pos = 0;               
+                double pos = 0;
                 do
                 {
-                    List<string> ingredientsString = IngredientsToString(ingredients, pos);
+                    List<string> ingredientsString = IngredientsToString(ingredients, pos, "[3] Verwijderen");
                     List<string> pages = MakePages(ingredientsString, 20);
 
 
                     Console.Clear();
-                    Console.WriteLine(GetGFLogo(3));
+                    Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
                     Console.WriteLine(new string('–', 100) + "\n" + "|Nummer  |Naam                            |Prijs       |Besteldatum   |Houdsbaarheidsdatum         |");
                     Console.WriteLine(new string('–', 100) + "\n" + pages[page]);
                     Console.WriteLine($"Totaal aantal ingredienten: {code_eigenaar.GetIngredients().Count}");
                     Console.WriteLine($"totaal waarde ingredienten: €{ Convert.ToInt32(code_eigenaar.GetIngredients().Sum(p => p.prijs))},00\n");
 
-                    (int, int, double) result = NextpageTabel(page, pages.Count - 1, pos, ingredients.Count - 1, 14);
+                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, ingredients.Count - 1, 14);
                     if (result.Item2 != -1)
                     {
                         return result.Item2;
                     }
-                    pos = result.Item3;
-                    page = result.Item1;
-
+                    else if (result.Item1 == -1 && result.Item2 == -1)
+                    {
+                        code_eigenaar.DeleteIngredientById(ingredients[Convert.ToInt32(pos)].ID);
+                        ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList();
+                        page = 0;
+                        pos = 0;
+                    }
+                    else
+                    {
+                        pos = result.Item3;
+                        page = result.Item1;
+                    }
                 } while (true);
             }
             else if (input.Item1 == "2")
@@ -2830,17 +2923,28 @@ namespace restaurant
                     List<string> pages = MakePages(ingredientsString, 20);
 
                     Console.Clear();
-                    Console.WriteLine(GetGFLogo(3));
+                    Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
                     Console.WriteLine(new string('–', 78) + "\n" + "|Naam                            |Hoeveelheid |Prijs                         |");
                     Console.WriteLine(new string('–', 78) + "\n" + pages[page]);
-                    (int, int, double) result = NextpageTabel(page, pages.Count - 1,pos , names.Count - 1,  14);
+                    (int, int, double) result = NextpageTable(page, pages.Count - 1,pos , names.Count - 1,  14);
                     if (result.Item2 != -1)
                     {
                         return result.Item2;
                     }
-                    pos = result.Item3;
-                    page = result.Item1;
+                    else if (result.Item1 == -1 && result.Item2 == -1)
+                    {
+                        //code_eigenaar.dele(ingredients[Convert.ToInt32(pos)].ID);
+                        ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.name).ToList();
+                        names = ingredients.Select(n => n.name).Distinct().ToList();
+                        page = 0;
+                        pos = 0;
+                    }
+                    else
+                    {
+                        pos = result.Item3;
+                        page = result.Item1;
+                    }
                 } while (true);
             }
             else if (input.Item1 == "3")
@@ -2881,25 +2985,35 @@ namespace restaurant
                 double pos = 0;
                 do
                 {
-                    List<string> ingredientsString = IngredientsToString(ingredients, pos);
+                    List<string> ingredientsString = IngredientsToString(ingredients, pos, "[3] Verwijderen");
                     List<string> pages = MakePages(ingredientsString, 20);
 
 
                     Console.Clear();
-                    Console.WriteLine(GetGFLogo(3));
+                    Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
                     Console.WriteLine(new string('–', 100) + "\n" + "|Nummer  |Naam                            |Prijs       |Besteldatum   |Houdsbaarheidsdatum         |");
                     Console.WriteLine(new string('–', 100) + "\n" + pages[page]);
                     Console.WriteLine($"Totaal aantal ingredienten: {ingredients.Count}");
                     Console.WriteLine($"totaal waarde ingredienten: €{ Convert.ToInt32(ingredients.Sum(p => p.prijs))},00\n");
 
-                    (int, int, double) result = NextpageTabel(page, pages.Count - 1,pos, ingredients.Count - 1, 14);
+                    (int, int, double) result = NextpageTable(page, pages.Count - 1,pos, ingredients.Count - 1, 14);
                     if (result.Item2 != -1)
                     {
                         return result.Item2;
                     }
-                    pos = result.Item3;
-                    page = result.Item1;
+                    else if (result.Item1 == -1 && result.Item2 == -1)
+                    {
+                        code_eigenaar.DeleteIngredientById(ingredients[Convert.ToInt32(pos)].ID);
+                        ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList();
+                        page = 0;
+                        pos = 0;
+                    }
+                    else
+                    {
+                        pos = result.Item3;
+                        page = result.Item1;
+                    }
                 } while (true);
             }
             else if (input.Item1 == "4")
@@ -2939,24 +3053,34 @@ namespace restaurant
                 double pos = 0;
                 do
                 {
-                    List<string> ingredientsString = IngredientsToString(ingredients, pos);
+                    List<string> ingredientsString = IngredientsToString(ingredients, pos, "[3] Verwijderen");
                     List<string> pages = MakePages(ingredientsString, 20);
 
                     Console.Clear();
-                    Console.WriteLine(GetGFLogo(3));
+                    Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
                     Console.WriteLine(new string('–', 100) + "\n" + "|Nummer  |Naam                            |Prijs       |Besteldatum   |Houdsbaarheidsdatum         |");
                     Console.WriteLine(new string('–', 100) + "\n" + pages[page]);
                     Console.WriteLine($"Totaal aantal ingredienten: {ingredients.Count}");
                     Console.WriteLine($"totaal waarde ingredienten: €{ Convert.ToInt32(ingredients.Sum(p => p.prijs))},00\n");
 
-                    (int, int, double) result = NextpageTabel(page, pages.Count - 1,pos ,ingredients.Count - 1, 14);
+                    (int, int, double) result = NextpageTable(page, pages.Count - 1,pos ,ingredients.Count - 1, 14);
                     if (result.Item2 != -1)
                     {
                         return result.Item2;
                     }
-                    pos = result.Item3;
-                    page = result.Item1;
+                    else if (result.Item1 == -1 && result.Item2 == -1)
+                    {
+                        code_eigenaar.DeleteIngredientById(ingredients[Convert.ToInt32(pos)].ID);
+                        ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList();
+                        page = 0;
+                        pos = 0;
+                    }
+                    else
+                    {
+                        pos = result.Item3;
+                        page = result.Item1;
+                    }
                 } while (true);
             }
             else if (input.Item1 == "5")
@@ -2996,24 +3120,34 @@ namespace restaurant
                 double pos = 0;
                 do
                 {
-                    List<string> ingredientsString = IngredientsToString(ingredients, pos);
+                    List<string> ingredientsString = IngredientsToString(ingredients, pos, "[3] Verwijderen");
                     List<string> pages = MakePages(ingredientsString, 20);
 
                     Console.Clear();
-                    Console.WriteLine(GetGFLogo(3));
+                    Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
                     Console.WriteLine(new string('–', 100) + "\n" + "|Nummer  |Naam                            |Prijs       |Besteldatum   |Houdsbaarheidsdatum         |");
                     Console.WriteLine(new string('–', 100) + "\n" + pages[page]);
                     Console.WriteLine($"Totaal aantal ingredienten: {ingredients.Count}");
                     Console.WriteLine($"totaal waarde ingredienten: €{ Convert.ToInt32(ingredients.Sum(p => p.prijs))},00\n");
 
-                    (int, int, double) result = NextpageTabel(page, pages.Count - 1, pos, ingredients.Count - 1, 14);
+                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, ingredients.Count - 1, 14);
                     if (result.Item2 != -1)
                     {
                         return result.Item2;
                     }
-                    pos = result.Item3;
-                    page = result.Item1;
+                    else if (result.Item1 == -1 && result.Item2 == -1)
+                    {
+                        code_eigenaar.DeleteIngredientById(ingredients[Convert.ToInt32(pos)].ID);
+                        ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList();
+                        page = 0;
+                        pos = 0;
+                    }
+                    else
+                    {
+                        pos = result.Item3;
+                        page = result.Item1;
+                    }
                 } while (true);
             }
             else if (input.Item1 == "6")
@@ -3030,24 +3164,34 @@ namespace restaurant
                 double pos = 0;
                 do
                 {
-                    List<string> ingredientsString = IngredientsToString(ingredients, pos);
+                    List<string> ingredientsString = IngredientsToString(ingredients, pos, "[3] Verwijderen");
                     List<string> pages = MakePages(ingredientsString, 20);
 
                     Console.Clear();
-                    Console.WriteLine(GetGFLogo(3));
+                    Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
                     Console.WriteLine(new string('–', 100) + "\n" + "|Nummer  |Naam                            |Prijs       |Besteldatum   |Houdsbaarheidsdatum         |");
                     Console.WriteLine(new string('–', 100) + "\n" + pages[page]);
                     Console.WriteLine($"Totaal aantal ingredienten: {ingredients.Count}");
                     Console.WriteLine($"totaal waarde ingredienten: €{ Convert.ToInt32(ingredients.Sum(p => p.prijs))},00\n");
 
-                    (int, int, double) result = NextpageTabel(page, pages.Count - 1,pos ,ingredients.Count - 1, 14);
+                    (int, int, double) result = NextpageTable(page, pages.Count - 1,pos ,ingredients.Count - 1, 14);
                     if (result.Item2 != -1)
                     {
                         return result.Item2;
                     }
-                    pos = result.Item3;
-                    page = result.Item1;
+                    else if (result.Item1 == -1 && result.Item2 == -1)
+                    {
+                        code_eigenaar.DeleteIngredientById(ingredients[Convert.ToInt32(pos)].ID);
+                        ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList();
+                        page = 0;
+                        pos = 0;
+                    }
+                    else
+                    {
+                        pos = result.Item3;
+                        page = result.Item1;
+                    }
                 } while (true);
             }
             else if (input.Item1 == "7")
@@ -3064,30 +3208,45 @@ namespace restaurant
                 double pos = 0;
                 do
                 {
-                    List<string> ingredientsString = IngredientsToString(ingredients, pos);
+                    List<string> ingredientsString = IngredientsToString(ingredients, pos, "[4] Verwijderen");
                     List<string> pages = MakePages(ingredientsString, 20);
 
                     Console.Clear();
-                    Console.WriteLine(GetGFLogo(3));
+                    Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
                     Console.WriteLine(new string('–', 100) + "\n" + "|Nummer  |Naam                            |Prijs       |Besteldatum   |Houdsbaarheidsdatum         |");
                     Console.WriteLine(new string('–', 100) + "\n" + pages[page]);
                     Console.WriteLine($"Totaal aantal ingredienten: {ingredients.Count}");
+                    (int, int, double) result = NextpageTableExpitedIngredients(page, pages.Count - 1,pos ,ingredients.Count - 1, 14);
 
-                    (int, int, double) result = Nextpage(page, pages.Count - 1,pos ,ingredients.Count - 1, 14);
-                    if (result.Item2 != -1)
+                    if (result.Item2 != -1 && result.Item2 != -2)
                     {
                         return result.Item2;
                     }
-                    pos = result.Item3;
-                    page = result.Item1;
+                    else if (result.Item1 == -1 && result.Item2 == -1)
+                    {
+                        code_eigenaar.DeleteIngredientById(ingredients[Convert.ToInt32(pos)].ID);
+                        ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList();
+                        page = 0;
+                        pos = 0;
+                    }
+                    else if (result.Item2 == -2)
+                    {
+                        code_eigenaar.DeleteExpiredIngredients();
+                        return 14;
+                    }
+                    else
+                    {
+                        pos = result.Item3;
+                        page = result.Item1;
+                    }
                 } while (true);
             }
             else if (input.Item1 == "8")
             {
                 return 11;
             }
-            else if (input.Item1 == "9")
+            else if (input.Item1 == "0")
             {
                 logoutUpdate = true;
                 Logout();

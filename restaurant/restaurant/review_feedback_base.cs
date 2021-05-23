@@ -9,7 +9,10 @@ namespace restaurant
     {
         public int ID { get; set; }
 
+        [Obsolete("Graag vervangen door klantnummer")]
         public int Klantnummer { get; set; }
+
+        public int klantnummer { get; set; }
 
         public string message { get; set; }
 
