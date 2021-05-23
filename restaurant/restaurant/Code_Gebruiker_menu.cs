@@ -1791,7 +1791,6 @@ namespace restaurant
 
                 if (message.Length > 50 - "Feedback: ".Length)
                 {
-                    Console.WriteLine(message.LastIndexOf(' '));
                     if (message.IndexOf(' ') > 50 || message.IndexOf(' ') == -1)
                     {
                         msgparts1.Add(message.Substring(0, 50 - "Feedback: ".Length));
