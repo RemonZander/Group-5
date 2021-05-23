@@ -1320,7 +1320,9 @@ namespace restaurant
                         Console.Clear();
                         Console.WriteLine(GetGFLogo(true));
                         Console.WriteLine(MakeFeedbackBox(feedback[Convert.ToInt32(pos)]) + "\n");
-                        Console.WriteLine("Weet u zeker dat u deze feedback wilt verwijderen? ja | nee");
+                        Console.WriteLine("Weet u zeker dat u deze feedback wilt verwijderen?");
+                        Console.WriteLine("[1] Ja");
+                        Console.WriteLine("[2] Nee");
 
                         input = AskForInput(5);
                         if (input.Item2 != -1)
@@ -1337,16 +1339,16 @@ namespace restaurant
                             Logout();
                             return 0;
                         }
-                        else if (input.Item1 == "ja")
+                        else if (input.Item1 == "1")
                         {
-                            code_gebruiker.DeleteReview(feedback[Convert.ToInt32(pos)].ID, ingelogd.klantgegevens);
+                            code_gebruiker.DeleteFeedback(feedback[Convert.ToInt32(pos)].ID, ingelogd.klantgegevens);
                             Console.WriteLine("\n Feedback is verwijderd");
                             Console.WriteLine("Druk op een knop om verder te gaan...");
                             Console.ReadKey();
                             return 5;
 
                         }
-                        else if (input.Item1 == "nee")
+                        else if (input.Item1 == "2")
                         {
                             return 5;
                         }
