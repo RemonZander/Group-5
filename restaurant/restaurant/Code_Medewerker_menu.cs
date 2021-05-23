@@ -165,7 +165,7 @@ namespace restaurant
             Console.WriteLine(GetGFLogo(true));
             Console.WriteLine("Work in progress!");
             Console.ReadKey();
-            return 0;
+            return 16;
         }
 
         public override List<Screen> Update(List<Screen> screens)
@@ -182,7 +182,7 @@ namespace restaurant
             Console.WriteLine(GetGFLogo(true));
             Console.WriteLine("Work in progress!");
             Console.ReadKey();
-            return 0;
+            return 16;
         }
 
         public override List<Screen> Update(List<Screen> screens)
