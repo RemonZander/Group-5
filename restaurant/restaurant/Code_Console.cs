@@ -25,7 +25,7 @@ namespace restaurant
             screens.Add(new ClientMenuScreen());
             screens.Add(new MakeReservationScreen());
             screens.Add(new MakeReviewScreen());
-            screens.Add(new ViewFeedbackScreen());// Wordt ViewFeedbackScreen
+            screens.Add(new ViewFeedbackScreen());
             screens.Add(new MakeFeedbackScreen());
             screens.Add(new ViewReviewScreen());
             #endregion
@@ -33,16 +33,16 @@ namespace restaurant
             screens.Add(new OwnerMenuScreen());
             screens.Add(new OwnerMenuScreen()); // Gerechten
             screens.Add(new OwnerMenuScreen()); // Reservering
-            screens.Add(new IngredientsScreen()); // Ingredienten
+            screens.Add(new IngredientsScreen());
             screens.Add(new OwnerMenuScreen()); // Inkomsten
             #endregion
             #region Medewerker
             screens.Add(new EmployeeMenuScreen());
-            screens.Add(new GetReservationsScreen()); // Reserveringen
-            screens.Add(new AddTableToReservationScreen()); // Tafels koppelen
+            screens.Add(new GetReservationsScreen());
+            screens.Add(new AddTableToReservationScreen());
             #endregion
             #region Klant
-            screens.Add(new ViewReservationScreen()); // ViewReservationScreen
+            screens.Add(new ViewReservationScreen());
             #endregion
             currentScreen = 0;
         }
@@ -1006,6 +1006,11 @@ namespace restaurant
 
                     result = AskForInput(0, null, input => regex.IsMatch(input), (null, "De email is niet juist er mist een @ of een ."));
 
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+
                     if (result.Item1 == null)
                     {
                         ResetOutput();
@@ -1021,6 +1026,11 @@ namespace restaurant
                 case 1:
                     Console.WriteLine(steps[currentStep]);
                     (string, int) otherResult = AskForInput(0);
+
+                    if (otherResult.Item2 != -1)
+                    {
+                        return otherResult.Item2;
+                    }
 
                     if (otherResult.Item1 == null)
                     {

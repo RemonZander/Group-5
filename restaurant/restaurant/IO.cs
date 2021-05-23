@@ -385,6 +385,49 @@ namespace restaurant
         }
 
         /// <summary>
+        /// Ophalen van klantgegevens met ID
+        /// </summary>
+        /// <param name="ID">Het ID van de klant</param>
+        /// <returns>Klantgegevens van de klant</returns>
+        public List<Klantgegevens> GetCustomer(List<int> ID)
+        {
+            database = GetDatabase();
+            List<Klantgegevens> klantgegevens = new List<Klantgegevens>();
+            if (database.login_gegevens == null)
+            {
+                database.login_gegevens = new List<Login_gegevens>();
+                return klantgegevens;
+            }
+            else if (database.login_gegevens[0].klantgegevens == null)
+            {
+                return klantgegevens;
+            }
+            else
+            {
+                //als de login_gegevens niet gesorteerd is, sorteer deze op klantnummer en sla deze op
+                if (database.login_gegevens != database.login_gegevens.OrderBy(s => s.klantgegevens.klantnummer).ToList())
+                {
+                    database.login_gegevens = database.login_gegevens.OrderBy(s => s.klantgegevens.klantnummer).ToList();
+                    Savedatabase(database);
+                }
+
+                //zoek voor klantgegevens op ID in de gegeven list
+                for (int a = 0; a < ID.Count; a++)
+                {
+                    if (ID[a] != -1)
+                    {
+                        klantgegevens.Add(database.login_gegevens[ID[a]].klantgegevens);
+                    }
+                    else
+                    {
+                        klantgegevens.Add(new Klantgegevens());
+                    }
+                }
+                return klantgegevens;
+            }
+        }
+
+        /// <summary>
         ///  Voor het ophalen van de naam van een medewerker met een ID
         /// </summary>
         /// <param name="employeeID">Het ID van de medewerker</param>
@@ -491,48 +534,8 @@ namespace restaurant
         }
         #endregion
 
-        /// <summary>
-        /// Ophalen van klantgegevens met ID
-        /// </summary>
-        /// <param name="ID">Het ID van de klant</param>
-        /// <returns>Klantgegevens van de klant</returns>
-        public List<Klantgegevens> GetCustomer(List<int> ID)
-        {
-            database = GetDatabase();
-            List<Klantgegevens> klantgegevens = new List<Klantgegevens>();
-            if(database.login_gegevens == null)
-            {
-                database.login_gegevens = new List<Login_gegevens>();
-                return klantgegevens;
-            }
-            else if(database.login_gegevens[0].klantgegevens == null)
-            {
-                return klantgegevens;
-            }
-            else
-            {
-                //als de login_gegevens niet gesorteerd is, sorteer deze op klantnummer en sla deze op
-                if (database.login_gegevens != database.login_gegevens.OrderBy(s => s.klantgegevens.klantnummer).ToList())
-                {
-                    database.login_gegevens = database.login_gegevens.OrderBy(s => s.klantgegevens.klantnummer).ToList();
-                    Savedatabase(database);
-                }
+        
 
-                //zoek voor klantgegevens op ID in de gegeven list
-                for (int a = 0; a < ID.Count; a++)
-                {
-                    if (ID[a] != -1)
-                    {
-                        klantgegevens.Add(database.login_gegevens[ID[a]].klantgegevens);
-                    }
-                    else
-                    {
-                        klantgegevens.Add(new Klantgegevens());
-                    }
-                }
-                return klantgegevens;
-            }
-        }
         #region Deprecated
         
         #endregion
