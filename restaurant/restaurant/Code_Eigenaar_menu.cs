@@ -406,6 +406,7 @@ namespace restaurant
                 Console.WriteLine(GetGFLogo(true));
                 if (pages.Count > 0)
                 {
+                    Console.WriteLine();
                     Console.WriteLine("Reserveringen van: " + date + (date == DateTime.Now.ToShortDateString() ? " (vandaag)" : ""));
                     Console.WriteLine($"Pagina {pageNum + 1} van de {pages.Count}:");
                     Console.WriteLine(pages[pageNum] + new string('#', maxLength + 6));
@@ -414,7 +415,22 @@ namespace restaurant
                 {
                     Console.WriteLine("Geen reserveringen gevonden op " + date);
                 }
-                Console.WriteLine("Volgende pagina [1]          Vorige pagina [2]");
+                if (pageNum > 0 && pages.Count > pageNum + 1)
+                {
+                    Console.WriteLine("Volgende pagina [1]          Vorige pagina [2]");
+                }
+                else if (pageNum == 0 && pageNum + 1 < pages.Count)
+                {
+                    Console.WriteLine("Volgende pagina [1]                           ");
+                }
+                else if (pageNum > 0 && pageNum - 1 >= 0)
+                {
+                    Console.WriteLine("                             Vorige pagina [2]");
+                }
+                else
+                {
+                    Console.WriteLine();
+                }
                 Console.WriteLine("Volgende dag    [3]          Vorige dag    [4]          Naar vandaag [5]");
                 Console.WriteLine();
                 Console.WriteLine(onlyWithoutTables ? "Toon alle reserveringen van deze dag       [6]" : "Toon alleen de reserveringen zonder tafel  [6]");
