@@ -129,7 +129,7 @@ namespace restaurant
         /// Verwijderd een reservering
         /// </summary>
         /// <param name="reserveringen">De reservering die verwijderd moet worden</param>
-        public void RemoveReservations(Reserveringen reserveringen)
+        public void DeleteReservations(Reserveringen reserveringen)
         {
             database = io.GetDatabase();
             database.reserveringen.Remove(reserveringen);
@@ -149,7 +149,6 @@ namespace restaurant
             {
                 datum = DateTime.Now,
                 klantnummer = klant.klantnummer,
-                isBezorging = true,
             };
 
             if (database.reserveringen.Count == 0)
@@ -341,7 +340,7 @@ namespace restaurant
             Review review = new Review
             {
                 Rating = rating,
-                Klantnummer = klant.klantnummer,
+                klantnummer = klant.klantnummer,
                 message = message,
                 reservering_ID = reservering.ID,
                 annomeme = false,
@@ -378,7 +377,7 @@ namespace restaurant
             Review review = new Review
             {
                 Rating = rating,
-                Klantnummer = -1,
+                klantnummer = -1,
                 message = message,
                 reservering_ID = -1,
                 annomeme = true,
@@ -415,7 +414,7 @@ namespace restaurant
             for (int i = 0; i < database.reviews.Count; i++)
             {
                 //als reviewID in de database gelijk staat aan gegeven reviewID en voor opgegeven klant, moet niet hebben dat mensen andere reviews kunnen aanpassen
-                if (reviewID == database.reviews[i].ID && klant.klantnummer == database.reviews[i].Klantnummer)
+                if (reviewID == database.reviews[i].ID && klant.klantnummer == database.reviews[i].klantnummer)
                 {
                     //maakt een nieuwe review op dezelfde locatie als de oude met informatie van de oude en de nieuwe
                     database.reviews[i] = new Review
@@ -424,7 +423,7 @@ namespace restaurant
                         annomeme = false,
                         datum = database.reviews[i].datum,
                         ID = database.reviews[i].ID,
-                        Klantnummer = database.reviews[i].Klantnummer,
+                        klantnummer = database.reviews[i].klantnummer,
                         message = message,
                         reservering_ID = database.reviews[i].reservering_ID,
                     };
@@ -459,7 +458,7 @@ namespace restaurant
                         annomeme = true,
                         datum = new DateTime(),
                         ID = database.reviews[i].ID,
-                        Klantnummer = -1,
+                        klantnummer = -1,
                         message = message,
                         reservering_ID = -1,
                     };
@@ -485,7 +484,7 @@ namespace restaurant
             for (int i = 0; i < database.reviews.Count; i++)
             {
                 //als reviewID in de database gelijk staat aan gegeven reviewID en voor opgegeven klant, moet niet hebben dat mensen andere reviews kunnen aanpassen
-                if (reviewID == database.reviews[i].ID && klant.klantnummer == database.reviews[i].Klantnummer)
+                if (reviewID == database.reviews[i].ID && klant.klantnummer == database.reviews[i].klantnummer)
                 {
                     //delete de review
                     database.reviews.RemoveAt(i);
@@ -524,7 +523,7 @@ namespace restaurant
                 recipient = werknemer.ID,
                 annomeme = false,
                 datum = DateTime.Now,
-                Klantnummer = klant.klantnummer,
+                klantnummer = klant.klantnummer,
                 message = message,
                 reservering_ID = ReserveringID,
             };
@@ -567,7 +566,7 @@ namespace restaurant
                 recipient = eigenaar.ID,
                 annomeme = false,
                 datum = DateTime.Now,
-                Klantnummer = klant.klantnummer,
+                klantnummer = klant.klantnummer,
                 message = message,
                 reservering_ID = ReserveringID,
             };
@@ -608,7 +607,7 @@ namespace restaurant
                 recipient = eigenaar.ID,
                 annomeme = false,
                 datum = DateTime.Now,
-                Klantnummer = -1,
+                klantnummer = -1,
                 message = message,
                 reservering_ID = -1,
             };
@@ -649,7 +648,7 @@ namespace restaurant
                 recipient = werknemer.ID,
                 annomeme = false,
                 datum = DateTime.Now,
-                Klantnummer = -1,
+                klantnummer = -1,
                 message = message,
                 reservering_ID = -1,
             };
@@ -684,7 +683,7 @@ namespace restaurant
             for (int i = 0; i < database.feedback.Count; i++)
             {
                 //als feedbackID in de database gelijk staat aan gegeven feedbackID en voor opgegeven klant, moet niet hebben dat mensen andere feedback kunnen aanpassen
-                if (feedbackID == database.feedback[i].ID && klant.klantnummer == database.feedback[i].Klantnummer)
+                if (feedbackID == database.feedback[i].ID && klant.klantnummer == database.feedback[i].klantnummer)
                 {
                     //maakt een nieuwe feeback op dezelfde locatie als de oude met informatie van de oude en de nieuwe
                     database.feedback[i] = new Feedback
@@ -693,7 +692,7 @@ namespace restaurant
                         annomeme = false,
                         datum = database.feedback[i].datum,
                         ID = database.feedback[i].ID,
-                        Klantnummer = database.feedback[i].Klantnummer,
+                        klantnummer = database.feedback[i].klantnummer,
                         message = message,
                         reservering_ID = database.feedback[i].reservering_ID,
                     };
@@ -727,7 +726,7 @@ namespace restaurant
                         annomeme = true,
                         datum = new DateTime(),
                         ID = database.feedback[i].ID,
-                        Klantnummer = -1,
+                        klantnummer = -1,
                         message = message,
                         reservering_ID = -1,
                     };
@@ -753,7 +752,7 @@ namespace restaurant
             for (int i = 0; i < database.feedback.Count; i++)
             {
                 //als feedbackID in de database gelijk staat aan gegeven feedbackID en voor opgegeven klant, moet niet hebben dat mensen andere feedback kunnen aanpassen
-                if (feedbackID == database.feedback[i].ID && klant.klantnummer == database.feedback[i].Klantnummer)
+                if (feedbackID == database.feedback[i].ID && klant.klantnummer == database.feedback[i].klantnummer)
                 {
                     //delete de review
                     database.feedback.RemoveAt(i);
@@ -1580,7 +1579,7 @@ namespace restaurant
             else if (input.Item1 == "1")
             {
                 newfeedback.annomeme = true;
-                newfeedback.Klantnummer = -1;
+                newfeedback.klantnummer = -1;
                 newfeedback.ID = feedback.ID;
                 newfeedback.reservering_ID = -1;
                 newfeedback.datum = new DateTime();
@@ -1588,7 +1587,7 @@ namespace restaurant
             else if (input.Item1 == "2")
             {
                 newfeedback.annomeme = false;
-                newfeedback.Klantnummer = feedback.Klantnummer;
+                newfeedback.klantnummer = feedback.klantnummer;
                 newfeedback.ID = feedback.ID;
                 newfeedback.reservering_ID = feedback.reservering_ID;
                 newfeedback.datum = feedback.datum;
