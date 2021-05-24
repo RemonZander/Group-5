@@ -26,7 +26,7 @@ namespace restaurant
         {
             Make_menu();
             Fill_Userdata(10);
-            Fill_reservations_threading(24, 500, 4, 6, 1, 9);
+            Fill_reservations_threading(24, 1000, 5, 5, 10, 30);
             Maak_werknemer(10);
             //Save_expenses();
             Make_reviews();
@@ -134,8 +134,17 @@ namespace restaurant
                         break;
                 }
 
-                List<Gerechten> gerechten = Make_dishes(aantal * 3, beschikbaar[pos].Item1, ingredient_temp);
-                List<int> gerechten_ID = gerechten.Select(g => g.ID).ToList();
+                List<int> gerechten_ID = new List<int>();
+                List<Gerechten> gerechten = new List<Gerechten>();
+                if (beschikbaar[pos].Item1.Date < DateTime.Now.Date.Date)
+                {
+                    gerechten = Make_dishes(aantal * 3, beschikbaar[pos].Item1, ingredient_temp);
+                    gerechten_ID = gerechten.Select(g => g.ID).ToList();
+                }
+                else
+                {
+                    tafels = new List<Tafels>();
+                }
 
                 reserveringen_list.Add(new Reserveringen
                 {
@@ -962,7 +971,7 @@ namespace restaurant
 
             foreach (var reservering in database.reserveringen)
             {
-                if (reservering.datum < DateTime.Now)
+                if (reservering.datum < DateTime.Now && reservering.gerechten_ID != null)
                 {
                     reviews.Add(new Review
                     {
@@ -1020,14 +1029,14 @@ namespace restaurant
 
             foreach (var reservering in database.reserveringen)
             {
-                if (reservering.datum < DateTime.Now)
+                if (reservering.datum < DateTime.Now && reservering.gerechten_ID != null)
                 {
                     feedback.Add(new Feedback
                     {
                         ID = feedback.Count,
                         klantnummer = reservering.klantnummer,
                         reservering_ID = reservering.ID,
-                        message = "",
+                        message = "test message",
                         recipient = database.werknemers[rnd.Next(0, database.werknemers.Count)].ID,
                         datum = reservering.datum.AddDays(rnd.Next(0, 50))
                     });
@@ -1815,7 +1824,6 @@ namespace restaurant
                 do
                 {
                     pages = new List<string>();
-                    //List<List<string>> reviewstring = ReviewsToString(reviews);
                     List<List<string>> reviewstring = Makedubbelboxes(ReviewsToString(reviews));
                     List<string> boxes = new List<string>();
                     for (int a = 0; a < reviewstring.Count; a++)
