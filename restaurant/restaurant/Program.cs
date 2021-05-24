@@ -53,7 +53,7 @@ namespace restaurant
             if (database.reserveringen == null) return;
             for (int a = 0; a < database.reserveringen.Count; a++)
             {
-                if (database.reserveringen[a].datum < DateTime.Now && database.reserveringen[a].tafels != null)
+                if (database.reserveringen[a].datum < DateTime.Now && database.reserveringen[a].tafels != null && database.reserveringen[a].gerechten_ID == null)
                 {
                     List<Gerechten> gerechten = testing_Class.Make_dishes(database.reserveringen[a].aantal * 3, database.reserveringen[a].datum.AddMinutes(rnd.Next(10, 100)), ingredient_temp);
                     Reserveringen temp = database.reserveringen[a];
