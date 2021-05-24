@@ -73,7 +73,7 @@ namespace restaurant
 
             foreach (var reservering in reserveringen)
             {
-                if (reservering.tafels == null)
+                if (reservering.tafels.Count == 0)
                 {
                     reserveringenZonderTafel.Add(reservering);
                 }
