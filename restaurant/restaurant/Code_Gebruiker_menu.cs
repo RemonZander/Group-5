@@ -136,6 +136,34 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
+        /// <summary>
+        /// Voor het herschrijven van een klanten reservering
+        /// </summary>
+        /// <param name="reservering">De reservering die je gaat overschrijven</param>
+        /// <param name="aantalMensen">het aantal mensen</param>
+        /// <param name="datum">de datum waarop je de reservering wilt hebben</param>
+        /// <param name="tafelBijRaam">of je een tafel bij het raam wilt</param>
+        public void OverwriteReservation(Reserveringen reservering, int aantalMensen, DateTime datum, bool tafelBijRaam)
+        {
+            Database database = io.GetDatabase();
+            for (int i = 0; i < database.reserveringen.Count; i++)
+            {
+                if (database.reserveringen[i].ID == reservering.ID)
+                {
+                    Reserveringen newReservering = new Reserveringen
+                    {
+                        ID = reservering.ID,
+                        aantal = aantalMensen,
+                        datum = datum,
+                        klantnummer = reservering.klantnummer,
+                        tafel_bij_raam = tafelBijRaam,
+                    };
+                    database.reserveringen[i] = newReservering;
+                    io.Savedatabase(database);
+                }
+            }
+        }
+
         //mist nog een adres dus nog niet compleet af
         /// <summary>
         /// maakt een reservering aan voor bezorging
