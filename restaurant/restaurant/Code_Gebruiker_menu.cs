@@ -146,20 +146,23 @@ namespace restaurant
         public void OverwriteReservation(Reserveringen reservering, int aantalMensen, DateTime datum, bool tafelBijRaam)
         {
             Database database = io.GetDatabase();
-            for (int i = 0; i < database.reserveringen.Count; i++)
+            if (database.reserveringen != null)
             {
-                if (database.reserveringen[i].ID == reservering.ID)
+                for (int i = 0; i < database.reserveringen.Count; i++)
                 {
-                    Reserveringen newReservering = new Reserveringen
+                    if (database.reserveringen[i].ID == reservering.ID)
                     {
-                        ID = reservering.ID,
-                        aantal = aantalMensen,
-                        datum = datum,
-                        klantnummer = reservering.klantnummer,
-                        tafel_bij_raam = tafelBijRaam,
-                    };
-                    database.reserveringen[i] = newReservering;
-                    io.Savedatabase(database);
+                        Reserveringen newReservering = new Reserveringen
+                        {
+                            ID = reservering.ID,
+                            aantal = aantalMensen,
+                            datum = datum,
+                            klantnummer = reservering.klantnummer,
+                            tafel_bij_raam = tafelBijRaam,
+                        };
+                        database.reserveringen[i] = newReservering;
+                        io.Savedatabase(database);
+                    }
                 }
             }
         }
