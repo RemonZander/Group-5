@@ -2,3 +2,12 @@
 
 # IDE1006: Naming Styles
 dotnet_diagnostic.IDE1006.severity = none
+
+# IDE0090: Use 'new(...)'
+csharp_style_implicit_object_creation_when_type_is_apparent = false
+
+# IDE0022: Use block body for methods
+csharp_style_expression_bodied_methods = false
+
+# Default severity for all analyzer diagnostics
+dotnet_analyzer_diagnostic.severity = none

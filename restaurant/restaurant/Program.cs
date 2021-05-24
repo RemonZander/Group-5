@@ -5,6 +5,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.Collections.Concurrent;
 
 namespace restaurant
 {
@@ -13,7 +14,7 @@ namespace restaurant
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
-        [STAThread]
+        //[STAThread]
         static void Main()
         {
             bool debug = true;
@@ -28,6 +29,7 @@ namespace restaurant
                 Code_Console code = new Code_Console();
                 NativeMethods.AllocConsole();
                 Console.OutputEncoding = System.Text.Encoding.UTF8;
+                EmulateRestaurant();
                 do
                 {
                     // Here we incorporate our visualization of the application
@@ -37,6 +39,84 @@ namespace restaurant
                     code.Refresh();
                 } while (true);
             }
+        }
+
+
+        private static void EmulateRestaurant()
+        {
+            IO io = new IO();
+            Testing_class testing_Class = new Testing_class();
+            Database database = io.GetDatabase();
+            Random rnd = new Random();
+            BlockingCollection<Ingredient> ingredient_temp = new BlockingCollection<Ingredient>();
+
+            if (database.reserveringen == null) return;
+            for (int a = 0; a < database.reserveringen.Count; a++)
+            {
+                if (database.reserveringen[a].datum < DateTime.Now && database.reserveringen[a].tafels != null && database.reserveringen[a].gerechten_ID == null)
+                {
+                    List<Gerechten> gerechten = testing_Class.Make_dishes(database.reserveringen[a].aantal * 3, database.reserveringen[a].datum.AddMinutes(rnd.Next(10, 100)), ingredient_temp);
+                    Reserveringen temp = database.reserveringen[a];
+                    temp.gerechten_ID = gerechten.Select(g => g.ID).ToList();
+                    database.reserveringen[a] = temp;
+
+                    Review review = new Review 
+                    { 
+                        ID = database.reviews[database.reviews.Count - 1].ID + 1,
+                        klantnummer = database.reserveringen[a].klantnummer,
+                        reservering_ID = database.reserveringen[a].ID,
+                        Rating = rnd.Next(1, 6),
+                        datum = database.reserveringen[a].datum.AddDays(rnd.Next(0, 50))
+                    };
+                    if (rnd.Next(5) == 3)
+                    {
+                        review.annomeme = true;
+                        review.klantnummer = -1;
+                        review.reservering_ID = -1;
+                        review.datum = new DateTime();
+                    }
+
+                    switch (review.Rating)
+                    {
+                        case 1:
+                            review.message = "Verschikkelijk restaurant, hier kom ik nooit meer! Wie die sushipizza heeft uitgevonden mag branden in hell!";
+                            break;
+                        case 2:
+                            review.message = "De service was wel goed, maar het eten wat niet zo goed. Ik denk dat ik hier niet meer terug wil komen. Geen aanrader voor vrienden!";
+                            break;
+                        case 3:
+                            review.message = "Niet goed, niet slecht. Eten is te doen. Service was prima, ik kom nog wel terug.";
+                            break;
+                        case 4:
+                            review.message = "gewoon goed! niet meer te zeggen.";
+                            break;
+                        case 5:
+                            review.message = "OMG, die sushipiza was amazing!!! Dit is het beste restaurant ever, nog nooit zo'n hipster restaurant gezien in mijn leven. Ik kom hier zeker terug!!!";
+                            break;
+                    }
+                    database.reviews.Add(review);
+
+
+                    Feedback feedback = new Feedback
+                    {
+                        ID = database.feedback[database.feedback.Count - 1].ID + 1,
+                        klantnummer = database.reserveringen[a].klantnummer,
+                        reservering_ID = database.reserveringen[a].ID,
+                        message = "test message",
+                        recipient = database.werknemers[rnd.Next(0, database.werknemers.Count)].ID,
+                        datum = database.reserveringen[a].datum.AddDays(rnd.Next(0, 50))
+                    };
+
+                    database.feedback.Add(feedback);
+                }
+                else if (database.reserveringen[a].datum < DateTime.Now && database.reserveringen[a].tafels == null && database.reserveringen[a].gerechten_ID == null)
+                {
+                    database.reserveringen[a] = new Reserveringen();
+                }
+            }
+
+            database.ingredienten.AddRange(ingredient_temp);
+            io.Savedatabase(database);
         }
     }
 

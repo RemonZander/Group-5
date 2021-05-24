@@ -307,7 +307,7 @@ namespace restaurant
             {
                 foreach (var review in database.reviews)
                 {
-                    if (review.Klantnummer == klant.klantnummer)
+                    if (review.klantnummer == klant.klantnummer)
                     {
                         reviewList.Add(review);
                     }
@@ -375,7 +375,7 @@ namespace restaurant
                 //voor iedere feedback met hetzelfde klantnummer als het klantnummer van de klant, voeg deze toe aan een lijst en return de lijst
                 foreach (var feedback in database.feedback)
                 {
-                    if (feedback.Klantnummer == klant.klantnummer)
+                    if (feedback.klantnummer == klant.klantnummer)
                     {
                         feedbackList.Add(feedback);
                     }
