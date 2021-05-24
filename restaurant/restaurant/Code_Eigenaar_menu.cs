@@ -400,9 +400,7 @@ namespace restaurant
             for (int i = 0; i < dates.Count; i++)
             {
                 reserveringen.Add(dates[i], reserveringenList.Where(d => d.datum.ToShortDateString() == dates[i]).ToList());
-                reserveringenWithoutTables.Add(dates[i], reserveringenList.Where(t => t.tafels.Count == 0).ToList());
-                //reserveringenWithoutTables.Add(dates[i], code_medewerker.getReserveringenZonderTafel(DateTime.Parse(dates[i])));
-                //reserveringen.Add(dates[i], code_medewerker.getReserveringen(DateTime.Parse(dates[i])));
+                reserveringenWithoutTables.Add(dates[i], reserveringenList.Where(t => t.tafels.Count == 0 && t.datum.ToShortDateString() == dates[i]).ToList());
 
             }
             //var pages = MakePages(boxText, 3);
@@ -414,19 +412,21 @@ namespace restaurant
                 (int, int, double) result = (0, 0, 0.0);
                 pages = new List<string>();
                 List<List<string>> reservationString = new List<List<string>>();
-                try
+                if (onlyWithoutTables)
                 {
-                    if (!onlyWithoutTables)
-                    {
-                        reservationString = Makedubbelboxes(code_eigenaar.ReserveringenToString(reserveringen[date]));
-
-                    }
-                    else
+                    if (reserveringen.ContainsKey(date))
                     {
                         reservationString = Makedubbelboxes(code_eigenaar.ReserveringenToString(reserveringenWithoutTables[date]));
                     }
                 }
-                catch
+                else
+                {
+                    if (reserveringen.ContainsKey(date))
+                    {
+                        reservationString = Makedubbelboxes(code_eigenaar.ReserveringenToString(reserveringen[date]));
+                    }
+                }
+                if (reservationString.Count == 0)
                 {
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
@@ -455,7 +455,7 @@ namespace restaurant
                             date = DateTime.Now.ToShortDateString();
                             break;
                     }
-                    Console.Clear();
+                    //Console.Clear();
                     goto a;
                 }
                 List<string> boxes = new List<string>();
@@ -527,20 +527,20 @@ namespace restaurant
                 List<string> txt = new List<string>();
                 if (pages.Count > 0 && pageNum > 0 && pageNum < pages.Count - 1)
                 {
-                    txt.Add("[1] Volgende pagina          [2] Vorige pagina");
+                    txt.Add("[1] Volgende pagina                                     [2] Vorige pagina");
                     tuples.Add(Tuple.Create((pageNum + 1, -1, (pageNum + 1) * 6.0), "D1"));
                     tuples.Add(Tuple.Create((pageNum - 1, -1, (pageNum - 1) * 6.0), "D2"));
                 }
                 //if there is only a next page
                 else if (pages.Count -1 > 0 && pageNum < pages.Count - 1)
                 {
-                    txt.Add("[1] Volgende pagina                           ");
+                    txt.Add("[1] Volgende pagina");
                     tuples.Add(Tuple.Create((pageNum + 1, -1, (pageNum + 1) * 6.0), "D1"));
                 }
                 //if there is only a previous page
                 else if (pages.Count -1 > 0 && pageNum >= pages.Count - 1)
                 {
-                    txt.Add("                             [2] Vorige pagina");
+                    txt.Add("                                                        [2] Vorige pagina");
                     tuples.Add(Tuple.Create((pageNum - 1, -1, (pageNum - 1) * 6.0), "D2"));
                 }
                 //if date is smaller than now
