@@ -1214,6 +1214,7 @@ namespace restaurant
             return done;
         }
 
+        [Obsolete("Gebruik de andere nextpage pls, die ondersteunt custom choices")]
         protected (int, int, double) Nextpage(int page, int maxpage, double pos, double maxpos, int screenIndex)
         {
             if (page < maxpage)
@@ -1395,6 +1396,91 @@ namespace restaurant
                     return (page, -1, pos);
                 }
             }
+        }
+
+        protected (int, int, double) Nextpage(int page, double pos, double maxpos, int screenIndex, List<Tuple<(int, int , double), string>> choices, List<string> text)
+        {
+            foreach (var item in text)
+            {
+                Console.WriteLine(item);
+            }
+            ConsoleKeyInfo key = Console.ReadKey();
+            if (IsKeyPressed(key, ESCAPE_KEY))
+            {
+                return (page, screenIndex, pos);
+            }
+            if (IsKeyPressed(key, UP_ARROW))
+            {
+                if (pos % 2 != 0)
+                {
+                    if ((pos - 1 > 6 * page && page != 0) || (pos > 2 && page == 0))
+                    {
+                        pos -= 2;
+                    }
+                }
+                else
+                {
+                    if ((pos > 6 * page && page != 0) || (pos > 1 && page == 0))
+                    {
+                        pos -= 2;
+                    }
+                }
+                return (page, -1, pos);
+            }
+            else if (IsKeyPressed(key, DOWN_ARROW))
+            {
+                if (pos % 2 != 0)
+                {
+                    if (((pos + 1 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 2)
+                    {
+                        pos += 2;
+                    }
+                }
+                else
+                {
+                    if (((pos + 2 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 1)
+                    {
+                        pos += 2;
+                    }
+                }
+                return (page, -1, pos);
+            }
+            else if (IsKeyPressed(key, LEFT_ARROW))
+            {
+                if (pos % 2 != 0 && pos > 0)
+                {
+                    pos -= 1;
+                }
+                return (page, -1, pos);
+            }
+            else if (IsKeyPressed(key, RIGHT_ARROW))
+            {
+                if (pos % 2 == 0 || pos == 0)
+                {
+                    pos += 1;
+                }
+                return (page, -1, pos);
+            }
+            
+            Console.ReadKey();
+            if (IsKeyPressed(key, "D0"))
+            {
+                logoutUpdate = true;
+                Logout();
+                return (page, 0, pos);
+            }            
+            foreach (var choice in choices)
+            {
+                if (IsKeyPressed(key, choice.Item2))
+                {
+                    return choice.Item1;
+                }
+            }
+
+            Console.WriteLine("U moet wel een juiste keuze maken...");
+            Console.WriteLine("Druk op en knop om verder te gaan.");
+            Console.ReadKey();
+            return (page, -1, pos);
         }
 
         protected (int, int) Nextpage(int page, int maxpage, int screenIndex)
@@ -1805,7 +1891,19 @@ namespace restaurant
                         Console.WriteLine(pages[page] + new string('#', 110));
                     }
 
-                    var result = Nextpage(page, pages.Count - 1, pos, (boxes.Count - 1) * 2, 10);
+                    (int, int, double) result = (0, 0, 0);
+                    if (page < pages.Count - 1)
+                    {
+                        result = Nextpage(page, pos, (boxes.Count - 1) * 2, 10, 
+                            new List<Tuple<(int, int, double), string>> { Tuple.Create((page + 1, -1, (page + 1) * 6.0), "D1"), Tuple.Create((page, 10, pos), "D2") , Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") }, 
+                            new List<string> { "[1] Volgende pagina", "[2] Terug" });
+                    }
+                    else
+                    {
+                        result = Nextpage(page, pos, (boxes.Count - 1) * 2, 10,
+                            new List<Tuple<(int, int, double), string>> { Tuple.Create((page, 10, pos), "D1"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
+                            new List<string> { "[1] Terug" });
+                    }
                     pos = result.Item3;
                     if (result.Item2 != -1 && result.Item2 != -2)
                     {
@@ -1964,7 +2062,20 @@ namespace restaurant
                         {
                             Console.WriteLine(pages[page] + new string('#', 110));
                         }
-                        var result = Nextpage(page, pages.Count - 1, pos, (boxes.Count - 1) * 2, 10);
+
+                        (int, int, double) result = (0, 0, 0);
+                        if (page < pages.Count - 1)
+                        {
+                            result = Nextpage(page, pos, (boxes.Count - 1) * 2, 10,
+                                new List<Tuple<(int, int, double), string>> { Tuple.Create((page + 1, -1, (page + 1) * 6.0), "D1"), Tuple.Create((page, 10, pos), "D2"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
+                                new List<string> { "[1] Volgende pagina", "[2] Terug" });
+                        }
+                        else
+                        {
+                            result = Nextpage(page, pos, (boxes.Count - 1) * 2, 10,
+                                new List<Tuple<(int, int, double), string>> { Tuple.Create((page, 10, pos), "D1"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
+                                new List<string> { "[1] Terug" });
+                        }
                         pos = result.Item3;
                         if (result.Item2 != -1 && result.Item2 != -1)
                         {
@@ -2122,7 +2233,20 @@ namespace restaurant
                     {
                         Console.WriteLine(pages[page] + new string('#', 110));
                     }
-                    var result = Nextpage(page, pages.Count - 1, pos, (boxes.Count - 1) * 2, 10);
+
+                    (int, int, double) result = (0, 0, 0);
+                    if (page < pages.Count - 1)
+                    {
+                        result = Nextpage(page, pos, (boxes.Count - 1) * 2, 10,
+                            new List<Tuple<(int, int, double), string>> { Tuple.Create((page + 1, -1, (page + 1) * 6.0), "D1"), Tuple.Create((page, 10, pos), "D2"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
+                            new List<string> { "[1] Volgende pagina", "[2] Terug" });
+                    }
+                    else
+                    {
+                        result = Nextpage(page, pos, (boxes.Count - 1) * 2, 10,
+                            new List<Tuple<(int, int, double), string>> { Tuple.Create((page, 10, pos), "D1"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
+                            new List<string> { "[1] Terug" });
+                    }
                     pos = result.Item3;
                     if (result.Item2 != -1 && result.Item2 != -1)
                     {
