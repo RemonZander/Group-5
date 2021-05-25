@@ -298,21 +298,13 @@ namespace restaurant
         {
             //pakt de database
             database = GetDatabase();
-            List<Review> reviewList = new List<Review>();
-            if(database.reviews == null)
+            if(database.reviews != null)
             {
-                return reviewList;
+                return database.reviews;
             }
             else
             {
-                foreach (var review in database.reviews)
-                {
-                    if (review.klantnummer == klant.klantnummer)
-                    {
-                        reviewList.Add(review);
-                    }
-                }
-                return reviewList;
+                return new List<Review>();
             }
         }
 
@@ -435,6 +427,8 @@ namespace restaurant
         public (string, string) GetEmployee(int employeeID)
         {
             Database database = GetDatabase();
+            
+            
             for (int i = 0; i < database.werknemers.Count; i++)
             {
                 if (database.werknemers[i].ID == employeeID)
@@ -452,19 +446,14 @@ namespace restaurant
         public List<Werknemer> GetEmployee()
         {
             Database database = GetDatabase();
-            List<Werknemer> werknemers = new List<Werknemer>();
-            if (database.werknemers == null)
+            if (database.werknemers != null)
             {
-                return werknemers;
+                return database.werknemers;
             }
             else
             {
-                foreach (Werknemer werknemer in database.werknemers)
-                {
-                    werknemers.Add(werknemer);
-                }
+                return new List<Werknemer>();
             }
-            return werknemers;
         }
 
         /// <summary>
@@ -491,19 +480,14 @@ namespace restaurant
         public List<Reserveringen> GetReservations()
         {
             Database database = GetDatabase();
-            List<Reserveringen> reserveringen = new List<Reserveringen>();
-            if (database.reserveringen == null)
+            if (database.reserveringen != null)
             {
-                return reserveringen;
+                return database.reserveringen;
             }
             else
             {
-                foreach (var reservering in database.reserveringen)
-                {
-                    reserveringen.Add(reservering);
-                }
+                return new List<Reserveringen>();
             }
-            return reserveringen;
         }
         #endregion
 
