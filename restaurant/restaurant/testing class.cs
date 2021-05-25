@@ -1257,14 +1257,14 @@ namespace restaurant
                 {
                     if (pos % 2 != 0)
                     {
-                        if (((pos + 1 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 2)
+                        if (((pos + 1 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 1)
                         {
                             pos += 2;
                         }
                     }
                     else
                     {
-                        if (((pos + 2 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 1)
+                        if (((pos + 2 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 2)
                         {
                             pos += 2;
                         }
@@ -1348,14 +1348,14 @@ namespace restaurant
                 {
                     if (pos % 2 != 0)
                     {
-                        if (((pos + 1 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 2)
+                        if (((pos + 1 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 1)
                         {
                             pos += 2;
                         }
                     }
                     else
                     {
-                        if (((pos + 2 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 1)
+                        if (((pos + 2 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 2)
                         {
                             pos += 2;
                         }
@@ -1440,14 +1440,14 @@ namespace restaurant
             {
                 if (pos % 2 != 0)
                 {
-                    if (((pos + 1 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 2)
+                    if (((pos + 1 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 1)
                     {
                         pos += 2;
                     }
                 }
                 else
                 {
-                    if (((pos + 2 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 1)
+                    if (((pos + 2 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 2)
                     {
                         pos += 2;
                     }
