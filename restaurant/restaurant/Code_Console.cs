@@ -34,7 +34,7 @@ namespace restaurant
             screens.Add(new OwnerMenuScreen()); // Gerechten
             screens.Add(new OwnerMenuScreen()); // Reservering
             screens.Add(new IngredientsScreen());
-            screens.Add(new OwnerMenuScreen()); // Inkomsten
+            screens.Add(new IncomeScreen()); // Inkomsten
             #endregion
             #region Medewerker
             screens.Add(new EmployeeMenuScreen());
@@ -43,6 +43,9 @@ namespace restaurant
             #endregion
             #region Klant
             screens.Add(new ViewReservationScreen());
+            #endregion
+            #region Medewerker
+            screens.Add(new EmployeeMenuScreen()); // EmployeeFeedbackScreen
             #endregion
             currentScreen = 0;
         }
@@ -150,12 +153,6 @@ namespace restaurant
         }
 
         /// <summary>
-        /// Returns a variant of the GFLogo string based on wether the user is logged in or not.
-        /// </summary>
-        /// <returns>GFLogo string</returns>
-        protected string GetGFLogoWithEscape() => !IsLoggedIn() ? GFLogo + "\n" : string.Format(GFLogoWithLogin, ingelogd.klantgegevens.voornaam, ingelogd.klantgegevens.achternaam);
-
-        /// <summary>
         /// This is the main function of the current screen. Here is all the logic of that current screen
         /// </summary>
         /// <returns>This function returns the ID of the next screen to display</returns>
@@ -218,7 +215,7 @@ namespace restaurant
         /// </summary>
         /// <param name="key">This is the name of the key, use one of the key constants described in the BaseScreen.</param>
         /// <returns>True if the right key is pressed, false is not</returns>
-        protected bool IsKeyPressed(ConsoleKeyInfo cki, string key) => cki.Key.ToString().ToUpper() == key;
+        protected bool IsKeyPressed(ConsoleKeyInfo cki, string key) => cki.Key.ToString().ToUpper() == key.ToUpper();
 
         #region Deprecated
         [Obsolete()]
@@ -582,12 +579,31 @@ namespace restaurant
             Console.WriteLine(gerechtenbox);
             Console.WriteLine("[1] Ga terug");
 
+            int screenIndex;
+
+            if (ingelogd.type == "Gebruiker")
+            {
+                screenIndex = 5;
+            }
+            else if (ingelogd.type == "Medewerker")
+            {
+                screenIndex = 16;
+            }
+            else if (ingelogd.type == "Eigenaar")
+            {
+                screenIndex = 11;
+            }
+            else
+            {
+                screenIndex = 0;
+            }
+
             string choice = Console.ReadLine();
             if (choice == "1")
             {
-                return 0;
+                return screenIndex;
             }
-            else if (choice == "2")
+            else if (choice == "0")
             {
                 LogoutWithMessage();
                 return 0;
@@ -618,36 +634,47 @@ namespace restaurant
             List<Review> reviews = io.GetReviews();
 
             int maxLength = 104;
+            int screenIndex;
+
+            if (ingelogd.type == "Gebruiker")
+            {
+                screenIndex = 5;
+            }
+            else if (ingelogd.type == "Medewerker")
+            {
+                screenIndex = 16;
+            }
+            else if (ingelogd.type == "Eigenaar")
+            {
+                screenIndex = 11;
+            }
+            else
+            {
+                screenIndex = 0;
+            }
 
             if (reviews.Count > 0)
             {
                 var boxText = BoxAroundText(Makedubbelboxes(ReviewsToString(reviews)), "#", 2, 0, maxLength, true);
                 var pages = MakePages(boxText, 3);
                 int pageNum = 0;
-                int screenIndex;
 
-                if (ingelogd.type == "Gebruiker")
-                {
-                    screenIndex = 5;
-                }
-                else if (ingelogd.type == "Medewerker")
-                {
-                    screenIndex = 16;
-                }
-                else if (ingelogd.type == "Eigenaar")
-                {
-                    screenIndex = 11;
-                }
-                else
-                {
-                    screenIndex = 0;
-                }
                 do
                 {
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine("Dit zijn alle reviews die zijn achtergelaten door onze klanten: \n");
-                    Console.WriteLine($"Dit zijn uw reviews op pagina {pageNum + 1} van de {pages.Count}:");
+                    Console.WriteLine($"Dit zijn de reviews op pagina {pageNum + 1} van de {pages.Count}:");
+                    Console.WriteLine(pages[pageNum]);
+
+/*                    if (reservationString[reservationString.Count - 1][1].Length < 70 && pageNum == pages.Count - 1)
+                    {
+                        Console.WriteLine(pages[pageNum] + new string('#', (maxLength + 6) / 2));
+                    }
+                    else
+                    {
+                        Console.WriteLine(pages[pageNum] + new string('#', maxLength + 6));
+                    }*/
 
                     var result = Nextpage(pageNum, pages.Count - 1, screenIndex);
 
@@ -665,7 +692,7 @@ namespace restaurant
                 Console.WriteLine("Er zijn nog geen reviews achtergelaten.");
                 Console.WriteLine("Druk op een knop om terug te gaan");
                 Console.ReadKey();
-                return 2;
+                return screenIndex;
             }
         }
 
@@ -777,7 +804,7 @@ namespace restaurant
                     result = AskForInput(
                         0,
                         c => char.IsDigit(c) || c == '/' || c == '-', 
-                        input => DateTime.TryParseExact(input, new string[2] { "dd/mm/yyyy", "d/m/yyyy"}, new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime), 
+                        input => DateTime.TryParseExact(input, new string[2] { "dd/MM/yyyy", "d/M/yyyy" }, new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime), 
                         ("Het formaat van de datum die u heeft ingevoerd klopt niet. Probeer het opnieuw.", "De datum die u hebt ingevoerd klopt niet, probeer het opnieuw.")
                     );
 
@@ -1011,10 +1038,21 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item1 == null)
+                    if (result.Item3 != null)
                     {
+                        Console.WriteLine(result.Item3);
+                        Console.WriteLine(PressButtonToContinueMessage);
+                        Console.ReadKey();
                         ResetOutput();
                         return result.Item2;
+                    }
+
+                    if (result.Item1.Trim() == "")
+                    {
+                        Console.WriteLine("U heeft een lege tekst ingevuld, druk op een knop om het nog een keer te proberen");
+                        Console.WriteLine(PressButtonToContinueMessage);
+                        Console.ReadKey();
+                        return 4;
                     }
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
@@ -1032,10 +1070,12 @@ namespace restaurant
                         return otherResult.Item2;
                     }
 
-                    if (otherResult.Item1 == null)
+                    if (otherResult.Item1.Trim() == "")
                     {
-                        ResetOutput();
-                        return otherResult.Item2;
+                        Console.WriteLine("U heeft een lege tekst ingevuld, druk op een knop om het nog een keer te proberen");
+                        Console.WriteLine(PressButtonToContinueMessage);
+                        Console.ReadKey();
+                        return 4;
                     }
 
                     output.Add($"{steps[currentStep]}\n{otherResult.Item1}");
@@ -1046,37 +1086,35 @@ namespace restaurant
                     return 4;
             }
 
+            ResetOutput();
+
             ingelogd = code_login.Login_Check(email, psw);
 
             if (ingelogd.type == "No account found")
             {
                 Console.WriteLine("Wachtwoord of email is niet juist, druk op een toets om opniew te proberen.");
                 Console.ReadKey();
-                ResetOutput();
                 return 4;
             }
             else if (ingelogd.type == "Medewerker")
             {
                 Console.WriteLine("U bent ingelogd!");
-                Console.WriteLine("Druk op een toets om terug naar het medewerkers menu te gaan.");
+                Console.WriteLine("Druk op een toets om naar het medewerkers menu te gaan.");
                 Console.ReadKey();
-                ResetOutput();
                 return 16;
             }
             else if (ingelogd.type == "Eigenaar")
             {
                 Console.WriteLine("U bent ingelogd!");
-                Console.WriteLine("Druk op een toets om terug naar het eigenaar menu te gaan.");
+                Console.WriteLine("Druk op een toets om naar het eigenaar menu te gaan.");
                 Console.ReadKey();
-                ResetOutput();
                 return 11;
             }
             else
             {
                 Console.WriteLine("U bent ingelogd!");
-                Console.WriteLine("Druk op een toets om terug naar het klanten menu te gaan.");
+                Console.WriteLine("Druk op een toets om naar het klanten menu te gaan.");
                 Console.ReadKey();
-                ResetOutput();
                 return 5;
             }
         }
@@ -1324,7 +1362,6 @@ namespace restaurant
                 if (input.Item1 == "0")
                 {
                     LogoutWithMessage();
-                    logoutUpdate = true;
                     return 0;
                 }
                 else if (input.Item1 == "1")
@@ -1430,6 +1467,8 @@ namespace restaurant
                             Console.WriteLine(MakeReservationBox(allReservations[Convert.ToInt32(pos)]) + "\n");
                             Console.WriteLine("Weet u zeker dat u deze reservering wilt afzeggen? ja | nee");
 
+                            Reserveringen currentReservation = allReservations[Convert.ToInt32(pos)];
+
                             a:
                                 input = AskForInput(
                                     screenNum,
@@ -1461,7 +1500,7 @@ namespace restaurant
                             if (input.Item1 == "ja")
                             {
                                 Console.WriteLine("Uw reservering is gecancelled");
-                                // Hier moet delete reservering komen
+                                code_gebruiker.DeleteReservations(currentReservation);
                                 return screenNum;
                             }
                             else
@@ -1476,6 +1515,139 @@ namespace restaurant
                         }
 
                         pageNum = result.Item1;
+                    } while (true);
+                }
+                else if (input.Item1 == "2")
+                {
+                    List<string> pages = new List<string>();
+                    int pageNum = 0;
+                    double pos = 0;
+
+                    DateTime resultDateTime = new DateTime();
+
+                    Console.WriteLine("\n" + "Type hier het datum in die u wilt gebruiken in het formaat dag-maand-jaar. De datum moet ook in het verleden zijn.");
+
+                    (string, int, string) inputResult = AskForInput(
+                        screenNum,
+                        null,
+                        input => {
+                            bool isValid = DateTime.TryParseExact(input, new string[2] { "dd/MM/yyyy", "d/M/yyyy" }, new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime);
+
+                            if (!isValid)
+                            {
+                                return isValid;
+                            }
+
+                            return isValid && resultDateTime < DateTime.Now;
+                        },
+                        (null, "De datum klopt niet helemaal. Kijk of het formaat van de datum klopt en dat de datum in het verleden is.")
+                    );
+
+                    if (inputResult.Item3 != null)
+                    {
+                        Console.WriteLine("\n" + inputResult.Item3);
+                        Console.WriteLine(PressButtonToContinueMessage);
+                        Console.ReadKey();
+                        return screenNum;
+                    }
+
+                    List<Reserveringen> reservations = allReservations.Where(res => res.datum < resultDateTime).ToList();
+
+                    if (reservations.Count == 0)
+                    {
+                        Console.WriteLine("\nEr zijn geen reserveringen gevonden op de datum die u heeft ingevoerd.");
+                        Console.WriteLine(PressButtonToContinueMessage);
+                        Console.ReadKey();
+                        return screenNum;
+                    }
+
+                    do
+                    {
+                        pages = new List<string>();
+
+                        List<List<string>> reservationString = Makedubbelboxes(ReservationsToString(reservations));
+                        List<string> boxes = new List<string>();
+                        for (int a = 0; a < reservationString.Count; a++)
+                        {
+                            if (a == reservationString.Count - 1 && reservationString[a][1].Length < 70)
+                            {
+                                if (a == Convert.ToInt32(Math.Floor(pos / 2)))
+                                {
+                                    if (a != 0 && a % 6 != 0)
+                                    {
+                                        boxes.Add(BoxAroundText(reservationString[a], "#", 2, 0, 104, true, new List<string>{
+                            "[4] Bekijk" + new string(' ', 50 - "[4] Bekijk".Length),
+                            new string(' ', 50)}));
+                                    }
+                                    else
+                                    {
+                                        boxes.Add(BoxAroundText(reservationString[a], "#", 2, 0, 50, true, new List<string>{
+                            "[4] Bekijk" + new string(' ', 50 - "[4] Bekijk".Length),
+                            new string(' ', 50)}));
+                                    }
+                                }
+                                else
+                                {
+                                    if (a != 0 && a % 6 != 0)
+                                    {
+                                        boxes.Add(BoxAroundText(reservationString[a], "#", 2, 0, 104, true));
+                                    }
+                                    else
+                                    {
+                                        boxes.Add(BoxAroundText(reservationString[a], "#", 2, 0, 50, true));
+                                    }
+
+                                }
+                            }
+                            else
+                            {
+                                if (a == Convert.ToInt32(Math.Floor(pos / 2)))
+                                {
+                                    if (pos % 2 == 0 || pos == 0)
+                                    {
+                                        boxes.Add(BoxAroundText(reservationString[a], "#", 2, 0, 104, true, new List<string>{
+                            "[4] Bekijk" + new string(' ', 50 - "[4] Bekijk".Length) + "##  " + new string(' ', 50),
+                            new string(' ', 50) + "##  " + new string(' ', 50) }));
+                                    }
+                                    else
+                                    {
+                                        boxes.Add(BoxAroundText(reservationString[a], "#", 2, 0, 104, true, new List<string> {
+                            new string(' ', 50) + "##  " + "[4] Bekijk" + new string(' ', 50 - "[4] Bekijk".Length),
+                            new string(' ', 50) + "##  " + new string(' ', 50)}));
+                                    }
+                                }
+                                else
+                                {
+                                    boxes.Add(BoxAroundText(reservationString[a], "#", 2, 0, 104, true));
+                                }
+                            }
+                        }
+
+                        pages = MakePages(boxes, 3);
+
+                        Console.Clear();
+                        Console.WriteLine(GetGFLogo(true));
+                        Console.WriteLine("Dit zijn al uw reserveringen: \n");
+                        Console.WriteLine($"Dit zijn al uw reserveringen op pagina {pageNum + 1} van de {pages.Count} voor {resultDateTime.ToShortDateString()}:");
+                        if (reservationString[reservationString.Count - 1][1].Length < 70 && pageNum == pages.Count - 1)
+                        {
+                            Console.WriteLine(pages[pageNum] + new string('#', (maxLength + 6) / 2));
+                        }
+                        else
+                        {
+                            Console.WriteLine(pages[pageNum] + new string('#', maxLength + 6));
+                        }
+                        var result = Nextpage(pageNum, pages.Count - 1, pos, (boxes.Count - 1) * 2, screenNum);
+
+                        pos = result.Item3;
+                        if (result.Item2 != -1 && result.Item2 != -2)
+                        {
+                            return result.Item2;
+                        }
+                        else if (result.Item1 == -1 && result.Item2 == -1)
+                        {
+                            return screenNum;
+                        }
                     } while (true);
                 }
                 return 19;
@@ -1530,7 +1702,7 @@ namespace restaurant
                 switch (Convert.ToInt32(result.Item1))
                 {
                     case 0:
-                        logoutUpdate = true;
+                        LogoutWithMessage();
                         return 0;
                     case 1:
                         return 1;
