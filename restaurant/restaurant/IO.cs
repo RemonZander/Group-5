@@ -483,6 +483,28 @@ namespace restaurant
                 return database.eigenaar;
             }
         }
+
+        /// <summary>
+        /// Voor het ophalen van alle reserveringen
+        /// </summary>
+        /// <returns>Een list met alle reserveringen</returns>
+        public List<Reserveringen> GetReservations()
+        {
+            Database database = GetDatabase();
+            List<Reserveringen> reserveringen = new List<Reserveringen>();
+            if (database.reserveringen == null)
+            {
+                return reserveringen;
+            }
+            else
+            {
+                foreach (var reservering in database.reserveringen)
+                {
+                    reserveringen.Add(reservering);
+                }
+            }
+            return reserveringen;
+        }
         #endregion
 
         #region sorteren
