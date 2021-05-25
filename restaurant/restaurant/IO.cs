@@ -260,7 +260,7 @@ namespace restaurant
             database = GetDatabase();
             if (database.reviews != null)
             {
-                return database.reviews;
+                return new List<Review>(database.reviews);
             }
             return new List<Review>();
         }
@@ -298,13 +298,22 @@ namespace restaurant
         {
             //pakt de database
             database = GetDatabase();
-            if(database.reviews != null)
+            List<Review> reviewList = new List<Review>();
+            if (database.reviews == null)
             {
-                return database.reviews;
+                return reviewList;
             }
             else
             {
-                return new List<Review>();
+                //voor iedere feedback met hetzelfde klantnummer als het klantnummer van de klant, voeg deze toe aan een lijst en return de lijst
+                foreach (var review in database.reviews)
+                {
+                    if (review.klantnummer == klant.klantnummer)
+                    {
+                        reviewList.Add(review);
+                    }
+                }
+                return reviewList;
             }
         }
 
@@ -312,14 +321,14 @@ namespace restaurant
         /// Ophalen van alle feedback
         /// </summary>
         /// <returns>Een list met alle feedback</returns>
-        public List<Review> GetFeedback()
+        public List<Feedback> GetFeedback()
         {
             database = GetDatabase();
-            if (database.reviews != null)
+            if (database.feedback != null)
             {
-                return database.reviews;
+                return new List<Feedback>(database.feedback);
             }
-            return new List<Review>();
+            return new List<Feedback>();
         }
 
         /// <summary>

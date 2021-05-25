@@ -1335,7 +1335,7 @@ namespace restaurant
                         Console.WriteLine(pages[page] + new string('#', 110));
                     }
 
-                    var result = Nextpage(page, pages.Count - 1, pos, (boxes.Count - 1) * 2, 8);
+                    var result = Nextpage(page, pages.Count - 1, pos, boxes.Count * 2 - 1, 8);
                     pos = result.Item3;
                     if (result.Item2 != -1 && result.Item2 != -2)
                     {
@@ -1503,7 +1503,7 @@ namespace restaurant
                         {
                             Console.WriteLine(pages[page] + new string('#', 110));
                         }
-                        var result = Nextpage(page, pages.Count - 1, pos, (boxes.Count - 1) * 2, 8);
+                        var result = Nextpage(page, pages.Count - 1, pos, boxes.Count *2 - 1, 8);
                         pos = result.Item3;
                         if (result.Item2 != -1 && result.Item2 != -1)
                         {
@@ -1736,7 +1736,7 @@ namespace restaurant
 
         private string MakeFeedbackBox(Feedback feedback)
         {
-            (string, string) employeeName = io.GetEmployee(feedback.ID);
+            List<Werknemer> werknemers = new List<Werknemer>(io.GetEmployee());
             string output = "";
             output += new string('#', 56) + "\n";
             output += "#  " + new string(' ', 50) + "  #\n";
@@ -1786,8 +1786,14 @@ namespace restaurant
             {
                 output += "#  " + "Feedback: " + message + new string(' ', 50 - ("Feedback: " + message).Length) + "  #\n";
             }
+            for (int i = 0; i < werknemers.Count; i++)
+            {
+                if (werknemers[i].ID == feedback.recipient)
+                {
+                    output += "#  " + "Ontvanger: " + werknemers[i].login_gegevens.klantgegevens.voornaam + " " + werknemers[i].login_gegevens.klantgegevens.achternaam + new string(' ', 50 - ("Ontvanger: " + werknemers[i].login_gegevens.klantgegevens.voornaam + " " + werknemers[i].login_gegevens.klantgegevens.achternaam).Length) + "  #\n";
+                }
+            }
 
-            output += "#  " + "Ontvanger: " + employeeName.Item1+ " "+ employeeName.Item2  + new string(' ', 50 - ("Ontvanger: " + employeeName.Item1 + " " + employeeName.Item2).Length) + "  #\n";
             output += "#  " + "Datum: " + feedback.datum + new string(' ', 50 - ("Datum: " + feedback.datum).Length) + "  #\n";
             output += "#  " + new string(' ', 50) + "  #\n";
             output += "#  " + new string(' ', 50) + "  #\n";
