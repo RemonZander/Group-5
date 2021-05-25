@@ -386,152 +386,206 @@ namespace restaurant
     {
         public override int DoWork()
         {
-            Database database = io.GetDatabase();
             int maxLength = 104;
+            double pos = 0;
+            List<string> pages = new List<string>();
 
             string date = DateTime.Now.ToShortDateString();
             Dictionary<string, List<Reserveringen>> reserveringen = new Dictionary<string, List<Reserveringen>>();
             Dictionary<string, List<Reserveringen>> reserveringenWithoutTables = new Dictionary<string, List<Reserveringen>>();
             //Add todays reservations to the reservations dictionary
-            reserveringen.Add(date, code_medewerker.getReserveringen(DateTime.Parse(date)));
-            reserveringenWithoutTables.Add(date, code_medewerker.getReserveringenZonderTafel(DateTime.Parse(date)));
+            List<Reserveringen> reserveringenList = io.GetDatabase().reserveringen;
+            List<string> dates = reserveringenList.Select(d => d.datum.ToShortDateString()).Distinct().ToList();
 
-            var boxText = BoxAroundText(Makedubbelboxes(code_eigenaar.ReserveringenToString(reserveringen[date])), "#", 2, 0, maxLength, true);
-            var pages = MakePages(boxText, 3);
+            for (int i = 0; i < dates.Count; i++)
+            {
+                reserveringen.Add(dates[i], reserveringenList.Where(d => d.datum.ToShortDateString() == dates[i]).ToList());
+                reserveringenWithoutTables.Add(dates[i], reserveringenList.Where(t => t.tafels.Count == 0 && t.datum.ToShortDateString() == dates[i]).ToList());
+
+            }
+            //var pages = MakePages(boxText, 3);
             int pageNum = 0;
             bool onlyWithoutTables = false;
             do
             {
-                Console.Clear();
-                Console.WriteLine(GetGFLogo(true));
-                if (pages.Count > 0)
+                a:
+                (int, int, double) result = (0, 0, 0.0);
+                pages = new List<string>();
+                List<List<string>> reservationString = new List<List<string>>();
+                if (onlyWithoutTables)
                 {
-                    Console.WriteLine();
-                    Console.WriteLine("Reserveringen van: " + date + (date == DateTime.Now.ToShortDateString() ? " (vandaag)" : ""));
-                    Console.WriteLine($"Pagina {pageNum + 1} van de {pages.Count}:");
-                    Console.WriteLine(pages[pageNum] + new string('#', maxLength + 6));
+                    if (reserveringen.ContainsKey(date))
+                    {
+                        reservationString = Makedubbelboxes(code_eigenaar.ReserveringenToString(reserveringenWithoutTables[date]));
+                    }
                 }
                 else
                 {
+                    if (reserveringen.ContainsKey(date))
+                    {
+                        reservationString = Makedubbelboxes(code_eigenaar.ReserveringenToString(reserveringen[date]));
+                    }
+                }
+                if (reservationString.Count == 0)
+                {
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine("Geen reserveringen gevonden op " + date);
-                }
-                if (pageNum > 0 && pages.Count > pageNum + 1)
-                {
-                    Console.WriteLine("Volgende pagina [1]          Vorige pagina [2]");
-                }
-                else if (pageNum == 0 && pageNum + 1 < pages.Count)
-                {
-                    Console.WriteLine("Volgende pagina [1]                           ");
-                }
-                else if (pageNum > 0 && pageNum - 1 >= 0)
-                {
-                    Console.WriteLine("                             Vorige pagina [2]");
-                }
-                else
-                {
-                    Console.WriteLine();
-                }
-                Console.WriteLine("Volgende dag    [3]          Vorige dag    [4]          Naar vandaag [5]");
-                Console.WriteLine();
-                Console.WriteLine(onlyWithoutTables ? "Toon alle reserveringen van deze dag       [6]" : "Toon alleen de reserveringen zonder tafel  [6]");
-                
-                (string, int) choice = AskForInput(16);
-                if (choice.Item1 == null)
-                {
-                    return 16;
-                }
-                if (choice.Item1 == "" || !choice.Item1.All(char.IsDigit))
-                {
-                    Console.WriteLine();
-                    Console.WriteLine("Voer een geldige waarde in. Druk een toets in om verder te gaan");
-                    Console.ReadKey();
-                }
-                else
-                {
-                    string newDate = DateTime.Now.ToShortDateString();
-
-                    //Check if int is not too big
-                    int inputInt;
-                    bool success = Int32.TryParse(choice.Item1, out inputInt);
-                    if (!success)
+                    result = Nextpage(pageNum, pos, pageNum, 16,
+                        new List<Tuple<(int, int, double), string>> {
+                                Tuple.Create((- 2, -2, pos), "D3"),
+                                Tuple.Create((- 3, -3, pos), "D4"),
+                                Tuple.Create((- 4, -4, pos), "D5"),
+                        },
+                        new List<string> { "[3] Volgende dag             [4] Vorige dag             [5] Naar vandaag" });
+                    if (result.Item2 > -1)
                     {
-                        inputInt = 0;
+                        return result.Item2;
                     }
-
-                    switch (inputInt)
+                    switch (result.Item1)
                     {
-                        case 1:
-                            //go to the next page
-                            if (pages.Count > pageNum+1)
-                            {
-                                pageNum++;
-                            }
-                            else
-                            {
-                                Console.WriteLine();
-                                Console.WriteLine("Er is geen volgende pagina beschikbaar. Druk een toets in om verder te gaan.");
-                                Console.ReadKey();
-                            }
+                        case -2:
+                            date = DateTime.Parse(date).AddDays(1).ToShortDateString();
                             break;
-                        case 2:
-                            //go to the previous page
-                            if (pageNum - 1 >= 0)
-                            {
-                                pageNum--;
-                            }
-                            else
-                            {
-                                Console.WriteLine();
-                                Console.WriteLine("Er is geen vorige pagina beschikbaar. Druk een toets in om verder te gaan.");
-                                Console.ReadKey();
-                            }
+                        case -3:
+                            date = DateTime.Parse(date).AddDays(-1).ToShortDateString();
                             break;
-                        case 3:
-                            newDate = DateTime.Parse(date).AddDays(1).ToShortDateString();
-                            break;
-                        case 4:
-                            newDate = DateTime.Parse(date).AddDays(-1).ToShortDateString();
-                            break;
-                        case 5:
+                        case -4:
                             //go to today
-                            newDate = DateTime.Now.ToShortDateString();
-                            break;
-                        case 6:
-                            onlyWithoutTables = !onlyWithoutTables;
-                            break;
-                        default:
-                            Console.WriteLine();
-                            Console.WriteLine("Voer een geldige waarde in. Druk een toets in om verder te gaan.");
-                            Console.ReadKey();
+                            date = DateTime.Now.ToShortDateString();
                             break;
                     }
-                    //If the input changes the current visible reserveringen list
-                    if (inputInt == 3 || inputInt == 4 || inputInt == 5 || inputInt == 6)
+                    //Console.Clear();
+                    goto a;
+                }
+                List<string> boxes = new List<string>();
+                for (int i = 0; i < reservationString.Count; i++)
+                {
+                    if(i == reservationString.Count - 1 && reservationString[i][1].Length < 70)
                     {
-                        pageNum = 0;
-                        if (inputInt == 3 || inputInt == 4 || inputInt == 5)
+                        if (i == Convert.ToInt32(Math.Floor(pos/2)))
                         {
-                            date = newDate;
-                        }
-                        if (onlyWithoutTables)
-                        {
-                            if (!reserveringenWithoutTables.ContainsKey(date))
+                            if (i != 0 && i % 6 != 0)
                             {
-                                reserveringenWithoutTables.Add(date, code_medewerker.getReserveringenZonderTafel(DateTime.Parse(date)));
+                                boxes.Add(BoxAroundText(reservationString[i], "#", 2, 0, 104, true, new List<string>{
+                                    "[7] Tafels koppelen" + new string(' ', 50 - "[7] Tafels koppelen".Length),
+                                    new string(' ', 50)}));
                             }
-                            boxText = BoxAroundText(Makedubbelboxes(code_eigenaar.ReserveringenToString(reserveringenWithoutTables[date])), "#", 2, 0, maxLength, true);
-                            
+                            else
+                            {
+                                boxes.Add(BoxAroundText(reservationString[i], "#", 2, 0, 50, true, new List<string>{
+                                    "[7] Tafels koppelen" + new string(' ', 50 - "[7] Tafels koppelen".Length),
+                                    new string(' ', 50)}));
+                            }
                         }
                         else
                         {
-                            if (!reserveringen.ContainsKey(date))
+                            if (i != 0 && i % 6 != 0)
                             {
-                                reserveringen.Add(date, code_medewerker.getReserveringenZonderTafel(DateTime.Parse(date)));
+                                boxes.Add(BoxAroundText(reservationString[i], "#", 2, 0, 104, true));
                             }
-                            boxText = BoxAroundText(Makedubbelboxes(code_eigenaar.ReserveringenToString(reserveringen[date])), "#", 2, 0, maxLength, true);
+                            else
+                            {
+                                boxes.Add(BoxAroundText(reservationString[i], "#", 2, 0, 50, true));
+                            }
                         }
-                        pages = MakePages(boxText, 3);
                     }
+                    else
+                    {
+                        if (i == Convert.ToInt32(Math.Floor(pos / 2)))
+                        {
+                            if (pos % 2 == 0 || pos == 0)
+                            {
+                                boxes.Add(BoxAroundText(reservationString[i], "#", 2, 0, 104, true, new List<string>{
+                                    "[7] Tafels koppelen" + new string(' ', 50 - "[7] Tafels koppelen".Length) + "##  " + new string(' ', 50),
+                                    new string(' ', 50) + "##  " + new string(' ', 50) }));
+                            }
+                            else
+                            {
+                                boxes.Add(BoxAroundText(reservationString[i], "#", 2, 0, 104, true, new List<string> {
+                                    new string(' ', 50) + "##  " + "[7] Tafels koppelen" + new string(' ', 50 - "[7] Tafels koppelen".Length),
+                                    new string(' ', 50) + "##  " + new string(' ', 50)}));
+                            }
+                        }
+                        else
+                        {
+                            boxes.Add(BoxAroundText(reservationString[i], "#", 2, 0, 104, true));
+                        }
+                    }
+                }
+                pages = MakePages(boxes, 3);
+                Console.Clear();
+                Console.WriteLine(GetGFLogo(true));
+
+
+                Console.WriteLine();
+                Console.WriteLine("Reserveringen van: " + date + (date == DateTime.Now.ToShortDateString() ? " (vandaag)" : ""));
+                Console.WriteLine($"Pagina {pageNum + 1} van de {pages.Count}:");
+                Console.WriteLine(pages[pageNum] + new string('#', maxLength + 6));
+                List<Tuple<(int, int, double), string>> tuples = new List<Tuple<(int, int, double), string>>();
+                //if there is a next page and a previous page
+                List<string> txt = new List<string>();
+                if (pages.Count > 0 && pageNum > 0 && pageNum < pages.Count - 1)
+                {
+                    txt.Add("[1] Volgende pagina                                     [2] Vorige pagina");
+                    tuples.Add(Tuple.Create((pageNum + 1, -1, (pageNum + 1) * 6.0), "D1"));
+                    tuples.Add(Tuple.Create((pageNum - 1, -1, (pageNum - 1) * 6.0), "D2"));
+                }
+                //if there is only a next page
+                else if (pages.Count -1 > 0 && pageNum < pages.Count - 1)
+                {
+                    txt.Add("[1] Volgende pagina");
+                    tuples.Add(Tuple.Create((pageNum + 1, -1, (pageNum + 1) * 6.0), "D1"));
+                }
+                //if there is only a previous page
+                else if (pages.Count -1 > 0 && pageNum >= pages.Count - 1)
+                {
+                    txt.Add("                                                        [2] Vorige pagina");
+                    tuples.Add(Tuple.Create((pageNum - 1, -1, (pageNum - 1) * 6.0), "D2"));
+                }
+                //if date is smaller than now
+                if (DateTime.Parse(date) >= DateTime.Parse(DateTime.Now.ToShortDateString()))
+                {
+                    txt.Add(onlyWithoutTables ? "[6] Toon alle reserveringen van deze dag      " : "[6] Toon alleen de reserveringen zonder tafel");
+                    tuples.Add(Tuple.Create((-5, -5, pos), "D6"));
+                }
+                tuples.Add(Tuple.Create((-2, -2, pos), "D3"));
+                tuples.Add(Tuple.Create((-3, -3, pos), "D4"));
+                tuples.Add(Tuple.Create((-4, -4, pos), "D5"));
+                tuples.Add(Tuple.Create((-7, -7, pos), "D7"));
+                txt.Add("[3] Volgende dag             [4] Vorige dag             [5] Naar vandaag");
+                        
+                result = Nextpage(pageNum, pos, (boxes.Count - 1) * 2, 16, tuples, txt);
+                if (result.Item2 > -1)
+                {
+                    return result.Item2;
+                }
+                string newDate = DateTime.Now.ToShortDateString();
+
+                switch (result.Item1)
+                {
+                    case -2:
+                        date = DateTime.Parse(date).AddDays(1).ToShortDateString();
+                        break;
+                    case -3:
+                        date = DateTime.Parse(date).AddDays(-1).ToShortDateString();
+                        break;
+                    case -4:
+                        //go to today
+                        date = DateTime.Now.ToShortDateString();
+                        break;
+                    case -5:
+                        onlyWithoutTables = !onlyWithoutTables;
+                        break;
+                    case -7:
+                        return 18;
+                }
+                pageNum = 0;
+                pos = 0;
+                if (result.Item1 >= 0)
+                {
+                    pos = result.Item3;
+                    pageNum = result.Item1;
                 }
             } while (true);
             
