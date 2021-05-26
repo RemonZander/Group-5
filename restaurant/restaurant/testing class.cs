@@ -1413,7 +1413,12 @@ namespace restaurant
             {
                 Console.WriteLine(item);
             }
-            ConsoleKeyInfo key = Console.ReadKey();
+            ConsoleKeyInfo key = new ConsoleKeyInfo();
+            do
+            {
+                key = new ConsoleKeyInfo();
+                key = Console.ReadKey();
+            } while (IsKeyPressed(key, ENTER_KEY));
             if (IsKeyPressed(key, ESCAPE_KEY))
             {
                 return (page, screenIndex, pos);
@@ -1477,7 +1482,7 @@ namespace restaurant
                 logoutUpdate = true;
                 Logout();
                 return (page, 0, pos);
-            }            
+            }
             foreach (var choice in choices)
             {
                 if (IsKeyPressed(key, choice.Item2))
@@ -1902,13 +1907,13 @@ namespace restaurant
                     (int, int, double) result = (0, 0, 0);
                     if (page < pages.Count - 1)
                     {
-                        result = Nextpage(page, pos, (boxes.Count - 1) * 2, 10, 
+                        result = Nextpage(page, pos, boxes.Count * 2 - 1, 10, 
                             new List<Tuple<(int, int, double), string>> { Tuple.Create((page + 1, -1, (page + 1) * 6.0), "D1"), Tuple.Create((page, 10, pos), "D2") , Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") }, 
                             new List<string> { "[1] Volgende pagina", "[2] Terug" });
                     }
                     else
                     {
-                        result = Nextpage(page, pos, (boxes.Count - 1) * 2, 10,
+                        result = Nextpage(page, pos, boxes.Count * 2 - 1, 10,
                             new List<Tuple<(int, int, double), string>> { Tuple.Create((page, 10, pos), "D1"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
                             new List<string> { "[1] Terug" });
                     }
@@ -2074,13 +2079,13 @@ namespace restaurant
                         (int, int, double) result = (0, 0, 0);
                         if (page < pages.Count - 1)
                         {
-                            result = Nextpage(page, pos, (boxes.Count - 1) * 2, 10,
+                            result = Nextpage(page, pos, boxes.Count * 2 - 1, 10,
                                 new List<Tuple<(int, int, double), string>> { Tuple.Create((page + 1, -1, (page + 1) * 6.0), "D1"), Tuple.Create((page, 10, pos), "D2"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
                                 new List<string> { "[1] Volgende pagina", "[2] Terug" });
                         }
                         else
                         {
-                            result = Nextpage(page, pos, (boxes.Count - 1) * 2, 10,
+                            result = Nextpage(page, pos, boxes.Count * 2 - 1, 10,
                                 new List<Tuple<(int, int, double), string>> { Tuple.Create((page, 10, pos), "D1"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
                                 new List<string> { "[1] Terug" });
                         }
@@ -2245,13 +2250,13 @@ namespace restaurant
                     (int, int, double) result = (0, 0, 0);
                     if (page < pages.Count - 1)
                     {
-                        result = Nextpage(page, pos, (boxes.Count - 1) * 2, 10,
+                        result = Nextpage(page, pos, boxes.Count * 2 - 1, 10,
                             new List<Tuple<(int, int, double), string>> { Tuple.Create((page + 1, -1, (page + 1) * 6.0), "D1"), Tuple.Create((page, 10, pos), "D2"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
                             new List<string> { "[1] Volgende pagina", "[2] Terug" });
                     }
                     else
                     {
-                        result = Nextpage(page, pos, (boxes.Count - 1) * 2, 10,
+                        result = Nextpage(page, pos, boxes.Count * 2 - 1, 10,
                             new List<Tuple<(int, int, double), string>> { Tuple.Create((page, 10, pos), "D1"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
                             new List<string> { "[1] Terug" });
                     }

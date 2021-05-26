@@ -555,7 +555,7 @@ namespace restaurant
                 tuples.Add(Tuple.Create((-7, -7, pos), "D7"));
                 txt.Add("[3] Volgende dag             [4] Vorige dag             [5] Naar vandaag");
                         
-                result = Nextpage(pageNum, pos, (boxes.Count - 1) * 2, 16, tuples, txt);
+                result = Nextpage(pageNum, pos, boxes.Count * 2 - 1, 16, tuples, txt);
                 if (result.Item2 > -1)
                 {
                     return result.Item2;
