@@ -1266,15 +1266,15 @@ namespace restaurant
                                 if (a != 0 && a % 6 != 0)
                                 {
                                     boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string>{
-                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
-                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    "[3] Bewerken" + new string(' ', 50 - "[3] Bewerken".Length),
+                                    "[4] Verwijderen" + new string(' ', 50 - "[4] Verwijderen".Length),
                                     new string(' ', 50)}));
                                 }
                                 else
                                 {
                                     boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 50, true, new List<string>{
-                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
-                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    "[3] Bewerken" + new string(' ', 50 - "[3] Bewerken".Length),
+                                    "[4] Verwijderen" + new string(' ', 50 - "[4] Verwijderen".Length),
                                     new string(' ', 50)}));
                                 }
                             }
@@ -1298,15 +1298,15 @@ namespace restaurant
                                 if (pos % 2 == 0 || pos == 0)
                                 {
                                     boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string>{
-                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length) + "##  " + new string(' ', 50),
-                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length) + "##  " + new string(' ', 50),
+                                    "[3] Bewerken" + new string(' ', 50 - "[3] Bewerken".Length) + "##  " + new string(' ', 50),
+                                    "[4] Verwijderen" + new string(' ', 50 - "[4] Verwijderen".Length) + "##  " + new string(' ', 50),
                                     new string(' ', 50) + "##  " + new string(' ', 50) }));
                                 }
                                 else
                                 {
                                     boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string> {
-                                    new string(' ', 50) + "##  " + "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
-                                    new string(' ', 50) + "##  " + "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50) + "##  " + "[3] Bewerken" + new string(' ', 50 - "[3] Bewerken".Length),
+                                    new string(' ', 50) + "##  " + "[4] Verwijderen" + new string(' ', 50 - "[4] Verwijderen".Length),
                                     new string(' ', 50) + "##  " + new string(' ', 50)}));
                                 }
                             }
@@ -1335,7 +1335,20 @@ namespace restaurant
                         Console.WriteLine(pages[page] + new string('#', 110));
                     }
 
-                    var result = Nextpage(page, pages.Count - 1, pos, boxes.Count * 2 - 1, 8);
+                    //var result = Nextpage(page, pages.Count - 1, pos, boxes.Count * 2 - 1, 8);
+                    (int, int, double) result = (0, 0, 0);
+                    if (page < pages.Count - 1)
+                    {
+                        result = Nextpage(page, pos, boxes.Count * 2 - 1, 8,
+                            new List<Tuple<(int, int, double), string>> { Tuple.Create((page + 1, -1, (page + 1) * 6.0), "D1"), Tuple.Create((page, 8, pos), "D2"), Tuple.Create((-1, -1, pos), "D3"), Tuple.Create((-2, -2, pos), "D4") },
+                            new List<string> { "[1] Volgende pagina", "[2] Terug" });
+                    }
+                    else
+                    {
+                        result = Nextpage(page, pos, boxes.Count*2-1, 8,
+                            new List<Tuple<(int, int, double), string>> { Tuple.Create((page, 8, pos), "D1"), Tuple.Create((-1, -1, pos), "D3"), Tuple.Create((-2, -2, pos), "D4") },
+                            new List<string> { "[1] Terug" });
+                    }
                     pos = result.Item3;
                     if (result.Item2 != -1 && result.Item2 != -2)
                     {
@@ -1430,15 +1443,15 @@ namespace restaurant
                                     if (a != 0 && a % 6 != 0)
                                     {
                                         boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string>{
-                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
-                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    "[3] Bewerken" + new string(' ', 50 - "[3] Bewerken".Length),
+                                    "[4] Verwijderen" + new string(' ', 50 - "[4] Verwijderen".Length),
                                     new string(' ', 50)}));
                                     }
                                     else
                                     {
                                         boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 50, true, new List<string>{
-                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
-                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    "[3] Bewerken" + new string(' ', 50 - "[3] Bewerken".Length),
+                                    "[4] Verwijderen" + new string(' ', 50 - "[4] Verwijderen".Length),
                                     new string(' ', 50)}));
                                     }
                                 }
@@ -1462,15 +1475,15 @@ namespace restaurant
                                     if (pos % 2 == 0 || pos == 0)
                                     {
                                         boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string>{
-                                    "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length) + "##  " + new string(' ', 50),
-                                    "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length) + "##  " + new string(' ', 50),
+                                    "[3] Bewerken" + new string(' ', 50 - "[3] Bewerken".Length) + "##  " + new string(' ', 50),
+                                    "[4] Verwijderen" + new string(' ', 50 - "[4] Verwijderen".Length) + "##  " + new string(' ', 50),
                                     new string(' ', 50) + "##  " + new string(' ', 50) }));
                                     }
                                     else
                                     {
                                         boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string> {
-                                    new string(' ', 50) + "##  " + "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
-                                    new string(' ', 50) + "##  " + "[5] Verwijderen" + new string(' ', 50 - "[5] Verwijderen".Length),
+                                    new string(' ', 50) + "##  " + "[3] Bewerken" + new string(' ', 50 - "[3] Bewerken".Length),
+                                    new string(' ', 50) + "##  " + "[4] Verwijderen" + new string(' ', 50 - "[4] Verwijderen".Length),
                                     new string(' ', 50) + "##  " + new string(' ', 50)}));
                                     }
                                 }
@@ -1503,7 +1516,20 @@ namespace restaurant
                         {
                             Console.WriteLine(pages[page] + new string('#', 110));
                         }
-                        var result = Nextpage(page, pages.Count - 1, pos, boxes.Count *2 - 1, 8);
+                        //var result = Nextpage(page, pages.Count - 1, pos, boxes.Count *2 - 1, 8);
+                        (int, int, double) result = (0, 0, 0);
+                        if (page < pages.Count - 1)
+                        {
+                            result = Nextpage(page, pos, boxes.Count * 2 - 1, 8,
+                                new List<Tuple<(int, int, double), string>> { Tuple.Create((page + 1, -1, (page + 1) * 6.0), "D1"), Tuple.Create((page, 8, pos), "D2"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
+                                new List<string> { "[1] Volgende pagina", "[2] Terug" });
+                        }
+                        else
+                        {
+                            result = Nextpage(page, pos, boxes.Count * 2 - 1, 8,
+                                new List<Tuple<(int, int, double), string>> { Tuple.Create((page, 8, pos), "D1"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
+                                new List<string> { "[1] Terug" });
+                        }
                         pos = result.Item3;
                         if (result.Item2 != -1 && result.Item2 != -1)
                         {
