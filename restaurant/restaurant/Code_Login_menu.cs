@@ -79,7 +79,7 @@ namespace restaurant
                 if (char.IsDigit(pswChars[i])) digitFoundAmount++;
             }
 
-            if (!(login_Gegevens.password.Length < 8) && !(punctFoundAmount > 0) && !(digitFoundAmount > 0))
+            if (login_Gegevens.password.Length < 8 || punctFoundAmount < 1 || digitFoundAmount < 1)
             {
                 return "Password must contain at least 8 characters, 1 punctuation mark and 1 number.";
             }
