@@ -118,7 +118,6 @@ namespace restaurant
         {
             Console.WriteLine(GetGFLogo(false));
             Console.WriteLine("Welkom in het medewerkersmenu.");
-            Console.WriteLine("\nKies een optie:");
             Console.WriteLine("[1] Reserveringen bekijken");
             Console.WriteLine("[2] Tafels koppelen");
             Console.WriteLine("[3] Feedback bekijken");
@@ -128,7 +127,11 @@ namespace restaurant
             {
                 return antwoord.Item2;
             }
-
+            else if (antwoord.Item1 == "0")
+            {
+                LogoutWithMessage();
+                return 0;
+            }
             else if (antwoord.Item1 == "1")
             {
                 return 17;
@@ -153,9 +156,10 @@ namespace restaurant
 
         public override List<Screen> Update(List<Screen> screens)
         {
+            DoLogoutOnEveryScreen(screens);
             return screens;
         }
-    }
+    } // Schermnummer: 16
 
     public class EmployeeFeedbackScreen : Screen
     {
@@ -170,16 +174,223 @@ namespace restaurant
 
         public override List<Screen> Update(List<Screen> screens)
         {
+            DoLogoutOnEveryScreen(screens);
             return screens;
         }
-    }
+    } // Schermnummer: 20
 
     public class AddTableToReservationScreen : Screen
     {
+        private Reserveringen reservering;
+        private bool vanGetReservationsScreen;
+
+        public AddTableToReservationScreen(Reserveringen reservering)
+        {
+            this.reservering = reservering;
+            vanGetReservationsScreen = true;
+        }
+
+        public AddTableToReservationScreen()
+        {
+            vanGetReservationsScreen = false;
+        }
+        
         public override int DoWork()
         {
-            var database = io.GetDatabase();
             Console.WriteLine(GetGFLogo(true));
+            string datum = DateTime.Now.ToShortDateString();
+            Dictionary<string, List<Reserveringen>> reserveringenZonderTafel = new Dictionary<string, List<Reserveringen>>();
+            List<Tuple<DateTime, List<Tafels>>> beschikbareTafels = code_medewerker.getBeschikbareTafels(DateTime.Parse(datum));
+
+            if (!vanGetReservationsScreen) {
+                List<Reserveringen> reserveringLijst = io.GetReservations();
+                List<string> datums = reserveringLijst.Select(reservering => reservering.datum.ToShortDateString()).Distinct().ToList(); //Pakt datum v reservering, zet t om naar string datum, Distinct = geen dubbele waarden, ToList zet m om naar n list
+                
+                for(int i = 0; i < datums.Count; i++)
+                {
+                    reserveringenZonderTafel.Add(datums[i], reserveringLijst.Where(R => R.tafels.Count == 0 && R.datum.ToShortDateString() == datums[i]).ToList()); //Kijkt of aantal tafels bij reservering == 0, en datum == datum van de reservering
+                }
+
+                int maxLength = 104; //Max aantal karakters per lijn
+                double pos = 0; //Positie in de grid aan reserveringen
+                List<string> pages = new List<string>();
+                int pagNum = 0; //Huidig paginanummer
+                do
+                {
+                    noReserveringen:
+                    (int, int, double) nextPageFunc = (0, 0, 0.0);
+                    pages = new List<string>();
+                    List<List<string>> reserveringString = new List<List<string>>();
+
+                    if (reserveringenZonderTafel.ContainsKey(datum))
+                    {
+                        reserveringString = Makedubbelboxes(code_eigenaar.ReserveringenToString(reserveringenZonderTafel[datum]));
+                    }
+
+                    if (reserveringString.Count == 0)
+                    {
+                        Console.Clear();
+                        Console.WriteLine(GetGFLogo(true));
+                        Console.WriteLine("Geen ongekoppelde reserveringen gevonden op " + datum);
+                        nextPageFunc = Nextpage(pagNum, pos, pagNum, 16,
+                            new List<Tuple<(int, int, double), string>>
+                            {
+                                Tuple.Create((-2, -2, pos), "D3"),
+                                Tuple.Create((-3, -3, pos), "D4"),
+                                Tuple.Create((-4, -4, pos), "D5"),
+                            },
+                            new List<string> { "[3] Volgende dag             [4] Vorige dag             [5] Naar vandaag" });
+                        if (nextPageFunc.Item2 > -1)
+                        {
+                            return nextPageFunc.Item2;
+                        }
+                        switch (nextPageFunc.Item1)
+                        {
+                            case -2: //Volgende dag
+                                datum = DateTime.Parse(datum).AddDays(1).ToShortDateString();
+                                break;
+                            case -3: //Vorige dag
+                                datum = DateTime.Parse(datum).AddDays(-1).ToShortDateString();
+                                break;
+                            case -4: //Vandaag
+                                datum = DateTime.Now.ToShortDateString();
+                                break;
+                        }
+                        goto noReserveringen;
+                    }
+
+                    List<string> vakjes = new List<string>();
+                    for (int i = 0; i < reserveringString.Count; i++)
+                    {
+                        if (i == reserveringString.Count - 1 && reserveringString[i][1].Length < 70) //Checkt of er maar 1 alleeeeeeenig vakje is
+                        {
+                            if (i == Convert.ToInt32(Math.Floor(pos/2))) //Checkt of positie in de grid (omgezet naar int) gelijk is aan i
+                            {
+                                if (i != 0 && i % 6 != 0)
+                                {
+                                    vakjes.Add(BoxAroundText(reserveringString[i], "#", 2, 0, maxLength, true, new List<string>{
+                                        "[6] Tafels koppelen" + new string(' ', 50 - "[6] Tafels koppelen".Length),
+                                        new string(' ', 50)}));
+                                }
+                                else
+                                {
+                                    vakjes.Add(BoxAroundText(reserveringString[i], "#", 2, 0, 50, true, new List<string>{
+                                        "[6] Tafels koppelen" + new string(' ', 50 - "[6] Tafels koppelen".Length),
+                                        new string(' ', 50)}));
+                                }
+                            }
+                            else
+                            {
+                                if (i != 0 && i % 6 != 0)
+                                {
+                                    vakjes.Add(BoxAroundText(reserveringString[i], "#", 2, 0, maxLength, true));
+                                }
+                                else
+                                {
+                                    vakjes.Add(BoxAroundText(reserveringString[i], "#", 2, 0, maxLength, true));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (i == Convert.ToInt32(Math.Floor(pos/2))) //Checkt of positie in de grid (omgezet naar int) gelijk is aan i
+                            {
+                                if (pos % 2 == 0 || pos == 0)
+                                {
+                                    vakjes.Add(BoxAroundText(reserveringString[i], "#", 2, 0, maxLength, true, new List<string>{
+                                        "[6] Tafels koppelen" + new string(' ', 50 - "[6] Tafels koppelen".Length) + "##  " + new string(' ', 50),
+                                        new string(' ', 50) + "##  " + new string(' ', 50)}));
+                                }
+                                else
+                                {
+                                    vakjes.Add(BoxAroundText(reserveringString[i], "#", 2, 0, maxLength, true, new List<string>{
+                                        new string(' ', 50) + "##  " + "[6] Tafels koppelen" + new string(' ', 50 - "[6] Tafels koppelen".Length),
+                                        new string(' ', 50) + "##  " + new string(' ', 50)}));
+                                }
+                            }
+                            else
+                            {
+                                vakjes.Add(BoxAroundText(reserveringString[i], "#", 2, 0, maxLength, true));
+                            }
+                        }
+                    }
+                    pages = MakePages(vakjes, 3);
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(true));
+
+                    Console.WriteLine();
+                    Console.WriteLine("Reserveringen van: " + datum + (datum == DateTime.Now.ToShortDateString() ? " (vandaag)" : ""));
+                    Console.WriteLine("Pagina " + (pagNum + 1) + " van de " + (pages.Count) + ":");
+                    Console.WriteLine(pages[pagNum] + new string('#', maxLength + 6));
+
+                    List<Tuple<(int, int, double), string>> nextPageFuncTuples = new List<Tuple<(int, int, double), string>>();
+                    List<string> tekst = new List<string>();
+                    if (pages.Count > 0 && pagNum > 0 && pagNum < pages.Count - 1) //Checkt of er een volgende en vorige pagina is
+                    {
+                        tekst.Add("[1] Volgende pagina                                     [2] Vorige pagina");
+                        nextPageFuncTuples.Add(Tuple.Create((pagNum + 1, -1, (pagNum + 1) * 6.0), "D1"));
+                        nextPageFuncTuples.Add(Tuple.Create((pagNum - 1, -1, (pagNum - 1) * 6.0), "D2"));
+                    }
+                    else if (pages.Count - 1 > 0 && pagNum < pages.Count - 1) //Checkt over er alleen een volgende pagina is
+                    {
+                        tekst.Add("[1] Volgende pagina");
+                        nextPageFuncTuples.Add(Tuple.Create((pagNum + 1, -1, (pagNum + 1) * 6.0), "D1"));
+                    }
+                    else if (pages.Count - 1 > 0 && pagNum >= pages.Count - 1) //Checkt of er alleen een vorige pagina is
+                    {
+                        tekst.Add("                                                        [2] Vorige pagina");
+                        nextPageFuncTuples.Add(Tuple.Create((pagNum - 1, -1, (pagNum - 1) * 6.0), "D2"));
+                    }
+
+                    nextPageFuncTuples.Add(Tuple.Create((-2, -2, pos), "D3"));
+                    nextPageFuncTuples.Add(Tuple.Create((-3, -3, pos), "D4"));
+                    nextPageFuncTuples.Add(Tuple.Create((-6, -6, pos), "D6"));
+                    tekst.Add("[3] Volgende dag             [4] Vorige dag             [5] Naar vandaag");
+
+                    nextPageFunc = Nextpage(pagNum, pos, vakjes.Count * 2 - 1, 16, nextPageFuncTuples, tekst);
+                    if (nextPageFunc.Item2 > -1)
+                    {
+                        return nextPageFunc.Item2;
+                    }
+                    string newDatum = DateTime.Now.ToShortDateString();
+
+                    switch (nextPageFunc.Item1)
+                    {
+                        case -2: //Volgende dag
+                            datum = DateTime.Parse(datum).AddDays(1).ToShortDateString();
+                            break;
+                        case -3: //Vorige dag
+                            datum = DateTime.Parse(datum).AddDays(-1).ToShortDateString();
+                            break;
+                        case -4:
+                            datum = DateTime.Now.ToShortDateString();
+                            break;
+                        case -6:
+                            return 16;
+                    }
+                    pagNum = 0;
+                    pos = 0;
+                    if (nextPageFunc.Item1 >= 0)
+                    {
+                        pos = nextPageFunc.Item3;
+                        pagNum = nextPageFunc.Item1;
+                    }
+                } while (true);
+            }
+
+            /*
+             * Okee ff kneitergrote comment hier want gotta heb n beetje het idee watk aant doen ben haha
+             * 0. Programma haalt alle niet gekoppelde reserveringen op -> getReserveringenZonderTafel(datum)
+             * 0.1 Programma haalt alle beschikbare tafels op -> getBeschikbareTafels(datum) 
+             * 1. "Kies (met de pijltjestoetsen) een reservering om te koppelen aan een tafel"
+             * 2. Reserveringen staan in boxes (net zoals bij reviews enz), je kan door de reserveringen navigeren met pijltjestoetsen
+             * 3. Medewerker kiest een reservering uit, programma ziet hoeveel tafels er nodig zijn voor deze reservering
+             * 4. Medewerker kiest een tafel(s) uit om te koppelen aan de reservering (idk hoek tafels moet vormgeven tho) -> tafelKoppelen(reservering, tafels)
+             * 4.1 Als er een onjuist aantal tafels wordt meegegeven, geeft het programma een foutmelding en moet de medewerker opnieuw tafels kiezen
+             * 5. Als de reservering aan de tafel is gekoppeld wordt de reservering weggehaald uitde lijst met ongekoppelde reserveringen
+             * 5.1 De tafel wordt weggehaald uitde lijst met beschikbare tafels
+            */
+
             Console.WriteLine("Work in progress!");
             Console.ReadKey();
             return 16;
@@ -187,9 +398,10 @@ namespace restaurant
 
         public override List<Screen> Update(List<Screen> screens)
         {
+            DoLogoutOnEveryScreen(screens);
             return screens;
         }
-    }
+    } // Schermnummer: 18
 
     public class MakeReservationScreen : Screen
     {
@@ -238,7 +450,7 @@ namespace restaurant
                 }
             } while (!succes);
 
-            if (dagtijd < DateTime.Today)
+            if (dagtijd < DateTime.Now)
             {
                 Console.WriteLine("\nSorry, het lijkt erop dat uw gekozen datum en tijdstip al is verlopen.");
                 Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
@@ -340,9 +552,10 @@ namespace restaurant
 
         public override List<Screen> Update(List<Screen> screens)
         {
+            DoLogoutOnEveryScreen(screens);
             return screens;
         }
-    }
+    } // Schermnummer: 6
 
     #endregion
 
@@ -415,19 +628,17 @@ namespace restaurant
 
         public double Inkomsten(DateTime beginDatum, DateTime eindDatum) // Mogelijkheid een bepaald tijdsspan in te voeren en daarvan de inkomsten te kunnen zien.
         {
-            double inkomsten = 0;
-            foreach (var bestelling in database.inkomsten.bestelling_reservering)
-            {
-                foreach (var reservering in database.reserveringen)
-                {
-                    if (reservering.ID == bestelling.reservering_ID && beginDatum <= reservering.datum && reservering.datum <= eindDatum)
-                    {
-                        inkomsten += bestelling.prijs;
-                        break;
-                    }
-                }
-            }
+            database = io.GetDatabase();
+
+            List<int> id = database.reserveringen.Where(d => d.datum >= beginDatum && d.datum <= eindDatum).Select(i => i.ID).ToList();
+            double inkomsten = database.inkomsten.bestelling_reservering.Where(d => id.Contains(d.ID)).Select(p => p.prijs).ToList().Sum();
             return inkomsten;
+        }
+
+        public List<double> InkomstenPerItem(DateTime beginDatum, DateTime eindDatum)
+        {
+            List<int> id = database.reserveringen.Where(d => d.datum >= beginDatum && d.datum <= eindDatum).Select(i => i.ID).ToList();
+            return database.inkomsten.bestelling_reservering.Where(d => id.Contains(d.ID)).Select(p => p.prijs).ToList();
         }
 
         #endregion
