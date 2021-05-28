@@ -26,12 +26,12 @@ namespace restaurant
         {
             Make_menu();
             Fill_Userdata(10);
-            Fill_reservations_threading(24, 1000, 5, 5, 10, 30);
+            Fill_reservations_threading(24, 1000, 3, 5, 10, 30);
             Maak_werknemer(10);
             //Save_expenses();
             Make_reviews();
             //Make_feedback();
-            //Save_Sales();
+            Save_Sales();
         }
 
         #region Reserveringen
@@ -871,7 +871,7 @@ namespace restaurant
             for (int a = 0, b = 0; a < database.reserveringen.Count; a++)
             {
                 double prijs = 0;
-                if (database.reserveringen[a].datum < DateTime.Now)
+                if (database.reserveringen[a].datum < DateTime.Now && (database.reserveringen[a].isBetaald || database.reserveringen[a].tafels.Count > 0))
                 {
                     foreach (var gerecht_ID in database.reserveringen[a].gerechten_ID)
                     {
@@ -1477,7 +1477,7 @@ namespace restaurant
             }
             
             Console.ReadKey();
-            if (IsKeyPressed(key, "D0"))
+            if (IsKeyPressed(key, "D0") || IsKeyPressed(key, "NumPad0"))
             {
                 logoutUpdate = true;
                 Logout();
@@ -3407,46 +3407,159 @@ namespace restaurant
 
     public class IncomeScreen : Screen
     {
+        private List<string> IncomeToStringMonths(List<(DateTime, double)> income, double pos, string optionMessage)
+        {
+            List<string> output = new List<string>();
+
+            for (int a = 0; a < income.Count; a++)
+            {
+                if (pos == a)
+                {
+                    output.Add("| " + income[a].Item1.ToShortDateString() + " - " + income[a].Item1.AddMonths(1).ToShortDateString() + new string(' ', 25 - (income[a].Item1.ToShortDateString() + " - " + income[a].Item1.AddMonths(1).ToShortDateString()).Length) +
+                        " | " + "€" + income[a].Item2 + new string(' ', 12 - ("€" + income[a].Item2).Length) + $" {optionMessage}|\n" +
+                        new string('–', 42 + optionMessage.Length + 2) + "\n");
+                }
+                else
+                {
+                    output.Add("| " + income[a].Item1.ToShortDateString() + " - " + income[a].Item1.AddMonths(1).ToShortDateString() + new string(' ', 25 - (income[a].Item1.ToShortDateString() + " - " + income[a].Item1.AddMonths(1).ToShortDateString()).Length) +
+                        " | " + "€" + income[a].Item2 + new string(' ', 12 - ("€" + income[a].Item2).Length) + new string(' ', optionMessage.Length) + " |\n" +
+                        new string('–', 42 + optionMessage.Length + 2) + "\n");
+                }
+            }
+
+            return output;
+        }
+
+        private List<string> IncomeToStringWeeks(List<(DateTime, double)> income, double pos, string optionMessage)
+        {
+            List<string> output = new List<string>();
+
+            for (int a = 0; a < income.Count; a++)
+            {
+                if (pos == a)
+                {
+                    output.Add("| " + income[a].Item1.ToShortDateString() + " - " + income[a].Item1.AddDays(7).ToShortDateString() + new string(' ', 25 - (income[a].Item1.ToShortDateString() + " - " + income[a].Item1.AddDays(7).ToShortDateString()).Length) +
+                        " | " + "€" + income[a].Item2 + new string(' ', 12 - ("€" + income[a].Item2).Length) + $" {optionMessage}|\n" +
+                        new string('–', 42 + optionMessage.Length + 2) + "\n");
+                }
+                else
+                {
+                    output.Add("| " + income[a].Item1.ToShortDateString() + " - " + income[a].Item1.AddDays(7).ToShortDateString() + new string(' ', 25 - (income[a].Item1.ToShortDateString() + " - " + income[a].Item1.AddDays(7).ToShortDateString()).Length) +
+                        " | " + "€" + income[a].Item2 + new string(' ', 12 - ("€" + income[a].Item2).Length) + new string(' ', optionMessage.Length) + " |\n" +
+                        new string('–', 42 + optionMessage.Length + 2) + "\n");
+                }
+            }
+
+            return output;
+        }
+
         public override int DoWork()
         {
             Console.WriteLine(GetGFLogo(true));
             Console.WriteLine("Hier kunt u alle inkomsten zien die u nu heeft");
-            Console.WriteLine("[1] Laat al uw inkomsten zien");
-            Console.WriteLine("[2] Laat de inkomsten zien vanaf een datum (genoteerd als 1-1-2000)");
-            Console.WriteLine("[3] Laat de inkomsten zien voor een datum (genoteerd als 1-1-2000)");
-            Console.WriteLine("[4] Laat de inkomsten zien vanaf een bepaalde prijs");
-            Console.WriteLine("[5] Laat de inkomsten zien onder een bepaalde prijs");
-
+            Console.WriteLine("[1] Laat al uw inkomsten zien per maand");
+            Console.WriteLine("[2] Laat al uw inkomsten zien per week");
+            Console.WriteLine("[3] Ga terug naar eigenaar menu scherm");
             (string, int) input = AskForInput(15);
-            if (input.Item2 != -1)
-            {
-                return 11;
-            }
-            if (input.Item1 == "1")
-            {
-                Console.Clear();
-            }
-            else if (input.Item1 == "2")
-            {
 
-            }
-            else if(input.Item1 == "3")
-            {
-
-            }
-            else if(input.Item1 == "4")
-            {
-
-            }
-            else if (input.Item1 == "5")
-            {
-
-            }
-            else if (input.Item1 == "0")
+            if (input.Item1 == "0")
             {
                 logoutUpdate = true;
                 Logout();
                 return 0;
+            }
+            else if (input.Item1 == "1")
+            {
+                List<DateTime> dates = io.GetReservations().OrderBy(d => d.datum).Select(d => d.datum).Distinct().ToList();
+                int months = ((dates[0].Year - DateTime.Now.Year) * 12) + DateTime.Now.Month - (dates[0].Month - 1);
+                List<(DateTime, double)> inkomsten = new List<(DateTime, double)>();
+                dates[0] = dates[0].AddDays(1 - dates[0].Day);
+                for (int a = 0; a < months; a++)
+                {
+                    inkomsten.Add((dates[0].AddMonths(a), code_eigenaar.Inkomsten(new DateTime(dates[0].Year, dates[0].Month, 1).AddMonths(a), new DateTime(dates[0].Year, dates[0].Month, 1).AddMonths(a + 1))));
+                }
+
+                double pos = 0;
+                int page = 0;
+                do
+                {
+                    List<string> incomeString = IncomeToStringMonths(inkomsten, pos, "[3] Meer Detail");
+                    List<string> pages = MakePages(incomeString, 20);
+
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(true));
+                    Console.WriteLine($"Dit zijn uw inkomsten per maand op pagina {page + 1} van de {pages.Count}:");
+                    Console.WriteLine(new string('–', 59) + "\n" + "|Maand                      |Totaal                       |");
+                    Console.WriteLine(new string('–', 59) + "\n" + pages[page]);
+                    Console.WriteLine($"totaal inkomen : €{ Convert.ToInt32(inkomsten.Select(P => P.Item2).Sum())},00\n");
+
+                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, inkomsten.Count - 1, 11);
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+                    else if (result.Item1 == -1 && result.Item2 == -1)
+                    {
+                        DetailIncomeScreen detail = new DetailIncomeScreen(code_eigenaar.InkomstenPerItem(inkomsten[Convert.ToInt32(pos)].Item1, inkomsten[Convert.ToInt32(pos)].Item1.AddMonths(1)));
+                        detail.DoWork();
+                        page = 0;
+                        pos = 0;
+                    }
+                    else
+                    {
+                        pos = result.Item3;
+                        page = result.Item1;
+                    }
+                } while (true);
+            }
+            else if (input.Item1 == "2")
+            {
+                List<DateTime> dates = io.GetReservations().OrderBy(d => d.datum).Select(d => d.datum).Distinct().ToList();
+                dates[0] = dates[0].AddDays(1 - Convert.ToInt32(dates[0].DayOfWeek));
+                TimeSpan timeSpan = DateTime.Now.Date - (dates[0].Date);
+                int weeks = timeSpan.Days / 7 + 1;
+                List<(DateTime, double)> inkomsten = new List<(DateTime, double)>();
+                for (int a = 0; a < weeks; a++)
+                {
+                    inkomsten.Add((dates[0].AddDays(a * 7), code_eigenaar.Inkomsten(new DateTime(dates[0].Year, dates[0].Month, dates[0].Day).AddDays(a * 7), new DateTime(dates[0].Year, dates[0].Month, dates[0].Day).AddDays((a + 1) * 7))));
+                }
+
+                double pos = 0;
+                int page = 0;
+                do
+                {
+                    List<string> incomeString = IncomeToStringWeeks(inkomsten, pos, "[3] Meer Detail");
+                    List<string> pages = MakePages(incomeString, 20);
+
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(true));
+                    Console.WriteLine($"Dit zijn uw inkomsten per week op pagina {page + 1} van de {pages.Count}:");
+                    Console.WriteLine(new string('–', 59) + "\n" + "|Week                       |Totaal                       |");
+                    Console.WriteLine(new string('–', 59) + "\n" + pages[page]);
+                    Console.WriteLine($"totaal inkomen : €{ Convert.ToInt32(inkomsten.Select(P => P.Item2).Sum())},00\n");
+
+                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, inkomsten.Count - 1, 11);
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+                    else if (result.Item1 == -1 && result.Item2 == -1)
+                    {
+                        DetailIncomeScreen detail = new DetailIncomeScreen(code_eigenaar.InkomstenPerItem(inkomsten[Convert.ToInt32(pos)].Item1, inkomsten[Convert.ToInt32(pos)].Item1.AddDays(7)));
+                        detail.DoWork();
+                        page = 0;
+                        pos = 0;
+                    }
+                    else
+                    {
+                        pos = result.Item3;
+                        page = result.Item1;
+                    }
+                } while (true);
+            }
+            else if (input.Item1 == "3")
+            {
+                return 11;
             }
             else
             {
@@ -3455,8 +3568,61 @@ namespace restaurant
                 Console.ReadKey();
                 return 15;
             }
+        }
 
-            return 15;
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            DoLogoutOnEveryScreen(screens);
+            return screens;
+        }
+    }
+
+    public class DetailIncomeScreen : Screen
+    {
+        private List<(DateTime, string, double)> items = new List<(DateTime, string, double)>();
+
+        public DetailIncomeScreen(List<(DateTime, string, double)> items)
+        {
+            this.items = items;
+        }
+
+        private List<string> IncomeToString(List<(DateTime, string, double)> income)
+        {
+            List<string> output = new List<string>();
+
+            for (int a = 0; a < income.Count; a++)
+            {
+                output.Add("| " + income[a].Item1.ToShortDateString() + new string(' ', 20 - (income[a].Item1.ToShortDateString()).Length) +
+                    " | " + income[a].Item2 + new string(' ', 40 - income[a].Item2.Length) +
+                    " | " + "€" + income[a].Item3 + new string(' ', 12 - ("€" + income[a].Item3).Length) + " |\n" +
+                    new string('–', 82) + "\n");
+            }
+
+            return output;
+        }
+
+        public override int DoWork()
+        {
+            int page = 0;
+            do
+            {
+                List<string> incomeString = IncomeToString(items);
+                List<string> pages = MakePages(incomeString, 20);
+
+                Console.Clear();
+                Console.WriteLine(GetGFLogo(true));
+                Console.WriteLine($"Dit zijn uw inkomsten per week op pagina {page + 1} van de {pages.Count}:");
+                Console.WriteLine(new string('–', 82) + "\n" + "|Datum                 |Naam                                      |Inkomsten     |");
+                Console.WriteLine(new string('–', 82) + "\n" + pages[page]);
+                Console.WriteLine($"totaal inkomen : €{ Convert.ToInt32(items.Select(P => P.Item3).Sum())},00\n");
+
+                (int, int) result = Nextpage(page, pages.Count - 1, 11);
+                if (result.Item2 != -1)
+                {
+                    return result.Item2;
+                }
+                page = result.Item1;
+            } while (true);
         }
 
         public override List<Screen> Update(List<Screen> screens)
