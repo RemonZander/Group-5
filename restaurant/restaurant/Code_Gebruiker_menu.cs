@@ -147,10 +147,17 @@ namespace restaurant
         /// Verwijderd een reservering
         /// </summary>
         /// <param name="reserveringen">De reservering die verwijderd moet worden</param>
-        public void DeleteReservations(Reserveringen reserveringen)
+        public void DeleteReservations(Reserveringen reservering)
         {
-            database = io.GetDatabase();
-            database.reserveringen.Remove(reserveringen);
+            Database database = io.GetDatabase();
+            for (int i = 0; i < database.reserveringen.Count; i++)
+            {
+                if (reservering.ID == database.reserveringen[i].ID)
+                {
+                    database.reserveringen.RemoveAt(i);
+                    break;
+                }
+            }
             io.Savedatabase(database);
         }
 
