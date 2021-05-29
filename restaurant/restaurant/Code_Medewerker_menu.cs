@@ -629,16 +629,34 @@ namespace restaurant
         public double Inkomsten(DateTime beginDatum, DateTime eindDatum) // Mogelijkheid een bepaald tijdsspan in te voeren en daarvan de inkomsten te kunnen zien.
         {
             database = io.GetDatabase();
-
+            if (database.reserveringen == null || database.inkomsten.bestelling_reservering == null) return 0;
             List<int> id = database.reserveringen.Where(d => d.datum >= beginDatum && d.datum <= eindDatum).Select(i => i.ID).ToList();
             double inkomsten = database.inkomsten.bestelling_reservering.Where(d => id.Contains(d.ID)).Select(p => p.prijs).ToList().Sum();
+            //double test = database.inkomsten.bestelling_reservering.Select(p => p.prijs).ToList().Sum();
+
+
             return inkomsten;
         }
 
-        public List<double> InkomstenPerItem(DateTime beginDatum, DateTime eindDatum)
+        public List<(DateTime, string, double)> InkomstenPerItem(DateTime beginDatum, DateTime eindDatum)
         {
-            List<int> id = database.reserveringen.Where(d => d.datum >= beginDatum && d.datum <= eindDatum).Select(i => i.ID).ToList();
-            return database.inkomsten.bestelling_reservering.Where(d => id.Contains(d.ID)).Select(p => p.prijs).ToList();
+            database = io.GetDatabase();
+            if (database.reserveringen == null || database.inkomsten.bestelling_reservering == null) return new List<(DateTime, string, double)>();
+            List<Reserveringen> reserveringen = database.reserveringen.Where(d => d.datum >= beginDatum && d.datum <= eindDatum).ToList();
+            List<int> IDs = reserveringen.Select(i => i.ID).ToList();
+            List<(DateTime, string, double)> output = new List<(DateTime, string, double)>();
+            for (int a = 0; a < database.inkomsten.bestelling_reservering.Count; a++)
+            {
+                if (IDs.Contains(database.inkomsten.bestelling_reservering[a].reservering_ID))
+                {
+                    output.Add((reserveringen[IDs.IndexOf(database.inkomsten.bestelling_reservering[a].reservering_ID)].datum,
+                        "Reservering van: " + database.login_gegevens[database.login_gegevens.IndexOf(database.login_gegevens.Where(k => k.klantgegevens.klantnummer == reserveringen[IDs.IndexOf(database.inkomsten.bestelling_reservering[a].reservering_ID)].klantnummer).FirstOrDefault())].klantgegevens.voornaam + " " +
+                        database.login_gegevens[database.login_gegevens.IndexOf(database.login_gegevens.Where(k => k.klantgegevens.klantnummer == reserveringen[IDs.IndexOf(database.inkomsten.bestelling_reservering[a].reservering_ID)].klantnummer).FirstOrDefault())].klantgegevens.achternaam,
+                        database.inkomsten.bestelling_reservering[a].prijs));
+                }
+            }
+            output = output.OrderBy(d => d.Item1).ToList();
+            return output;
         }
 
         #endregion

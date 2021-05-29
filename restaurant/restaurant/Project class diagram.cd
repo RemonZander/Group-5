@@ -3,7 +3,7 @@
   <Class Name="restaurant.Program" Collapsed="true">
     <Position X="2.25" Y="11.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAABAAAAAA=</HashCode>
       <FileName>Program.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -38,8 +38,6 @@
       <Path>
         <Point X="18.75" Y="20.069" />
         <Point X="18.75" Y="21.247" />
-        <Point X="22.292" Y="21.247" Type="JumpStart" />
-        <Point X="22.458" Y="21.247" Type="JumpEnd" />
         <Point X="25.375" Y="21.247" />
         <Point X="25.375" Y="19.103" />
       </Path>
@@ -72,8 +70,6 @@
         <Point X="15.914" Y="21.247" Type="JumpEnd" />
         <Point X="18.167" Y="21.247" Type="JumpStart" />
         <Point X="18.333" Y="21.247" Type="JumpEnd" />
-        <Point X="22.292" Y="21.247" Type="JumpStart" />
-        <Point X="22.458" Y="21.247" Type="JumpEnd" />
         <Point X="25.812" Y="21.247" />
         <Point X="25.812" Y="19.103" />
       </Path>
@@ -160,17 +156,9 @@
       <FileName>Menu_Medewerker.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Field Name="Code" />
       <Field Name="IO" />
       <Field Name="database" />
     </ShowAsAssociation>
-  </Class>
-  <Class Name="restaurant.Code_Medewerker_menu">
-    <Position X="11.25" Y="12.75" Width="2" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAIBAABAAQAAIAEQAAAAAAAAEAAAAAAA=</HashCode>
-      <FileName>Code_Medewerker_menu.cs</FileName>
-    </TypeIdentifier>
   </Class>
   <Class Name="restaurant.Menu_Gebruiker">
     <Position X="14.75" Y="15.75" Width="1.5" />
@@ -201,14 +189,14 @@
   <Class Name="restaurant.Code_Gebruiker_menu">
     <Position X="11.5" Y="16.25" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>CAASAAAAAAgAAIBBCAIAQAABAADEAAAAAIAAAhEAAAA=</HashCode>
+      <HashCode>CAASAIAAAAgAAIBBSAIAQAAAAADEAAAAAIAAAhEAAAA=</HashCode>
       <FileName>Code_Gebruiker_menu.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="restaurant.IO">
     <Position X="21.25" Y="16.75" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AABAAAAAAQAAoABgAEAAAAIAAAABkAAEACAAQIABAAA=</HashCode>
+      <HashCode>AABAAAAAAQAAoABgAEAAABIAAAABkAAEACAAQIABAAA=</HashCode>
       <FileName>IO.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -554,7 +542,6 @@
       <FileName>Code_Console.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Field Name="code_medewerker" />
       <Field Name="code_gebruiker" />
       <Field Name="code_eigenaar" />
       <Field Name="code_login" />
@@ -666,25 +653,11 @@
       <FileName>Code_Eigenaar_menu.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="restaurant.EmployeeMenuScreen">
-    <Position X="19" Y="2.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAQAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Code_Medewerker_menu.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="restaurant.AddTableToReservationScreen">
+  <Class Name="restaurant.IncomeScreen">
     <Position X="20.75" Y="4.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Code_Medewerker_menu.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="restaurant.MakeReservationScreen">
-    <Position X="17.5" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAQAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Code_Medewerker_menu.cs</FileName>
+      <FileName>testing class.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="restaurant.StepScreen" Collapsed="true">
@@ -722,6 +695,27 @@
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAQAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Code_Console.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="restaurant.Code_Medewerker_menu">
+    <Position X="11.25" Y="12.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIBAABAAQAAIAEQAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>Code_Medewerker_menu.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="restaurant.EmployeeMenuScreen">
+    <Position X="19" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Code_Medewerker_menu.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="restaurant.MakeReservationScreen">
+    <Position X="17.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Code_Medewerker_menu.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Struct Name="restaurant.Reserveringen">
