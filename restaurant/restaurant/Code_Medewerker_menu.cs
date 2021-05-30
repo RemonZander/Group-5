@@ -121,6 +121,8 @@ namespace restaurant
             Console.WriteLine("[1] Reserveringen bekijken");
             Console.WriteLine("[2] Tafels koppelen");
             Console.WriteLine("[3] Feedback bekijken");
+            Console.WriteLine("[4] Menukaart");
+            Console.WriteLine("[5] Reviews bekijken");
 
             (string, int) antwoord = AskForInput(16);
             if (antwoord.Item2 != -1)
@@ -143,6 +145,14 @@ namespace restaurant
             else if (antwoord.Item1 == "3")
             {
                 return 20;
+            }
+            else if (antwoord.Item1 == "4")
+            {
+                return 1;
+            }
+            else if (antwoord.Item1 == "5")
+            {
+                return 2;
             }
             else
             {
@@ -658,7 +668,6 @@ namespace restaurant
             output = output.OrderBy(d => d.Item1).ToList();
             return output;
         }
-
         #endregion
 
         #region Winst_of_Verlies
