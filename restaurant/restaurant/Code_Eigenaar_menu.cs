@@ -311,6 +311,30 @@ namespace restaurant
             }
         }
 
+        public void OverwriteMeal(Gerechten meal)
+        {
+            database = io.GetDatabase();
+            if (IfDishExists(meal.ID))
+            {
+                int dishIndex = database.menukaart.gerechten.FindIndex(x => x.ID == meal.ID);
+                database.menukaart.gerechten[dishIndex] = new Gerechten
+                {
+                    naam = meal.naam,
+                    ID = meal.ID,
+                    ingredienten = meal.ingredienten,
+                    is_populair = meal.is_populair,
+                    prijs = meal.prijs,
+                    special = meal.special,
+                    is_gearchiveerd = meal.is_gearchiveerd,
+                    allergenen = meal.allergenen,
+                    diner = meal.diner,
+                    lunch = meal.lunch,
+                    ontbijt = meal.ontbijt,
+                };
+                io.Savedatabase(database);
+            }
+        }
+
         public List<Tuple<Gerechten, int>> GetUserOrderInfo(DateTime beginDate, DateTime endDate)
         {
             database = io.GetDatabase();
@@ -344,6 +368,7 @@ namespace restaurant
 
         public List<List<string>> ReserveringenToString(List<Reserveringen> reserveringen)
         {
+            reserveringen = reserveringen.OrderBy(o => o.datum).ToList();
             List<Klantgegevens> klantgegevens = io.GetCustomer(reserveringen.Select(i => i.klantnummer).ToList());
             List<List<string>> output = new List<List<string>>();
             for (int a = 0; a < reserveringen.Count; a++)
@@ -354,7 +379,7 @@ namespace restaurant
 
                 block.Add("Voornaam: " + klantgegevens[a].voornaam + new string(' ', 50 - ("Voornaam: " + klantgegevens[a].voornaam).Length));
                 block.Add("Achternaam: " + klantgegevens[a].achternaam + new string(' ', 50 - ("Achternaam: " + klantgegevens[a].achternaam).Length));
-
+                block.Add("Tijdstip: " + reserveringen[a].datum.ToShortTimeString() + new string(' ', 50 - ("Tijdstip: " + reserveringen[a].datum.ToShortTimeString()).Length));
                 int[] tafels = new int[reserveringen[a].tafels.Count];
                 for (int i = 0; i < tafels.Length; i++)
                 {
