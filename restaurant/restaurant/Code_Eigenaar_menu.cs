@@ -344,6 +344,7 @@ namespace restaurant
 
         public List<List<string>> ReserveringenToString(List<Reserveringen> reserveringen)
         {
+            reserveringen = reserveringen.OrderBy(o => o.datum).ToList();
             List<Klantgegevens> klantgegevens = io.GetCustomer(reserveringen.Select(i => i.klantnummer).ToList());
             List<List<string>> output = new List<List<string>>();
             for (int a = 0; a < reserveringen.Count; a++)
