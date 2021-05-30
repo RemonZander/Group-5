@@ -220,125 +220,213 @@ namespace restaurant
         /// <returns>True if the right key is pressed, false is not</returns>
         protected bool IsKeyPressed(ConsoleKeyInfo cki, string key) => cki.Key.ToString().ToUpper() == key.ToUpper();
 
-        #region Deprecated
-        [Obsolete()]
-        /// <summary>
-        /// With this method you can ask the user for input and add a condition based on what type of characters are allowed in the input.
-        /// If you only need to ask the user for input without any checks on the input please use Console.Readline() instead.
-        /// </summary>
-        /// <param name="conditionPerChar">The lambda that gets called to check if every character in the input string matches a certain condition.</param>
-        /// <param name="onFalseMessage">The message to display when the condition failes.</param>
-        /// <returns>The input that has been asked</returns>
-        protected string AskForInput(Func<char, bool> conditionPerChar, string onFalseMessage = "", bool required = true)
+        protected (int, int, double) SetupPagination(List<List<string>> input, string aboveText, int screenIndex, List<string> pages, int pageNum, double pos, int maxLength, List<string> choices, bool standardBindings = true)
         {
-            string input = Console.ReadLine();
+            List<List<string>> mealsString = Makedubbelboxes(input);
 
-            if (required)
+            List<string> boxes = new List<string>();
+
+            List<Tuple<(int, int, double), string>> bindings = new();
+
+            for (int a = 0; a < mealsString.Count; a++)
             {
-                if (IsInputEmpty(input))
+                if (a == mealsString.Count - 1 && mealsString[a][1].Length < 70)
                 {
-                    Console.WriteLine(InputEmptyMessage);
-                    return AskForInput(conditionPerChar, onFalseMessage, required);
-                }
-            }
-
-            if (!ValidateInput(input, conditionPerChar))
-            {
-                Console.WriteLine(onFalseMessage);
-                return AskForInput(conditionPerChar, onFalseMessage, required);
-            }
-
-            return input;
-        }
-
-        [Obsolete()]
-        /// <summary>
-        /// With this method you can ask the user for input and add a condition based on what type of characters are allowed in the input.
-        /// If you only need to ask the user for input without any checks on the input please use Console.Readline() instead.
-        /// </summary>
-        /// <param name="conditionInput">The lambda that gets called to check if the input itself matches a certain condition</param>
-        /// <param name="onFalseMessage">The message to display when the condition failes.</param>
-        /// <returns>The input that has been asked</returns>
-        protected string AskForInput(Func<string, bool> conditionInput, string onFalseMessage = "", bool required = true)
-        {
-            string input = Console.ReadLine();
-
-            if (required)
-            {
-                if (IsInputEmpty(input))
-                {
-                    Console.WriteLine(InputEmptyMessage);
-                    return AskForInput(conditionInput, onFalseMessage, required);
-                }
-            }
-
-            if (!ValidateInput(input, conditionInput))
-            {
-                Console.WriteLine(onFalseMessage);
-                return AskForInput(conditionInput, onFalseMessage, required);
-            }
-
-            return input;
-        }
-
-        [Obsolete()]
-        protected string AskForInput()
-        {
-            bool AskRepeat = true;
-            string output = "";
-
-            while (AskRepeat)
-            {
-                ConsoleKeyInfo CKInfo = Console.ReadKey(true);
-
-                if (IsKeyPressed(CKInfo, ENTER_KEY)) break;
-
-                if (IsKeyPressed(CKInfo, BACKSPACE_KEY))
-                {
-                    (int, int) curserPos = Console.GetCursorPosition();
-                    if (curserPos.Item1 > 0)
+                    if (a == Convert.ToInt32(Math.Floor(pos / 2)))
                     {
-                        Console.SetCursorPosition(curserPos.Item1 - 1, curserPos.Item2);
-                        Console.Write(" ");
+                        List<string> modifiedChoices = new();
+
+                        foreach (string choice in choices)
+                        {
+                            modifiedChoices.Add(choice + new string(' ', 50 - choice.Length));
+                        }
+
+                        modifiedChoices.Add(new string(' ', 50));
+
+                        if (a != 0 && a % 6 != 0)
+                        {
+                            boxes.Add(BoxAroundText(mealsString[a], "#", 2, 0, 104, true, modifiedChoices));
+                        }
+                        else
+                        {
+                            boxes.Add(BoxAroundText(mealsString[a], "#", 2, 0, 50, true, modifiedChoices));
+                        }
+                    }
+                    else
+                    {
+                        if (a != 0 && a % 6 != 0)
+                        {
+                            boxes.Add(BoxAroundText(mealsString[a], "#", 2, 0, 104, true));
+                        }
+                        else
+                        {
+                            boxes.Add(BoxAroundText(mealsString[a], "#", 2, 0, 50, true));
+                        }
+
                     }
                 }
-
-                output += CKInfo.KeyChar;
-                Console.Write(CKInfo.KeyChar);
-            }
-
-            return output;
-        }
-
-        [Obsolete()]
-        protected string AskForInput(Func<char, bool> conditionPerChar, Func<string, bool> conditionInput, (string, string) onFalseMessage, bool required = true)
-        {
-            string input = AskForInput();
-
-            if (required)
-            {
-                if (IsInputEmpty(input))
+                else
                 {
-                    Console.WriteLine(InputEmptyMessage);
-                    return AskForInput(conditionPerChar, conditionInput, onFalseMessage, required);
+                    if (a == Convert.ToInt32(Math.Floor(pos / 2)))
+                    {
+                        List<string> modifiedChoices = new();
+
+                        if (pos % 2 == 0 || pos == 0)
+                        {
+                            foreach (string choice in choices)
+                            {
+                                modifiedChoices.Add(choice + new string(' ', 50 - choice.Length) + "##  " + new string(' ', 50));
+                            }
+
+                            modifiedChoices.Add(new string(' ', 50) + "##  " + new string(' ', 50));
+
+                            boxes.Add(BoxAroundText(mealsString[a], "#", 2, 0, 104, true, modifiedChoices));
+                        }
+                        else
+                        {
+                            foreach (string choice in choices)
+                            {
+                                modifiedChoices.Add(new string(' ', 50) + "##  " + choice + new string(' ', 50 - choice.Length));
+                            }
+
+                            modifiedChoices.Add(new string(' ', 50) + "##  " + new string(' ', 50));
+
+                            boxes.Add(BoxAroundText(mealsString[a], "#", 2, 0, 104, true, modifiedChoices));
+                        }
+                    }
+                    else
+                    {
+                        boxes.Add(BoxAroundText(mealsString[a], "#", 2, 0, 104, true));
+                    }
                 }
             }
 
-            if (conditionPerChar != null && !ValidateInput(input, conditionPerChar))
+            pages = MakePages(boxes, 3);
+
+            Console.Clear();
+            Console.WriteLine(string.Format(aboveText, GetGFLogo(true), pageNum + 1, pages.Count));
+
+            if (mealsString[mealsString.Count - 1][1].Length < 70 && pageNum == pages.Count - 1)
             {
-                Console.WriteLine(onFalseMessage.Item1);
-                return AskForInput(conditionPerChar, conditionInput, onFalseMessage, required);
+                Console.WriteLine(pages[pageNum] + new string('#', (maxLength + 6) / 2));
+            }
+            else
+            {
+                Console.WriteLine(pages[pageNum] + new string('#', maxLength + 6));
             }
 
-            if (conditionInput != null && !ValidateInput(input, conditionInput))
+            (int, int, double) result = (0, 0, 0);
+
+            if (!standardBindings)
             {
-                Console.WriteLine(onFalseMessage.Item2);
-                return AskForInput(conditionPerChar, conditionInput, onFalseMessage, required);
+                bindings = new List<Tuple<(int, int, double), string>> { Tuple.Create((pageNum + 1, -1, (pageNum + 1) * 6.0), ConsoleKey.D1.ToString()), Tuple.Create((pageNum, screenIndex, pos), ConsoleKey.D2.ToString()) };
             }
 
-            return input;
+            int i = 0;
+            int j = 2;
+            foreach (string choice in choices)
+            {
+                i--;
+                j++;
+
+                if (j > 9)
+                {
+                    throw new Exception("Meer dan 10 keuzes nog niet gesupport.");
+                }
+
+                bindings.Add(Tuple.Create((i, i, pos), "D" + j));
+            }
+
+            if (pageNum < pages.Count - 1)
+            {
+                result = Nextpage(pageNum, pos, boxes.Count * 2 - 1, 10,
+                    bindings,
+                    new List<string> { "[1] Volgende pagina", "[2] Terug" });
+            }
+            else
+            {
+                result = Nextpage(pageNum, pos, boxes.Count * 2 - 1, 10,
+                    bindings,
+                    new List<string> { "[1] Terug" });
+            }
+
+            return result;
         }
-        #endregion
+
+        protected int GoBack(int screenIndex, bool canLogout = true)
+        {
+            int userInputResult = -1;
+
+            bool check(string input) => canLogout ? int.TryParse(input, out userInputResult) && (userInputResult == 1 || userInputResult == 0) : int.TryParse(input, out userInputResult) && userInputResult == 1;
+
+            (string, int, string) userInput = AskForInput(screenIndex, null, input => check(input), (null, DigitsOnlyMessage));
+
+            if (userInput.Item2 != -1)
+            {
+                return userInput.Item2;
+            }
+
+            if (userInput.Item3 != null)
+            {
+                Console.WriteLine(userInput.Item3);
+                Console.WriteLine(PressButtonToContinueMessage);
+                return screenIndex;
+            }
+
+            if (userInputResult == 1)
+            {
+                return screenIndex;
+            }
+
+            if (canLogout && userInputResult == 0)
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+
+            return screenIndex;
+        }
+
+        protected int Confirmation(int screenIndex, Func<int> onTrue, Func<int> onFalse, bool canLogout = true)
+        {
+            bool check(string input) => canLogout ? input.Trim().ToLower() == "ja" || input.Trim().ToLower() == "nee" || input.Trim() == "0" : input.Trim().ToLower() == "ja" || input.Trim().ToLower() == "nee";
+
+        a:
+            (string, int, string) input = AskForInput(
+                screenIndex,
+                null,
+                input => check(input),
+                (null, InvalidInputMessage)
+            );
+
+            if (input.Item2 != -1)
+            {
+                return input.Item2;
+            }
+
+            if (input.Item3 != null)
+            {
+                Console.WriteLine(input.Item3);
+                Console.WriteLine(PressButtonToContinueMessage);
+                Console.ReadKey();
+                goto a;
+            }
+
+            if (canLogout && input.Item1 == "0")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+
+            return input.Item1.Trim().ToLower() == "ja" ? onTrue() : onFalse();
+        }
+
+        protected string convertBooleanString(bool boolean)
+        {
+            return boolean ? "Ja" : "Nee";
+        }
 
         protected (string, int) AskForInput(int screenIndex)
         {
@@ -348,6 +436,8 @@ namespace restaurant
             while (AskRepeat)
             {
                 ConsoleKeyInfo CKInfo = Console.ReadKey(true);
+
+                if (CKInfo.KeyChar == '\0') continue;
 
                 if (IsKeyPressed(CKInfo, ENTER_KEY)) break;
 
@@ -368,7 +458,10 @@ namespace restaurant
                     output.Add(CKInfo.KeyChar);
                 }
 
-                Console.Write(CKInfo.KeyChar);
+                if (CKInfo.KeyChar != '\0')
+                {
+                    Console.Write(CKInfo.KeyChar);
+                }
             }
 
             // -1 means no interruptions has been found while asking for input
@@ -2374,214 +2467,6 @@ namespace restaurant
 
         public ViewMealsScreen()
         {
-        }
-
-        private (int, int, double) SetupPagination(List<List<string>> input, string aboveText, int screenIndex, List<string> pages, int pageNum, double pos, int maxLength, List<string> choices, bool standardBindings = true)
-        {
-            List<List<string>> mealsString = Makedubbelboxes(input);
-
-            List<string> boxes = new List<string>();
-
-            List<Tuple<(int, int, double), string>> bindings = new();
-
-            for (int a = 0; a < mealsString.Count; a++)
-            {
-                if (a == mealsString.Count - 1 && mealsString[a][1].Length < 70)
-                {
-                    if (a == Convert.ToInt32(Math.Floor(pos / 2)))
-                    {
-                        List<string> modifiedChoices = new();
-
-                        foreach (string choice in choices)
-                        {
-                            modifiedChoices.Add(choice + new string(' ', 50 - choice.Length));
-                        }
-
-                        modifiedChoices.Add(new string(' ', 50));
-
-                        if (a != 0 && a % 6 != 0)
-                        {
-                            boxes.Add(BoxAroundText(mealsString[a], "#", 2, 0, 104, true, modifiedChoices));
-                        }
-                        else
-                        {
-                            boxes.Add(BoxAroundText(mealsString[a], "#", 2, 0, 50, true, modifiedChoices));
-                        }
-                    }
-                    else
-                    {
-                        if (a != 0 && a % 6 != 0)
-                        {
-                            boxes.Add(BoxAroundText(mealsString[a], "#", 2, 0, 104, true));
-                        }
-                        else
-                        {
-                            boxes.Add(BoxAroundText(mealsString[a], "#", 2, 0, 50, true));
-                        }
-
-                    }
-                }
-                else
-                {
-                    if (a == Convert.ToInt32(Math.Floor(pos / 2)))
-                    {
-                        List<string> modifiedChoices = new();
-
-                        if (pos % 2 == 0 || pos == 0)
-                        {
-                            foreach (string choice in choices)
-                            {
-                                modifiedChoices.Add(choice + new string(' ', 50 - choice.Length) + "##  " + new string(' ', 50));
-                            }
-
-                            modifiedChoices.Add(new string(' ', 50) + "##  " + new string(' ', 50));
-
-                            boxes.Add(BoxAroundText(mealsString[a], "#", 2, 0, 104, true, modifiedChoices));
-                        }
-                        else
-                        {
-                            foreach (string choice in choices)
-                            {
-                                modifiedChoices.Add(new string(' ', 50) + "##  " + choice + new string(' ', 50 - choice.Length));
-                            }
-
-                            modifiedChoices.Add(new string(' ', 50) + "##  " + new string(' ', 50));
-
-                            boxes.Add(BoxAroundText(mealsString[a], "#", 2, 0, 104, true, modifiedChoices));
-                        }
-                    }
-                    else
-                    {
-                        boxes.Add(BoxAroundText(mealsString[a], "#", 2, 0, 104, true));
-                    }
-                }
-            }
-
-            pages = MakePages(boxes, 3);
-
-            Console.Clear();
-            Console.WriteLine(string.Format(aboveText, GetGFLogo(true), pageNum + 1, pages.Count));
-
-            if (mealsString[mealsString.Count - 1][1].Length < 70 && pageNum == pages.Count - 1)
-            {
-                Console.WriteLine(pages[pageNum] + new string('#', (maxLength + 6) / 2));
-            }
-            else
-            {
-                Console.WriteLine(pages[pageNum] + new string('#', maxLength + 6));
-            }
-
-            (int, int, double) result = (0, 0, 0);
-
-            if (!standardBindings)
-            {
-                bindings = new List<Tuple<(int, int, double), string>> { Tuple.Create((pageNum + 1, -1, (pageNum + 1) * 6.0), ConsoleKey.D1.ToString()), Tuple.Create((pageNum, screenIndex, pos), ConsoleKey.D2.ToString()) };
-            }
-
-            int i = 0;
-            int j = 2;
-            foreach(string choice in choices)
-            {
-                i--;
-                j++;
-
-                if (j > 9)
-                {
-                    throw new Exception("Meer dan 10 keuzes nog niet gesupport.");
-                }
-
-                bindings.Add(Tuple.Create((i, i, pos), "D" + j));
-            }
-
-            if (pageNum < pages.Count - 1)
-            {
-                result = Nextpage(pageNum, pos, boxes.Count * 2 - 1, 10,
-                    bindings,
-                    new List<string> { "[1] Volgende pagina", "[2] Terug" });
-            }
-            else
-            {
-                result = Nextpage(pageNum, pos, boxes.Count * 2 - 1, 10,
-                    bindings,
-                    new List<string> { "[1] Terug" });
-            }
-
-            return result;
-        }
-
-        private int GoBack(int screenIndex, bool canLogout = true)
-        {
-            int userInputResult = -1;
-
-            bool check(string input) => canLogout ? int.TryParse(input, out userInputResult) && (userInputResult == 1 || userInputResult == 0) : int.TryParse(input, out userInputResult) && userInputResult == 1;
-
-            (string, int, string) userInput = AskForInput(screenIndex, null, input => check(input), (null, DigitsOnlyMessage));
-
-            if (userInput.Item2 != -1)
-            {
-                return userInput.Item2;
-            }
-
-            if (userInput.Item3 != null)
-            {
-                Console.WriteLine(userInput.Item3);
-                Console.WriteLine(PressButtonToContinueMessage);
-                return ScreenNum;
-            }
-
-            if (userInputResult == 1)
-            {
-                return ScreenNum;
-            }
-
-            if (canLogout && userInputResult == 0)
-            {
-                logoutUpdate = true;
-                Logout();
-                return 0;
-            }
-
-            return ScreenNum;
-        }
-
-        private int Confirmation(int screenIndex, Func<int> onTrue, Func<int> onFalse, bool canLogout = true)
-        {
-            bool check(string input) => canLogout ? input.Trim().ToLower() == "ja" || input.Trim().ToLower() == "nee" || input.Trim() == "0" : input.Trim().ToLower() == "ja" || input.Trim().ToLower() == "nee";
-
-            a:
-                (string, int, string) input = AskForInput(
-                    screenIndex,
-                    null,
-                    input => check(input),
-                    (null, InvalidInputMessage)
-                );
-                
-                if (input.Item2 != -1)
-                {
-                    return input.Item2;
-                }
-
-                if (input.Item3 != null)
-                {
-                    Console.WriteLine(input.Item3);
-                    Console.WriteLine(PressButtonToContinueMessage);
-                    Console.ReadKey();
-                    goto a;
-                }
-
-                if (canLogout && input.Item1 == "0")
-                {
-                    logoutUpdate = true;
-                    Logout();
-                    return 0;
-                }
-
-            return input.Item1.Trim().ToLower() == "ja" ? onTrue() : onFalse();
-        }
-
-        private string convertBooleanString(bool boolean)
-        {
-            return boolean ? "Ja" : "Nee";
         }
 
         private List<List<string>> MealsToString(List<Gerechten> meals)
