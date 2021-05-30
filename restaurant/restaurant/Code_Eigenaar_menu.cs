@@ -311,6 +311,30 @@ namespace restaurant
             }
         }
 
+        public void OverwriteMeal(Gerechten meal)
+        {
+            database = io.GetDatabase();
+            if (IfDishExists(meal.ID))
+            {
+                int dishIndex = database.menukaart.gerechten.FindIndex(x => x.ID == meal.ID);
+                database.menukaart.gerechten[dishIndex] = new Gerechten
+                {
+                    naam = meal.naam,
+                    ID = meal.ID,
+                    ingredienten = meal.ingredienten,
+                    is_populair = meal.is_populair,
+                    prijs = meal.prijs,
+                    special = meal.special,
+                    is_gearchiveerd = meal.is_gearchiveerd,
+                    allergenen = meal.allergenen,
+                    diner = meal.diner,
+                    lunch = meal.lunch,
+                    ontbijt = meal.ontbijt,
+                };
+                io.Savedatabase(database);
+            }
+        }
+
         public List<Tuple<Gerechten, int>> GetUserOrderInfo(DateTime beginDate, DateTime endDate)
         {
             database = io.GetDatabase();
