@@ -2702,6 +2702,69 @@ namespace restaurant
             return output;
         }
 
+        private string EditMealBoxWithDetail(Gerechten meal)
+        {
+            List<Ingredient> ingredients = code_eigenaar.GetIngredients();
+
+            string output = "";
+            List<string> rows = new();
+            rows.Add("Naam: " + meal.naam);
+            rows.Add("Prijs: " + meal.prijs);
+            rows.Add("Is populair: " + convertBooleanString(meal.is_populair));
+            rows.Add("Is speciaal: " + convertBooleanString(meal.special));
+            rows.Add("Is ontbijt: " + convertBooleanString(meal.ontbijt));
+            rows.Add("Is lunch: " + convertBooleanString(meal.lunch));
+            rows.Add("Is hoofdmenu: " + convertBooleanString(meal.diner));
+            rows.Add("");
+            rows.Add("Allergenen: ");
+
+            if (meal.allergenen != null && meal.allergenen.Count > 0)
+            {
+                foreach (string allergy in meal.allergenen)
+                {
+                    rows.Add(allergy);
+                }
+            }
+            else
+            {
+                rows.Add("Geen allergenen gevonden in het gerecht.");
+            }
+
+            rows.Add("");
+            rows.Add("Ingredienten in het gerecht: ");
+
+            if (meal.ingredienten != null && meal.ingredienten.Count > 0)
+            {
+                foreach (int id in meal.ingredienten.Distinct().ToArray())
+                {
+                    Ingredient ingredient = ingredients.Where(x => x.ID == id).Single();
+                    int amount = meal.ingredienten.Where(ingredientId => ingredientId == id).Count();
+
+                    rows.Add($"{ingredient.name} x{amount}");
+                }
+            }
+            else
+            {
+                rows.Add("Geen ingredienten gevonden in het gerecht.");
+            }
+
+
+            output += new string('#', 56) + "\n";
+            output += "#  " + new string(' ', 50) + "  #\n";
+            output += "#  " + new string(' ', 50) + "  #\n";
+
+            foreach (string row in rows)
+            {
+                output += "#  " + row + new string(' ', 50 - row.Length) + "  #\n";
+            }
+
+            output += "#  " + new string(' ', 50) + "  #\n";
+            output += "#  " + new string(' ', 50) + "  #\n";
+            output += new string('#', 56);
+            return output;
+        }
+
+
         private int ReadMeal(Gerechten meal)
         {
             Console.Clear();
@@ -2719,7 +2782,7 @@ namespace restaurant
             {
                 Console.Clear();
                 Console.WriteLine(GetGFLogo(true));
-                Console.WriteLine(MealBoxWithDetail(meal));
+                Console.WriteLine(EditMealBoxWithDetail(meal));
                 Console.WriteLine("");
             }
 
@@ -2728,9 +2791,7 @@ namespace restaurant
         a:
             topText();
             Console.WriteLine("Wat is de naam van het gerecht?");
-
-            Console.WriteLine("\nType");
-            result = AskForInput(ScreenNum, c => char.IsLetterOrDigit(c), null, (DigitsAndLettersOnlyMessage, null));
+            result = AskForInput(ScreenNum, c => char.IsLetterOrDigit(c), null, (DigitsAndLettersOnlyMessage, null), false);
 
             if (result.Item2 != -1)
             {
@@ -2752,14 +2813,17 @@ namespace restaurant
                 return 0;
             }
 
-            meal.naam = result.Item1;
+            if (result.Item1.Trim() != "")
+            {
+                meal.naam = result.Item1;
+            }
         price:
             topText();
 
             Console.WriteLine("Wat is de prijs van het gerecht?");
 
             double price = 0;
-            result = AskForInput(ScreenNum, null, input => double.TryParse(input, out price), (null, DigitsOnlyMessage));
+            result = AskForInput(ScreenNum, null, input => double.TryParse(input, out price), (null, DigitsOnlyMessage), false);
 
             if (result.Item2 != -1)
             {
@@ -2781,7 +2845,10 @@ namespace restaurant
                 return 0;
             }
 
-            meal.prijs = price;
+            if (result.Item1.Trim() != "")
+            {
+                meal.prijs = price;
+            }
         populair:
             topText();
 
@@ -2791,7 +2858,8 @@ namespace restaurant
                 ScreenNum,
                 null,
                 input => input.Trim().ToLower() == "ja" || input.Trim().ToLower() == "nee",
-                (null, InvalidInputMessage)
+                (null, InvalidInputMessage),
+                false
             );
 
             if (result.Item2 != -1)
@@ -2814,7 +2882,10 @@ namespace restaurant
                 return 0;
             }
 
-            meal.is_populair = result.Item1 == "ja";
+            if (result.Item1.Trim() != "")
+            {
+                meal.is_populair = result.Item1 == "ja";
+            }
         speciaal:
             topText();
 
@@ -2824,7 +2895,8 @@ namespace restaurant
                 ScreenNum,
                 null,
                 input => input.Trim().ToLower() == "ja" || input.Trim().ToLower() == "nee",
-                (null, InvalidInputMessage)
+                (null, InvalidInputMessage),
+                false
             );
 
             if (result.Item2 != -1)
@@ -2847,7 +2919,10 @@ namespace restaurant
                 return 0;
             }
 
-            meal.special = result.Item1 == "ja";
+            if (result.Item1.Trim() != "")
+            {
+                meal.special = result.Item1 == "ja";
+            }
         breakfast:
             topText();
 
@@ -2857,7 +2932,8 @@ namespace restaurant
                 ScreenNum,
                 null,
                 input => input.Trim().ToLower() == "ja" || input.Trim().ToLower() == "nee",
-                (null, InvalidInputMessage)
+                (null, InvalidInputMessage),
+                false
             );
 
             if (result.Item2 != -1)
@@ -2880,7 +2956,10 @@ namespace restaurant
                 return 0;
             }
 
-            meal.ontbijt = result.Item1 == "ja";
+            if (result.Item1.Trim() != "")
+            {
+                meal.ontbijt = result.Item1 == "ja";
+            }
         lunch:
             topText();
 
@@ -2890,7 +2969,8 @@ namespace restaurant
                 ScreenNum,
                 null,
                 input => input.Trim().ToLower() == "ja" || input.Trim().ToLower() == "nee",
-                (null, InvalidInputMessage)
+                (null, InvalidInputMessage),
+                false
             );
 
             if (result.Item2 != -1)
@@ -2913,7 +2993,11 @@ namespace restaurant
                 return 0;
             }
 
-            meal.lunch = result.Item1 == "ja";
+            if (result.Item1.Trim() != "")
+            {
+                meal.lunch = result.Item1 == "ja";
+            }
+
         diner:
             topText();
 
@@ -2923,7 +3007,8 @@ namespace restaurant
                 ScreenNum,
                 null,
                 input => input.Trim().ToLower() == "ja" || input.Trim().ToLower() == "nee",
-                (null, InvalidInputMessage)
+                (null, InvalidInputMessage),
+                false
             );
 
             if (result.Item2 != -1)
@@ -2946,7 +3031,10 @@ namespace restaurant
                 return 0;
             }
 
-            meal.diner = result.Item1 == "ja";
+            if (result.Item1.Trim() != "")
+            {
+                meal.diner = result.Item1 == "ja";
+            }
         allergies:
             List<string> allergies = new();
 
@@ -2958,17 +3046,17 @@ namespace restaurant
 
                 result = AskForInput(ScreenNum, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
 
-                if (result.Item2 != -1)
-                {
-                    return result.Item2;
-                }
-
                 if (result.Item3 != null)
                 {
                     Console.WriteLine("\n" + result.Item3);
                     Console.WriteLine(PressButtonToContinueMessage);
                     Console.ReadKey();
                     goto allergies;
+                }
+
+                if (result.Item2 != -1)
+                {
+                    return result.Item2;
                 }
 
                 if (result.Item1 == "0")
@@ -2996,7 +3084,7 @@ namespace restaurant
             {
                 List<int> ingredients = new();
 
-                // OverwriteMeal
+                code_eigenaar.OverwriteMeal(meal);
 
                 Console.WriteLine("\nGerecht is aangepast.");
                 Console.WriteLine(PressButtonToContinueMessage);
@@ -3324,6 +3412,114 @@ namespace restaurant
                         (int, int, double) result = SetupPagination(
                             MealsToString(currentList),
                             "{0}\nDit zijn al uw speciale gerechten op pagina {1} van de {2}:",
+                            ScreenNum,
+                            pages,
+                            pageNum,
+                            pos,
+                            maxLength,
+                            new List<string>() { "[3] Bekijk", "[4] Bewerk", "[5] Archiveer", "[6] Verwijderen" }
+                        );
+
+                        pos = result.Item3;
+
+                        if (result.Item2 != -1 && result.Item2 != -2 && result.Item2 != -3)
+                        {
+                            return result.Item2;
+                        }
+                        else if (result.Item1 == -1 && result.Item2 == -1)
+                        {
+                            return ReadMeal(currentList[Convert.ToInt32(pos)]);
+                        }
+                        else if (result.Item1 == -2 && result.Item2 == -2)
+                        {
+                            return UpdateMeal(currentList[Convert.ToInt32(pos)]);
+                        }
+                        else if (result.Item1 == -3 && result.Item2 == -3)
+                        {
+                            return ArchiveMeal(currentList[Convert.ToInt32(pos)]);
+                        }
+                        else if (result.Item1 == -4 && result.Item2 == -4)
+                        {
+                            return DeleteMeal(currentList[Convert.ToInt32(pos)]);
+                        }
+
+                        if (result.Item2 != -1)
+                        {
+                            return result.Item2;
+                        }
+
+                        pageNum = result.Item1;
+                    } while (true);
+                }
+                else if (input.Item1 == "5")
+                {
+                    Console.WriteLine("\nOp welk type wilt u sorteren? Type in Ontbijt/Lunch/Diner");
+
+                    var lastInput = AskForInput(
+                        ScreenNum, 
+                        c => char.IsLetter(c), 
+                        input => input.ToLower().Trim() == "ontbijt" || input.ToLower().Trim() == "lunch" || input.ToLower().Trim() == "diner",
+                        (LettersOnlyMessage, null)
+                    );
+
+                    if (lastInput.Item3 != null)
+                    {
+                        Console.WriteLine(lastInput.Item3);
+                        Console.WriteLine("Druk op een knop om door te gaan.");
+                        Console.ReadKey();
+                        return ScreenNum;
+                    }
+
+                    if (lastInput.Item2 != -1)
+                    {
+                        return lastInput.Item2;
+                    }
+
+                    if (lastInput.Item1 == "0")
+                    {
+                        LogoutWithMessage();
+                        return 0;
+                    }
+
+                    List<Gerechten> currentList = new();
+
+                    string selectedChoice = "";
+
+                    if (lastInput.Item1 == "ontbijt")
+                    {
+                        currentList = AllMeals.Where(meal => meal.ontbijt).ToList();
+                        selectedChoice = "ontbijt";
+                    }
+                    else if (lastInput.Item1 == "lunch")
+                    {
+                        currentList = AllMeals.Where(meal => meal.lunch).ToList();
+                        selectedChoice = "lunch";
+                    }
+                    else if (lastInput.Item1 == "diner")
+                    {
+                        currentList = AllMeals.Where(meal => meal.diner).ToList();
+                        selectedChoice = "diner";
+                    }
+
+                    if (currentList.Count <= 0)
+                    {
+                        Console.Clear();
+                        Console.WriteLine(GetGFLogo(true));
+                        Console.WriteLine($"Er zijn geen {selectedChoice} gerechten aangemaakt.");
+                        Console.WriteLine("[1] Ga terug");
+
+                        return GoBack(ScreenNum);
+                    }
+
+                    List<string> pages = new List<string>();
+                    int pageNum = 0;
+                    double pos = 0;
+
+                    do
+                    {
+                        (int, int, double) result = SetupPagination(
+                            MealsToString(currentList),
+                            "{0}\nDit zijn al uw gerechten op pagina {1} van de {2} gesorteerd op " + selectedChoice + ":",
                             ScreenNum,
                             pages,
                             pageNum,
