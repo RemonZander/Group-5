@@ -2555,7 +2555,7 @@ namespace restaurant
                     input => check(input),
                     (null, InvalidInputMessage)
                 );
-
+                
                 if (input.Item2 != -1)
                 {
                     return input.Item2;
@@ -2715,7 +2715,302 @@ namespace restaurant
 
         private int UpdateMeal(Gerechten meal)
         {
-            return ScreenNum;
+            void topText()
+            {
+                Console.Clear();
+                Console.WriteLine(GetGFLogo(true));
+                Console.WriteLine(MealBoxWithDetail(meal));
+                Console.WriteLine("");
+            }
+
+            (string, int, string) result;
+
+        a:
+            topText();
+            Console.WriteLine("Wat is de naam van het gerecht?");
+
+            Console.WriteLine("\nType");
+            result = AskForInput(ScreenNum, c => char.IsLetterOrDigit(c), null, (DigitsAndLettersOnlyMessage, null));
+
+            if (result.Item2 != -1)
+            {
+                return result.Item2;
+            }
+
+            if (result.Item3 != null)
+            {
+                Console.WriteLine("\n" + result.Item3);
+                Console.WriteLine(PressButtonToContinueMessage);
+                Console.ReadKey();
+                goto a;
+            }
+
+            if (result.Item1 == "0")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+
+            meal.naam = result.Item1;
+        price:
+            topText();
+
+            Console.WriteLine("Wat is de prijs van het gerecht?");
+
+            double price = 0;
+            result = AskForInput(ScreenNum, null, input => double.TryParse(input, out price), (null, DigitsOnlyMessage));
+
+            if (result.Item2 != -1)
+            {
+                return result.Item2;
+            }
+
+            if (result.Item3 != null)
+            {
+                Console.WriteLine("\n" + result.Item3);
+                Console.WriteLine(PressButtonToContinueMessage);
+                Console.ReadKey();
+                goto price;
+            }
+
+            if (result.Item1 == "0")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+
+            meal.prijs = price;
+        populair:
+            topText();
+
+            Console.WriteLine("Is het gerecht populair? Type in ja of nee.");
+
+            result = AskForInput(
+                ScreenNum,
+                null,
+                input => input.Trim().ToLower() == "ja" || input.Trim().ToLower() == "nee",
+                (null, InvalidInputMessage)
+            );
+
+            if (result.Item2 != -1)
+            {
+                return result.Item2;
+            }
+
+            if (result.Item3 != null)
+            {
+                Console.WriteLine("\n" + result.Item3);
+                Console.WriteLine(PressButtonToContinueMessage);
+                Console.ReadKey();
+                goto populair;
+            }
+
+            if (result.Item1 == "0")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+
+            meal.is_populair = result.Item1 == "ja";
+        speciaal:
+            topText();
+
+            Console.WriteLine("Is het gerecht speciaal? Type in ja of nee.");
+
+            result = AskForInput(
+                ScreenNum,
+                null,
+                input => input.Trim().ToLower() == "ja" || input.Trim().ToLower() == "nee",
+                (null, InvalidInputMessage)
+            );
+
+            if (result.Item2 != -1)
+            {
+                return result.Item2;
+            }
+
+            if (result.Item3 != null)
+            {
+                Console.WriteLine("\n" + result.Item3);
+                Console.WriteLine(PressButtonToContinueMessage);
+                Console.ReadKey();
+                goto speciaal;
+            }
+
+            if (result.Item1 == "0")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+
+            meal.special = result.Item1 == "ja";
+        breakfast:
+            topText();
+
+            Console.WriteLine("Is het gerecht beschikbaar als ontbijt? Type in ja of nee.");
+
+            result = AskForInput(
+                ScreenNum,
+                null,
+                input => input.Trim().ToLower() == "ja" || input.Trim().ToLower() == "nee",
+                (null, InvalidInputMessage)
+            );
+
+            if (result.Item2 != -1)
+            {
+                return result.Item2;
+            }
+
+            if (result.Item3 != null)
+            {
+                Console.WriteLine("\n" + result.Item3);
+                Console.WriteLine(PressButtonToContinueMessage);
+                Console.ReadKey();
+                goto breakfast;
+            }
+
+            if (result.Item1 == "0")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+
+            meal.ontbijt = result.Item1 == "ja";
+        lunch:
+            topText();
+
+            Console.WriteLine("Is het gerecht beschikbaar als lunch? Type in ja of nee.");
+
+            result = AskForInput(
+                ScreenNum,
+                null,
+                input => input.Trim().ToLower() == "ja" || input.Trim().ToLower() == "nee",
+                (null, InvalidInputMessage)
+            );
+
+            if (result.Item2 != -1)
+            {
+                return result.Item2;
+            }
+
+            if (result.Item3 != null)
+            {
+                Console.WriteLine("\n" + result.Item3);
+                Console.WriteLine(PressButtonToContinueMessage);
+                Console.ReadKey();
+                goto lunch;
+            }
+
+            if (result.Item1 == "0")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+
+            meal.lunch = result.Item1 == "ja";
+        diner:
+            topText();
+
+            Console.WriteLine("Is het gerecht beschikbaar als avondeten? Type in ja of nee.");
+
+            result = AskForInput(
+                ScreenNum,
+                null,
+                input => input.Trim().ToLower() == "ja" || input.Trim().ToLower() == "nee",
+                (null, InvalidInputMessage)
+            );
+
+            if (result.Item2 != -1)
+            {
+                return result.Item2;
+            }
+
+            if (result.Item3 != null)
+            {
+                Console.WriteLine("\n" + result.Item3);
+                Console.WriteLine(PressButtonToContinueMessage);
+                Console.ReadKey();
+                goto diner;
+            }
+
+            if (result.Item1 == "0")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+
+            meal.diner = result.Item1 == "ja";
+        allergies:
+            List<string> allergies = new();
+
+            do
+            {
+                topText();
+
+                Console.WriteLine("Geef nu aan de allergenen van het gerecht, als u geen allergenen wilt aangeven of als u klaar bent type dan in klaar en klik op enter");
+
+                result = AskForInput(ScreenNum, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
+
+                if (result.Item2 != -1)
+                {
+                    return result.Item2;
+                }
+
+                if (result.Item3 != null)
+                {
+                    Console.WriteLine("\n" + result.Item3);
+                    Console.WriteLine(PressButtonToContinueMessage);
+                    Console.ReadKey();
+                    goto allergies;
+                }
+
+                if (result.Item1 == "0")
+                {
+                    logoutUpdate = true;
+                    Logout();
+                    return 0;
+                }
+
+                if (result.Item1.ToLower().Trim() == "klaar")
+                {
+                    break;
+                }
+
+                meal.allergenen.Add(result.Item1);
+            } while (true);
+
+            topText();
+            int possibleInput = -1;
+            Console.WriteLine("Klopt alle informatie over het gerecht?\n[1] Ja\n[2] Nee, doe het maar opnieuw");
+
+            result = AskForInput(11, null, input => int.TryParse(input, out possibleInput) && (possibleInput == 1 || possibleInput == 2), (null, DigitsOnlyMessage));
+
+            if (possibleInput == 1)
+            {
+                List<int> ingredients = new();
+
+                // OverwriteMeal
+
+                Console.WriteLine("\nGerecht is aangepast.");
+                Console.WriteLine(PressButtonToContinueMessage);
+                Console.ReadKey();
+
+                return ScreenNum;
+            }
+            else
+            {
+                Console.WriteLine("\nGerecht is niet aangepast. U wordt terugverwijsd naar het menu.");
+                Console.WriteLine(PressButtonToContinueMessage);
+                Console.ReadKey();
+                return ScreenNum;
+            }
         }
 
         private int ArchiveMeal(Gerechten meal)
