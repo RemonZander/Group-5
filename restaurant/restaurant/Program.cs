@@ -62,12 +62,20 @@ namespace restaurant
 
                     Review review = new Review 
                     { 
-                        ID = database.reviews[database.reviews.Count - 1].ID + 1,
+                        ID = 0,
                         klantnummer = database.reserveringen[a].klantnummer,
                         reservering_ID = database.reserveringen[a].ID,
                         Rating = rnd.Next(1, 6),
                         datum = database.reserveringen[a].datum.AddDays(rnd.Next(0, 50))
                     };
+                    if (database.reviews == null)
+                    {
+                        database.reviews = new List<Review> { review };
+                    }
+                    else
+                    {
+                        review.ID = database.reviews[database.reviews.Count - 1].ID + 1;
+                    }
                     if (rnd.Next(5) == 3)
                     {
                         review.annomeme = true;
@@ -91,36 +99,28 @@ namespace restaurant
                             review.message = "gewoon goed! niet meer te zeggen.";
                             break;
                         case 5:
-                            review.message = "OMG, die sushipiza was amazing!!! Dit is het beste restaurant ever, nog nooit zo'n hipster restaurant gezien in mijn leven. Ik kom hier zeker terug!!!";
+                            review.message = "OMG, die sushipizza was amazing!!! Dit is het beste restaurant ever, nog nooit zo'n hipster restaurant gezien in mijn leven. Ik kom hier zeker terug!!!";
                             break;
                     }
                     database.reviews.Add(review);
 
+                    Feedback feedback = new Feedback
+                    {
+                        ID = 0,
+                        klantnummer = database.reserveringen[a].klantnummer,
+                        reservering_ID = database.reserveringen[a].ID,
+                        message = "test message",
+                        recipient = database.werknemers[rnd.Next(0, database.werknemers.Count)].ID,
+                        datum = database.reserveringen[a].datum.AddDays(rnd.Next(0, 50))
+                    };
 
                     if (database.feedback == null)
                     {
-                        Feedback feedback = new Feedback
-                        {
-                            ID = 0,
-                            klantnummer = database.reserveringen[a].klantnummer,
-                            reservering_ID = database.reserveringen[a].ID,
-                            message = "test message",
-                            recipient = database.werknemers[rnd.Next(0, database.werknemers.Count)].ID,
-                            datum = database.reserveringen[a].datum.AddDays(rnd.Next(0, 50))
-                        };
                         database.feedback = new List<Feedback> { feedback };
                     }
                     else
                     {
-                        Feedback feedback = new Feedback
-                        {
-                            ID = database.feedback[database.feedback.Count - 1].ID + 1,
-                            klantnummer = database.reserveringen[a].klantnummer,
-                            reservering_ID = database.reserveringen[a].ID,
-                            message = "test message",
-                            recipient = database.werknemers[rnd.Next(0, database.werknemers.Count)].ID,
-                            datum = database.reserveringen[a].datum.AddDays(rnd.Next(0, 50))
-                        };
+                        feedback.ID = database.feedback[database.feedback.Count - 1].ID + 1;
                         database.feedback.Add(feedback);
                     }
 

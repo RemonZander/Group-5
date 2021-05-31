@@ -26,7 +26,7 @@ namespace restaurant
         {
             Make_menu();
             Fill_Userdata(10);
-            Fill_reservations_threading(24, 1000, 5, 7, 10, 30);
+            Fill_reservations_threading(24, 500, 6, 7, 1, 30);
             Maak_werknemer(10);
             //Save_expenses();
             Make_reviews();
@@ -60,7 +60,14 @@ namespace restaurant
                 reservation_thread[b].Join();
             }
 
-            database.ingredienten.AddRange(ingredient_temp);
+            if (ingredient_temp.Count != 0)
+            {
+                database.ingredienten.AddRange(ingredient_temp);
+            }
+            else
+            {
+                database.ingredienten = new List<Ingredient>();
+            }
             database.reserveringen = reserveringen_list;
             io.Savedatabase(database);
         }
@@ -925,7 +932,7 @@ namespace restaurant
             }
 
             uitgaven.inboedel = new List<Inboedel>();
-            for (int a = 0; a < 100; a++)
+            for (int a = 0; a <= 20; a++)
             {
                 uitgaven.inboedel.Add(new Inboedel
                 {
