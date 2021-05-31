@@ -82,6 +82,32 @@ namespace restaurant
             return reserveringenZonderTafel;
         }
 
+        public List<Reserveringen> tijdBewerken(Reserveringen reservering, DateTime Datum) // Medewerker kan tijd van reservering aanpassen als er geen beschikbare tafels zijn
+        {
+            database = io.GetDatabase();
+            for (int a = 0; a < database.reserveringen.Count; a++)
+            {
+                if (database.reserveringen[a].ID == reservering.ID)
+                {
+                    database.reserveringen[a] = new Reserveringen
+                    {
+                        datum = Datum,
+                        ID = database.reserveringen[a].ID,
+                        aantal = database.reserveringen[a].aantal,
+                        klantnummer = database.reserveringen[a].klantnummer,
+                        tafel_bij_raam = database.reserveringen[a].tafel_bij_raam,
+                        tafels = database.reserveringen[a].tafels
+                    };
+                    break;
+                }
+            }
+
+            io.Savedatabase(database);
+
+            return database.reserveringen;
+        }
+
+
         public List<Reserveringen> tafelKoppelen(Reserveringen reservering, List<Tafels> tafels) // Medewerker moet de reserveringen kunnen koppelen aan een tafel
         {
             database = io.GetDatabase();
@@ -192,7 +218,7 @@ namespace restaurant
     public class AddTableToReservationScreen : Screen
     {
         private Reserveringen reservering;
-        private bool vanGetReservationsScreen;
+        private bool vanGetReservationsScreen = false;
 
         public AddTableToReservationScreen(Reserveringen reservering)
         {
@@ -202,7 +228,6 @@ namespace restaurant
 
         public AddTableToReservationScreen()
         {
-            vanGetReservationsScreen = false;
         }
         
         public override int DoWork()
@@ -238,6 +263,7 @@ namespace restaurant
 
                     if (reserveringenZonderTafel.ContainsKey(datum))
                     {
+                        reserveringenZonderTafel[datum] = reserveringenZonderTafel[datum].OrderBy(o => o.datum).ToList();
                         reserveringString = Makedubbelboxes(code_eigenaar.ReserveringenToString(reserveringenZonderTafel[datum]));
                     }
 
@@ -250,21 +276,24 @@ namespace restaurant
                             new List<Tuple<(int, int, double), string>>
                             {
                                 Tuple.Create((-3, -3, pos), "D3"),
+                                Tuple.Create((-3, -3, pos), "NumPad3"),
                                 Tuple.Create((-4, -4, pos), "D4"),
+                                Tuple.Create((-4, -4, pos), "NumPad4"),
                                 Tuple.Create((-5, -5, pos), "D5"),
+                                Tuple.Create((-5, -5, pos), "NumPad5"),
                             },
-                            new List<string> { "[3] Volgende dag             [4] Vorige dag             [5] Naar vandaag" });
+                            new List<string> { "[3] Vorige dag             [4] Volgende dag             [5] Naar vandaag" });
                         if (nextPageFunc.Item2 > -1)
                         {
                             return nextPageFunc.Item2;
                         }
                         switch (nextPageFunc.Item1)
                         {
-                            case -3: //Volgende dag
-                                datum = DateTime.Parse(datum).AddDays(1).ToShortDateString();
-                                break;
-                            case -4: //Vorige dag
+                            case -3: //Vorige dag
                                 datum = DateTime.Parse(datum).AddDays(-1).ToShortDateString();
+                                break;
+                            case -4: //Volgende dag
+                                datum = DateTime.Parse(datum).AddDays(1).ToShortDateString();
                                 break;
                             case -5: //Vandaag
                                 datum = DateTime.Now.ToShortDateString();
@@ -357,10 +386,14 @@ namespace restaurant
                     }
 
                     nextPageFuncTuples.Add(Tuple.Create((-3, -3, pos), "D3"));
+                    nextPageFuncTuples.Add(Tuple.Create((-3, -3, pos), "NumPad3"));
                     nextPageFuncTuples.Add(Tuple.Create((-4, -4, pos), "D4"));
+                    nextPageFuncTuples.Add(Tuple.Create((-4, -4, pos), "NumPad4"));
                     nextPageFuncTuples.Add(Tuple.Create((-5, -5, pos), "D5"));
+                    nextPageFuncTuples.Add(Tuple.Create((-5, -5, pos), "NumPad5"));
                     nextPageFuncTuples.Add(Tuple.Create((-6, -6, pos), "D6"));
-                    tekst.Add("[3] Volgende dag             [4] Vorige dag             [5] Naar vandaag");
+                    nextPageFuncTuples.Add(Tuple.Create((-6, -6, pos), "NumPad6"));
+                    tekst.Add("[3] Vorige dag             [4] Volgende dag             [5] Naar vandaag");
 
                     nextPageFunc = Nextpage(pagNum, pos, vakjes.Count * 2 - 1, 16, nextPageFuncTuples, tekst);
                     if (nextPageFunc.Item2 > -1)
@@ -371,11 +404,11 @@ namespace restaurant
 
                     switch (nextPageFunc.Item1)
                     {
-                        case -3: //Volgende dag
-                            datum = DateTime.Parse(datum).AddDays(1).ToShortDateString();
-                            break;
-                        case -4: //Vorige dag
+                        case -3: //Vorige dag
                             datum = DateTime.Parse(datum).AddDays(-1).ToShortDateString();
+                            break;
+                        case -4: //Volgende dag
+                            datum = DateTime.Parse(datum).AddDays(1).ToShortDateString();
                             break;
                         case -5: //Vandaag
                             datum = DateTime.Now.ToShortDateString();
@@ -416,10 +449,95 @@ namespace restaurant
                 Console.WriteLine("Gekozen tafels: " + tafelID);
 
                 // Laat alle beschikbare tafels zien => ID | tijd | is aan raam
-                Console.WriteLine("\n  ID  |  Tijd  |  Is aan raam");
+                Console.WriteLine("\nID  |        Tijd        |  Is aan raam");
                 List<Tuple<DateTime, List<Tafels>>> alleBeschikbareTafels = code_medewerker.getBeschikbareTafels(reservering.datum);
                 List<Tafels> beschikbareTafelsOpTijdstip = new List<Tafels>();
                 
+                if (beschikbareTafelsOpTijdstip.Count == 0)
+                {
+                    Console.WriteLine("Sorry, er zijn geen beschikbare tafels op het tijdstip van deze reservering.");
+                    DateTime newDatum = new DateTime();
+                    if (reservering.datum.Hour >= 21)
+                    {
+                        Console.WriteLine("[1] Een kwartier eerder");
+                        (string, int) ans = AskForInput(18);
+                        if (ans.Item2 != -1) //Escape
+                        {
+                            return ans.Item2;
+                        }
+                        if (ans.Item1 == "0") //Log uit
+                        {
+                            logoutUpdate = true;
+                            Logout();
+                            return 0;
+                        }
+                        if (ans.Item1 == "1") //Een kwartier eerder
+                        {
+                            newDatum = reservering.datum.AddMinutes(-15);
+                        }
+                    }
+                    else if (reservering.datum.Hour < 10 || reservering.datum.Hour == 10 && reservering.datum.Minute == 0)
+                    {
+                        Console.WriteLine("                                         [2] Een kwartier later");
+                        (string, int) ans = AskForInput(18);
+                        if (ans.Item2 != -1) //Escape
+                        {
+                            return ans.Item2;
+                        }
+                        if (ans.Item1 == "0") //Log uit
+                        {
+                            logoutUpdate = true;
+                            Logout();
+                            return 0;
+                        }
+                        if (ans.Item1 == "2") //Een kwartier later
+                        {
+                            newDatum = reservering.datum.AddMinutes(15);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("[1] Een kwartier eerder                  [2] Een kwartier later");
+                        (string, int) ans = AskForInput(18);
+                        if (ans.Item2 != -1) //Escape
+                        {
+                            return ans.Item2;
+                        }
+                        if (ans.Item1 == "0") //Log uit
+                        {
+                            logoutUpdate = true;
+                            Logout();
+                            return 0;
+                        }
+                        else if (ans.Item1 == "1") //Een kwartier eerder
+                        {
+                            newDatum = reservering.datum.AddMinutes(-15);
+                        }
+                        else if (ans.Item1 == "2") //Een kwartier later
+                        {
+                            newDatum = reservering.datum.AddMinutes(15);
+                        }
+                        else
+                        {
+                            Console.WriteLine("U moet wel een juiste keuze maken...");
+                            Console.WriteLine("Druk op een knop om verder te gaan.");
+                            Console.ReadKey();
+                            goto tafelkoppelen;
+                        }
+                    }
+                    // verandert datum van reservering & update de reservering
+                    List<Reserveringen> reserveringen = code_medewerker.tijdBewerken(reservering, newDatum);
+                    for (int i = 0; i < reserveringen.Count; i++)
+                    {
+                        if (reserveringen[i].ID == reservering.ID)
+                        {
+                            reservering = reserveringen[i];
+                        }
+                    }
+
+                    goto tafelkoppelen;
+                }
+
                 for (int i = 0; i < alleBeschikbareTafels.Count; i++)
                 {
                     if (alleBeschikbareTafels[i].Item1 == reservering.datum)
@@ -436,7 +554,7 @@ namespace restaurant
                             {
                                 isAanRaam = "Nee";
                             }
-                            Console.WriteLine(alleBeschikbareTafels[i].Item2[j].ID + "  |  " + reservering.datum + "  |  " + isAanRaam);
+                            Console.WriteLine(alleBeschikbareTafels[i].Item2[j].ID + "  |  " + alleBeschikbareTafels[i].Item1 + "  |  " + isAanRaam);
                         }
                     }
                 }
@@ -459,14 +577,14 @@ namespace restaurant
             do
             {
                 Console.Clear();
-                Console.WriteLine(GetGFLogo(true));
+                Console.WriteLine(GFLogo);
                 Console.WriteLine("\nU heeft de volgende tafels gekoppeld aan reservering " + reservering.ID + ":  " + tafelID);
                 Console.WriteLine("Wilt u uw keuze bevestigen?");
                 Console.WriteLine("[1] Ja\n[2] Nee");
                 var antwoord = Console.ReadLine();
                 if (antwoord == "1")
                 {
-                    reservering.tafels = tafels;
+                    code_medewerker.tafelKoppelen(reservering, tafels);
                     Console.WriteLine("Uw keuze is succesvol opgeslagen in het systeem");
                     succes = true;
                 }
