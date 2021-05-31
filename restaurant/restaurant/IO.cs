@@ -202,8 +202,12 @@ namespace restaurant
                         break;
                     }
                     //haalt alle tafels uit beschikbaar die in removed_tables staan
-                    beschikbaar[location + b] = Tuple.Create(reservering.datum.AddMinutes(15 * b), beschikbaar[location + b].Item2.Except(removed_tables).ToList());
-                    if (location- b >= 0)
+                    //zorgt ervoor dat alle reserveringen binnen de uren blijven (10:00 tot 21:00)
+                    if (reservering.datum.AddMinutes(15 * b).Hour < 22)
+                    {
+                        beschikbaar[location + b] = Tuple.Create(reservering.datum.AddMinutes(15 * b), beschikbaar[location + b].Item2.Except(removed_tables).ToList());
+                    }
+                    if (location - b >= 0 && reservering.datum.AddMinutes(15 * -b).Hour > 9)
                     {
                         beschikbaar[location - b] = Tuple.Create(reservering.datum.AddMinutes(15 * -b), beschikbaar[location - b].Item2.Except(removed_tables).ToList());
                         if (beschikbaar[location - b].Item2.Count == 0)
