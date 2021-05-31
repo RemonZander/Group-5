@@ -431,6 +431,19 @@ namespace restaurant
             tafelkoppelen:
             List<Tafels> tafels = new List<Tafels>();
             string tafelID = "";
+            List<Tuple<DateTime, List<Tafels>>> alleBeschikbareTafels = code_medewerker.getBeschikbareTafels(reservering.datum);
+            List<Tafels> beschikbareTafelsOpTijdstip = new List<Tafels>();
+
+            for (int i = 0; i < alleBeschikbareTafels.Count; i++)
+            {
+                if (alleBeschikbareTafels[i].Item1 == reservering.datum)
+                {
+                    for (int j = 0; j < alleBeschikbareTafels[i].Item2.Count; j++)
+                    {
+                        beschikbareTafelsOpTijdstip.Add(alleBeschikbareTafels[i].Item2[j]);
+                    }
+                }
+            }
 
             do
             {
@@ -449,11 +462,11 @@ namespace restaurant
                 Console.WriteLine("Gekozen tafels: " + tafelID);
 
                 // Laat alle beschikbare tafels zien => ID | tijd | is aan raam
-                Console.WriteLine("\nID  |        Tijd        |  Is aan raam");
-                List<Tuple<DateTime, List<Tafels>>> alleBeschikbareTafels = code_medewerker.getBeschikbareTafels(reservering.datum);
-                List<Tafels> beschikbareTafelsOpTijdstip = new List<Tafels>();
-                
-                if (beschikbareTafelsOpTijdstip.Count == 0)
+                Console.WriteLine("\n----------------------------------------------");
+                Console.WriteLine("| ID  |         Tijd         |  Is aan raam  |");
+                Console.WriteLine("----------------------------------------------");
+
+                if (beschikbareTafelsOpTijdstip.Count == 0 || beschikbareTafelsOpTijdstip.Count < Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(reservering.aantal / 4.0))))
                 {
                     Console.WriteLine("Sorry, er zijn geen beschikbare tafels op het tijdstip van deze reservering.");
                     DateTime newDatum = new DateTime();
@@ -538,27 +551,29 @@ namespace restaurant
                     goto tafelkoppelen;
                 }
 
-                for (int i = 0; i < alleBeschikbareTafels.Count; i++)
+                for (int i = 0; i < beschikbareTafelsOpTijdstip.Count; i++)
                 {
-                    if (alleBeschikbareTafels[i].Item1 == reservering.datum)
+                    string isAanRaam;
+                    if (beschikbareTafelsOpTijdstip[i].isRaam)
                     {
-                        for (int j = 0; j < alleBeschikbareTafels[i].Item2.Count; j++)
-                        {
-                            beschikbareTafelsOpTijdstip.Add(alleBeschikbareTafels[i].Item2[j]);
-                            string isAanRaam;
-                            if (alleBeschikbareTafels[i].Item2[j].isRaam)
-                            {
-                                isAanRaam = "Ja";
-                            }
-                            else
-                            {
-                                isAanRaam = "Nee";
-                            }
-                            Console.WriteLine(alleBeschikbareTafels[i].Item2[j].ID + "  |  " + alleBeschikbareTafels[i].Item1 + "  |  " + isAanRaam);
-                        }
+                        isAanRaam = "Ja   ";
+                    }
+                    else
+                    {
+                        isAanRaam = "Nee  ";
+                    }
+
+                    if ($"{beschikbareTafelsOpTijdstip[i].ID}".Length == 1)
+                    {
+                        Console.WriteLine($"| {beschikbareTafelsOpTijdstip[i].ID}   |  {reservering.datum}  |      {isAanRaam}    |");
+                    }
+                    else //|  Is aan raam  |
+                    {
+                        Console.WriteLine($"| {beschikbareTafelsOpTijdstip[i].ID}  |  {reservering.datum}  |      {isAanRaam}    |");
                     }
                 }
 
+                Console.WriteLine("----------------------------------------------");
                 Console.WriteLine("\nTyp hier het ID van de tafel die u wilt koppelen: ");
                 string antwoord = Console.ReadLine();
                 for (int i = 0; i < beschikbareTafelsOpTijdstip.Count; i++)
@@ -567,8 +582,10 @@ namespace restaurant
                     {
                         tafelID += beschikbareTafelsOpTijdstip[i].ID + "  ";
                         tafels.Add(beschikbareTafelsOpTijdstip[i]);
+                        beschikbareTafelsOpTijdstip.Remove(beschikbareTafelsOpTijdstip[i]);
                         Console.WriteLine("Tafel succesvol gekozen, klik op een toets om verder te gaan.");
                         Console.ReadKey();
+                        break;
                     }
                 }
             } while (tafels.Count != Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(reservering.aantal / 4.0))));
