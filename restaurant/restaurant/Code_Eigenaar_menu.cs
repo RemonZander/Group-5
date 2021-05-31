@@ -376,7 +376,6 @@ namespace restaurant
                 List<string> block = new List<string>();
                 block.Add(new string(' ', 50));
                 block.Add(new string(' ', 50));
-
                 block.Add("Voornaam: " + klantgegevens[a].voornaam + new string(' ', 50 - ("Voornaam: " + klantgegevens[a].voornaam).Length));
                 block.Add("Achternaam: " + klantgegevens[a].achternaam + new string(' ', 50 - ("Achternaam: " + klantgegevens[a].achternaam).Length));
                 block.Add("Tijdstip: " + reserveringen[a].datum.ToShortTimeString() + new string(' ', 50 - ("Tijdstip: " + reserveringen[a].datum.ToShortTimeString()).Length));
@@ -385,17 +384,15 @@ namespace restaurant
                 {
                     tafels[i] = reserveringen[a].tafels[i].ID;
                 }
-                block.Add("Gereserveerde Tafels" + new string(' ', 50 - ("Gereserveerde Tafels").Length));
+                block.Add("Aantal gereserveerde tafels:" + new string(' ', 50 - ("Aantal gereserveerde tafels:").Length));
                 if (tafels.Length < 1) 
                 { 
-                    block.Add("Nog geen tafels gekoppeld" + new string(' ', 50 - ("Nog geen tafels gekoppeld").Length)); 
+                    block.Add("Er zijn nog geen tafels gekoppeld" + new string(' ', 50 - ("Er zijn nog geen tafels gekoppeld").Length)); 
                 }
                 block.Add(string.Join(", ", tafels) + new string(' ', 50 - (string.Join(", ", tafels)).Length));
                 block.Add(new string(' ', 50));
                 output.Add(block);
             }
-
-
             return output;
         }
 
