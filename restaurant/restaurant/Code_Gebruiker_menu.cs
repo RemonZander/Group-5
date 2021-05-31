@@ -885,11 +885,11 @@ namespace restaurant
             Console.WriteLine("[1] Normaal");
             Console.WriteLine("[2] Anoniem");
             Console.WriteLine("[3] Terug");
-            (string, int)key = AskForInput(huidigScherm);
+            (string, int)key = AskForInput(vorigScherm);
 
             if (key.Item2 != -1)
             {
-                return huidigScherm;
+                return vorigScherm;
             }
 
             //reservering ID heb ik later nodig buiten de scope
@@ -1069,7 +1069,7 @@ namespace restaurant
                     Console.WriteLine("Succesvol feedback gemaakt.");
                     Console.WriteLine("druk op een toets om terug te gaan.");
                     Console.ReadKey();
-                    return huidigScherm;
+                    return vorigScherm;
                 }
                 else
                 {
@@ -1077,7 +1077,7 @@ namespace restaurant
                     Console.WriteLine("Succesvol feedback gemaakt.");
                     Console.WriteLine("druk op een toets om terug te gaan.");
                     Console.ReadKey();
-                    return huidigScherm;
+                    return vorigScherm;
                 }
             }
 
@@ -1191,7 +1191,7 @@ namespace restaurant
                     Console.WriteLine("\nSuccesvol feedback gemaakt.");
                     Console.WriteLine("druk op een toets om terug te gaan.");
                     Console.ReadKey();
-                    return huidigScherm;
+                    return vorigScherm;
                 }
                 else
                 {
@@ -1199,7 +1199,7 @@ namespace restaurant
                     Console.WriteLine("\nSuccesvol feedback gemaakt.");
                     Console.WriteLine("druk op een toets om terug te gaan.");
                     Console.ReadKey();
-                    return huidigScherm;
+                    return vorigScherm;
                 }
             }
 
