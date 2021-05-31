@@ -1132,7 +1132,7 @@ namespace restaurant
                     if (result.Item3 != null)
                     {
                         Console.WriteLine(result.Item3);
-                        Console.WriteLine(PressButtonToContinueMessage);
+                        Console.WriteLine("\n" + PressButtonToContinueMessage);
                         Console.ReadKey();
                         ResetOutput();
                         return 4;
@@ -1161,17 +1161,17 @@ namespace restaurant
                     Console.WriteLine(steps[currentStep]);
                     (string, int) otherResult = AskForInput(0);
 
-                    if (otherResult.Item2 != -1)
-                    {
-                        return otherResult.Item2;
-                    }
-
                     if (otherResult.Item1.Trim() == "")
                     {
                         Console.WriteLine("U heeft een lege tekst ingevuld, druk op een knop om het nog een keer te proberen");
                         Console.WriteLine(PressButtonToContinueMessage);
                         Console.ReadKey();
                         return 4;
+                    }
+
+                    if (otherResult.Item2 != -1)
+                    {
+                        return otherResult.Item2;
                     }
 
                     output.Add($"{steps[currentStep]}\n{otherResult.Item1}");
@@ -2249,7 +2249,7 @@ namespace restaurant
 
             if (result.Item2 != -1) return 11;
 
-            if (!(new string[7] { "0", "1", "2", "3", "4", "5", "6" }).Contains(result.Item1))
+            if (!(new string[8] { "0", "1", "2", "3", "4", "5", "6", "7" }).Contains(result.Item1))
             {
                 Console.WriteLine(InvalidInputMessage);
                 Console.ReadKey();
