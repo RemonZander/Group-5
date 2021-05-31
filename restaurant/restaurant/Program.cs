@@ -97,17 +97,35 @@ namespace restaurant
                     database.reviews.Add(review);
 
 
-                    Feedback feedback = new Feedback
+                    if (database.feedback == null)
                     {
-                        ID = database.feedback[database.feedback.Count - 1].ID + 1,
-                        klantnummer = database.reserveringen[a].klantnummer,
-                        reservering_ID = database.reserveringen[a].ID,
-                        message = "test message",
-                        recipient = database.werknemers[rnd.Next(0, database.werknemers.Count)].ID,
-                        datum = database.reserveringen[a].datum.AddDays(rnd.Next(0, 50))
-                    };
+                        Feedback feedback = new Feedback
+                        {
+                            ID = 0,
+                            klantnummer = database.reserveringen[a].klantnummer,
+                            reservering_ID = database.reserveringen[a].ID,
+                            message = "test message",
+                            recipient = database.werknemers[rnd.Next(0, database.werknemers.Count)].ID,
+                            datum = database.reserveringen[a].datum.AddDays(rnd.Next(0, 50))
+                        };
+                        database.feedback = new List<Feedback> { feedback };
+                    }
+                    else
+                    {
+                        Feedback feedback = new Feedback
+                        {
+                            ID = database.feedback[database.feedback.Count - 1].ID + 1,
+                            klantnummer = database.reserveringen[a].klantnummer,
+                            reservering_ID = database.reserveringen[a].ID,
+                            message = "test message",
+                            recipient = database.werknemers[rnd.Next(0, database.werknemers.Count)].ID,
+                            datum = database.reserveringen[a].datum.AddDays(rnd.Next(0, 50))
+                        };
+                        database.feedback.Add(feedback);
+                    }
 
-                    database.feedback.Add(feedback);
+
+                    
                 }
                 else if (database.reserveringen[a].datum < DateTime.Now && database.reserveringen[a].tafels == null && database.reserveringen[a].gerechten_ID == null)
                 {
