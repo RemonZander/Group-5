@@ -3172,7 +3172,7 @@ namespace restaurant
 
                 if (input.Item3 != null)
                 {
-                    Console.WriteLine(input.Item3);
+                    Console.WriteLine("\n" + input.Item3);
                     Console.WriteLine(PressButtonToContinueMessage);
                     Console.ReadKey();
                     return ScreenNum;
@@ -3453,12 +3453,12 @@ namespace restaurant
                         ScreenNum, 
                         c => char.IsLetter(c), 
                         input => input.ToLower().Trim() == "ontbijt" || input.ToLower().Trim() == "lunch" || input.ToLower().Trim() == "diner",
-                        (LettersOnlyMessage, null)
+                        (LettersOnlyMessage, InvalidInputMessage)
                     );
 
                     if (lastInput.Item3 != null)
                     {
-                        Console.WriteLine(lastInput.Item3);
+                        Console.WriteLine("\n" + lastInput.Item3);
                         Console.WriteLine("Druk op een knop om door te gaan.");
                         Console.ReadKey();
                         return ScreenNum;
