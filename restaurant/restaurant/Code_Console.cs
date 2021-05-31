@@ -1129,17 +1129,17 @@ namespace restaurant
 
                     result = AskForInput(0, null, input => regex.IsMatch(input), (null, "De email is niet juist er mist een @ of een ."));
 
-                    if (result.Item2 != -1)
-                    {
-                        return result.Item2;
-                    }
-
                     if (result.Item3 != null)
                     {
                         Console.WriteLine(result.Item3);
                         Console.WriteLine(PressButtonToContinueMessage);
                         Console.ReadKey();
                         ResetOutput();
+                        return 4;
+                    }
+
+                    if (result.Item2 != -1)
+                    {
                         return result.Item2;
                     }
 
