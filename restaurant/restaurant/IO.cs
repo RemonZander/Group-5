@@ -44,7 +44,7 @@ namespace restaurant
             database = JsonConvert.DeserializeObject<Database>(output);
 
             List<Tafels> temp = new List<Tafels>();
-            for (int i = 0; i < 100; i++)
+            for (int i = 1; i <= 20; i++)
             {
                 Tafels tafel = new Tafels
                 {
@@ -548,8 +548,6 @@ namespace restaurant
             return database;
         }
         #endregion
-
-        
 
         #region Deprecated
         
