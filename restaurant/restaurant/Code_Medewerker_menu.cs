@@ -203,6 +203,17 @@ namespace restaurant
         {
             var database = io.GetDatabase();
             Console.WriteLine(GetGFLogo(true));
+            List<Feedback> feedbackList = io.GetFeedback();
+            List<Feedback> employeeFeedbackList = new List<Feedback>();
+
+            for (int i = 0; i < feedbackList.Count; i++)
+            {
+                if (feedbackList[i].recipient == ingelogd.klantgegevens.klantnummer)
+                {
+                    employeeFeedbackList.Add(feedbackList[i]);
+                }
+            }
+
             Console.WriteLine("Work in progress!");
             Console.ReadKey();
             return 16;
