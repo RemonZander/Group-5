@@ -643,18 +643,12 @@ namespace restaurant
     public class GerechtenScreen : Screen
     {
         //max lengte van een gerecht naam is 25 tekens
-        private readonly List<Gerechten> gerechten = new List<Gerechten>();
-        private readonly List<string> gerechtenstring = new List<string>();
-        private readonly string gerechtenbox;
+        private List<Gerechten> gerechten = new List<Gerechten>();
+        private List<string> gerechtenstring = new List<string>();
+        private string gerechtenbox;
 
         public GerechtenScreen()
         {
-            gerechten = code_gebruiker.GetMenukaart();
-            if (gerechten.Count > 0)
-            {
-                gerechtenstring = DishesToString();
-                gerechtenbox = BoxAroundText(gerechtenstring, "#", 2, 2, 35, false);
-            }
         }
 
         private List<string> DishesToString()
@@ -671,7 +665,19 @@ namespace restaurant
 
         public override int DoWork()
         {
-            Console.WriteLine(GetGFLogo(false)) ;
+            gerechten = code_gebruiker.GetMenukaart();
+
+            if (gerechten.Count > 0)
+            {
+                gerechtenstring = DishesToString();
+                gerechtenbox = BoxAroundText(gerechtenstring, "#", 2, 2, 35, false);
+            }
+            else
+            {
+                return 0;
+            }
+
+            Console.WriteLine(GetGFLogo(false));
             Console.WriteLine(gerechtenbox);
             Console.WriteLine("[1] Ga terug");
 
@@ -695,6 +701,7 @@ namespace restaurant
             }
 
             string choice = Console.ReadLine();
+
             if (choice == "1")
             {
                 return screenIndex;
@@ -900,7 +907,7 @@ namespace restaurant
                     result = AskForInput(
                         0,
                         c => char.IsDigit(c) || c == '/' || c == '-', 
-                        input => DateTime.TryParseExact(input, new string[2] { "dd/MM/yyyy", "d/M/yyyy" }, new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime), 
+                        input => DateTime.TryParseExact(input, new string[2] { "dd/MM/yyyy", "d/M/yyyy" }, new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime) && resultDateTime < DateTime.Now, 
                         ("Het formaat van de datum die u heeft ingevoerd klopt niet. Probeer het opnieuw.", "De datum die u hebt ingevoerd klopt niet, probeer het opnieuw.")
                     );
 
