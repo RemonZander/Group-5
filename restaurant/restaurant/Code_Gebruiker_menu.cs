@@ -830,9 +830,9 @@ namespace restaurant
     class MakeFeedbackScreen : Screen
     {
         //het ID van dit scherm
-        private readonly int huidigScherm = 5;
+        private readonly int huidigScherm = 9;
         //het ID van klanten menu
-        private readonly int vorigScherm = 0;
+        private readonly int vorigScherm = 5;
         public MakeFeedbackScreen()
         {
 
