@@ -341,10 +341,9 @@ namespace restaurant
             List<Tuple<Gerechten, int>> populaireGerechten = new List<Tuple<Gerechten, int>>();
             //hier komt een loop waarbij populaire gerechten gevuld wordt met alle bestaande gerechten.
             //als de reservering plaats heeft gevonden binnen de gestelde tijd.
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < database.menukaart.gerechten.Count; i++)
             {
-                populaireGerechten.Add(Tuple.Create(instance.Get_standard_dishes()[i], 0));
-
+                populaireGerechten.Add(Tuple.Create(database.menukaart.gerechten[i], 0));
             }
             foreach (var reservering in database.reserveringen)
             {
