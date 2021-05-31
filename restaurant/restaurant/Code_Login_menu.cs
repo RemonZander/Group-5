@@ -24,20 +24,25 @@ namespace restaurant
         public Login_gegevens Login_Check(string email, string password)
         {
             database = io.GetDatabase();
-
-            foreach (var login_Gegevens in database.login_gegevens)
+            if (database.login_gegevens != null)
             {
-                if (email == login_Gegevens.email && password == login_Gegevens.password)
+                foreach (var login_Gegevens in database.login_gegevens)
                 {
-                    return login_Gegevens;
+                    if (email == login_Gegevens.email && password == login_Gegevens.password)
+                    {
+                        return login_Gegevens;
+                    }
                 }
             }
-
-            foreach (var werknemer in database.werknemers)
+            
+            if (database.werknemers != null)
             {
-                if (email == werknemer.login_gegevens.email && password == werknemer.login_gegevens.password)
+                foreach (var werknemer in database.werknemers)
                 {
-                    return werknemer.login_gegevens;
+                    if (email == werknemer.login_gegevens.email && password == werknemer.login_gegevens.password)
+                    {
+                        return werknemer.login_gegevens;
+                    }
                 }
             }
 
