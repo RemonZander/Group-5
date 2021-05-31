@@ -46,9 +46,12 @@ namespace restaurant
                 }
             }
 
-            if (email == database.eigenaar.login_gegevens.email && password == database.eigenaar.login_gegevens.password)
+            if (database.eigenaar != null)
             {
-                return database.eigenaar.login_gegevens;
+                if (email == database.eigenaar.login_gegevens.email && password == database.eigenaar.login_gegevens.password)
+                {
+                    return database.eigenaar.login_gegevens;
+                }
             }
 
             return new Login_gegevens
