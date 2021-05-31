@@ -92,14 +92,14 @@ namespace restaurant
  \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|";
 
         protected const string GFLogoWithLogin = @" _____                     _  ______         _         
-|  __ \                   | | |  ___|       (_)                       U bent nu ingelogd als {0} {1}
+|  __ \                   | | |  ___|       (_)                       U bent nu ingelogd als {0}
 | |  \/_ __ __ _ _ __   __| | | |_ _   _ ___ _  ___  _ __             [0] Log uit
 | | __| '__/ _` | '_ \ / _` | |  _| | | / __| |/ _ \| '_ \ 
 | |_\ \ | | (_| | | | | (_| | | | | |_| \__ \ | (_) | | | |    
  \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|";
 
         protected const string GFLogoWithLoginAndEscape = @" _____                     _  ______         _         
-|  __ \                   | | |  ___|       (_)                       U bent nu ingelogd als {0} {1}
+|  __ \                   | | |  ___|       (_)                       U bent nu ingelogd als {0}
 | |  \/_ __ __ _ _ __   __| | | |_ _   _ ___ _  ___  _ __             [0] Log uit
 | | __| '__/ _` | '_ \ / _` | |  _| | | / __| |/ _ \| '_ \ 
 | |_\ \ | | (_| | | | | (_| | | | | |_| \__ \ | (_) | | | |           Druk op de esc knop om een scherm terug te gaan.
@@ -133,6 +133,18 @@ namespace restaurant
         /// <returns>GFLogo string</returns>
         protected string GetGFLogo(bool showEscape)
         {
+            string getName()
+            {
+                string name = ingelogd.klantgegevens.voornaam + ingelogd.klantgegevens.achternaam;
+
+                if (name.Length > 50)
+                {
+                    name = name.Substring(0, 50) + "...";
+                }
+
+                return name;
+            }
+
             if (!IsLoggedIn() && !showEscape)
             {
                 return GFLogo;
@@ -143,11 +155,11 @@ namespace restaurant
             }
             else if (IsLoggedIn() && !showEscape)
             {
-                return string.Format(GFLogoWithLogin, ingelogd.klantgegevens.voornaam, ingelogd.klantgegevens.achternaam);
+                return string.Format(GFLogoWithLogin, getName());
             }
             else if (IsLoggedIn() && showEscape)
             {
-                return string.Format(GFLogoWithLoginAndEscape, ingelogd.klantgegevens.voornaam, ingelogd.klantgegevens.achternaam);
+                return string.Format(GFLogoWithLoginAndEscape, getName());
             }
             else
             {
@@ -3161,7 +3173,7 @@ namespace restaurant
                 if (input.Item3 != null)
                 {
                     Console.WriteLine(input.Item3);
-                    Console.WriteLine("Druk op een knop om door te gaan.");
+                    Console.WriteLine(PressButtonToContinueMessage);
                     Console.ReadKey();
                     return ScreenNum;
                 }
@@ -3541,7 +3553,13 @@ namespace restaurant
                         pageNum = result.Item1;
                     } while (true);
                 }
-                return 19;
+                else
+                {
+                    Console.WriteLine("\n" + InvalidInputMessage);
+                    Console.WriteLine(PressButtonToContinueMessage);
+                    Console.ReadKey();
+                    return ScreenNum;
+                }
             }
             else
             {
