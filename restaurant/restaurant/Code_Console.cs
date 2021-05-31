@@ -1302,6 +1302,8 @@ namespace restaurant
     public class ViewReservationScreen : Screen
     {
         private int screenNum = 19;
+        private int ClientMenuNum = 5;
+
         List<Reserveringen> allReservations;
         List<Reserveringen> futureReservations;
         List<Reserveringen> pastReservations;
@@ -1337,69 +1339,148 @@ namespace restaurant
 
         private int EditReservation(string reviewstr, Reserveringen reservering)
         {
-            Console.Clear();
-            Console.WriteLine(GetGFLogo(true));
-            Console.WriteLine("Hier kunt u een reservering bewerken:");
-            Console.WriteLine(reviewstr + "\n");
+            void topText()
+            {
+                Console.Clear();
+                Console.WriteLine(GetGFLogo(true));
+                Console.WriteLine(reviewstr + "\n");
+                Console.WriteLine("");
+            }
 
-            (string, int, string) input;
+            (string, int, string) result;
 
+        date:
+            topText();
             Console.WriteLine("\n Type hier uw nieuwe datum in (formaat dag-maand-jaar): ");
             DateTime resultDateTime = new DateTime();
-            input = AskForInput(
-                0,
+            result = AskForInput(
+                ClientMenuNum,
                 c => char.IsDigit(c) || c == '/' || c == '-',
                 input => DateTime.TryParseExact(input, new string[2] { "dd/mm/yyyy", "d/m/yyyy" }, new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime),
                 ("Het formaat van de datum die u heeft ingevoerd klopt niet. Gebruik de - teken of de / teken om de datum te onderscheiden.", "De datum die u hebt ingevoerd klopt niet, probeer het opnieuw.")
             );
 
-            if (input.Item2 != -1)
+            if (result.Item2 != -1)
             {
-                return input.Item2;
+                return result.Item2;
             }
 
-            if (input.Item1 == "0")
+            if (result.Item3 != null)
+            {
+                Console.WriteLine("\n" + result.Item3);
+                Console.WriteLine(PressButtonToContinueMessage);
+                Console.ReadKey();
+                goto date;
+            }
+
+            if (result.Item1 == "0")
             {
                 logoutUpdate = true;
                 Logout();
                 return 0;
             }
 
-            reservering.datum = resultDateTime;
-        a:
-            Console.Clear();
-            Console.WriteLine(GetGFLogo(true));
-            Console.WriteLine("Bewerkte reservering:");
-
-            Console.WriteLine(MakeReservationBox(reservering) + "\n");
-
-            Console.WriteLine("Wilt u deze reservering bewerken en opslaan? ja | nee");
-
-            input = AskForInput(
-                screenNum,
-                null,
-                input => input.Trim().ToLower() == "ja" || input.Trim().ToLower() == "nee",
-                (null, InvalidInputMessage)
-            );
-
-            if (input.Item2 != -1)
+            if (result.Item1.Trim() == "")
             {
-                return input.Item2;
+                resultDateTime = reservering.datum;
+            }
+        amount:
+            topText();
+
+            Console.WriteLine("Wat is het nieuwe aantal mensen?");
+
+            int amount = -1;
+            result = AskForInput(ClientMenuNum, null, input => int.TryParse(input, out amount), (null, DigitsOnlyMessage), false);
+
+            if (result.Item2 != -1)
+            {
+                return result.Item2;
             }
 
-            if (input.Item3 != null)
+            if (result.Item3 != null)
             {
-                Console.WriteLine(input.Item3);
+                Console.WriteLine("\n" + result.Item3);
                 Console.WriteLine(PressButtonToContinueMessage);
                 Console.ReadKey();
-                goto a;
+                goto amount;
             }
 
-            Console.WriteLine("\nReservering is bijgewerkt");
-            Console.WriteLine(PressButtonToContinueMessage);
-            Console.ReadKey();
+            if (result.Item1 == "0")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
 
-            return screenNum;
+            if (result.Item1.Trim() == "")
+            {
+                amount = reservering.aantal;
+            }
+        tableByWindow:
+            topText();
+
+            Console.WriteLine("Wilt u een tafel aan raamzijde? Type in ja of nee");
+
+            bool windowSide = reservering.tafel_bij_raam;
+
+            result = AskForInput(
+                ClientMenuNum,
+                null,
+                input => input.Trim().ToLower() == "ja" || input.Trim().ToLower() == "nee",
+                (null, InvalidInputMessage),
+                false
+            );
+
+            if (result.Item2 != -1)
+            {
+                return result.Item2;
+            }
+
+            if (result.Item3 != null)
+            {
+                Console.WriteLine("\n" + result.Item3);
+                Console.WriteLine(PressButtonToContinueMessage);
+                Console.ReadKey();
+                goto tableByWindow;
+            }
+
+            if (result.Item1 == "0")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+
+            if (result.Item1.Trim() != "")
+            {
+                windowSide = result.Item1.ToLower().Trim() == "ja";
+            }
+
+            topText();
+            int possibleInput = -1;
+            Console.WriteLine("Klopt alle informatie over de reservering?\n[1] Ja\n[2] Nee, doe het maar opnieuw");
+
+            result = AskForInput(11, null, input => int.TryParse(input, out possibleInput) && (possibleInput == 1 || possibleInput == 2), (null, DigitsOnlyMessage));
+
+            if (possibleInput == 1)
+            {
+                List<int> ingredients = new();
+
+                code_gebruiker.OverwriteReservation(reservering, amount, resultDateTime, windowSide);
+
+                Console.WriteLine("\nReservering is aangepast.");
+                Console.WriteLine(PressButtonToContinueMessage);
+                Console.ReadKey();
+
+                return screenNum;
+            }
+            else
+            {
+                Console.WriteLine("\nReservering is NIET aangepast.");
+                Console.WriteLine(PressButtonToContinueMessage);
+                Console.ReadKey();
+                goto date;
+            }
         }
 
         private int ReadReservation(string reviewstr, Reserveringen reservering)
@@ -1497,7 +1578,7 @@ namespace restaurant
                 Console.WriteLine("[5] Ga terug naar de klant menu scherm");
 
                 int possibleResult = -1;
-                var input = AskForInput(5, null, input => int.TryParse(input, out possibleResult), (null, InvalidInputMessage));
+                var input = AskForInput(ClientMenuNum, null, input => int.TryParse(input, out possibleResult), (null, InvalidInputMessage));
 
                 if (input.Item3 != null)
                 {
@@ -1514,7 +1595,7 @@ namespace restaurant
 
                 if (input.Item1 == "5")
                 {
-                    return 5;
+                    return ClientMenuNum;
                 }
 
                 if (input.Item1 == "0")
@@ -1522,6 +1603,7 @@ namespace restaurant
                     LogoutWithMessage();
                     return 0;
                 }
+
                 else if (input.Item1 == "1")
                 {
                     if (pastReservations.Count <= 0)
@@ -1533,7 +1615,7 @@ namespace restaurant
 
                         int userInputResult = -1;
 
-                        (string, int, string) userInput = AskForInput(5, null, input => int.TryParse(input, out possibleResult) && possibleResult == 1, (null, DigitsOnlyMessage));
+                        (string, int, string) userInput = AskForInput(ClientMenuNum, null, input => int.TryParse(input, out possibleResult) && possibleResult == 1, (null, DigitsOnlyMessage));
 
                         if (userInput.Item2 != -1)
                         {
@@ -1549,7 +1631,7 @@ namespace restaurant
 
                         if (userInputResult == 1)
                         {
-                            return 5;
+                            return ClientMenuNum;
                         }
 
                         return screenNum;
@@ -1711,7 +1793,7 @@ namespace restaurant
 
                         int userInputResult = -1;
 
-                        (string, int, string) userInput = AskForInput(5, null, input => int.TryParse(input, out possibleResult) && possibleResult == 1, (null, DigitsOnlyMessage));
+                        (string, int, string) userInput = AskForInput(ClientMenuNum, null, input => int.TryParse(input, out possibleResult) && possibleResult == 1, (null, DigitsOnlyMessage));
 
                         if (userInput.Item2 != -1)
                         {
@@ -1727,7 +1809,7 @@ namespace restaurant
 
                         if (userInputResult == 1)
                         {
-                            return 5;
+                            return ClientMenuNum;
                         }
 
                         return screenNum;
@@ -2125,7 +2207,7 @@ namespace restaurant
                         pageNum = result.Item1;
                     } while (true);
                 }
-                return 19;
+                return screenNum;
             }
             else
             {
@@ -2133,7 +2215,7 @@ namespace restaurant
                 Console.WriteLine("U heeft nog geen reserveringen geplaatst.");
                 Console.WriteLine("Druk op een knop om terug te gaan");
                 Console.ReadKey();
-                return 5;
+                return ClientMenuNum;
             }
         }
 
