@@ -218,9 +218,12 @@ namespace restaurant
                             break;
                         }
 
-                        beschikbaar[location + b] = Tuple.Create(reserveringen[c].datum.AddMinutes(15 * b), beschikbaar[location + b].Item2.Except(removed_tables).ToList());
+                        if (reserveringen[c].datum.AddMinutes(15 * b).Hour < 22)
+                        {
+                            beschikbaar[location + b] = Tuple.Create(reserveringen[c].datum.AddMinutes(15 * b), beschikbaar[location + b].Item2.Except(removed_tables).ToList());
+                        }
 
-                        if (location - b >= 0)
+                        if (location - b >= 0 && reserveringen[c].datum.AddMinutes(15 * -b).Hour > 9)
                         {
                             beschikbaar[location - b] = Tuple.Create(reserveringen[c].datum.AddMinutes(15 * -b), beschikbaar[location - b].Item2.Except(removed_tables).ToList());
                             if (beschikbaar[location - b].Item2.Count == 0)

@@ -117,7 +117,7 @@
   <Class Name="restaurant.Code_Eigenaar_menu">
     <Position X="14.25" Y="25.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>CADAAEIAAAAIgKBAiwACQAIAgARAAGCEAAAAAFgAAAE=</HashCode>
+      <HashCode>CADAAEIAAAAIgKBAiwACQAIAgARAAGCEAAAAAFgAAAM=</HashCode>
       <FileName>Code_Eigenaar_menu.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -189,7 +189,7 @@
   <Class Name="restaurant.Code_Gebruiker_menu">
     <Position X="11.5" Y="16.25" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>CAASAIAAAAgAAIBBSAIAQAAAAADEAAAAAIAAAhEAAAA=</HashCode>
+      <HashCode>CAASAIAAAAgAAIBBSAIAQAAAAADEAAAAAIAAAxEAAAA=</HashCode>
       <FileName>Code_Gebruiker_menu.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -538,7 +538,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAQAAAAAAASBYASQyIIB4AZBIAAAUAAAgCgGAAhCACQ=</HashCode>
+      <HashCode>AAQAAAAAAASBYASQyIIB4AZBIAAAUAFAoGgGAAhCACQ=</HashCode>
       <FileName>Code_Console.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -549,7 +549,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="restaurant.StartScreen">
-    <Position X="0.75" Y="3.75" Width="1.5" />
+    <Position X="5.75" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Code_Console.cs</FileName>
@@ -577,7 +577,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="restaurant.LoginScreen">
-    <Position X="0.5" Y="7.25" Width="1.5" />
+    <Position X="9.75" Y="6.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAQAAAAgAAAAAAAAQAAAAAAgAAAAAAAAAAA=</HashCode>
       <FileName>Code_Console.cs</FileName>
@@ -656,7 +656,7 @@
   <Class Name="restaurant.IncomeScreen">
     <Position X="20.75" Y="4.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAQAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAQAAAAAAAQAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE=</HashCode>
       <FileName>testing class.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -690,17 +690,17 @@
       <FileName>Code_Console.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="restaurant.AddMealScreen">
+  <Class Name="restaurant.EmployeeFeedbackScreen">
     <Position X="14.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAQAAAAAAAQAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Code_Console.cs</FileName>
+      <HashCode>AAQAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Code_Medewerker_menu.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="restaurant.Code_Medewerker_menu">
     <Position X="11.25" Y="12.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAIBAABAAQAAIAEQAAAAAAAAEAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAgIBAABAAQAAIAEQAAAAAAAAEAAAAAAA=</HashCode>
       <FileName>Code_Medewerker_menu.cs</FileName>
     </TypeIdentifier>
   </Class>
