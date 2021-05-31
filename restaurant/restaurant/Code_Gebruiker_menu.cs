@@ -1738,14 +1738,13 @@ namespace restaurant
             Console.WriteLine("Bericht: " + newfeedback.message);
 
             Console.WriteLine("\nWilt u deze bewerking en opslaan?");
-            Console.WriteLine("[1] Ja");
-            Console.WriteLine("[2] Nee");
+            Console.WriteLine("voer  ja  of  nee  en druk op enter om u keuze te bevestigen.");
             input = AskForInput(8);
             if (input.Item2 != -1)
             {
                 return input.Item2;
             }
-            else if (input.Item1 == "1")
+            else if (input.Item1 == "ja")
             {
                 if (!newfeedback.annomeme)
                 {
@@ -1760,7 +1759,7 @@ namespace restaurant
                 Console.ReadKey();
                 return 5;
             }
-            else if (input.Item1 == "2")
+            else if (input.Item1 == "nee")
             {
                 Console.WriteLine("\nDruk op een toets om terug te gaan naar het beginscherm.");
                 Console.ReadKey();
