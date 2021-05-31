@@ -982,7 +982,7 @@ namespace restaurant
                 case 6:
                     Console.WriteLine(steps[currentStep]);
                     int possibleValue = -1;
-                    result = AskForInput(0, c => char.IsDigit(c), input => int.TryParse(input, out possibleValue), (DigitsOnlyMessage, "De nummer die u heeft ingevoerd is te lang voor een gemiddeld huisnummer"));
+                    result = AskForInput(0, c => char.IsDigit(c), input => int.TryParse(input, out possibleValue) && possibleValue > 0, (DigitsOnlyMessage, "De nummer die u heeft ingevoerd is te lang voor een gemiddeld huisnummer of het is 0"));
 
                     if (result.Item1 == null)
                     {
@@ -1138,8 +1138,8 @@ namespace restaurant
 
                     if (result.Item3 != null)
                     {
-                        Console.WriteLine(result.Item3);
-                        Console.WriteLine("\n" + PressButtonToContinueMessage);
+                        Console.WriteLine("\n" + result.Item3);
+                        Console.WriteLine(PressButtonToContinueMessage);
                         Console.ReadKey();
                         ResetOutput();
                         return 4;
@@ -1152,7 +1152,7 @@ namespace restaurant
 
                     if (result.Item1.Trim() == "")
                     {
-                        Console.WriteLine("U heeft een lege tekst ingevuld, druk op een knop om het nog een keer te proberen");
+                        Console.WriteLine("\nU heeft een lege tekst ingevuld, druk op een knop om het nog een keer te proberen");
                         Console.WriteLine(PressButtonToContinueMessage);
                         Console.ReadKey();
                         return 4;
@@ -1170,7 +1170,7 @@ namespace restaurant
 
                     if (otherResult.Item1.Trim() == "")
                     {
-                        Console.WriteLine("U heeft een lege tekst ingevuld, druk op een knop om het nog een keer te proberen");
+                        Console.WriteLine("\nU heeft een lege tekst ingevuld, druk op een knop om het nog een keer te proberen");
                         Console.WriteLine(PressButtonToContinueMessage);
                         Console.ReadKey();
                         return 4;
@@ -2338,18 +2338,18 @@ namespace restaurant
 
                     result = AskForInput(11, c => char.IsLetterOrDigit(c), null, (DigitsAndLettersOnlyMessage, null));
 
-                    if (result.Item2 != -1)
-                    {
-                        ResetOutput();
-                        return result.Item2;
-                    }
-
                     if (result.Item3 != null)
                     {
                         Console.WriteLine("\n" + result.Item3);
                         Console.WriteLine(PressButtonToContinueMessage);
                         Console.ReadKey();
                         return 12;
+                    }
+
+                    if (result.Item2 != -1)
+                    {
+                        ResetOutput();
+                        return result.Item2;
                     }
 
                     name = result.Item1;
@@ -2363,18 +2363,26 @@ namespace restaurant
 
                     result = AskForInput(11, null, input => double.TryParse(input, out price), (null, DigitsOnlyMessage));
 
-                    if (result.Item2 != -1)
-                    {
-                        ResetOutput();
-                        return result.Item2;
-                    }
-
                     if (result.Item3 != null)
                     {
                         Console.WriteLine("\n" + result.Item3);
                         Console.WriteLine(PressButtonToContinueMessage);
                         Console.ReadKey();
                         return 12;
+                    }
+
+                    if (price < 0)
+                    {
+                        Console.WriteLine("\nPrijs kan niet lager dan 0 zijn.");
+                        Console.WriteLine(PressButtonToContinueMessage);
+                        Console.ReadKey();
+                        return 12;
+                    }
+
+                    if (result.Item2 != -1)
+                    {
+                        ResetOutput();
+                        return result.Item2;
                     }
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
@@ -2386,18 +2394,18 @@ namespace restaurant
 
                     result = AskForInput(11, null, input => input.ToLower() == "ja" || input.ToLower() == "nee", (null, "Type in ja of nee alstublieft."));
 
-                    if (result.Item2 != -1)
-                    {
-                        ResetOutput();
-                        return result.Item2;
-                    }
-
                     if (result.Item3 != null)
                     {
                         Console.WriteLine("\n" + result.Item3);
                         Console.WriteLine(PressButtonToContinueMessage);
                         Console.ReadKey();
                         return 12;
+                    }
+
+                    if (result.Item2 != -1)
+                    {
+                        ResetOutput();
+                        return result.Item2;
                     }
 
                     isBreakfast = result.Item1.ToLower() == "ja";
@@ -2411,18 +2419,18 @@ namespace restaurant
 
                     result = AskForInput(11, null, input => input.ToLower() == "ja" || input.ToLower() == "nee", (null, "Type in ja of nee alstublieft."));
 
-                    if (result.Item2 != -1)
-                    {
-                        ResetOutput();
-                        return result.Item2;
-                    }
-
                     if (result.Item3 != null)
                     {
                         Console.WriteLine("\n" + result.Item3);
                         Console.WriteLine(PressButtonToContinueMessage);
                         Console.ReadKey();
                         return 12;
+                    }
+
+                    if (result.Item2 != -1)
+                    {
+                        ResetOutput();
+                        return result.Item2;
                     }
 
                     isLunch = result.Item1.ToLower() == "ja";
@@ -2436,18 +2444,18 @@ namespace restaurant
 
                     result = AskForInput(11, null, input => input.ToLower() == "ja" || input.ToLower() == "nee", (null, "Type in ja of nee alstublieft."));
 
-                    if (result.Item2 != -1)
-                    {
-                        ResetOutput();
-                        return result.Item2;
-                    }
-
                     if (result.Item3 != null)
                     {
                         Console.WriteLine("\n" + result.Item3);
                         Console.WriteLine(PressButtonToContinueMessage);
                         Console.ReadKey();
                         return 12;
+                    }
+
+                    if (result.Item2 != -1)
+                    {
+                        ResetOutput();
+                        return result.Item2;
                     }
 
                     isDiner = result.Item1.ToLower() == "ja";
@@ -2466,18 +2474,18 @@ namespace restaurant
 
                     result = AskForInput(11, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
 
-                    if (result.Item2 != -1)
-                    {
-                        ResetOutput();
-                        return result.Item2;
-                    }
-
                     if (result.Item3 != null)
                     {
                         Console.WriteLine("\n" + result.Item3);
                         Console.WriteLine(PressButtonToContinueMessage);
                         Console.ReadKey();
                         return 12;
+                    }
+
+                    if (result.Item2 != -1)
+                    {
+                        ResetOutput();
+                        return result.Item2;
                     }
 
                     if (result.Item1.Trim() != "klaar")
@@ -2500,18 +2508,18 @@ namespace restaurant
 
                     result = AskForInput(11, null, input => int.TryParse(input, out possibleInput) && (possibleInput == 1 || possibleInput == 2), (null, DigitsOnlyMessage));
 
-                    if (result.Item2 != -1)
-                    {
-                        ResetOutput();
-                        return result.Item2;
-                    }
-
                     if (result.Item3 != null)
                     {
                         Console.WriteLine("\n" + result.Item3);
                         Console.WriteLine(PressButtonToContinueMessage);
                         Console.ReadKey();
                         return 12;
+                    }
+
+                    if (result.Item2 != -1)
+                    {
+                        ResetOutput();
+                        return result.Item2;
                     }
 
                     if (possibleInput == 1)
