@@ -376,7 +376,6 @@ namespace restaurant
                 List<string> block = new List<string>();
                 block.Add(new string(' ', 50));
                 block.Add(new string(' ', 50));
-
                 block.Add("Voornaam: " + klantgegevens[a].voornaam + new string(' ', 50 - ("Voornaam: " + klantgegevens[a].voornaam).Length));
                 block.Add("Achternaam: " + klantgegevens[a].achternaam + new string(' ', 50 - ("Achternaam: " + klantgegevens[a].achternaam).Length));
                 block.Add("Tijdstip: " + reserveringen[a].datum.ToShortTimeString() + new string(' ', 50 - ("Tijdstip: " + reserveringen[a].datum.ToShortTimeString()).Length));
@@ -385,17 +384,15 @@ namespace restaurant
                 {
                     tafels[i] = reserveringen[a].tafels[i].ID;
                 }
-                block.Add("Gereserveerde Tafels" + new string(' ', 50 - ("Gereserveerde Tafels").Length));
+                block.Add("Aantal gereserveerde tafels:" + new string(' ', 50 - ("Aantal gereserveerde tafels:").Length));
                 if (tafels.Length < 1) 
                 { 
-                    block.Add("Nog geen tafels gekoppeld" + new string(' ', 50 - ("Nog geen tafels gekoppeld").Length)); 
+                    block.Add("Er zijn nog geen tafels gekoppeld" + new string(' ', 50 - ("Er zijn nog geen tafels gekoppeld").Length)); 
                 }
                 block.Add(string.Join(", ", tafels) + new string(' ', 50 - (string.Join(", ", tafels)).Length));
                 block.Add(new string(' ', 50));
                 output.Add(block);
             }
-
-
             return output;
         }
 
@@ -462,7 +459,7 @@ namespace restaurant
                                 Tuple.Create((- 3, -3, pos), "D4"),
                                 Tuple.Create((- 4, -4, pos), "D5"),
                         },
-                        new List<string> { "[3] Volgende dag             [4] Vorige dag             [5] Naar vandaag" });
+                        new List<string> { "[3] Vorige dag             [4] Volgende dag             [5] Naar vandaag" });
                     if (result.Item2 > -1)
                     {
                         return result.Item2;
@@ -470,10 +467,10 @@ namespace restaurant
                     switch (result.Item1)
                     {
                         case -2:
-                            date = DateTime.Parse(date).AddDays(1).ToShortDateString();
+                            date = DateTime.Parse(date).AddDays(-1).ToShortDateString();
                             break;
                         case -3:
-                            date = DateTime.Parse(date).AddDays(-1).ToShortDateString();
+                            date = DateTime.Parse(date).AddDays(1).ToShortDateString();
                             break;
                         case -4:
                             //go to today
@@ -578,7 +575,7 @@ namespace restaurant
                 tuples.Add(Tuple.Create((-3, -3, pos), "D4"));
                 tuples.Add(Tuple.Create((-4, -4, pos), "D5"));
                 tuples.Add(Tuple.Create((-7, -7, pos), "D7"));
-                txt.Add("[3] Volgende dag             [4] Vorige dag             [5] Naar vandaag");
+                txt.Add("[3] Vorige dag             [4] Volgende dag             [5] Naar vandaag");
                         
                 result = Nextpage(pageNum, pos, boxes.Count * 2 - 1, 16, tuples, txt);
                 if (result.Item2 > -1)
@@ -590,10 +587,10 @@ namespace restaurant
                 switch (result.Item1)
                 {
                     case -2:
-                        date = DateTime.Parse(date).AddDays(1).ToShortDateString();
+                        date = DateTime.Parse(date).AddDays(-1).ToShortDateString();
                         break;
                     case -3:
-                        date = DateTime.Parse(date).AddDays(-1).ToShortDateString();
+                        date = DateTime.Parse(date).AddDays(1).ToShortDateString();
                         break;
                     case -4:
                         //go to today
