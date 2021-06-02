@@ -1961,16 +1961,24 @@ namespace restaurant
         }
     }
 
-    /*class PaymentScreen : Screen
+    class PaymentScreen : Screen
     {
         private readonly int huidigscherm = 14;
         private readonly int vorigscherm = 5;
         public override int DoWork()
         {
-            throw new NotImplementedException();
-
             //alle oude reserveringen van de klant
             List<Reserveringen> reserveringen = new List<Reserveringen>(code_gebruiker.GetCustomerReservation(ingelogd.klantgegevens, false));
+            //als er geen oude reserveringen zijn
+            if (reserveringen.Count == 0)
+            {
+                Console.Clear();
+                Console.WriteLine(GFLogoWithLogin);
+                Console.WriteLine("Er staat niks open voor betaling");
+                Console.WriteLine("Druk op een toets om terug te gaan");
+                return vorigscherm;
+            }
+            
             //als reservering al betaald is of heeft geen gerechten besteld, haal deze weg
             foreach (var reservering in reserveringen)
             {
@@ -1980,26 +1988,131 @@ namespace restaurant
                 }
             }
 
-            Console.Clear();
-            Console.WriteLine(GFLogoWithLoginAndEscape);
-
             //er staat niks meer open voor betaling
             if (reserveringen.Count == 0)
             {
-                Console.WriteLine("U heeft alles al betaald");
+                Console.Clear();
+                Console.WriteLine(GFLogoWithLogin);
+                Console.WriteLine("Er staat niks open voor betaling");
                 Console.WriteLine("Druk op een toets om terug te gaan");
-                Console.ReadKey();
                 return vorigscherm;
             }
-
             
-            //kies de reservering die de klant wilt betalen
-            //4 getallen invoeren om te betalen, much roleplay
+            bool repeat = true;
+            Reserveringen chosenReservering = new Reserveringen();
+            (string, int) input;
+            //check of de input een van de ID's is
+            do
+            {
+                Console.Clear();
+                Console.WriteLine(GFLogoWithLoginAndEscape);
+                Console.WriteLine("Hier ziet u alle Reserveringen die nog open staan voor betaling");
+                Console.WriteLine("Het formaat van deze weergave is:");
+                Console.WriteLine("ID  |  Datum");
 
-            
+                for (int i = 0; i < reserveringen.Count; i++)
+                {
+                    Console.WriteLine(reserveringen[i].ID + "  |  " + reserveringen[i].datum);
+                }
 
-            
+                Console.WriteLine("U kunt met het ID kiezen welke reservering u wilt betalen");
 
+                //met escape, return naar klantmenu
+                input = AskForInput(vorigscherm);
+                if (input.Item2 != -1)
+                {
+                    return vorigscherm;
+                }
+
+                //als input is 0, logout
+                if (input.Item1 == "0")
+                {
+                    Console.WriteLine("\nSuccesvol uitgelogd");
+                    Console.WriteLine("Druk op een toets om terug te gaan.");
+                    Console.ReadKey();
+                    //logout sequence
+                    logoutUpdate = true;
+                    Logout();
+                    return 0;
+                }
+
+                //is om te kijken of choice een int is
+                try
+                {
+                    //kijkt of de invoer in de lijst is, zo niet dan invalid input
+                    if (!reserveringen.Select(i => i.ID).ToList().Contains(Convert.ToInt32(input.Item1)))
+                    {
+                        Console.WriteLine("\nU moet wel geldige Reservering invoeren.");
+                        Console.WriteLine("Druk op een toets om opnieuw te kiezen.");
+                        Console.ReadKey();
+                    }
+                    //als die wel in de lijst zoek die dan en sla deze op
+                    for (int i = 0; i < reserveringen.Count; i++)
+                    {
+                        if (reserveringen[i].ID == Convert.ToInt32(input.Item1))
+                        {
+                            //breek beide loops en sla de reservering op
+                            repeat = false;
+                            chosenReservering = reserveringen[i];
+                            break;
+                        }
+                    }
+                }
+                //geen int ingevoerd
+                catch
+                {
+                    Console.WriteLine("\nU moet wel een reservering invoeren.");
+                    Console.WriteLine("Druk op een toets om verder te gaan.");
+                    Console.ReadKey();
+                }
+            } while (repeat);
+
+
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine(GFLogoWithLoginAndEscape);
+                Console.WriteLine($"De reservering die u heeft gekozen heeft nummer: {chosenReservering.ID} en is van {chosenReservering.datum}");
+                Console.WriteLine("Hier ziet u wat er allemaal was besteld");
+                Console.WriteLine("\n" + BestelBox(chosenReservering));
+                Console.WriteLine("\n" + betaalBox(chosenReservering));
+                Console.WriteLine("U kunt betalen door vier getallen in te voeren");
+                input = AskForInput(vorigscherm);
+                if (input.Item2 != -1)
+                {
+                    return vorigscherm;
+                }
+
+                //als input is 0, logout
+                if (input.Item1 == "0")
+                {
+                    Console.WriteLine("\nSuccesvol uitgelogd");
+                    Console.WriteLine("Druk op een toets om terug te gaan.");
+                    Console.ReadKey();
+                    //logout sequence
+                    logoutUpdate = true;
+                    Logout();
+                    return 0;
+                }
+                //dummygetal die ik ff nodig had
+                int keyCode;
+                //als de lengte van de input 4 is en het is een getal 
+                if (input.Item1.Length == 4 && int.TryParse(input.Item1, out keyCode))
+                {
+                    Console.WriteLine("Betaling was succesvol");
+                    Console.WriteLine("druk op een toets om terug te gaan");
+                    io.ReserveringBetalen(chosenReservering);
+                    Console.ReadKey();
+                    return vorigscherm;
+                }
+                //anders doe error message en ga er nog een keer doorheen
+                else
+                {
+                    Console.WriteLine("U moet wel vier getallen invoeren");
+                    Console.WriteLine("druk op een toets om opnieuw te proberen");
+                    Console.ReadKey();
+                }
+            }
         }
 
         private string BestelBox(Reserveringen reserveringen)
@@ -2011,13 +2124,25 @@ namespace restaurant
                 namen.Add(gerechten.Item2[i].naam);
             }
             
-            string box = BoxAroundText(namen, "#", 1 ,2, gerechten.Item1, false);
-            return box;
+            return BoxAroundText(namen, "#", 2 ,1, gerechten.Item1, false);
+        }
+
+        private string betaalBox(Reserveringen reserveringen)
+        {
+            Tuple<int, List<Gerechten>> gerechten = io.GetNaamGerechten(reserveringen);
+            double totaalprijs = 0.00;
+            for (int i = 0; i < gerechten.Item2.Count; i++)
+            {
+                totaalprijs += gerechten.Item2[i].prijs;
+            }
+            List<string> totaalStringList = new List<string> { Convert.ToString(totaalprijs) };
+            return BoxAroundText(totaalStringList, "#", 2, 1, Convert.ToString(totaalprijs).Length, false);
         }
         public override List<Screen> Update(List<Screen> screens)
         {
+            DoLogoutOnEveryScreen(screens);
             return screens;
         }
-    }*/
+    }
     #endregion
 }
