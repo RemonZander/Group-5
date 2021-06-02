@@ -214,9 +214,33 @@ namespace restaurant
                 }
             }
 
-            Console.WriteLine("Work in progress!");
-            Console.ReadKey();
-            return 16;
+            if (employeeFeedbackList.Count == 0)
+            {
+                Console.WriteLine("U heeft nog geen feedback.");
+                Console.WriteLine("Druk op een toets om terug te keren naar het medewerkersmenu.");
+                Console.ReadKey();
+                return 16;
+            }
+
+            int page = 0;
+            List<string> pages = MakePages(BoxAroundText(Makedubbelboxes(FeedbackToString(employeeFeedbackList)), "#", 2, 0, 104, true), 3);
+            do
+            {
+                Console.Clear();
+                Console.WriteLine(GetGFLogo(true));
+                Console.WriteLine("Dit is alle feedback gericht aan u.");
+                Console.WriteLine($"Dit is de feedback op pagina {page + 1} van de {pages.Count}:");
+                Console.WriteLine(pages[page] + new string('#', 110));
+
+                var result = Nextpage(page, pages.Count - 1, 16);
+
+                if (result.Item2 != -1)
+                {
+                    return result.Item2;
+                }
+                page = result.Item1;
+
+            } while (true);
         }
 
         public override List<Screen> Update(List<Screen> screens)
