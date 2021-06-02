@@ -1622,6 +1622,108 @@ namespace restaurant
 
             return output;
         }
+
+        protected List<List<string>> FeedbackToString(List<Feedback> feedback)
+        {
+            List<Werknemer> werknemers = new List<Werknemer>(io.GetEmployee());
+            List<List<string>> output = new List<List<string>>();
+            for (int a = 0; a < feedback.Count; a++)
+            {
+                List<string> block = new List<string>();
+                //block += new string('#', 56);
+                block.Add(new string(' ', 50));
+                block.Add(new string(' ', 50));
+                if (!feedback[a].annomeme)
+                {
+                    block.Add("Voornaam: " + ingelogd.klantgegevens.voornaam + new string(' ', 50 - ("Voornaam: " + ingelogd.klantgegevens.voornaam).Length));
+                    block.Add("Achternaam: " + ingelogd.klantgegevens.achternaam + new string(' ', 50 - ("Achternaam: " + ingelogd.klantgegevens.achternaam).Length));
+                }
+                else
+                {
+                    block.Add("Anoniem" + new string(' ', 50 - "Anoniem".Length));
+                    block.Add(new string(' ', 50));
+                }
+
+                List<string> msgparts1 = new List<string>();
+                string message = feedback[a].message;
+
+                if (message.Length > 50 - "Feedback: ".Length)
+                {
+                    if (message.IndexOf(' ') > 50 || message.IndexOf(' ') == -1)
+                    {
+                        msgparts1.Add(message.Substring(0, 50 - "Feedback: ".Length));
+                    }
+                    else
+                    {
+                        msgparts1.Add(message.Substring(0, message.Substring(0, 50 - ("Feedback: ").Length).LastIndexOf(' ')));
+                    }
+
+                    message = message.Remove(0, msgparts1[0].Length + 1);
+                    int count = 1;
+                    while (message.Length > 50)
+                    {
+                        if (message.IndexOf(' ') > 50 || message.IndexOf(' ') == -1)
+                        {
+                            msgparts1.Add(message.Substring(0, 50));
+                        }
+                        else
+                        {
+                            msgparts1.Add(message.Substring(0, message.Substring(0, 50).LastIndexOf(' ')));
+                        }
+
+                        message = message.Remove(0, msgparts1[count].Length + 1);
+                        count++;
+                    }
+                    msgparts1.Add(message);
+
+                    block.Add("Feedback: " + msgparts1[0] + new string(' ', 50 - ("Feedback: " + msgparts1[0]).Length));
+                    for (int b = 1; b < 4; b++)
+                    {
+                        if (b < msgparts1.Count)
+                        {
+                            block.Add(msgparts1[b] + new string(' ', 50 - msgparts1[b].Length));
+                        }
+                        else
+                        {
+                            block.Add(new string(' ', 50));
+                        }
+                    }
+                }
+                else
+                {
+                    block.Add("Feedback: " + message + new string(' ', 50 - ("Feedback: " + message).Length));
+                    block.Add(new string(' ', 50));
+                    block.Add(new string(' ', 50));
+                    block.Add(new string(' ', 50));
+                }
+
+                for (int i = 0; i < werknemers.Count; i++)
+                {
+                    if (werknemers[i].ID == feedback[a].recipient)
+                    {
+                        block.Add("Ontvanger: " + werknemers[i].login_gegevens.klantgegevens.voornaam + " " + werknemers[i].login_gegevens.klantgegevens.achternaam + new string(' ', 50 - ("Ontvanger: " + werknemers[i].login_gegevens.klantgegevens.voornaam + " " + werknemers[i].login_gegevens.klantgegevens.achternaam).Length));
+                    }
+                }
+
+                if (!feedback[a].annomeme)
+                {
+                    block.Add("Datum: " + feedback[a].datum + new string(' ', 50 - ("Datum: " + feedback[a].datum).Length));
+                }
+                else
+                {
+                    block.Add(new string(' ', 50));
+                }
+
+                block.Add(new string(' ', 50));
+                block.Add(new string(' ', 50));
+                //block += new string('#', 56);
+
+                output.Add(block);
+            }
+
+
+            return output;
+        }
     }
 
     public class ViewReviewScreen : Screen
@@ -3233,6 +3335,29 @@ namespace restaurant
             return output;
         }
 
+        private List<string> IncomeToStringWeeks(List<(DateTime, double)> expenses, double pos, string optionMessage)
+        {
+            List<string> output = new List<string>();
+
+            for (int a = 0; a < expenses.Count; a++)
+            {
+                if (pos == a)
+                {
+                    output.Add("| " + expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddDays(7).ToShortDateString() + new string(' ', 25 - (expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddDays(7).ToShortDateString()).Length) +
+                        " | " + "€" + expenses[a].Item2 + new string(' ', 12 - ("€" + expenses[a].Item2).Length) + $" {optionMessage}|\n" +
+                        new string('–', 42 + optionMessage.Length + 2) + "\n");
+                }
+                else
+                {
+                    output.Add("| " + expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddDays(7).ToShortDateString() + new string(' ', 25 - (expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddDays(7).ToShortDateString()).Length) +
+                        " | " + "€" + expenses[a].Item2 + new string(' ', 12 - ("€" + expenses[a].Item2).Length) + new string(' ', optionMessage.Length) + " |\n" +
+                        new string('–', 42 + optionMessage.Length + 2) + "\n");
+                }
+            }
+
+            return output;
+        }
+
         public override int DoWork()
         {
             Console.WriteLine(GetGFLogo(true));
@@ -3300,7 +3425,50 @@ namespace restaurant
             }
             else if (input.Item1 == "2")
             {
+                List<DateTime> dates = code_eigenaar.GetUitgavenWerknemers().OrderBy(d => d.Item2).Select(d => d.Item2).Distinct().ToList();
+                dates.AddRange(code_eigenaar.GetUitgavenIngredienten().OrderBy(d => d.bestel_datum).Select(d => d.bestel_datum).Distinct().ToList());
+                dates[0] = dates[0].AddDays(1 - Convert.ToInt32(dates[0].DayOfWeek));
+                TimeSpan timeSpan = DateTime.Now.Date - (dates[0].Date);
+                int weeks = timeSpan.Days / 7 + 1;
+                List<(DateTime, double)> uitgaven = new List<(DateTime, double)>();
+                for (int a = 0; a < weeks; a++)
+                {
+                    uitgaven.Add((dates[0].AddDays(a * 7), code_eigenaar.GetUitgavenWerknemers(new DateTime(dates[0].Year, dates[0].Month, dates[0].Day).AddDays(a * 7), new DateTime(dates[0].Year, dates[0].Month, dates[0].Day).AddDays((a + 1) * 7)) +
+                        code_eigenaar.GetUitgavenIngredienten(new DateTime(dates[0].Year, dates[0].Month, dates[0].Day).AddDays(a * 7), new DateTime(dates[0].Year, dates[0].Month, dates[0].Day).AddDays((a + 1) * 7))));
+                }
 
+                double pos = 0;
+                int page = 0;
+                do
+                {
+                    List<string> expensesString = IncomeToStringWeeks(uitgaven, pos, "[3] Meer Detail");
+                    List<string> pages = MakePages(expensesString, 20);
+
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(true));
+                    Console.WriteLine($"Dit zijn uw uitgaven per week op pagina {page + 1} van de {pages.Count}:");
+                    Console.WriteLine(new string('–', 59) + "\n" + "|Week                       |Totaal                       |");
+                    Console.WriteLine(new string('–', 59) + "\n" + pages[page]);
+                    Console.WriteLine($"totale uitgaven : €{ Convert.ToInt32(uitgaven.Select(P => P.Item2).Sum())},00\n");
+
+                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, uitgaven.Count - 1, 11);
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+                    else if (result.Item1 == -1 && result.Item2 == -1)
+                    {
+                        /*                        DetailIncomeScreen detail = new DetailIncomeScreen(code_eigenaar.InkomstenPerItem(uitgaven[Convert.ToInt32(pos)].Item1, uitgaven[Convert.ToInt32(pos)].Item1.AddMonths(1)));
+                                                detail.DoWork();
+                                                page = 0;
+                                                pos = 0;*/
+                    }
+                    else
+                    {
+                        pos = result.Item3;
+                        page = result.Item1;
+                    }
+                } while (true);
             }
             else if (input.Item1 == "3")
             {
