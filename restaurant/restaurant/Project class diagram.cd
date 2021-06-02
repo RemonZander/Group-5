@@ -38,7 +38,7 @@
   <Class Name="restaurant.Code_Eigenaar_menu">
     <Position X="14.25" Y="25.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>CADAAEIAAAAIgKBAiwACQAIAgARAAGCEAAAAAFgAAAM=</HashCode>
+      <HashCode>CADAAEIAAAAIgKBAiAACQAIAgARAAGCEAAAAAFgAAAM=</HashCode>
       <FileName>Code_Eigenaar_menu.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -85,8 +85,8 @@
     <AssociationLine Name="uitgaven" Type="restaurant.Uitgaven" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="26.938" Y="19.103" />
-        <Point X="26.938" Y="21.436" />
-        <Point X="29.25" Y="21.436" />
+        <Point X="26.938" Y="21.3" />
+        <Point X="29.25" Y="21.3" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="0.432" Y="0.138" />
@@ -258,26 +258,13 @@
   </Class>
   <Class Name="restaurant.Werker">
     <Position X="46.25" Y="13.75" Width="2.25" />
-    <InheritanceLine Type="restaurant.Type_BTW_Prijs" FixedToPoint="true">
-      <Path>
-        <Point X="43.75" Y="17.25" />
-        <Point X="43.75" Y="15.347" />
-        <Point X="46.25" Y="15.347" />
-      </Path>
-    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAIAAGAAAAQAAQAAAAAAAAAABAAAAAAAgAABACABAg=</HashCode>
+      <HashCode>AAAAAAGAAAAQgAAAAAAAAAAAABAAAAAAAAAAAAAABAA=</HashCode>
       <FileName>Werker.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="restaurant.Eigenaar">
     <Position X="46.5" Y="18" Width="1.5" />
-    <InheritanceLine Type="restaurant.Werker" FixedFromPoint="true">
-      <Path>
-        <Point X="47.25" Y="16.906" />
-        <Point X="47.25" Y="18" />
-      </Path>
-    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Eigenaar.cs</FileName>
@@ -482,18 +469,8 @@
   </Class>
   <Class Name="restaurant.IngredientsScreen">
     <Position X="0.75" Y="0.5" Width="1.5" />
-    <InheritanceLine Type="restaurant.Screen" ManuallyRouted="true">
-      <Path>
-        <Point X="6.5" Y="10" />
-        <Point X="6.5" Y="9.608" />
-        <Point X="8.722" Y="9.608" />
-        <Point X="8.722" Y="2.877" />
-        <Point X="1.5" Y="2.877" />
-        <Point X="1.5" Y="2.502" />
-      </Path>
-    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAQAAAAAAAQAAAAACAAEAAAAAAAAAAAAAACAAAAAAAA=</HashCode>
+      <HashCode>AAQAAAAAAAQAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>testing class.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -602,7 +579,7 @@
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAACAAAAAAQAAAAAQAAAgAAAAAAAAAAAAQ=</HashCode>
+      <HashCode>AAAAAAAAAAAACAAAAAAQAAAAAQAAAAAAAAAAAAAAAAQ=</HashCode>
       <FileName>Uitgaven.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
