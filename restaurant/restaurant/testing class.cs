@@ -26,12 +26,12 @@ namespace restaurant
         {
             Make_menu();
             Fill_Userdata(10);
-            Fill_reservations_threading(24, 500, 6, 7, 1, 30);
+            Fill_reservations_threading(24, 500, 5, 7, 1, 30);
             Maak_werknemer(10);
-            //Save_expenses();
             Make_reviews();
-            //Make_feedback();
+            Make_feedback();
             Save_Sales();
+            Save_expenses();
         }
 
         #region Reserveringen
@@ -921,21 +921,19 @@ namespace restaurant
             database = io.GetDatabase();
             if (database.reserveringen == null || database.werknemers == null || database.ingredienten == null) return;
 
+            Random rnd = new Random();
             Uitgaven uitgaven = database.uitgaven;
-            uitgaven.ingredienten = new List<Tuple<int, DateTime>>();
             uitgaven.werknemer = new List<Tuple<int, DateTime>>();
             foreach (var werknemer in database.werknemers)
             {
-                uitgaven.werknemer.Add(Tuple.Create(werknemer.ID, DateTime.Now));
-            }
-
-            foreach (var ingredient in database.ingredienten)
-            {
-                uitgaven.ingredienten.Add(Tuple.Create(ingredient.ID, DateTime.Now));
+                for (int b = rnd.Next(0, 4); b < rnd.Next(9, 13); b++)
+                {
+                    uitgaven.werknemer.Add(Tuple.Create(werknemer.ID, DateTime.Now.AddMonths(DateTime.Now.Month - DateTime.Now.Month + b)));
+                }
             }
 
             uitgaven.inboedel = new List<Inboedel>();
-            for (int a = 0; a <= 20; a++)
+            for (int a = 1; a <= 20; a++)
             {
                 uitgaven.inboedel.Add(new Inboedel
                 {
@@ -1006,7 +1004,7 @@ namespace restaurant
                             reviews[reviews.Count - 1].message = "Verschikkelijk restaurant, hier kom ik nooit meer! Wie die sushipizza heeft uitgevonden mag branden in hell!";
                             break;
                         case 2:
-                            reviews[reviews.Count - 1].message = "De service was wel goed, maar het eten wat niet zo goed. Ik denk dat ik hier niet meer terug wil komen. Geen aanrader voor vrienden!";
+                            reviews[reviews.Count - 1].message = "De service was wel goed, maar het eten was niet zo goed. Ik denk dat ik hier niet meer terug wil komen. Geen aanrader voor vrienden!";
                             break;
                         case 3:
                             reviews[reviews.Count - 1].message = "Niet goed, niet slecht. Eten is te doen. Service was prima, ik kom nog wel terug.";
@@ -1050,6 +1048,14 @@ namespace restaurant
                         recipient = database.werknemers[rnd.Next(0, database.werknemers.Count)].ID,
                         datum = reservering.datum.AddDays(rnd.Next(0, 50))
                     });
+
+                    if (rnd.Next(5) == 3)
+                    {
+                        feedback[feedback.Count - 1].annomeme = true;
+                        feedback[feedback.Count - 1].klantnummer = -1;
+                        feedback[feedback.Count - 1].reservering_ID = -1;
+                        feedback[feedback.Count - 1].datum = new DateTime();
+                    }
                 }
             }
 
@@ -1079,9 +1085,9 @@ namespace restaurant
                 werknemers.Add(new Werknemer
                 {
                     salaris = 3000,
-                    inkomstenbelasting = 0.371,
                     prestatiebeloning = rnd.Next(0, 30) / 100,
                     ID = werknemers.Count,
+                    lease_auto = 500,
                     login_gegevens = new Login_gegevens
                     {
                         email = names[rnd.Next(0, 2)][rnd.Next(0, 20)] + "." + names[2][rnd.Next(0, 40)] + "@gmail.com",
@@ -1100,7 +1106,6 @@ namespace restaurant
             {
                 ID = 0,
                 salaris = 5000,
-                inkomstenbelasting = 0.371,
                 prestatiebeloning = rnd.Next(0, 30) / 100,
                 login_gegevens = new Login_gegevens
                 {
@@ -1618,8 +1623,6 @@ namespace restaurant
             return output;
         }
     }
-
-
 
     public class ViewReviewScreen : Screen
     {
@@ -2534,26 +2537,26 @@ namespace restaurant
                     //zet rating naar een int, word later gebruikt
                     int rating = Convert.ToInt32(choice.Item1);
 
-                    Console.WriteLine("Als laatste, de inhoud van u review.");
-                    Console.WriteLine("Met Enter gaat u verder op een nieuwe regel. Een review mag niet langer zijn dan 160 tekens.");
-                    Console.WriteLine("Als u klaar bent met het typen van u review, type dan \"klaar\" op een nieuwe regel.");
+                    Console.WriteLine("Als laatste, de inhoud van u review. Een review mag niet langer zijn dan 160 tekens.");
                     Console.WriteLine("De inhoud van de review:");
 
+                    succes = false;
                     string message = "";
-                    string Line = Console.ReadLine();
-                    message = Line;
-                    while (Line != "klaar")
+                    do
                     {
-                        Line = Console.ReadLine();
-                        if (Line == "klaar")
+                        message = Console.ReadLine();
+
+                        if (message.Length > 160)
                         {
-                            break;
+                            Console.WriteLine("Uw bericht mag niet langer zijn dan 160 tekens.");
                         }
                         else
                         {
-                            message += " " + Line;
+                            succes = true;
                         }
-                    }
+                    } while (!succes);
+                    
+
                     code_gebruiker.MakeReview(rating, message);
                     Console.WriteLine("Succesvol een review gemaakt.");
                     Console.WriteLine("Druk op een toets om terug te gaan.");
@@ -2639,36 +2642,7 @@ namespace restaurant
 
     public class IngredientsScreen : Screen
     {
-        private List<string> IngredientsToString(List<Ingredient> ingredients, double pos, string optionMessage)
-        {
-            List<string> output = new List<string>();
-
-            for (int a = 0; a < ingredients.Count; a++)
-            {
-                if (pos == a)
-                {
-                    output.Add("| " + ingredients[a].ID + new string(' ', 6 - ingredients[a].ID.ToString().Length) +
-                        " | " + ingredients[a].name + new string(' ', 30 - ingredients[a].name.Length) +
-                        " | € " + ingredients[a].prijs + new string(' ', 8 - ingredients[a].prijs.ToString().Length) +
-                        " | " + ingredients[a].bestel_datum.ToShortDateString() + new string(' ', 12 - ingredients[a].bestel_datum.ToShortDateString().ToString().Length) +
-                        " | " + ingredients[a].houdbaarheids_datum.ToShortDateString() + new string(' ', 11 - ingredients[a].houdbaarheids_datum.ToShortDateString().ToString().Length) + $" {optionMessage}|\n" +
-                        new string('–', 100) + "\n");
-                }
-                else
-                {
-                    output.Add("| " + ingredients[a].ID + new string(' ', 6 - ingredients[a].ID.ToString().Length) +
-                        " | " + ingredients[a].name + new string(' ', 30 - ingredients[a].name.Length) +
-                        " | € " + ingredients[a].prijs + new string(' ', 8 - ingredients[a].prijs.ToString().Length) +
-                        " | " + ingredients[a].bestel_datum.ToShortDateString() + new string(' ', 12 - ingredients[a].bestel_datum.ToShortDateString().ToString().Length) +
-                        " | " + ingredients[a].houdbaarheids_datum.ToShortDateString() + new string(' ', 11 - ingredients[a].houdbaarheids_datum.ToShortDateString().ToString().Length) + new string(' ', optionMessage.Length) + " |\n" +
-                        new string('–', 100) + "\n");
-                }
-            }
-
-            return output;
-        }
-
-        private List<string> IngredientsNameToString(List<Ingredient> ingredients, List<string> names, double pos)
+        private List<string> IngredientToString(List<Ingredient> ingredients, List<string> names, double pos)
         {
             List<string> output = new List<string>();
 
@@ -2820,16 +2794,21 @@ namespace restaurant
 
         public override int DoWork()
         {
+            if (code_eigenaar.GetIngredients().Count == 0)
+            {
+                Console.WriteLine(GetGFLogo(true));
+                Console.WriteLine("u heeft geen ingredienten in uw magazijn.");
+                Console.WriteLine("Druk op een knop om terug te gaan.");
+                Console.ReadKey();
+                return 11;
+            }
+
             Console.WriteLine(GetGFLogo(true));
             Console.WriteLine("Hier kunt u alle ingredienten zien die u nu heeft");
-            Console.WriteLine("[1] Laat alle ingredienten zien");
-            Console.WriteLine("[2] Laat aantal ingredienten op naam zien");
-            Console.WriteLine("[3] Laat alle ingredienten zien vanaf een datum (genoteerd als 1-1-2000)");
-            Console.WriteLine("[4] Laat alle ingredienten duurer dan een prijs");
-            Console.WriteLine("[5] Laat alle ingredienten goedkoper dan een prijs");
-            Console.WriteLine("[6] Laat alle ingredienten zien die bijna verlopen zijn");
-            Console.WriteLine("[7] Laat alle ingredienten zien die verlopen zijn");
-            Console.WriteLine("[8] Ga terug naar eigenaar menu scherm");
+            Console.WriteLine("[1] Laat aantal ingredienten op naam zien");
+            Console.WriteLine("[2] Laat alle ingredienten zien die bijna verlopen zijn");
+            Console.WriteLine("[3] Laat alle ingredienten zien die verlopen zijn");
+            Console.WriteLine("[4] Ga terug naar eigenaar menu scherm");
 
             (string, int) input = AskForInput(14);
             if (input.Item2 != -1)
@@ -2838,57 +2817,19 @@ namespace restaurant
             }
             if (input.Item1 == "1")
             {
-                List<Ingredient> ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList();
-                int page = 0;
-                double pos = 0;
-                do
-                {
-                    List<string> ingredientsString = IngredientsToString(ingredients, pos, "[3] Verwijderen");
-                    List<string> pages = MakePages(ingredientsString, 20);
-
-
-                    Console.Clear();
-                    Console.WriteLine(GetGFLogo(true));
-                    Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
-                    Console.WriteLine(new string('–', 100) + "\n" + "|Nummer  |Naam                            |Prijs       |Besteldatum   |Houdsbaarheidsdatum         |");
-                    Console.WriteLine(new string('–', 100) + "\n" + pages[page]);
-                    Console.WriteLine($"Totaal aantal ingredienten: {code_eigenaar.GetIngredients().Count}");
-                    Console.WriteLine($"totaal waarde ingredienten: €{ Convert.ToInt32(code_eigenaar.GetIngredients().Sum(p => p.prijs))},00\n");
-
-                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, ingredients.Count - 1, 14);
-                    if (result.Item2 != -1)
-                    {
-                        return result.Item2;
-                    }
-                    else if (result.Item1 == -1 && result.Item2 == -1)
-                    {
-                        code_eigenaar.DeleteIngredientById(ingredients[Convert.ToInt32(pos)].ID);
-                        ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList();
-                        page = 0;
-                        pos = 0;
-                    }
-                    else
-                    {
-                        pos = result.Item3;
-                        page = result.Item1;
-                    }
-                } while (true);
-            }
-            else if (input.Item1 == "2")
-            {
                 List<Ingredient> ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.name).ToList();
                 List<string> names = ingredients.Select(n => n.name).Distinct().ToList();
                 int page = 0;
                 double pos = 0;
                 do
                 {                   
-                    List<string> ingredientsString = IngredientsNameToString(ingredients, names, pos);
+                    List<string> ingredientsString = IngredientToString(ingredients, names, pos);
                     List<string> pages = MakePages(ingredientsString, 20);
 
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
-                    Console.WriteLine(new string('–', 78) + "\n" + "|Naam                            |Hoeveelheid |Prijs                         |");
+                    Console.WriteLine(new string('–', 78) + "\n" + "|Naam                            |Hoeveelheid |Waarde                        |");
                     Console.WriteLine(new string('–', 78) + "\n" + pages[page]);
                     (int, int, double) result = NextpageTable(page, pages.Count - 1,pos , names.Count - 1,  14);
                     if (result.Item2 != -1)
@@ -2910,212 +2851,11 @@ namespace restaurant
                     }
                 } while (true);
             }
-            else if (input.Item1 == "3")
-            {
-                bool succes = false;
-                DateTime date = new DateTime();
-                do
-                {
-                    try
-                    {
-                        Console.WriteLine("\nVoer hier de datum in:");
-                        input = AskForInput(14);
-                        if (input.Item2 != -1)
-                        {
-                            return input.Item2;
-                        }
-                        date = Convert.ToDateTime(input.Item1);
-                        succes = true;
-                    }
-                    catch
-                    {
-                        Console.WriteLine("\nU moet wel een correcte datum invullen");
-                        Console.WriteLine("Druk op een knop om verder te gaan...");
-                        Console.ReadKey();
-                        
-                    }
-                } while (!succes);
-
-                List<Ingredient> ingredients = code_eigenaar.GetIngredients().OrderBy(d => d.bestel_datum).Where(d => d.bestel_datum > date).ToList();
-                if (ingredients.Count == 0)
-                {
-                    Console.WriteLine("\nU heeft geen ingredienten na deze datum besteld");
-                    Console.WriteLine("Druk op een knop om verder te gaan...");
-                    Console.ReadKey();
-                    return 14;
-                }                
-                int page = 0;
-                double pos = 0;
-                do
-                {
-                    List<string> ingredientsString = IngredientsToString(ingredients, pos, "[3] Verwijderen");
-                    List<string> pages = MakePages(ingredientsString, 20);
-
-
-                    Console.Clear();
-                    Console.WriteLine(GetGFLogo(true));
-                    Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
-                    Console.WriteLine(new string('–', 100) + "\n" + "|Nummer  |Naam                            |Prijs       |Besteldatum   |Houdsbaarheidsdatum         |");
-                    Console.WriteLine(new string('–', 100) + "\n" + pages[page]);
-                    Console.WriteLine($"Totaal aantal ingredienten: {ingredients.Count}");
-                    Console.WriteLine($"totaal waarde ingredienten: €{ Convert.ToInt32(ingredients.Sum(p => p.prijs))},00\n");
-
-                    (int, int, double) result = NextpageTable(page, pages.Count - 1,pos, ingredients.Count - 1, 14);
-                    if (result.Item2 != -1)
-                    {
-                        return result.Item2;
-                    }
-                    else if (result.Item1 == -1 && result.Item2 == -1)
-                    {
-                        code_eigenaar.DeleteIngredientById(ingredients[Convert.ToInt32(pos)].ID);
-                        ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList();
-                        page = 0;
-                        pos = 0;
-                    }
-                    else
-                    {
-                        pos = result.Item3;
-                        page = result.Item1;
-                    }
-                } while (true);
-            }
-            else if (input.Item1 == "4")
-            {
-                bool succes = false;
-                double price = 0.0;
-                do
-                {
-                    try
-                    {
-                        Console.WriteLine("\nVoer hier de prijs in:");
-                        input = AskForInput(14);
-                        if (input.Item2 != -1)
-                        {
-                            return input.Item2;
-                        }
-                        price = Convert.ToInt32(input.Item1);
-                        succes = true;
-                    }
-                    catch
-                    {
-                        Console.WriteLine("\nU moet wel een correcte prijs invullen");
-                        Console.WriteLine("Druk op een knop om verder te gaan...");
-                        Console.ReadKey();
-                    }
-                } while (!succes);
-
-                List<Ingredient> ingredients = code_eigenaar.GetIngredients().OrderBy(d => d.prijs).Where(d => d.prijs > price).ToList();
-                if (ingredients.Count == 0)
-                {
-                    Console.WriteLine("\nU heeft geen ingredienten hoger dan deze prijs besteld");
-                    Console.WriteLine("Druk op een knop om verder te gaan...");
-                    Console.ReadKey();
-                    return 14;
-                }                
-                int page = 0;
-                double pos = 0;
-                do
-                {
-                    List<string> ingredientsString = IngredientsToString(ingredients, pos, "[3] Verwijderen");
-                    List<string> pages = MakePages(ingredientsString, 20);
-
-                    Console.Clear();
-                    Console.WriteLine(GetGFLogo(true));
-                    Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
-                    Console.WriteLine(new string('–', 100) + "\n" + "|Nummer  |Naam                            |Prijs       |Besteldatum   |Houdsbaarheidsdatum         |");
-                    Console.WriteLine(new string('–', 100) + "\n" + pages[page]);
-                    Console.WriteLine($"Totaal aantal ingredienten: {ingredients.Count}");
-                    Console.WriteLine($"totaal waarde ingredienten: €{ Convert.ToInt32(ingredients.Sum(p => p.prijs))},00\n");
-
-                    (int, int, double) result = NextpageTable(page, pages.Count - 1,pos ,ingredients.Count - 1, 14);
-                    if (result.Item2 != -1)
-                    {
-                        return result.Item2;
-                    }
-                    else if (result.Item1 == -1 && result.Item2 == -1)
-                    {
-                        code_eigenaar.DeleteIngredientById(ingredients[Convert.ToInt32(pos)].ID);
-                        ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList();
-                        page = 0;
-                        pos = 0;
-                    }
-                    else
-                    {
-                        pos = result.Item3;
-                        page = result.Item1;
-                    }
-                } while (true);
-            }
-            else if (input.Item1 == "5")
-            {
-                bool succes = false;
-                double price = 0.0;
-                do
-                {
-                    try
-                    {
-                        Console.WriteLine("\nVoer hier de prijs in:");
-                        input = AskForInput(14);
-                        if (input.Item2 != -1)
-                        {
-                            return input.Item2;
-                        }
-                        price = Convert.ToInt32(input.Item1);
-                        succes = true;
-                    }
-                    catch
-                    {
-                        Console.WriteLine("\nU moet wel een correcte prijs invullen");
-                        Console.WriteLine("Druk op een knop om verder te gaan...");
-                        Console.ReadKey();
-                    }
-                } while (!succes);
-
-                List<Ingredient> ingredients = code_eigenaar.GetIngredients().OrderBy(d => d.prijs).Where(d => d.prijs < price).ToList();
-                if (ingredients.Count == 0)
-                {
-                    Console.WriteLine("\nU heeft geen ingredienten lager dan deze prijs besteld");
-                    Console.WriteLine("Druk op een knop om verder te gaan...");
-                    Console.ReadKey();
-                    return 14;
-                }               
-                int page = 0;
-                double pos = 0;
-                do
-                {
-                    List<string> ingredientsString = IngredientsToString(ingredients, pos, "[3] Verwijderen");
-                    List<string> pages = MakePages(ingredientsString, 20);
-
-                    Console.Clear();
-                    Console.WriteLine(GetGFLogo(true));
-                    Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
-                    Console.WriteLine(new string('–', 100) + "\n" + "|Nummer  |Naam                            |Prijs       |Besteldatum   |Houdsbaarheidsdatum         |");
-                    Console.WriteLine(new string('–', 100) + "\n" + pages[page]);
-                    Console.WriteLine($"Totaal aantal ingredienten: {ingredients.Count}");
-                    Console.WriteLine($"totaal waarde ingredienten: €{ Convert.ToInt32(ingredients.Sum(p => p.prijs))},00\n");
-
-                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, ingredients.Count - 1, 14);
-                    if (result.Item2 != -1)
-                    {
-                        return result.Item2;
-                    }
-                    else if (result.Item1 == -1 && result.Item2 == -1)
-                    {
-                        code_eigenaar.DeleteIngredientById(ingredients[Convert.ToInt32(pos)].ID);
-                        ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList();
-                        page = 0;
-                        pos = 0;
-                    }
-                    else
-                    {
-                        pos = result.Item3;
-                        page = result.Item1;
-                    }
-                } while (true);
-            }
-            else if (input.Item1 == "6")
+            else if (input.Item1 == "2")
             {
                 List<Ingredient> ingredients = code_eigenaar.GetAlmostExpiredIngredients(7);
+                List<string> names = ingredients.Select(n => n.name).Distinct().ToList();
+
                 if (ingredients.Count == 0)
                 {
                     Console.WriteLine("\nU heeft geen ingredienten die bijna verlopen zijn");
@@ -3127,14 +2867,14 @@ namespace restaurant
                 double pos = 0;
                 do
                 {
-                    List<string> ingredientsString = IngredientsToString(ingredients, pos, "[3] Verwijderen");
+                    List<string> ingredientsString = IngredientToString(ingredients, names, pos);
                     List<string> pages = MakePages(ingredientsString, 20);
 
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
-                    Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
-                    Console.WriteLine(new string('–', 100) + "\n" + "|Nummer  |Naam                            |Prijs       |Besteldatum   |Houdsbaarheidsdatum         |");
-                    Console.WriteLine(new string('–', 100) + "\n" + pages[page]);
+                    Console.WriteLine($"Dit zijn de bijna verlopen ingredienten op pagina {page + 1} van de {pages.Count}:");
+                    Console.WriteLine(new string('–', 78) + "\n" + "|Naam                            |Hoeveelheid |Waarde                        |");
+                    Console.WriteLine(new string('–', 78) + "\n" + pages[page]);
                     Console.WriteLine($"Totaal aantal ingredienten: {ingredients.Count}");
                     Console.WriteLine($"totaal waarde ingredienten: €{ Convert.ToInt32(ingredients.Sum(p => p.prijs))},00\n");
 
@@ -3145,8 +2885,9 @@ namespace restaurant
                     }
                     else if (result.Item1 == -1 && result.Item2 == -1)
                     {
-                        code_eigenaar.DeleteIngredientById(ingredients[Convert.ToInt32(pos)].ID);
-                        ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList();
+                        code_eigenaar.DeleteIngredients(ingredients.Where(n => n.name == names[Convert.ToInt32(pos)]).ToList());
+                        ingredients = ingredients = code_eigenaar.GetAlmostExpiredIngredients(7);
+                        names = ingredients.Select(n => n.name).Distinct().ToList();
                         page = 0;
                         pos = 0;
                     }
@@ -3157,9 +2898,10 @@ namespace restaurant
                     }
                 } while (true);
             }
-            else if (input.Item1 == "7")
+            else if (input.Item1 == "3")
             {
                 List<Ingredient> ingredients = code_eigenaar.GetExpiredIngredients();
+                List<string> names = ingredients.Select(n => n.name).Distinct().ToList();
                 if (ingredients.Count == 0)
                 {
                     Console.WriteLine("\nU heeft geen ingredienten die verlopen zijn");
@@ -3171,14 +2913,14 @@ namespace restaurant
                 double pos = 0;
                 do
                 {
-                    List<string> ingredientsString = IngredientsToString(ingredients, pos, "[4] Verwijderen");
+                    List<string> ingredientsString = IngredientToString(ingredients, names, pos);
                     List<string> pages = MakePages(ingredientsString, 20);
 
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
-                    Console.WriteLine($"Dit zijn de ingredienten op pagina {page + 1} van de {pages.Count}:");
-                    Console.WriteLine(new string('–', 100) + "\n" + "|Nummer  |Naam                            |Prijs       |Besteldatum   |Houdsbaarheidsdatum         |");
-                    Console.WriteLine(new string('–', 100) + "\n" + pages[page]);
+                    Console.WriteLine($"Dit zijn de verlopen ingredienten op pagina {page + 1} van de {pages.Count}:");
+                    Console.WriteLine(new string('–', 78) + "\n" + "|Naam                            |Hoeveelheid |Waarde                        |");
+                    Console.WriteLine(new string('–', 78) + "\n" + pages[page]);
                     Console.WriteLine($"Totaal aantal ingredienten: {ingredients.Count}");
                     (int, int, double) result = NextpageTableExpitedIngredients(page, pages.Count - 1,pos ,ingredients.Count - 1, 14);
 
@@ -3188,10 +2930,19 @@ namespace restaurant
                     }
                     else if (result.Item1 == -1 && result.Item2 == -1)
                     {
-                        code_eigenaar.DeleteIngredientById(ingredients[Convert.ToInt32(pos)].ID);
-                        ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.ID).ToList();
+                        code_eigenaar.DeleteIngredients(ingredients.Where(n => n.name == names[Convert.ToInt32(pos)]).ToList());
+                        ingredients = ingredients = code_eigenaar.GetExpiredIngredients();
+                        names = ingredients.Select(n => n.name).Distinct().ToList();
                         page = 0;
                         pos = 0;
+
+                        if (ingredients.Count == 0)
+                        {
+                            Console.WriteLine("\nU heeft geen ingredienten die verlopen zijn");
+                            Console.WriteLine("Druk op een knop om verder te gaan...");
+                            Console.ReadKey();
+                            return 14;
+                        }
                     }
                     else if (result.Item2 == -2)
                     {
@@ -3205,7 +2956,7 @@ namespace restaurant
                     }
                 } while (true);
             }
-            else if (input.Item1 == "8")
+            else if (input.Item1 == "4")
             {
                 return 11;
             }
@@ -3304,7 +3055,6 @@ namespace restaurant
                 {
                     inkomsten.Add((dates[0].AddMonths(a), code_eigenaar.Inkomsten(new DateTime(dates[0].Year, dates[0].Month, 1).AddMonths(a), new DateTime(dates[0].Year, dates[0].Month, 1).AddMonths(a + 1))));
                 }
-
                 double pos = 0;
                 int page = 0;
                 do
@@ -3449,6 +3199,135 @@ namespace restaurant
                 }
                 page = result.Item1;
             } while (true);
+        }
+
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            DoLogoutOnEveryScreen(screens);
+            return screens;
+        }
+    }
+
+    public class ExpensesScreen : Screen
+    {
+        private List<string> ExpensesToStringMonth(List<(DateTime, double)> expenses, double pos, string optionMessage)
+        {
+            List<string> output = new List<string>();
+
+            for (int a = 0; a < expenses.Count; a++)
+            {
+                if (pos == a)
+                {
+                    output.Add("| " + expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddMonths(1).ToShortDateString() + new string(' ', 25 - (expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddMonths(1).ToShortDateString()).Length) +
+                        " | " + "€" + Convert.ToInt32(expenses[a].Item2) + new string(' ', 12 - ("€" + Convert.ToInt32(expenses[a].Item2)).Length) + $" {optionMessage}|\n" +
+                        new string('–', 42 + optionMessage.Length + 2) + "\n");
+                }
+                else
+                {
+                    output.Add("| " + expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddMonths(1).ToShortDateString() + new string(' ', 25 - (expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddMonths(1).ToShortDateString()).Length) +
+                        " | " + "€" + Convert.ToInt32(expenses[a].Item2) + new string(' ', 12 - ("€" + Convert.ToInt32(expenses[a].Item2)).Length) + new string(' ', optionMessage.Length) + " |\n" +
+                        new string('–', 42 + optionMessage.Length + 2) + "\n");
+                }
+            }
+
+            return output;
+        }
+
+        public override int DoWork()
+        {
+            Console.WriteLine(GetGFLogo(true));
+            Console.WriteLine("Hier kunt u alle uitgaven zien die u nu heeft");
+            Console.WriteLine("[1] Laat alle uitgaven zien per maand");
+            Console.WriteLine("[2] Laat alle uitgaven zien per week");
+            Console.WriteLine("[3] Laat alle arbeidskosten zien per maand");
+            Console.WriteLine("[4] Laat alle Inboedel kosten zien per maand");
+            Console.WriteLine("[5] Laat alle Ingredienten kosten zien per maand");
+            Console.WriteLine("[6] Ga terug naar eigenaar menu scherm");
+            (string, int) input = AskForInput(15);
+
+            if (input.Item1 == "0")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+            else if (input.Item1 == "1")
+            {
+                List<DateTime> dates = code_eigenaar.GetUitgavenWerknemers().OrderBy(d => d.Item2).Select(d => d.Item2).Distinct().ToList();
+                dates.AddRange(code_eigenaar.GetUitgavenIngredienten().OrderBy(d => d.bestel_datum).Select(d => d.bestel_datum).Distinct().ToList());
+                dates = dates.Distinct().ToList();
+                dates.Sort();
+                int months = ((dates[0].Year - DateTime.Now.Year) * 12) + DateTime.Now.Month - (dates[0].Month - 1);
+                List<(DateTime, double)> uitgaven = new List<(DateTime, double)>();
+                dates[0] = dates[0].AddDays(1 - dates[0].Day);
+                for (int a = 0; a < months; a++)
+                {
+                    uitgaven.Add((dates[0].AddMonths(a), code_eigenaar.GetUitgavenWerknemers(new DateTime(dates[0].Year, dates[0].Month, 1).AddMonths(a), new DateTime(dates[0].Year, dates[0].Month, 1).AddMonths(a + 1)) +
+                        code_eigenaar.GetUitgavenIngredienten(new DateTime(dates[0].Year, dates[0].Month, 1).AddMonths(a), new DateTime(dates[0].Year, dates[0].Month, 1).AddMonths(a + 1))));
+                }
+                double pos = 0;
+                int page = 0;
+                do
+                {
+                    List<string> expensesString = ExpensesToStringMonth(uitgaven, pos, "[3] Meer Detail");
+                    List<string> pages = MakePages(expensesString, 20);
+
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(true));
+                    Console.WriteLine($"Dit zijn uw uitgaven per maand op pagina {page + 1} van de {pages.Count}:");
+                    Console.WriteLine(new string('–', 59) + "\n" + "|Maand                      |Totaal                       |");
+                    Console.WriteLine(new string('–', 59) + "\n" + pages[page]);
+                    Console.WriteLine($"totale uitgaven : €{ Convert.ToInt32(uitgaven.Select(P => P.Item2).Sum())},00\n");
+                    
+                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, uitgaven.Count - 1, 11);
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+                    else if (result.Item1 == -1 && result.Item2 == -1)
+                    {
+/*                        DetailIncomeScreen detail = new DetailIncomeScreen(code_eigenaar.InkomstenPerItem(uitgaven[Convert.ToInt32(pos)].Item1, uitgaven[Convert.ToInt32(pos)].Item1.AddMonths(1)));
+                        detail.DoWork();
+                        page = 0;
+                        pos = 0;*/
+                    }
+                    else
+                    {
+                        pos = result.Item3;
+                        page = result.Item1;
+                    }
+                } while (true);
+            }
+            else if (input.Item1 == "2")
+            {
+
+            }
+            else if (input.Item1 == "3")
+            {
+
+            }
+            else if (input.Item1 == "4")
+            {
+
+            }
+            else if (input.Item1 == "5")
+            {
+
+            }
+            else if (input.Item1 == "6")
+            {
+
+            }
+            else
+            {
+                Console.WriteLine("\nU moet wel een juiste keuze maken...");
+                Console.WriteLine("Druk op en knop om verder te gaan.");
+                Console.ReadKey();
+                return 13;
+            }
+
+
+            return 11;
         }
 
         public override List<Screen> Update(List<Screen> screens)
