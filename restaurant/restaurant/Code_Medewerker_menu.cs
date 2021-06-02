@@ -807,68 +807,57 @@ namespace restaurant
     {
         #region Inkomsten_en_Uitgaven
 
-        public double Uitgaven(DateTime beginDatum, DateTime eindDatum) // Mogelijkheid een bepaald tijdsspan in te voeren en daarvan de uitgaven te kunnen zien.
+        public List<Ingredient> GetUitgavenIngredienten() // Ingrediënten
         {
-            double uitgaven = 0;
-            uitgaven += GetUitgavenEigenaar(beginDatum, eindDatum);
-            uitgaven += GetUitgavenIngredienten(beginDatum, eindDatum);
-            uitgaven += GetUitgavenWerknemers(beginDatum, eindDatum);
-            return uitgaven;
+            database = io.GetDatabase();
+            List<Ingredient> ingredients = new List<Ingredient>();
+            foreach (var ingredient in database.ingredienten)
+            {
+                ingredients.Add(ingredient);
+            }
+            return ingredients;
         }
 
-        /*public double GetUitgavenInboedel(DateTime beginDatum, DateTime eindDatum) // Inboedel
+        public double GetUitgavenIngredienten(DateTime begindate, DateTime enddate) // Ingrediënten
         {
-            double uitgavenInboedel = 0;
-            return uitgavenInboedel;
-        }*/
-
-        public double GetUitgavenEigenaar(DateTime beginDatum, DateTime eindDatum) // Eigenaar
-        {
-            double uitgavenEigenaar = 0;
-            foreach (var uitgave in database.uitgaven.eigenaar)
+            database = io.GetDatabase();
+            double price = 0;
+            foreach (var ingredient in database.ingredienten)
             {
-                if (beginDatum <= uitgave.Item2 && uitgave.Item2 <= eindDatum)
+                if (ingredient.bestel_datum >= begindate && ingredient.bestel_datum <= enddate)
                 {
-                    uitgavenEigenaar += uitgave.Item1;
-                    break;
+                    price += ingredient.prijs;
                 }
             }
-            return uitgavenEigenaar;
+            return price;
         }
 
-        public double GetUitgavenIngredienten(DateTime beginDatum, DateTime eindDatum) // Ingrediënten
+        public List<(Werknemer, DateTime)> GetUitgavenWerknemers() // Werknemers
         {
-            double uitgavenIngredienten = 0;
-            foreach (var uitgave in database.uitgaven.ingredienten)
-            {
-                if (beginDatum <= uitgave.Item2 && uitgave.Item2 <= eindDatum)
-                {
-                    uitgavenIngredienten += uitgave.Item1;
-                    break;
-                }
-            }
-            return uitgavenIngredienten;
-        }
-
-        public double GetUitgavenWerknemers(DateTime beginDatum, DateTime eindDatum) // Werknemers
-        {
-            double uitgavenWerknemers = 0;
+            database = io.GetDatabase();
+            List<(Werknemer, DateTime)> kosten = new List<(Werknemer, DateTime)>();
             foreach (var uitgave in database.uitgaven.werknemer)
             {
-                if (beginDatum <= uitgave.Item2 && uitgave.Item2 <= eindDatum)
-                {
-                    uitgavenWerknemers += uitgave.Item1;
-                    break;
-                }
+                Werknemer werknemer = database.werknemers.Where(i => i.ID == uitgave.Item1).FirstOrDefault();
+                kosten.Add((werknemer, uitgave.Item2));
             }
-            return uitgavenWerknemers;
+            return kosten;
         }
 
-        /*public double GetUitgavenOverig(DateTime beginDatum, DateTime eindDatum)
+        public double GetUitgavenWerknemers(DateTime begindate, DateTime enddate) // Werknemers
         {
-            double uitgavenOverig = 0;
-            return uitgavenOverig;
-        }*/
+            database = io.GetDatabase();
+            double price = 0;
+            foreach (var uitgave in database.uitgaven.werknemer)
+            {
+                if (uitgave.Item2 >= begindate && uitgave.Item2 <= enddate)
+                {
+                    Werknemer werknemer = database.werknemers.Where(i => i.ID == uitgave.Item1).FirstOrDefault();
+                    price += (werknemer.salaris + werknemer.salaris * werknemer.prestatiebeloning + werknemer.lease_auto);
+                }
+            }
+            return price;
+        }
 
         public double Inkomsten(DateTime beginDatum, DateTime eindDatum) // Mogelijkheid een bepaald tijdsspan in te voeren en daarvan de inkomsten te kunnen zien.
         {
@@ -876,8 +865,6 @@ namespace restaurant
             if (database.reserveringen == null || database.inkomsten.bestelling_reservering == null) return 0;
             List<int> id = database.reserveringen.Where(d => d.datum >= beginDatum && d.datum <= eindDatum).Select(i => i.ID).ToList();
             double inkomsten = database.inkomsten.bestelling_reservering.Where(d => id.Contains(d.ID)).Select(p => p.prijs).ToList().Sum();
-            //double test = database.inkomsten.bestelling_reservering.Select(p => p.prijs).ToList().Sum();
-
 
             return inkomsten;
         }
@@ -902,18 +889,6 @@ namespace restaurant
             output = output.OrderBy(d => d.Item1).ToList();
             return output;
         }
-        #endregion
-
-        #region Winst_of_Verlies
-
-        public double Winst_of_Verlies(DateTime beginDatum, DateTime eindDatum)
-        {
-            double inkomsten = Inkomsten(beginDatum, eindDatum);
-            double uitgaven = Uitgaven(beginDatum, eindDatum);
-
-            return inkomsten - uitgaven;
-        }
-
         #endregion
     }
 }
