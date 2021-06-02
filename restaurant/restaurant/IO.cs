@@ -553,6 +553,33 @@ namespace restaurant
         }
         #endregion
 
+        public Tuple<int, List<Gerechten>> GetNaamGerechten(Reserveringen reserveringen)
+        {
+            if (reserveringen.gerechten_ID == null || reserveringen.gerechten_ID.Count == 0)
+            {
+                return Tuple.Create(0, new List<Gerechten>());
+            }
+            Database database = GetDatabase();
+            
+            int maxLen = 0;
+            List<Gerechten> gerechten = new List<Gerechten>();
+            
+            for (int i = 0 , j = 0; i < reserveringen.gerechten_ID.Count && database.menukaart.gerechten.Count < j; j++)
+            {
+                if (reserveringen.gerechten_ID[i] == database.menukaart.gerechten[j].ID)
+                {
+                    gerechten.Add(database.menukaart.gerechten[j]);
+                    if (database.menukaart.gerechten[j].naam.Length > maxLen)
+                    {
+                        maxLen = database.menukaart.gerechten[j].naam.Length;
+                    }
+                    i++;
+                    //break;
+                }
+            }
+            return Tuple.Create(maxLen, gerechten);
+        }
+
         #region Deprecated
         
         #endregion

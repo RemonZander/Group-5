@@ -121,10 +121,10 @@ namespace restaurant
         {
             List<Ingredient> ingredients = new List<Ingredient>(GetIngredients());
             DateTime compareDate = DateTime.Now;
-            compareDate = compareDate.AddDays(-dag);
+            compareDate = compareDate.AddDays(dag);
             for (int i = 0; i < ingredients.Count; i++)
             {
-                if (ingredients[i].houdbaarheids_datum < compareDate)
+                if (ingredients[i].houdbaarheids_datum > compareDate || ingredients[i].houdbaarheids_datum < DateTime.Now)
                 {
                     ingredients[i] = new Ingredient();
                 }
