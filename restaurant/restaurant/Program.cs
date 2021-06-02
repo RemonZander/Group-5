@@ -68,7 +68,7 @@ namespace restaurant
                         Rating = rnd.Next(1, 6),
                         datum = database.reserveringen[a].datum.AddDays(rnd.Next(0, 50))
                     };
-                    if (database.reviews == null)
+                    if (database.reviews.Count == 0)
                     {
                         database.reviews = new List<Review> { review };
                     }
@@ -114,7 +114,7 @@ namespace restaurant
                         datum = database.reserveringen[a].datum.AddDays(rnd.Next(0, 50))
                     };
 
-                    if (database.feedback == null)
+                    if (database.feedback.Count == 0)
                     {
                         database.feedback = new List<Feedback> { feedback };
                     }
