@@ -1738,14 +1738,13 @@ namespace restaurant
             Console.WriteLine("Bericht: " + newfeedback.message);
 
             Console.WriteLine("\nWilt u deze bewerking en opslaan?");
-            Console.WriteLine("[1] Ja");
-            Console.WriteLine("[2] Nee");
+            Console.WriteLine("voer  ja  of  nee  en druk op enter om u keuze te bevestigen.");
             input = AskForInput(8);
             if (input.Item2 != -1)
             {
                 return input.Item2;
             }
-            else if (input.Item1 == "1")
+            else if (input.Item1 == "ja")
             {
                 if (!newfeedback.annomeme)
                 {
@@ -1760,7 +1759,7 @@ namespace restaurant
                 Console.ReadKey();
                 return 5;
             }
-            else if (input.Item1 == "2")
+            else if (input.Item1 == "nee")
             {
                 Console.WriteLine("\nDruk op een toets om terug te gaan naar het beginscherm.");
                 Console.ReadKey();
@@ -1961,5 +1960,64 @@ namespace restaurant
             return screens;
         }
     }
+
+    /*class PaymentScreen : Screen
+    {
+        private readonly int huidigscherm = 14;
+        private readonly int vorigscherm = 5;
+        public override int DoWork()
+        {
+            throw new NotImplementedException();
+
+            //alle oude reserveringen van de klant
+            List<Reserveringen> reserveringen = new List<Reserveringen>(code_gebruiker.GetCustomerReservation(ingelogd.klantgegevens, false));
+            //als reservering al betaald is of heeft geen gerechten besteld, haal deze weg
+            foreach (var reservering in reserveringen)
+            {
+                if (reservering.isBetaald == true || reservering.gerechten_ID == null || reservering.gerechten_ID.Count == 0)
+                {
+                    reserveringen.Remove(reservering);
+                }
+            }
+
+            Console.Clear();
+            Console.WriteLine(GFLogoWithLoginAndEscape);
+
+            //er staat niks meer open voor betaling
+            if (reserveringen.Count == 0)
+            {
+                Console.WriteLine("U heeft alles al betaald");
+                Console.WriteLine("Druk op een toets om terug te gaan");
+                Console.ReadKey();
+                return vorigscherm;
+            }
+
+            
+            //kies de reservering die de klant wilt betalen
+            //4 getallen invoeren om te betalen, much roleplay
+
+            
+
+            
+
+        }
+
+        private string BestelBox(Reserveringen reserveringen)
+        {
+            Tuple<int, List<Gerechten>> gerechten = io.GetNaamGerechten(reserveringen);
+            List<string> namen = new List<string>();
+            for (int i = 0; i < gerechten.Item2.Count; i++)
+            {
+                namen.Add(gerechten.Item2[i].naam);
+            }
+            
+            string box = BoxAroundText(namen, "#", 1 ,2, gerechten.Item1, false);
+            return box;
+        }
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            return screens;
+        }
+    }*/
     #endregion
 }
