@@ -664,10 +664,10 @@ namespace restaurant
             do
             {
                 Console.WriteLine("\nDe dag waarop u wilt reserveren (genoteerd als 'dag-maand-jaar'): ");
-                (string, int) dag = AskForInput(5);
-                if (dag.Item2 != -1)
+                (string, int) date = AskForInput(5);
+                if (date.Item2 != -1)
                 {
-                    return dag.Item2;
+                    return date.Item2;
                 }
                 Console.WriteLine("\nHet tijdstip waarop u wilt reserveren (genoteerd als '18:30'): ");
                 tijd = AskForInput(5);
@@ -677,7 +677,12 @@ namespace restaurant
                 }
                 try
                 {
-                    dagtijd = Convert.ToDateTime(dag.Item1 + " " + tijd.Item1);
+                    string dag = date.Item1.Substring(0, date.Item1.IndexOf('-'));
+                    date.Item1 = date.Item1.Remove(0, date.Item1.IndexOf('-') + 1);
+                    string maand = date.Item1.Substring(0, date.Item1.IndexOf('-'));
+                    date.Item1 = date.Item1.Remove(0, date.Item1.IndexOf('-') + 1);
+                    string jaar = date.Item1;
+                    dagtijd = Convert.ToDateTime(dag + " " + maand + " " + jaar + " " + tijd.Item1);
                     succes = true;
                 }
                 catch
