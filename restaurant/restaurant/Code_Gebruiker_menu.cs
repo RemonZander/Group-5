@@ -826,6 +826,7 @@ namespace restaurant
 
         #endregion
     }
+    
     #region Screens
     class MakeFeedbackScreen : Screen
     {
@@ -1848,108 +1849,6 @@ namespace restaurant
             output += "#  " + new string(' ', 50) + "  #\n";
             output += "#  " + new string(' ', 50) + "  #\n";
             output += new string('#', 56);
-
-            return output;
-        }
-
-        private List<List<string>> FeedbackToString(List<Feedback> feedback)
-        {
-            List<Werknemer> werknemers = new List<Werknemer>(io.GetEmployee());
-            List<List<string>> output = new List<List<string>>();
-            for (int a = 0; a < feedback.Count; a++)
-            {
-                List<string> block = new List<string>();
-                //block += new string('#', 56);
-                block.Add(new string(' ', 50));
-                block.Add(new string(' ', 50));
-                if (!feedback[a].annomeme)
-                {
-                    block.Add("Voornaam: " + ingelogd.klantgegevens.voornaam + new string(' ', 50 - ("Voornaam: " + ingelogd.klantgegevens.voornaam).Length));
-                    block.Add("Achternaam: " + ingelogd.klantgegevens.achternaam + new string(' ', 50 - ("Achternaam: " + ingelogd.klantgegevens.achternaam).Length));
-                }
-                else
-                {
-                    block.Add("Anoniem" + new string(' ', 50 - "Anoniem".Length));
-                    block.Add(new string(' ', 50));
-                }
-
-                List<string> msgparts1 = new List<string>();
-                string message = feedback[a].message;
-
-                if (message.Length > 50 - "Feedback: ".Length)
-                {
-                    if (message.IndexOf(' ') > 50 || message.IndexOf(' ') == -1)
-                    {
-                        msgparts1.Add(message.Substring(0, 50 - "Feedback: ".Length));
-                    }
-                    else
-                    {
-                        msgparts1.Add(message.Substring(0, message.Substring(0, 50 - ("Feedback: ").Length).LastIndexOf(' ')));
-                    }
-
-                    message = message.Remove(0, msgparts1[0].Length + 1);
-                    int count = 1;
-                    while (message.Length > 50)
-                    {
-                        if (message.IndexOf(' ') > 50 || message.IndexOf(' ') == -1)
-                        {
-                            msgparts1.Add(message.Substring(0, 50));
-                        }
-                        else
-                        {
-                            msgparts1.Add(message.Substring(0, message.Substring(0, 50).LastIndexOf(' ')));
-                        }
-
-                        message = message.Remove(0, msgparts1[count].Length + 1);
-                        count++;
-                    }
-                    msgparts1.Add(message);
-
-                    block.Add("Feedback: " + msgparts1[0] + new string(' ', 50 - ("Feedback: " + msgparts1[0]).Length));
-                    for (int b = 1; b < 4; b++)
-                    {
-                        if (b < msgparts1.Count)
-                        {
-                            block.Add(msgparts1[b] + new string(' ', 50 - msgparts1[b].Length));
-                        }
-                        else
-                        {
-                            block.Add(new string(' ', 50));
-                        }
-                    }
-                }
-                else
-                {
-                    block.Add("Feedback: " + message + new string(' ', 50 - ("Feedback: " + message).Length));
-                    block.Add(new string(' ', 50));
-                    block.Add(new string(' ', 50));
-                    block.Add(new string(' ', 50));
-                }
-
-                for (int i = 0; i < werknemers.Count; i++)
-                {
-                    if (werknemers[i].ID == feedback[a].recipient)
-                    {
-                        block.Add("Ontvanger: " + werknemers[i].login_gegevens.klantgegevens.voornaam + " " + werknemers[i].login_gegevens.klantgegevens.achternaam + new string(' ', 50 - ("Ontvanger: " + werknemers[i].login_gegevens.klantgegevens.voornaam + " " + werknemers[i].login_gegevens.klantgegevens.achternaam).Length));
-                    }
-                }
-                
-                if (!feedback[a].annomeme)
-                {
-                    block.Add("Datum: " + feedback[a].datum + new string(' ', 50 - ("Datum: " + feedback[a].datum).Length));
-                }
-                else
-                {
-                    block.Add(new string(' ', 50));
-                }
-
-                block.Add(new string(' ', 50));
-                block.Add(new string(' ', 50));
-                //block += new string('#', 56);
-
-                output.Add(block);
-            }
-
 
             return output;
         }
