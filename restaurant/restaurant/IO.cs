@@ -252,6 +252,34 @@ namespace restaurant
             }
             return beschikbaar;
         }
+
+        /// <summary>
+        /// Voor het omzetten van een reservering naar betaald
+        /// </summary>
+        /// <param name="reserveringen">De reservering die je naam betaald wilt zetten</param>
+        public void ReserveringBetalen(Reserveringen reserveringen)
+        {
+            Database database = GetDatabase();
+            for (int i = 0; i < database.reserveringen.Count; i++)
+            {
+                if (database.reserveringen[i].ID == reserveringen.ID)
+                {
+                    database.reserveringen[i] = new Reserveringen
+                    {
+                        ID = reserveringen.ID,
+                        datum = reserveringen.datum,
+                        klantnummer = reserveringen.klantnummer,
+                        aantal = reserveringen.aantal,
+                        tafels = reserveringen.tafels,
+                        gerechten_ID = reserveringen.gerechten_ID,
+                        tafel_bij_raam = reserveringen.tafel_bij_raam,
+                        isBetaald = true,
+                    };
+                    break;
+                }
+            }
+            Savedatabase(database);
+        }
         #endregion
 
         #region Gettters
@@ -502,6 +530,39 @@ namespace restaurant
                 return new List<Reserveringen>();
             }
         }
+
+        /// <summary>
+        /// voor het krijgen van de gerechten die zijn besteld bij een reservering
+        /// en voor het krijgen van de lengte van de langste naam
+        /// </summary>
+        /// <param name="reserveringen">De reservering </param>
+        /// <returns>Tuple met int langste naam en een lijst met gerechten </returns>
+        public Tuple<int, List<Gerechten>> GetNaamGerechten(Reserveringen reserveringen)
+        {
+            if (reserveringen.gerechten_ID == null || reserveringen.gerechten_ID.Count == 0)
+            {
+                return Tuple.Create(0, new List<Gerechten>());
+            }
+            Database database = GetDatabase();
+
+            int maxLen = 0;
+            List<Gerechten> gerechten = new List<Gerechten>();
+
+            for (int i = 0, j = 0; i < reserveringen.gerechten_ID.Count && database.menukaart.gerechten.Count < j; j++)
+            {
+                if (reserveringen.gerechten_ID[i] == database.menukaart.gerechten[j].ID)
+                {
+                    gerechten.Add(database.menukaart.gerechten[j]);
+                    if (database.menukaart.gerechten[j].naam.Length > maxLen)
+                    {
+                        maxLen = database.menukaart.gerechten[j].naam.Length;
+                    }
+                    i++;
+                    //break;
+                }
+            }
+            return Tuple.Create(maxLen, gerechten);
+        }
         #endregion
 
         #region sorteren
@@ -552,33 +613,6 @@ namespace restaurant
             return database;
         }
         #endregion
-
-        public Tuple<int, List<Gerechten>> GetNaamGerechten(Reserveringen reserveringen)
-        {
-            if (reserveringen.gerechten_ID == null || reserveringen.gerechten_ID.Count == 0)
-            {
-                return Tuple.Create(0, new List<Gerechten>());
-            }
-            Database database = GetDatabase();
-            
-            int maxLen = 0;
-            List<Gerechten> gerechten = new List<Gerechten>();
-            
-            for (int i = 0 , j = 0; i < reserveringen.gerechten_ID.Count && database.menukaart.gerechten.Count < j; j++)
-            {
-                if (reserveringen.gerechten_ID[i] == database.menukaart.gerechten[j].ID)
-                {
-                    gerechten.Add(database.menukaart.gerechten[j]);
-                    if (database.menukaart.gerechten[j].naam.Length > maxLen)
-                    {
-                        maxLen = database.menukaart.gerechten[j].naam.Length;
-                    }
-                    i++;
-                    //break;
-                }
-            }
-            return Tuple.Create(maxLen, gerechten);
-        }
 
         #region Deprecated
         
