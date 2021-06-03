@@ -531,37 +531,28 @@ namespace restaurant
             }
         }
 
-        /// <summary>
-        /// voor het krijgen van de gerechten die zijn besteld bij een reservering
-        /// en voor het krijgen van de lengte van de langste naam
-        /// </summary>
-        /// <param name="reserveringen">De reservering </param>
-        /// <returns>Tuple met int langste naam en een lijst met gerechten </returns>
-        public Tuple<int, List<Gerechten>> GetNaamGerechten(Reserveringen reserveringen)
+
+        public List<Gerechten> GetNaamGerechten(Reserveringen reservering)
         {
-            if (reserveringen.gerechten_ID == null || reserveringen.gerechten_ID.Count == 0)
+            if (reservering.gerechten_ID == null || reservering.gerechten_ID.Count == 0)
             {
-                return Tuple.Create(0, new List<Gerechten>());
+                return new List<Gerechten>();
             }
             Database database = GetDatabase();
 
-            int maxLen = 0;
             List<Gerechten> gerechten = new List<Gerechten>();
 
-            for (int i = 0, j = 0; i < reserveringen.gerechten_ID.Count && database.menukaart.gerechten.Count < j; j++)
+            for (int i = 0; i < reservering.gerechten_ID.Count; i++)
             {
-                if (reserveringen.gerechten_ID[i] == database.menukaart.gerechten[j].ID)
+                for (int j = 0; j < database.menukaart.gerechten.Count; j++)
                 {
-                    gerechten.Add(database.menukaart.gerechten[j]);
-                    if (database.menukaart.gerechten[j].naam.Length > maxLen)
+                    if (reservering.gerechten_ID[i] == database.menukaart.gerechten[j].ID)
                     {
-                        maxLen = database.menukaart.gerechten[j].naam.Length;
+                        gerechten.Add(database.menukaart.gerechten[j]);
                     }
-                    i++;
-                    //break;
                 }
             }
-            return Tuple.Create(maxLen, gerechten);
+            return gerechten;
         }
         #endregion
 

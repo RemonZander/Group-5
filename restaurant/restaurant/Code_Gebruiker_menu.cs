@@ -866,7 +866,8 @@ namespace restaurant
             reserveringen = reserveringen.Except(feedbackReservervations).ToList();
             if (reserveringen.Count == 0)
             {
-                Console.WriteLine(GFLogo);
+                Console.Clear();
+                Console.WriteLine(GetGFLogo(false));
                 Console.WriteLine("Er staan momenteel geen Reserveringen open voor feedback.");
                 Console.WriteLine("Druk op een toets om terug te gaan.");
                 Console.ReadKey();
@@ -1033,7 +1034,7 @@ namespace restaurant
                 } while (!((feedbackVoorEigenaar != false && feedbackMedewerker.login_gegevens == null) || (feedbackVoorEigenaar == false && feedbackMedewerker.login_gegevens != null)));
 
                 Console.Clear();
-                Console.WriteLine(GFLogo);
+                Console.WriteLine(GetGFLogo(false));
 
                 if (feedbackVoorEigenaar)
                 {
@@ -1155,7 +1156,7 @@ namespace restaurant
                 } while (!((feedbackVoorEigenaar != false && feedbackMedewerker.login_gegevens == null) || (feedbackVoorEigenaar == false && feedbackMedewerker.login_gegevens != null)));
 
                 Console.Clear();
-                Console.WriteLine(GFLogo);
+                Console.WriteLine(GetGFLogo(false));
                 
                 if (feedbackVoorEigenaar)
                 {
@@ -1862,12 +1863,13 @@ namespace restaurant
 
     class PaymentScreen : Screen
     {
-        private readonly int huidigscherm = 14;
+        private readonly int huidigscherm = 9;
         private readonly int vorigscherm = 5;
         public override int DoWork()
         {
             //alle oude reserveringen van de klant
             List<Reserveringen> reserveringen = new List<Reserveringen>(code_gebruiker.GetCustomerReservation(ingelogd.klantgegevens, false));
+            List<Reserveringen> exemptReserveringen = new List<Reserveringen>();
             //als er geen oude reserveringen zijn
             if (reserveringen.Count == 0)
             {
@@ -1883,9 +1885,11 @@ namespace restaurant
             {
                 if (reservering.isBetaald == true || reservering.gerechten_ID == null || reservering.gerechten_ID.Count == 0)
                 {
-                    reserveringen.Remove(reservering);
+                    exemptReserveringen.Add(reservering);
                 }
             }
+            
+            reserveringen = reserveringen.Except(exemptReserveringen).ToList();
 
             //er staat niks meer open voor betaling
             if (reserveringen.Count == 0)
@@ -1970,7 +1974,7 @@ namespace restaurant
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine(GFLogoWithLoginAndEscape);
+                Console.WriteLine(GetGFLogo(true));
                 Console.WriteLine($"De reservering die u heeft gekozen heeft nummer: {chosenReservering.ID} en is van {chosenReservering.datum}");
                 Console.WriteLine("Hier ziet u wat er allemaal was besteld");
                 Console.WriteLine("\n" + BestelBox(chosenReservering));
@@ -1998,7 +2002,7 @@ namespace restaurant
                 //als de lengte van de input 4 is en het is een getal 
                 if (input.Item1.Length == 4 && int.TryParse(input.Item1, out keyCode))
                 {
-                    Console.WriteLine("Betaling was succesvol");
+                    Console.WriteLine("\nBetaling was succesvol");
                     Console.WriteLine("druk op een toets om terug te gaan");
                     io.ReserveringBetalen(chosenReservering);
                     Console.ReadKey();
@@ -2014,28 +2018,31 @@ namespace restaurant
             }
         }
 
-        private string BestelBox(Reserveringen reserveringen)
+        private string BestelBox(Reserveringen reservering)
         {
-            Tuple<int, List<Gerechten>> gerechten = io.GetNaamGerechten(reserveringen);
-            List<string> namen = new List<string>();
-            for (int i = 0; i < gerechten.Item2.Count; i++)
+            List<Gerechten> gerechten = io.GetNaamGerechten(reservering);
+            List<string> namen = gerechten.Select(x => x.naam).Distinct().ToList();
+            List<int> nameAmount = new List<int>();
+            List<string> lines = new List<string>();
+            for (int i = 0; i < namen.Count; i++)
             {
-                namen.Add(gerechten.Item2[i].naam);
+                nameAmount.Add(gerechten.Count(x => x.naam == namen[i]));
+                lines.Add(nameAmount[i]+ "x  "+ namen[i] + new string(' ', 25-(nameAmount[i] + "X  " + namen[i]).Length) + " | Totaal: €" + (nameAmount[i]* gerechten.Where(x => x.naam == namen[i]).Select(x => x.prijs).FirstOrDefault())
+                    + new string(' ', 50 - (nameAmount[i] + "X  " + namen[i] + new string(' ', 25 - (nameAmount[i] + "X  " + namen[i]).Length) + " | Totaal: €" + (nameAmount[i] * gerechten.Where(x => x.naam == namen[i]).Select(x => x.prijs).FirstOrDefault())).Length));
             }
-            
-            return BoxAroundText(namen, "#", 2 ,1, gerechten.Item1, false);
+
+            return BoxAroundText(lines, "#", 2 ,1, 50, false);
         }
 
-        private string betaalBox(Reserveringen reserveringen)
+        private string betaalBox(Reserveringen reservering)
         {
-            Tuple<int, List<Gerechten>> gerechten = io.GetNaamGerechten(reserveringen);
-            double totaalprijs = 0.00;
-            for (int i = 0; i < gerechten.Item2.Count; i++)
-            {
-                totaalprijs += gerechten.Item2[i].prijs;
-            }
-            List<string> totaalStringList = new List<string> { Convert.ToString(totaalprijs) };
-            return BoxAroundText(totaalStringList, "#", 2, 1, Convert.ToString(totaalprijs).Length, false);
+            List<Gerechten> gerechten = io.GetNaamGerechten(reservering);
+            double totaalprijs = gerechten.Select(x => x.prijs).Sum();
+
+            //zorgt ervoor dat je 2 getallen na de komma hebt
+            totaalprijs = Math.Round(totaalprijs, 2, MidpointRounding.AwayFromZero);
+            List<string> totaalStringList = new List<string> { "€"+Convert.ToString(totaalprijs) };
+            return BoxAroundText(totaalStringList, "#", 2, 1, Convert.ToString(totaalprijs).Length+1, false);
         }
         public override List<Screen> Update(List<Screen> screens)
         {
