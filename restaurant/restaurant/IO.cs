@@ -90,22 +90,25 @@ namespace restaurant
         public List<Tuple<DateTime, List<Tafels>>> ReserveringBeschikbaarheid(DateTime date)
         {
             database = GetDatabase();
+            //als reserveringen niet bestaat
+            if (database.reserveringen == null)
+            {
+                return new List<Tuple<DateTime, List<Tafels>>>();
+            }
             //maakt een lijst met tuples die beheert alle beschikbare plekken op int aantal dagen
             List<Tuple<DateTime, List<Tafels>>> beschikbaar = new List<Tuple<DateTime, List<Tafels>>>();
 
             //maakt een starttijd starttijd
             DateTime possibleTime = new DateTime(date.Year, date.Month, date.Day, 10, 0, 0);
 
-            //45 kwaterieren van 1000 tot 2100
-            //661 minuten van 1000 tot 2100
+            //44+1 kwaterieren van 1000 tot 2100
             for (int i = 0; i < 45; i++)
             {
                 //voegt een tuple toe voor ieder kwartier
                 beschikbaar.Add(Tuple.Create(possibleTime, database.tafels));
                 possibleTime = possibleTime.AddMinutes(15);
-                //possibleTime = possibleTime.AddMinutes(1);
             }
-
+            
             //voor elke reservering die gemaakt is
             foreach (var reservering in database.reserveringen)
             {
@@ -129,9 +132,13 @@ namespace restaurant
         public List<Tuple<DateTime, List<Tafels>>> ReserveringBeschikbaarheid(int start_maand, int eind_maand, int start_dag, int eind_dag)
         {
             database = GetDatabase();
+            //als reserveringen niet bestaat
+            if (database.reserveringen == null)
+            {
+                return new List<Tuple<DateTime, List<Tafels>>>();
+            }
             //maakt een lijst met tuples die beheert alle beschikbare plekken op int aantal dagen
             List<Tuple<DateTime, List<Tafels>>> beschikbaar = BerekenTotaleBeschikbaarheid(start_maand, eind_maand, start_dag, eind_dag);
-
 
             //verantwoordelijk voor het communiceren met de database
             foreach (var reservering in database.reserveringen)
@@ -290,11 +297,11 @@ namespace restaurant
         public List<Review> GetReviews()
         {
             database = GetDatabase();
-            if (database.reviews != null)
+            if (database.reviews == null)
             {
-                return new List<Review>(database.reviews);
+                return new List<Review>();
             }
-            return new List<Review>();
+            return new List<Review>(database.reviews);
         }
 
         /// <summary>
@@ -305,13 +312,14 @@ namespace restaurant
         public List<Review> GetReviews(int max)
         {
             database = GetDatabase();
-            List<Review> reviewList = new List<Review>();
+            
             if (database.reviews == null)
             {
-                return reviewList;
+                return new List<Review>();
             }
             else
             {
+                List<Review> reviewList = new List<Review>();
                 //laat max reviews zien, als er zoveel zijn
                 for (int i = 0, j = 0; i < database.reviews.Count && j < max; i++, j++)
                 {
@@ -330,13 +338,13 @@ namespace restaurant
         {
             //pakt de database
             database = GetDatabase();
-            List<Review> reviewList = new List<Review>();
             if (database.reviews == null)
             {
-                return reviewList;
+                return new List<Review>();
             }
             else
             {
+                List<Review> reviewList = new List<Review>();
                 //voor iedere feedback met hetzelfde klantnummer als het klantnummer van de klant, voeg deze toe aan een lijst en return de lijst
                 foreach (var review in database.reviews)
                 {
@@ -356,11 +364,11 @@ namespace restaurant
         public List<Feedback> GetFeedback()
         {
             database = GetDatabase();
-            if (database.feedback != null)
+            if (database.feedback == null)
             {
-                return new List<Feedback>(database.feedback);
+                return new List<Feedback>();
             }
-            return new List<Feedback>();
+            return new List<Feedback>(database.feedback);
         }
 
         /// <summary>
@@ -372,15 +380,14 @@ namespace restaurant
         {
             //pakt de database
             database = GetDatabase();
-            //maakt een lege feedbacklijst aan
-            List<Feedback> feedbackList = new List<Feedback>();
             //als er geen feedback is return de lege lijst
             if (database.feedback == null)
             {
-                return feedbackList;
+                return new List<Feedback>();
             }
             else
             {
+                List<Feedback> feedbackList = new List<Feedback>();
                 //sla tot 50 items op en return deze lijst
                 for (int i = 0, j = 0; i < database.feedback.Count && j < max; i++, j++)
                 {
@@ -398,13 +405,13 @@ namespace restaurant
         public List<Feedback> GetFeedback(Klantgegevens klant)
         {
             database = GetDatabase();
-            List<Feedback> feedbackList = new List<Feedback>();
             if(database.feedback == null)
             {
-                return feedbackList;
+                return new List<Feedback>();
             }
             else
             {
+                List<Feedback> feedbackList = new List<Feedback>();
                 //voor iedere feedback met hetzelfde klantnummer als het klantnummer van de klant, voeg deze toe aan een lijst en return de lijst
                 foreach (var feedback in database.feedback)
                 {
@@ -467,9 +474,11 @@ namespace restaurant
         /// <returns>De voornaam(Item1) en achternaam(Item2) van de medewerker</returns>
         public (string, string) GetEmployee(int employeeID)
         {
-            Database database = GetDatabase();
-            
-            
+            database = GetDatabase();
+            if (database.werknemers == null)
+            {
+                return (null, null);
+            }
             for (int i = 0; i < database.werknemers.Count; i++)
             {
                 if (database.werknemers[i].ID == employeeID)
@@ -486,15 +495,12 @@ namespace restaurant
         /// <returns>Een list met alle medewerkers</returns>
         public List<Werknemer> GetEmployee()
         {
-            Database database = GetDatabase();
-            if (database.werknemers != null)
-            {
-                return database.werknemers;
-            }
-            else
+            database = GetDatabase();
+            if (database.werknemers == null)
             {
                 return new List<Werknemer>();
             }
+            return new List<Werknemer>(database.werknemers);
         }
 
         /// <summary>
@@ -503,7 +509,7 @@ namespace restaurant
         /// <returns>De eigenaar</returns>
         public Eigenaar GetEigenaar()
         {
-            Database database = GetDatabase();
+            database = GetDatabase();
             if(database.eigenaar == null)
             {
                 return new Eigenaar();
@@ -520,28 +526,29 @@ namespace restaurant
         /// <returns>Een list met alle reserveringen</returns>
         public List<Reserveringen> GetReservations()
         {
-            Database database = GetDatabase();
-            if (database.reserveringen != null)
-            {
-                return database.reserveringen;
-            }
-            else
+            database = GetDatabase();
+            if (database.reserveringen == null)
             {
                 return new List<Reserveringen>();
             }
+            return new List<Reserveringen>(database.reserveringen);
         }
 
-
-        public List<Gerechten> GetNaamGerechten(Reserveringen reservering)
+        /// <summary>
+        /// voor het ophalen van alle gerechten die staan bij een reservering
+        /// </summary>
+        /// <param name="reservering">De reservering</param>
+        /// <returns>Een list met alle gerechten</returns>
+        public List<Gerechten> GetGerechtenReservering(Reserveringen reservering)
         {
             if (reservering.gerechten_ID == null || reservering.gerechten_ID.Count == 0)
             {
                 return new List<Gerechten>();
             }
-            Database database = GetDatabase();
+            database = GetDatabase();
 
             List<Gerechten> gerechten = new List<Gerechten>();
-
+            //voor alle gerechten van de reservering, voor alle gerechten op de menukaart, als matched, voeg deze toe aan de lijst
             for (int i = 0; i < reservering.gerechten_ID.Count; i++)
             {
                 for (int j = 0; j < database.menukaart.gerechten.Count; j++)
