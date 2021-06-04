@@ -965,13 +965,7 @@ namespace restaurant
                         }
                         if (choiceMedewerker.Item1 == "0")
                         {
-                            Console.WriteLine("\nSuccesvol uitgelogd");
-                            Console.WriteLine("Druk op een toets om terug te gaan.");
-                            Console.ReadKey();
-                            //logout sequence
-                            logoutUpdate = true;
-                            Logout();
-                            return 0;
+                            return LogoutSequence();
                         }
                         //als match met werknemer sla deze op
                         for (int i = 0; i < Medewerkers.Count; i++)
@@ -1003,31 +997,27 @@ namespace restaurant
                 {
                     Console.WriteLine($"De feedback die u gaat schrijven is voor { feedbackMedewerker.login_gegevens.klantgegevens.voornaam} {feedbackMedewerker.login_gegevens.klantgegevens.achternaam} (Medewerker).");
                 }
-                Console.WriteLine("Met Enter gaat u verder op een nieuwe regel.");
-                Console.WriteLine("Als u klaar bent met het typen, type dan  klaar  op een nieuwe regel om het feedback aan te maken.");
-                Console.WriteLine("De inhoud van uw feedback:\n");
-
-                //is aan vervanging toe
+                Console.WriteLine("\nHieronder kunt u de inhoud van uw feedback schrijven (max. 160 tekens).");
+                bool succes = false;
                 string message = "";
-                string Line = Console.ReadLine();
-                message = Line;
-                while (Line != "klaar")
+                do
                 {
-                    Line = Console.ReadLine();
-                    if (Line == "klaar")
+                    message = Console.ReadLine();
+
+                    if (message.Length > 160)
                     {
-                        break;
+                        Console.WriteLine("Uw feedback mag niet langer zijn dan 160 tekens.\nHieronder kunt u opnieuw feedback schrijven.");
                     }
                     else
                     {
-                        message += " " + Line;
+                        succes = true;
                     }
-                }
+                } while (!succes);
                 if (feedbackVoorEigenaar)
                 {
                     code_gebruiker.MakeFeedback(io.GetEigenaar(), message);
                     Console.WriteLine("\nSuccesvol feedback aangemaakt.");
-                    Console.WriteLine("Druk op een toets om terug te keren naar het klantenmenu.");
+                    Console.WriteLine("Druk op een toets om terug te gaan naar het klantenmenu.");
                     Console.ReadKey();
                     return vorigScherm;
                 }
@@ -1035,7 +1025,7 @@ namespace restaurant
                 {
                     code_gebruiker.MakeFeedback(feedbackMedewerker, message);
                     Console.WriteLine("\nSuccesvol feedback aangemaakt.");
-                    Console.WriteLine("Druk op een toets om terug te keren naar het klantenmenu.");
+                    Console.WriteLine("Druk op een toets om terug te gaan naar het klantenmenu.");
                     Console.ReadKey();
                     return vorigScherm;
                 }
@@ -1069,13 +1059,7 @@ namespace restaurant
                     //als input is 0, logout
                     if (key.Item1 == "0")
                     {
-                        Console.WriteLine("\nSuccesvol uitgelogd");
-                        Console.WriteLine("Druk op een toets om terug te gaan.");
-                        Console.ReadKey();
-                        //logout sequence
-                        logoutUpdate = true;
-                        Logout();
-                        return 0;
+                        return LogoutSequence();
                     }
 
                     //is om te kijken of choice een int is
@@ -1150,13 +1134,7 @@ namespace restaurant
                         }
                         if(choiceMedewerker.Item1 == "0")
                         {
-                            Console.WriteLine("\nSuccesvol uitgelogd");
-                            Console.WriteLine("Druk op een toets om terug te gaan.");
-                            Console.ReadKey();
-                            //logout sequence
-                            logoutUpdate = true;
-                            Logout();
-                            return 0;
+                            return LogoutSequence();
                         }
                         //als match met werknemer sla deze op
                         for (int i = 0; i < Medewerkers.Count; i++)
@@ -1188,26 +1166,22 @@ namespace restaurant
                 {
                     Console.WriteLine($"De feedback die u gaat schrijven is voor { feedbackMedewerker.login_gegevens.klantgegevens.voornaam} {feedbackMedewerker.login_gegevens.klantgegevens.achternaam} (Medewerker).");
                 }
-                Console.WriteLine("Met Enter gaat u verder op een nieuwe regel.");
-                Console.WriteLine("Als u klaar bent met het typen, type dan  klaar  op een nieuwe regel om het feedback aan te maken.");
-                Console.WriteLine("De inhoud van uw feedback:\n");
-                
-                //is aan vervanging toe
+                Console.WriteLine("\nHieronder kunt u de inhoud van uw feedback schrijven (max. 160 tekens).");
+
+                bool succes = false;
                 string message = "";
-                string Line = Console.ReadLine();
-                message = Line;
-                while (Line != "klaar")
+                do
                 {
-                    Line = Console.ReadLine();
-                    if (Line == "klaar")
+                    message = Console.ReadLine();
+                    if (message.Length > 160)
                     {
-                        break;
+                        Console.WriteLine("Uw feedback mag niet langer zijn dan 160 tekens.\nHieronder kunt u opnieuw feedback schrijven.");
                     }
                     else
                     {
-                        message += " " + Line;
+                        succes = true;
                     }
-                }
+                } while (!succes);
                 if (feedbackVoorEigenaar)
                 {
                     code_gebruiker.MakeFeedback(io.GetEigenaar(), ingelogd.klantgegevens, message, ReserveringID);
@@ -1234,15 +1208,9 @@ namespace restaurant
             //logout
             else if (key.Item1 == "0")
             {
-                Console.WriteLine("\nSuccesvol uitgelogd");
-                Console.WriteLine("Druk op een toets om terug te gaan.");
-                Console.ReadKey();
-                //logout sequence
-                logoutUpdate = true;
-                Logout();
-                return 0;
+                return LogoutSequence();
             }
-
+            //wrong input
             else
             {
                 //error message
@@ -1252,7 +1220,18 @@ namespace restaurant
                 return huidigScherm;
             }
         }
-        
+
+        private int LogoutSequence()
+        {
+            Console.WriteLine("\nSuccesvol uitgelogd");
+            Console.WriteLine("Druk op een toets om terug te gaan.");
+            Console.ReadKey();
+            //logout sequence
+            logoutUpdate = true;
+            Logout();
+            return 0;
+        }
+
         public override List<Screen> Update(List<Screen> screens)
         {
             DoLogoutOnEveryScreen(screens);
@@ -1278,7 +1257,7 @@ namespace restaurant
                 Console.Clear();
                 Console.WriteLine(GFLogo);
                 Console.WriteLine("U heeft nog geen feedback");
-                Console.WriteLine("druk op een toets om terug te gaan");
+                Console.WriteLine("Druk op een toets om terug te gaan");
                 Console.ReadKey();
                 return vorigscherm;
             }
@@ -1421,13 +1400,7 @@ namespace restaurant
                         }
                         else if (input.Item1 == "0")
                         {
-                            Console.WriteLine("\nSuccesvol uitgelogd");
-                            Console.WriteLine("Druk op een toets om terug te gaan.");
-                            Console.ReadKey();
-                            //logout sequence
-                            logoutUpdate = true;
-                            Logout();
-                            return 0;
+                            return LogoutSequence();
                         }
                         else if (input.Item1 == "1")
                         {
@@ -1598,13 +1571,7 @@ namespace restaurant
                             }
                             else if (input.Item1 == "0")
                             {
-                                Console.WriteLine("\nSuccesvol uitgelogd");
-                                Console.WriteLine("Druk op een toets om terug te gaan.");
-                                Console.ReadKey();
-                                //logout sequence
-                                logoutUpdate = true;
-                                Logout();
-                                return 0;
+                                return LogoutSequence();
                             }
                             else if (input.Item1 == "ja")
                             {
@@ -1644,9 +1611,7 @@ namespace restaurant
             }
             else if (input.Item1 == "0")
             {
-                logoutUpdate = true;
-                Logout();
-                return 0;
+                return LogoutSequence();
             }
             else
             {
@@ -1697,13 +1662,7 @@ namespace restaurant
             //logout sequence
             else if (input.Item1 == "0")
             {
-                Console.WriteLine("\nSuccesvol uitgelogd");
-                Console.WriteLine("Druk op een toets om terug te gaan.");
-                Console.ReadKey();
-                //logout sequence
-                logoutUpdate = true;
-                Logout();
-                return 0;
+                return LogoutSequence();
             }
             //wrong input message
             else
@@ -1717,7 +1676,7 @@ namespace restaurant
             #endregion
 
             #region Bericht
-            Console.WriteLine("\n Typ hier uw bericht: ");
+            Console.WriteLine("\n Uw feedback mag niet langer zijn dan 160 tekens.\nHieronder kunt u opnieuw feedback schrijven.");
             input = AskForInput(huidigscherm);
             if (input.Item2 != -1)
             {
@@ -1737,11 +1696,9 @@ namespace restaurant
                 Console.ReadKey();
                 EditFeedback(feedbackstr, feedback);
             }
-            else if (input.Item1 == "6")
+            else if (input.Item1 == "0")
             {
-                logoutUpdate = true;
-                Logout();
-                return 0;
+                return LogoutSequence();
             }
             feedback.message = input.Item1;
         #endregion
@@ -1787,13 +1744,7 @@ namespace restaurant
             }
             else if (input.Item1 == "0")
             {
-                Console.WriteLine("\nSuccesvol uitgelogd");
-                Console.WriteLine("Druk op een toets om terug te gaan.");
-                Console.ReadKey();
-                //logout sequence
-                logoutUpdate = true;
-                Logout();
-                return 0;
+                return LogoutSequence();
             }
             else
             {
@@ -1890,6 +1841,17 @@ namespace restaurant
             return output;
         }
 
+        private int LogoutSequence()
+        {
+            Console.WriteLine("\nSuccesvol uitgelogd");
+            Console.WriteLine("Druk op een toets om terug te gaan.");
+            Console.ReadKey();
+            //logout sequence
+            logoutUpdate = true;
+            Logout();
+            return 0;
+        }
+
         public override List<Screen> Update(List<Screen> screens)
         {
             DoLogoutOnEveryScreen(screens);
@@ -1966,13 +1928,7 @@ namespace restaurant
                 //als input is 0, logout
                 if (input.Item1 == "0")
                 {
-                    Console.WriteLine("\nSuccesvol uitgelogd");
-                    Console.WriteLine("Druk op een toets om terug te gaan.");
-                    Console.ReadKey();
-                    //logout sequence
-                    logoutUpdate = true;
-                    Logout();
-                    return 0;
+                    return LogoutSequence();
                 }
 
                 //is om te kijken of choice een int is
@@ -2025,13 +1981,7 @@ namespace restaurant
                 //als input is 0, logout
                 if (input.Item1 == "0")
                 {
-                    Console.WriteLine("\nSuccesvol uitgelogd");
-                    Console.WriteLine("Druk op een toets om terug te gaan.");
-                    Console.ReadKey();
-                    //logout sequence
-                    logoutUpdate = true;
-                    Logout();
-                    return 0;
+                    return LogoutSequence();
                 }
                 //dummygetal die ik ff nodig had
                 int keyCode;
@@ -2039,7 +1989,7 @@ namespace restaurant
                 if (input.Item1.Length == 4 && int.TryParse(input.Item1, out keyCode))
                 {
                     Console.WriteLine("\nBetaling was succesvol");
-                    Console.WriteLine("druk op een toets om terug te gaan");
+                    Console.WriteLine("Druk op een toets om terug te gaan naar het klantenmenu.");
                     io.ReserveringBetalen(chosenReservering);
                     Console.ReadKey();
                     return vorigscherm;
@@ -2048,7 +1998,7 @@ namespace restaurant
                 else
                 {
                     Console.WriteLine("U moet wel vier getallen invoeren");
-                    Console.WriteLine("druk op een toets om opnieuw te proberen");
+                    Console.WriteLine("Druk op een toets om opnieuw te proberen");
                     Console.ReadKey();
                 }
             }
@@ -2080,6 +2030,18 @@ namespace restaurant
             List<string> totaalStringList = new List<string> { "€"+Convert.ToString(totaalprijs) };
             return BoxAroundText(totaalStringList, "#", 2, 1, Convert.ToString(totaalprijs).Length+1, false);
         }
+
+        private int LogoutSequence()
+        {
+            Console.WriteLine("\nSuccesvol uitgelogd");
+            Console.WriteLine("Druk op een toets om terug te gaan.");
+            Console.ReadKey();
+            //logout sequence
+            logoutUpdate = true;
+            Logout();
+            return 0;
+        }
+
         public override List<Screen> Update(List<Screen> screens)
         {
             DoLogoutOnEveryScreen(screens);

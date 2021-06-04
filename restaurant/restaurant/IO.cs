@@ -91,10 +91,7 @@ namespace restaurant
         {
             database = GetDatabase();
             //als reserveringen niet bestaat
-            if (database.reserveringen == null)
-            {
-                return new List<Tuple<DateTime, List<Tafels>>>();
-            }
+            
             //maakt een lijst met tuples die beheert alle beschikbare plekken op int aantal dagen
             List<Tuple<DateTime, List<Tafels>>> beschikbaar = new List<Tuple<DateTime, List<Tafels>>>();
 
@@ -108,7 +105,12 @@ namespace restaurant
                 beschikbaar.Add(Tuple.Create(possibleTime, database.tafels));
                 possibleTime = possibleTime.AddMinutes(15);
             }
-            
+
+            if (database.reserveringen == null)
+            {
+                return beschikbaar;
+            }
+
             //voor elke reservering die gemaakt is
             foreach (var reservering in database.reserveringen)
             {
