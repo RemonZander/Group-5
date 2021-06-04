@@ -926,9 +926,9 @@ namespace restaurant
             uitgaven.werknemer = new List<Tuple<int, DateTime>>();
             foreach (var werknemer in database.werknemers)
             {
-                for (int b = rnd.Next(9, 13); b > rnd.Next(0, 4); b--)
+                for (int b = rnd.Next(9, 13); b > rnd.Next(0, 6); b--)
                 {
-                    uitgaven.werknemer.Add(Tuple.Create(werknemer.ID, DateTime.Now.AddMonths(DateTime.Now.Month - b)));
+                    uitgaven.werknemer.Add(Tuple.Create(werknemer.ID, DateTime.Now.AddMonths(DateTime.Now.Month - (DateTime.Now.Month + b))));
                 }
             }
 
@@ -1283,7 +1283,7 @@ namespace restaurant
                 }
                 else
                 {
-                    if (((pos + 2 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 2)
+                    if (((pos + 2 < 6 * (page + 1) && page != 0) || pos < 4) && pos < maxpos - 1)
                     {
                         pos += 2;
                     }
@@ -1300,7 +1300,7 @@ namespace restaurant
             }
             else if (IsKeyPressed(key, RIGHT_ARROW))
             {
-                if (pos % 2 == 0 || pos == 0)
+                if ((pos % 2 == 0 || pos == 0) && pos < maxpos)
                 {
                     pos += 1;
                 }
@@ -1822,6 +1822,7 @@ namespace restaurant
                         }
                     }
 
+                    int uneven = 0;
                     pages = MakePages(boxes, 3);
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
@@ -1829,6 +1830,7 @@ namespace restaurant
                     if (reviewstring[reviewstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
                     {
                         Console.WriteLine(pages[page] + new string('#', 56));
+                        uneven = 1;
                     }
                     else
                     {
@@ -1838,13 +1840,13 @@ namespace restaurant
                     (int, int, double) result = (0, 0, 0);
                     if (page < pages.Count - 1)
                     {
-                        result = Nextpage(page, pos, boxes.Count * 2 - 1, 10, 
+                        result = Nextpage(page, pos, boxes.Count * 2 - (1 + uneven), 10, 
                             new List<Tuple<(int, int, double), string>> { Tuple.Create((page + 1, -1, (page + 1) * 6.0), "D1"), Tuple.Create((page, 10, pos), "D2") , Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") }, 
                             new List<string> { "[1] Volgende pagina", "[2] Terug" });
                     }
                     else
                     {
-                        result = Nextpage(page, pos, boxes.Count * 2 - 1, 10,
+                        result = Nextpage(page, pos, boxes.Count * 2 - (1 + uneven), 10,
                             new List<Tuple<(int, int, double), string>> { Tuple.Create((page, 10, pos), "D1"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
                             new List<string> { "[1] Terug" });
                     }
@@ -2329,7 +2331,7 @@ namespace restaurant
                 EditReview(reviewstr, review);
                 return 10;
             }
-            else if (input.Item1 == "6")
+            else if (input.Item1 == "0")
             {
                 logoutUpdate = true;
                 Logout();
@@ -3338,13 +3340,13 @@ namespace restaurant
                 if (pos == a)
                 {
                     output.Add("| " + expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddDays(7).ToShortDateString() + new string(' ', 25 - (expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddDays(7).ToShortDateString()).Length) +
-                        " | " + "€" + expenses[a].Item2 + new string(' ', 12 - ("€" + expenses[a].Item2).Length) + $" {optionMessage}|\n" +
+                        " | " + "€" + Convert.ToInt32(expenses[a].Item2) + new string(' ', 12 - ("€" + Convert.ToInt32(expenses[a].Item2)).Length) + $" {optionMessage}|\n" +
                         new string('–', 42 + optionMessage.Length + 2) + "\n");
                 }
                 else
                 {
                     output.Add("| " + expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddDays(7).ToShortDateString() + new string(' ', 25 - (expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddDays(7).ToShortDateString()).Length) +
-                        " | " + "€" + expenses[a].Item2 + new string(' ', 12 - ("€" + expenses[a].Item2).Length) + new string(' ', optionMessage.Length) + " |\n" +
+                        " | " + "€" + Convert.ToInt32(expenses[a].Item2) + new string(' ', 12 - ("€" + Convert.ToInt32(expenses[a].Item2)).Length) + new string(' ', optionMessage.Length) + " |\n" +
                         new string('–', 42 + optionMessage.Length + 2) + "\n");
                 }
             }
@@ -3375,8 +3377,7 @@ namespace restaurant
                 List<DateTime> dates = code_eigenaar.GetUitgavenWerknemers().OrderBy(d => d.Item2).Select(d => d.Item2).Distinct().ToList();
                 dates.AddRange(code_eigenaar.GetUitgavenIngredienten().OrderBy(d => d.bestel_datum).Select(d => d.bestel_datum).Distinct().ToList());
                 dates = dates.OrderBy(d => d).Distinct().ToList();
-                dates.Sort();
-                int months = ((dates[0].Year - DateTime.Now.Year) * 12) + DateTime.Now.Month - (dates[0].Month - 1);
+                int months = ((DateTime.Now.Year - dates[0].Year) * 12) + DateTime.Now.Month - (dates[0].Month - 1);
                 List<(DateTime, double)> uitgaven = new List<(DateTime, double)>();
                 dates[0] = dates[0].AddDays(1 - dates[0].Day);
                 for (int a = 0; a < months; a++)
@@ -3421,6 +3422,7 @@ namespace restaurant
             {
                 List<DateTime> dates = code_eigenaar.GetUitgavenWerknemers().OrderBy(d => d.Item2).Select(d => d.Item2).Distinct().ToList();
                 dates.AddRange(code_eigenaar.GetUitgavenIngredienten().OrderBy(d => d.bestel_datum).Select(d => d.bestel_datum).Distinct().ToList());
+                dates = dates.OrderBy(d => d).Distinct().ToList();
                 dates[0] = dates[0].AddDays(1 - Convert.ToInt32(dates[0].DayOfWeek));
                 TimeSpan timeSpan = DateTime.Now.Date - (dates[0].Date);
                 int weeks = timeSpan.Days / 7 + 1;
