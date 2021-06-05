@@ -693,7 +693,7 @@ namespace restaurant
 
     public class GetWorkersScreen : Screen
     {
-        int currentScreenID = 22;
+        int currentScreenID = 23;
         public override int DoWork()
         {
             int maxLength = 124;
@@ -713,7 +713,7 @@ namespace restaurant
                     Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine("Geen medewerkers gevonden.");
                     Console.WriteLine("Maak een nieuwe medewerker door op [3] te drukken.");
-                    (string, int) ans = AskForInput(22);
+                    (string, int) ans = AskForInput(11);
                     switch (ans.Item1)
                     {
                         case "3":
@@ -826,12 +826,7 @@ namespace restaurant
                 {
                     case -3:
                         //toevoegen
-                        return 23;
-                        //AddWorkerScreen modifyWorker = new AddWorkerScreen();
-                        //Console.Clear();
-                        //modifyWorker = new AddWorkerScreen();
-                        //modifyWorker.DoWork();
-                        //break;
+                        return 24;
                     case -4:
                         //Verwijderen
                         Code_Eigenaar_menu eigenaar_Menu = new Code_Eigenaar_menu();
@@ -921,8 +916,8 @@ namespace restaurant
 
         public override int DoWork()
         {
-            int currentScreen = 23;
-            int previousScreen = 22;
+            int currentScreen = 24;
+            int previousScreen = 23;
             (string, int, string) result;
 
             Console.WriteLine(string.Join("\n", output));
