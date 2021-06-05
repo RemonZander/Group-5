@@ -693,7 +693,7 @@ namespace restaurant
 
     public class GetWorkersScreen : Screen
     {
-        int currentScreenID = 23;
+        int currentScreenID = 24;
         public override int DoWork()
         {
             int maxLength = 124;
@@ -826,7 +826,7 @@ namespace restaurant
                 {
                     case -3:
                         //toevoegen
-                        return 24;
+                        return 23;
                     case -4:
                         //Verwijderen
                         Code_Eigenaar_menu eigenaar_Menu = new Code_Eigenaar_menu();
@@ -916,8 +916,8 @@ namespace restaurant
 
         public override int DoWork()
         {
-            int currentScreen = 24;
-            int previousScreen = 23;
+            int currentScreen = 23;
+            int previousScreen = 24;
             (string, int, string) result;
 
             Console.WriteLine(string.Join("\n", output));
