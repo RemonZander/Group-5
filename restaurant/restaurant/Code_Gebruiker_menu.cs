@@ -1346,6 +1346,7 @@ namespace restaurant
                     }
 
                     pages = MakePages(boxes, 3);
+                    int oneven = 0;
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit is uw feedback op pagina {page + 1} van de {pages.Count}:");
@@ -1355,6 +1356,7 @@ namespace restaurant
                     if (feedbackstring[feedbackstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
                     {
                         Console.WriteLine(pages[page] + new string('#', 56));
+                        oneven = 1;
                     }
                     else
                     {
@@ -1365,13 +1367,13 @@ namespace restaurant
                     (int, int, double) result = (0, 0, 0);
                     if (page < pages.Count - 1)
                     {
-                        result = Nextpage(page, pos, boxes.Count * 2 - 1, 8,
+                        result = Nextpage(page, pos, boxes.Count * 2 -(1 + oneven), 8,
                             new List<Tuple<(int, int, double), string>> { Tuple.Create((page + 1, -1, (page + 1) * 6.0), "D1"), Tuple.Create((page, 8, pos), "D2"), Tuple.Create((-1, -1, pos), "D3"), Tuple.Create((-2, -2, pos), "D4") },
                             new List<string> { "[1] Volgende pagina", "[2] Terug" });
                     }
                     else
                     {
-                        result = Nextpage(page, pos, boxes.Count*2-1, 8,
+                        result = Nextpage(page, pos, boxes.Count * 2 - (1 + oneven), 8,
                             new List<Tuple<(int, int, double), string>> { Tuple.Create((page, 8, pos), "D1"), Tuple.Create((-1, -1, pos), "D3"), Tuple.Create((-2, -2, pos), "D4") },
                             new List<string> { "[1] Terug" });
                     }
@@ -1515,6 +1517,7 @@ namespace restaurant
                         }
 
                         pages = MakePages(boxes, 3);
+                        int oneven = 0;
                         if (pages.Count == 0)
                         {
                             Console.WriteLine("\nVanaf deze datum heeft u nog geen feedback geschreven.");
@@ -1529,6 +1532,7 @@ namespace restaurant
                         if (feedbackstring[feedbackstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
                         {
                             Console.WriteLine(pages[page] + new string('#', 56));
+                            oneven = 1;
                         }
                         else
                         {
@@ -1538,13 +1542,13 @@ namespace restaurant
                         (int, int, double) result = (0, 0, 0);
                         if (page < pages.Count - 1)
                         {
-                            result = Nextpage(page, pos, boxes.Count * 2 - 1, 8,
+                            result = Nextpage(page, pos, boxes.Count * 2 - (1 + oneven), 8,
                                 new List<Tuple<(int, int, double), string>> { Tuple.Create((page + 1, -1, (page + 1) * 6.0), "D1"), Tuple.Create((page, 8, pos), "D2"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
                                 new List<string> { "[1] Volgende pagina", "[2] Terug" });
                         }
                         else
                         {
-                            result = Nextpage(page, pos, boxes.Count * 2 - 1, 8,
+                            result = Nextpage(page, pos, boxes.Count * 2 - (1 + oneven), 8,
                                 new List<Tuple<(int, int, double), string>> { Tuple.Create((page, 8, pos), "D1"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
                                 new List<string> { "[1] Terug" });
                         }
