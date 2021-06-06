@@ -21,36 +21,36 @@ namespace restaurant
             screens.Add(new ReviewScreen());
             screens.Add(new RegisterScreen());
             screens.Add(new LoginScreen());
-            #region Klant
+            // Klant
             screens.Add(new ClientMenuScreen());
             screens.Add(new MakeReservationScreen());
             screens.Add(new MakeReviewScreen());
             screens.Add(new ViewFeedbackScreen());
             screens.Add(new MakeFeedbackScreen());
             screens.Add(new ViewReviewScreen());
-            #endregion
-            #region Eigenaar
+
+            // Eigenaar
             screens.Add(new OwnerMenuScreen());
             screens.Add(new MakeMealScreen()); // Gerechten
-            screens.Add(new OwnerMenuScreen()); // Uitgaven
+            screens.Add(new ExpensesScreen()); // Uitgaven
             screens.Add(new IngredientsScreen());
             screens.Add(new IncomeScreen()); // Inkomsten
-            #endregion
-            #region Medewerker
+
+            // Medewerker
             screens.Add(new EmployeeMenuScreen());
             screens.Add(new GetReservationsScreen());
             screens.Add(new AddTableToReservationScreen());
             #endregion
-            #region Klant
+            // Klant
             screens.Add(new ViewReservationScreen());
-            #endregion
-            #region Eigenaar
+
+            // Eigenaar
             screens.Add(new EmployeeFeedbackScreen()); // EmployeeFeedbackScreen
             screens.Add(new ViewMealsScreen()); // ViewMealsScreen
-            #endregion
-            // 22 - PaymentScreen
-            // 23 - Aanmaken worker
-            // 24 - Bewerken/Verwijderen worker
+
+            screens.Add(new PaymentScreen());
+            screens.Add(new AddWorkerScreen())
+            screens.Add(new GetWorkersScreen());
             currentScreen = 0;
         }
 
@@ -1211,7 +1211,7 @@ namespace restaurant
             steps.Add("Uw postcode: ");
             steps.Add("Uw straatnaam: ");
             steps.Add("Uw huisnummer: ");
-            steps.Add("\nHieronder vult u uw login gegevens:\nUw e-mailadres:: ");
+            steps.Add("\nHieronder vult u uw login gegevens:\nUw e-mailadres:");
             steps.Add("Het wachtwoord voor uw account:");
             steps.Add("\nKloppen de bovenstaande gegevens?\n[1] Deze kloppen niet, breng me terug.\n[2] Ja, deze kloppen.");
 
@@ -2292,6 +2292,8 @@ namespace restaurant
             Console.WriteLine("[6] Nieuwe gerechten toevoegen");
             Console.WriteLine("[7] Ingrediënten");
             Console.WriteLine("[8] Inkomsten");
+            Console.WriteLine("[9] Inkomsten");
+            Console.WriteLine("[10] Inkomsten");
 
             (string, int) result = AskForInput(0);
 
