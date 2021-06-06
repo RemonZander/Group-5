@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -881,6 +882,41 @@ namespace restaurant
                 }
             }
             return price;
+        }
+
+        public List<(Inboedel, DateTime)> GetInboedel()
+        {
+            database = io.GetDatabase();
+            List<(Inboedel, DateTime)> output = new List<(Inboedel, DateTime)>();
+            if (database.uitgaven.Equals(null) || database.uitgaven.inboedel.Count == 0)
+            {
+                return new List<(Inboedel, DateTime)>();
+            }
+
+            for (int a = 0; a < database.uitgaven.inboedel.Count; a++)
+            {
+                output.Add((database.uitgaven.inboedel[a], database.uitgaven.inboedel[a].datum));
+            }
+            return output;
+        }
+
+        public double GetInboedel(DateTime begindate, DateTime enddate)
+        {
+            database = io.GetDatabase();
+            double output = 0;
+            if (database.uitgaven.Equals(null) || database.uitgaven.inboedel.Count == 0)
+            {
+                return 0;
+            }
+
+            for (int a = 0; a < database.uitgaven.inboedel.Count; a++)
+            {
+                if (database.uitgaven.inboedel[a].datum >= begindate && database.uitgaven.inboedel[a].datum <= enddate)
+                {
+                    output += database.uitgaven.inboedel[a].prijs;
+                }
+            }
+            return output;
         }
 
         public double Inkomsten(DateTime beginDatum, DateTime eindDatum) // Mogelijkheid een bepaald tijdsspan in te voeren en daarvan de inkomsten te kunnen zien.
