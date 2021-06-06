@@ -123,9 +123,6 @@ namespace restaurant
                         feedback.ID = database.feedback[database.feedback.Count - 1].ID + 1;
                         database.feedback.Add(feedback);
                     }
-
-
-                    
                 }
                 else if (database.reserveringen[a].datum < DateTime.Now && database.reserveringen[a].tafels == null && database.reserveringen[a].gerechten_ID == null)
                 {
@@ -133,7 +130,10 @@ namespace restaurant
                 }
             }
 
-            database.ingredienten.AddRange(ingredient_temp);
+            if (ingredient_temp.Count != 0)
+            {
+                database.ingredienten.AddRange(ingredient_temp);
+            } 
             io.Savedatabase(database);
         }
     }
