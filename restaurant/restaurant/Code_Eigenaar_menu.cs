@@ -58,7 +58,7 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        public void EditMeal(int ID, string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<int> ingredients, List<string> allergens, bool isDiner, bool isLunch, bool isOntbijt)
+        public void EditMeal(int ID, string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<string> ingredients, List<string> allergens, bool isDiner, bool isLunch, bool isOntbijt)
         {
             database = io.GetDatabase();
             List<Gerechten> gerechten = new List<Gerechten>(GetMeals());
@@ -71,7 +71,7 @@ namespace restaurant
                     gerechten[i].prijs = price;
                     gerechten[i].special = isSpecial;
                     gerechten[i].is_gearchiveerd = isArchived;
-                    gerechten[i].ingredienten = ingredients;
+                    gerechten[i].Ingredienten = ingredients;
                     gerechten[i].allergenen = allergens;
                     gerechten[i].diner = isDiner;
                     gerechten[i].lunch = isLunch;
@@ -83,7 +83,7 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        public void CreateMeal(string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<int> ingredients, List<string> allergens, bool isDiner, bool isLunch, bool isOntbijt)
+        public void CreateMeal(string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<string> ingredients, List<string> allergens, bool isDiner, bool isLunch, bool isOntbijt)
         {
             database = io.GetDatabase();
             List<Gerechten> gerechten = new List<Gerechten>(GetMeals());
@@ -95,7 +95,7 @@ namespace restaurant
             gerecht.prijs = price;
             gerecht.special = isSpecial;
             gerecht.is_gearchiveerd = isArchived;
-            gerecht.ingredienten = ingredients;
+            gerecht.Ingredienten = ingredients;
             gerecht.allergenen = allergens;
             gerecht.diner = isDiner;
             gerecht.lunch = isLunch;
@@ -126,7 +126,7 @@ namespace restaurant
             compareDate = compareDate.AddDays(dag);
             for (int i = 0; i < ingredients.Count; i++)
             {
-                if (ingredients[i].houdbaarheids_datum > compareDate || ingredients[i].houdbaarheids_datum < DateTime.Now)
+                if (DateTime.Now.AddDays(ingredients[i].dagenHoudbaar) > compareDate || DateTime.Now.AddDays(ingredients[i].dagenHoudbaar) < DateTime.Now)
                 {
                     ingredients[i] = new Ingredient();
                 }
@@ -140,7 +140,7 @@ namespace restaurant
             List<Ingredient> ingredients = new List<Ingredient>(GetIngredients());
             for (int i = 0; i < ingredients.Count; i++)
             {
-                if (ingredients[i].houdbaarheids_datum > DateTime.Now)
+                if (DateTime.Now.AddDays(ingredients[i].dagenHoudbaar) > DateTime.Now)
                 {
                     ingredients[i] = new Ingredient();
                 }
@@ -154,7 +154,7 @@ namespace restaurant
             database = io.GetDatabase();
             for (int i = 0; i < database.ingredienten.Count; i++)
             {
-                if (database.ingredienten[i].houdbaarheids_datum <= DateTime.Now)
+                if (DateTime.Now.AddDays(database.ingredienten[i].dagenHoudbaar) <= DateTime.Now)
                 {
                     database.ingredienten[i] = new Ingredient();
                 }
@@ -299,7 +299,7 @@ namespace restaurant
                 {
                     naam = database.menukaart.gerechten[dishIndex].naam,
                     ID = database.menukaart.gerechten[dishIndex].ID,
-                    ingredienten = database.menukaart.gerechten[dishIndex].ingredienten,
+                    Ingredienten = database.menukaart.gerechten[dishIndex].Ingredienten,
                     is_populair = true,
                     prijs = database.menukaart.gerechten[dishIndex].prijs,
                     special = database.menukaart.gerechten[dishIndex].special,
@@ -323,7 +323,7 @@ namespace restaurant
                 {
                     naam = meal.naam,
                     ID = meal.ID,
-                    ingredienten = meal.ingredienten,
+                    Ingredienten = meal.Ingredienten,
                     is_populair = meal.is_populair,
                     prijs = meal.prijs,
                     special = meal.special,
