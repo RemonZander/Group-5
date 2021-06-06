@@ -941,10 +941,13 @@ namespace restaurant
                     //als er wel medewerkers zijn
                     else
                     {
-                        Console.WriteLine("Kies hier een medewerker aan wie u uw feedback wilt richten.\n\nMedewerkers:");
+                        Console.WriteLine("Kies hier een medewerker aan wie u uw feedback wilt richten.");
+                        Console.WriteLine("\nDe lijst met medewerkers:");
+                        Console.WriteLine(new string('–', 46) + "\n| ID     | Naam                              |\n" + new string('–', 46));
                         for (int j = 0; j < Medewerkers.Count; j++)
                         {
-                            Console.WriteLine("Naam:  " + Medewerkers[j].login_gegevens.klantgegevens.voornaam + " " + Medewerkers[j].login_gegevens.klantgegevens.achternaam);
+                            //Console.WriteLine("Naam:  " + Medewerkers[j].login_gegevens.klantgegevens.voornaam + " " + Medewerkers[j].login_gegevens.klantgegevens.achternaam);
+                            Console.WriteLine("|" + Medewerkers[j].ID + new string(' ', 8 - Medewerkers[j].ID.ToString().Length) + "|" + Medewerkers[j].login_gegevens.klantgegevens.voornaam + " " + Medewerkers[j].login_gegevens.klantgegevens.achternaam +  new string(' ', 35 - (Medewerkers[j].login_gegevens.klantgegevens.voornaam + " " + Medewerkers[j].login_gegevens.klantgegevens.achternaam).Length) +  "|\n" + new string('–', 46));
                         }
                         Console.WriteLine("\nVoer hieronder de voor- en achternaam in van de medewerker aan wie u uw feedback wilt richten.");
                         Console.WriteLine("Druk vervolgens op enter om uw keuze te bevestigen.");
@@ -1041,14 +1044,16 @@ namespace restaurant
                 {
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
+                    Console.WriteLine("Hier kunt u een oude reservering kiezen, waarover u feedback wilt schrijven.");
+                    Console.WriteLine("U kunt één keer feedback schrijven per reservering.");
+                    Console.WriteLine("\nU kunt kiezen uit één van de onderstaande reserveringen:");
+                    Console.WriteLine(new string('–', 44) + "\n|ID     |Aantal mensen | Datum             |\n" + new string('–', 44));
                     for (int i = 0; i < reserveringen.Count; i++)
                     {
-                        Console.WriteLine(reserveringen[i].ID + new string(' ', 8 - reserveringen[i].ID.ToString().Length) + "| " + reserveringen[i].aantal + new string(' ', 5 - reserveringen[i].aantal.ToString().Length) + "| " + reserveringen[i].datum);
+                        Console.WriteLine("|" + reserveringen[i].ID + new string(' ', 7 - reserveringen[i].ID.ToString().Length) + "| " + reserveringen[i].aantal + new string(' ', 13 - reserveringen[i].aantal.ToString().Length) + "| " + reserveringen[i].datum.ToShortDateString() + " " + reserveringen[i].datum.ToShortTimeString() + new string(' ', 18-(reserveringen[i].datum.ToShortDateString() + " " + reserveringen[i].datum.ToShortTimeString()).Length) + "|\n" + new string('–', 44));
                     }
-                    Console.WriteLine("\nHier ziet u alle reserveringen waarover u nog feedback kunt geven.");
-                    Console.WriteLine("het formaat van deze weergave is:  ID | aantal mensen | datum");
-                    Console.WriteLine("Met het ID kunt u selecteren over welk bezoek u een review wilt schrijven.");
-                    Console.WriteLine("Het ID van u reservering:");
+                    Console.WriteLine("\nMet het ID kunt u selecteren over welk bezoek u feedback wilt schrijven.");
+                    Console.WriteLine("Voer een ID in en druk op enter.");
 
                     key = AskForInput(huidigScherm);
                     if (key.Item2 != -1)
@@ -1108,42 +1113,43 @@ namespace restaurant
                         Console.WriteLine("Druk op een toets om verder te gaan");
                         feedbackVoorEigenaar = true;
                     }
-                    //als er wel medewerkers zijn
-                    else
-                    {
-                        for (int j = 0; j < Medewerkers.Count; j++)
-                        {
-                            Console.WriteLine("Naam:  " + Medewerkers[j].login_gegevens.klantgegevens.voornaam + " " + Medewerkers[j].login_gegevens.klantgegevens.achternaam);
-                        }
-                        Console.WriteLine("\nVoer hieronder de voor- en achternaam in van de medewerker aan wie u uw feedback wilt richten.");
-                        Console.WriteLine("Druk vervolgens op enter om uw keuze te bevestigen.");
-                        Console.WriteLine("Wilt u uw feedback richten aan de eigenaar van het restaurant, voer dan niks in en druk gelijk op Enter.");
-                        Console.WriteLine("LET OP! Het invoeren van de naam is hoofdlettergevoelig!");
 
-                        //item 1 is de naam van de medewerker
-                        (string, int) choiceMedewerker = AskForInput(huidigScherm);
-                        //als escape, ga terug
-                        if (choiceMedewerker.Item2 != -1)
+                    Console.WriteLine("Kies hier een medewerker aan wie u uw feedback wilt richten.");
+                    Console.WriteLine("\nDe lijst met medewerkers:");
+                    Console.WriteLine(new string('–', 46) + "\n| ID     | Naam                              |\n" + new string('–', 46));
+                    for (int j = 0; j < Medewerkers.Count; j++)
+                    {
+                        //Console.WriteLine("Naam:  " + Medewerkers[j].login_gegevens.klantgegevens.voornaam + " " + Medewerkers[j].login_gegevens.klantgegevens.achternaam);
+                        Console.WriteLine("|" + Medewerkers[j].ID + new string(' ', 8 - Medewerkers[j].ID.ToString().Length) + "|" + Medewerkers[j].login_gegevens.klantgegevens.voornaam + " " + Medewerkers[j].login_gegevens.klantgegevens.achternaam + new string(' ', 35 - (Medewerkers[j].login_gegevens.klantgegevens.voornaam + " " + Medewerkers[j].login_gegevens.klantgegevens.achternaam).Length) + "|\n" + new string('–', 46));
+                    }
+                    Console.WriteLine("\nVoer hieronder de voor- en achternaam in van de medewerker aan wie u uw feedback wilt richten.");
+                    Console.WriteLine("Druk vervolgens op enter om uw keuze te bevestigen.");
+                    Console.WriteLine("Wilt u uw feedback richten aan de eigenaar van het restaurant, voer dan niks in en druk gelijk op Enter.");
+                    Console.WriteLine("LET OP! Het invoeren van de naam is hoofdlettergevoelig!");
+
+                    //item 1 is de naam van de medewerker
+                    (string, int) choiceMedewerker = AskForInput(huidigScherm);
+                    //als escape, ga terug
+                    if (choiceMedewerker.Item2 != -1)
+                    {
+                        return choiceMedewerker.Item2;
+                    }
+                    //als leeg, is voor eigenaar
+                    if (choiceMedewerker.Item1 == "")
+                    {
+                        feedbackVoorEigenaar = true;
+                    }
+                    if(choiceMedewerker.Item1 == "0")
+                    {
+                        return LogoutSequence();
+                    }
+                    //als match met werknemer sla deze op
+                    for (int i = 0; i < Medewerkers.Count; i++)
+                    {
+                        if (Medewerkers[i].login_gegevens.klantgegevens.voornaam + " " + Medewerkers[i].login_gegevens.klantgegevens.achternaam == choiceMedewerker.Item1)
                         {
-                            return choiceMedewerker.Item2;
-                        }
-                        //als leeg, is voor eigenaar
-                        if (choiceMedewerker.Item1 == "")
-                        {
-                            feedbackVoorEigenaar = true;
-                        }
-                        if(choiceMedewerker.Item1 == "0")
-                        {
-                            return LogoutSequence();
-                        }
-                        //als match met werknemer sla deze op
-                        for (int i = 0; i < Medewerkers.Count; i++)
-                        {
-                            if (Medewerkers[i].login_gegevens.klantgegevens.voornaam + " " + Medewerkers[i].login_gegevens.klantgegevens.achternaam == choiceMedewerker.Item1)
-                            {
-                                feedbackMedewerker = Medewerkers[i];
-                                break;
-                            }
+                            feedbackMedewerker = Medewerkers[i];
+                            break;
                         }
                     }
                     if (feedbackVoorEigenaar == false && feedbackMedewerker.login_gegevens == null)
