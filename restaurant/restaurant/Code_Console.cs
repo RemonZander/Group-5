@@ -16,41 +16,41 @@ namespace restaurant
 
         public Code_Console()
         {
-            screens.Add(new StartScreen());
-            screens.Add(new GerechtenScreen());
-            screens.Add(new ReviewScreen());
-            screens.Add(new RegisterScreen());
-            screens.Add(new LoginScreen());
+            screens.Add(new StartScreen()); // 0
+            screens.Add(new GerechtenScreen()); // 1
+            screens.Add(new ReviewScreen()); // 2
+            screens.Add(new RegisterScreen()); // 3
+            screens.Add(new LoginScreen()); // 4
             // Klant
-            screens.Add(new ClientMenuScreen());
-            screens.Add(new MakeReservationScreen());
-            screens.Add(new MakeReviewScreen());
-            screens.Add(new ViewFeedbackScreen());
-            screens.Add(new MakeFeedbackScreen());
-            screens.Add(new ViewReviewScreen());
+            screens.Add(new ClientMenuScreen()); // 5
+            screens.Add(new MakeReservationScreen()); // 6
+            screens.Add(new MakeReviewScreen()); // 7
+            screens.Add(new ViewFeedbackScreen()); // 8
+            screens.Add(new MakeFeedbackScreen()); // 9
+            screens.Add(new ViewReviewScreen()); // 10
 
             // Eigenaar
-            screens.Add(new OwnerMenuScreen());
-            screens.Add(new MakeMealScreen()); // Gerechten
-            screens.Add(new ExpensesScreen()); // Uitgaven
-            screens.Add(new IngredientsScreen());
-            screens.Add(new IncomeScreen()); // Inkomsten
+            screens.Add(new OwnerMenuScreen()); // 11
+            screens.Add(new MakeMealScreen()); // 12
+            screens.Add(new ExpensesScreen()); // 13
+            screens.Add(new IngredientsScreen()); // 14
+            screens.Add(new IncomeScreen()); // 15
 
             // Medewerker
-            screens.Add(new EmployeeMenuScreen());
-            screens.Add(new GetReservationsScreen());
-            screens.Add(new AddTableToReservationScreen());
-            #endregion
+            screens.Add(new EmployeeMenuScreen()); // 16
+            screens.Add(new GetReservationsScreen()); // 17
+            screens.Add(new AddTableToReservationScreen()); // 18
+
             // Klant
-            screens.Add(new ViewReservationScreen());
+            screens.Add(new ViewReservationScreen()); // 19
 
             // Eigenaar
-            screens.Add(new EmployeeFeedbackScreen()); // EmployeeFeedbackScreen
-            screens.Add(new ViewMealsScreen()); // ViewMealsScreen
+            screens.Add(new EmployeeFeedbackScreen()); // 20
+            screens.Add(new ViewMealsScreen()); // 21
 
-            screens.Add(new PaymentScreen());
-            screens.Add(new AddWorkerScreen())
-            screens.Add(new GetWorkersScreen());
+            screens.Add(new PaymentScreen()); // 22
+            screens.Add(new AddWorkerScreen()); // 23
+            screens.Add(new GetWorkersScreen()); // 24
             currentScreen = 0;
         }
 
@@ -2292,14 +2292,14 @@ namespace restaurant
             Console.WriteLine("[6] Nieuwe gerechten toevoegen");
             Console.WriteLine("[7] Ingrediënten");
             Console.WriteLine("[8] Inkomsten");
-            Console.WriteLine("[9] Inkomsten");
-            Console.WriteLine("[10] Inkomsten");
+            Console.WriteLine("[9] Voeg een werknemer toe");
+            Console.WriteLine("[10] Bewerk/Verwijder een werknemer");
 
             (string, int) result = AskForInput(0);
 
             if (result.Item2 != -1) return 11;
 
-            if (!(new string[9] { "0", "1", "2", "3", "4", "5", "6", "7", "8" }).Contains(result.Item1))
+            if (!(new string[11] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }).Contains(result.Item1))
             {
                 Console.WriteLine(InvalidInputMessage);
                 Console.WriteLine(PressButtonToContinueMessage);
@@ -2328,7 +2328,11 @@ namespace restaurant
                     case 7:
                         return 14;
                     case 8:
-                        return 15;
+                        return 13;
+                    case 9:
+                        return 23;
+                    case 10:
+                        return 24;
                 }
             }
             return 11;
