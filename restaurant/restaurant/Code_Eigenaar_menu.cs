@@ -727,13 +727,9 @@ namespace restaurant
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine("Geen medewerkers gevonden.");
-                    Console.WriteLine("Maak een nieuwe medewerker door op [3] te drukken.");
                     (string, int) ans = AskForInput(11);
                     switch (ans.Item1)
                     {
-                        case "3":
-                            //toevoegen
-                            return 23;
                         default:
                             Console.WriteLine(PressButtonToContinueMessage);
                             Console.ReadKey();
@@ -987,7 +983,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3, currentScreen);
+                    if (result.Item3 != null) return ShowInvalidInput(currentScreen, result.Item3);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1005,7 +1001,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3, currentScreen);
+                    if (result.Item3 != null) return ShowInvalidInput(currentScreen, result.Item3);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1030,7 +1026,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3, currentScreen);
+                    if (result.Item3 != null) return ShowInvalidInput(currentScreen, result.Item3);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1048,7 +1044,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3, currentScreen);
+                    if (result.Item3 != null) return ShowInvalidInput(currentScreen, result.Item3);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1066,7 +1062,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3, currentScreen);
+                    if (result.Item3 != null) return ShowInvalidInput(currentScreen, result.Item3);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1084,7 +1080,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3, currentScreen);
+                    if (result.Item3 != null) return ShowInvalidInput(currentScreen, result.Item3);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1103,7 +1099,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3, currentScreen);
+                    if (result.Item3 != null) return ShowInvalidInput(currentScreen, result.Item3);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1127,7 +1123,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3, currentScreen);
+                    if (result.Item3 != null) return ShowInvalidInput(currentScreen, result.Item3);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1175,7 +1171,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3, currentScreen);
+                    if (result.Item3 != null) return ShowInvalidInput(currentScreen, result.Item3);
 
                     if (result.Item1 == "1")
                     {
