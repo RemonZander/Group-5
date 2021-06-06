@@ -411,6 +411,7 @@ namespace restaurant
                 block.Add(new string(' ', 60));
                 block.Add("Voornaam: " + werknemers[a].login_gegevens.klantgegevens.voornaam + new string(' ', 60 - ("Voornaam: " + werknemers[a].login_gegevens.klantgegevens.voornaam).Length));
                 block.Add("Achternaam: " + werknemers[a].login_gegevens.klantgegevens.achternaam + new string(' ', 60 - ("Achternaam: " + werknemers[a].login_gegevens.klantgegevens.achternaam).Length));
+                block.Add("E-mailadres: " + werknemers[a].login_gegevens.email + new string(' ', 60 - ("E-mailadres: " + werknemers[a].login_gegevens.email).Length));
                 block.Add(new string(' ', 60));
                 output.Add(block);
             }
@@ -437,6 +438,20 @@ namespace restaurant
                 return true;
             }
             return false;
+        }
+
+        public void SaveIngredientName(IngredientType ingredientType)
+        {
+            database = io.GetDatabase();
+            if (database.ingredientenNamen.Count == 0)
+            {
+                database.ingredientenNamen = new List<IngredientType> { ingredientType };
+            }
+            else
+            {
+                database.ingredientenNamen.Add(ingredientType);
+            }
+            io.Savedatabase(database);
         }
     }
 
@@ -789,7 +804,16 @@ namespace restaurant
                 Console.WriteLine();
                 Console.WriteLine("Werknemerslijst");
                 Console.WriteLine($"Pagina {pageNum + 1} van de {pages.Count}:");
-                Console.WriteLine(pages[pageNum] + new string('#', maxLength + 6));
+                int uneven = 0;
+                if (workerString[workerString.Count - 1][1].Length < 70 && pageNum == pages.Count - 1)
+                {
+                    Console.WriteLine(pages[pageNum] + new string('#', 66));
+                    uneven = 1;
+                }
+                else
+                {
+                    Console.WriteLine(pages[pageNum] + new string('#', maxLength + 6));
+                }
                 List<Tuple<(int, int, double), string>> tuples = new List<Tuple<(int, int, double), string>>();
                 //if there is a next page and a previous page
                 List<string> txt = new List<string>();
@@ -815,7 +839,7 @@ namespace restaurant
                 tuples.Add(Tuple.Create((-3, -3, pos), "D3"));
                 tuples.Add(Tuple.Create((-4, -4, pos), "D4"));
                 tuples.Add(Tuple.Create((-5, -5, pos), "D5"));
-                result = Nextpage(pageNum, pos, boxes.Count * 2 - 1, 16, tuples, txt);
+                result = Nextpage(pageNum, pos, boxes.Count * 2 - (1 + uneven), 16, tuples, txt);
                 if (result.Item2 > -1)
                 {
                     return result.Item2;
@@ -829,19 +853,48 @@ namespace restaurant
                         return 23;
                     case -4:
                         //Verwijderen
+                        Console.Clear();
+                        Console.WriteLine(GetGFLogo(true));
                         Code_Eigenaar_menu eigenaar_Menu = new Code_Eigenaar_menu();
-                        bool deleted = eigenaar_Menu.DeleteWorker(workers[Convert.ToInt32(pos)]);
-                        if (deleted)
-                        {
-                            Console.WriteLine("Medewerker is succesvol verwijderd!");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Er is iets fout gegaan probeer het later opnieuw.");
-                        }
-                        Console.WriteLine(PressButtonToContinueMessage);
-                        Console.ReadKey();
-                        return currentScreenID;
+
+                        List<Werknemer> workerslist = new List<Werknemer>();
+                        Werknemer worker = workers[Convert.ToInt32(pos)];
+                        Console.WriteLine("Weet u zeker dat u deze medewerker wilt verwijderen? Type in ja of nee");
+                        Console.WriteLine(GetGFLogo(true));
+                        Console.WriteLine(new string('#', 50));
+                        Console.WriteLine("#" + new string(' ', 48) + "#");
+                        Console.WriteLine("#" + new string(' ', 48) + "#");
+                        Console.WriteLine("#  Voornaam: " + worker.login_gegevens.klantgegevens.voornaam + new string(' ', 36 - worker.login_gegevens.klantgegevens.voornaam.Length) + "#");
+                        Console.WriteLine("#  Achternaam: " + worker.login_gegevens.klantgegevens.achternaam + new string(' ', 34 - worker.login_gegevens.klantgegevens.achternaam.ToString().Length) + "#");
+                        Console.WriteLine("#  E-mailadres: " + worker.login_gegevens.email + new string(' ', 33 - worker.login_gegevens.email.Length) + "#");
+                        Console.WriteLine("#" + new string(' ', 48) + "#");
+                        Console.WriteLine("#" + new string(' ', 48) + "#");
+                        Console.WriteLine(new string('#', 50) + "\n");
+                        return Confirmation(
+                            currentScreenID,
+                            () =>
+                            {
+                                bool deleted = eigenaar_Menu.DeleteWorker(workers[Convert.ToInt32(pos)]);
+                                if (deleted)
+                                {
+                                    Console.WriteLine("Medewerker is succesvol verwijderd!");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Er is iets fout gegaan probeer het later opnieuw.");
+                                }
+                                Console.WriteLine(PressButtonToContinueMessage);
+                                Console.ReadKey();
+                                return currentScreenID;
+                            },
+                            () =>
+                            {
+                                Console.WriteLine("\n De medewerker is NIET verwijderd.");
+                                Console.WriteLine(PressButtonToContinueMessage);
+                                Console.ReadKey();
+                                return currentScreenID;
+                            }
+                        );
                 }
                 pageNum = 0;
                 pos = 0;
@@ -1063,6 +1116,10 @@ namespace restaurant
                     Regex regex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
 
                     result = AskForInput(previousScreen, null, input => regex.IsMatch(input), (null, "Het e-mailadres is niet juist er mist een @ of een ."));
+                    //if (result.Item1.Length > 30)
+                    //{
+                        
+                    //}
 
                     if (result.Item1 == null)
                     {
