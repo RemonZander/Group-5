@@ -64,45 +64,93 @@ namespace restaurant
         public string Register(Login_gegevens login_Gegevens)
         {
             database = io.GetDatabase();
-
-            if (database.login_gegevens != null)
+            if (login_Gegevens.type == "Gebruiker")
             {
-                foreach (var item in database.login_gegevens)
+                if (database.login_gegevens != null)
                 {
-                    if (item.email == login_Gegevens.email && item.type == login_Gegevens.type)
+                    foreach (var item in database.login_gegevens)
                     {
-                        return "This email and account type is already in use";
+                        if (item.email == login_Gegevens.email && item.type == login_Gegevens.type)
+                        {
+                            return "This email and account type is already in use";
+                        }
                     }
                 }
+                char[] pswChars = login_Gegevens.password.ToCharArray();
+
+                int punctFoundAmount = 0;
+                int digitFoundAmount = 0;
+
+                for (int i = 0; i < pswChars.Length; i++)
+                {
+                    if (char.IsPunctuation(pswChars[i])) punctFoundAmount++;
+                    if (char.IsDigit(pswChars[i])) digitFoundAmount++;
+                }
+
+                if (login_Gegevens.password.Length < 8 || punctFoundAmount < 1 || digitFoundAmount < 1)
+                {
+                    return "Password must contain at least 8 characters, 1 punctuation mark and 1 number.";
+                }
+
+                if (database.login_gegevens == null)
+                {
+                    database.login_gegevens = new List<Login_gegevens> { login_Gegevens };
+                }
+                else
+                {
+                    database.login_gegevens.Add(login_Gegevens);
+                }
+
+                io.Savedatabase(database);
+                return "Succes!";
             }
-
-            char[] pswChars = login_Gegevens.password.ToCharArray();
-
-            int punctFoundAmount = 0;
-            int digitFoundAmount = 0;
-
-            for (int i = 0; i < pswChars.Length; i++)
+            else if (login_Gegevens.type == "Medewerker")
             {
-                if (char.IsPunctuation(pswChars[i])) punctFoundAmount++;
-                if (char.IsDigit(pswChars[i])) digitFoundAmount++;
+                if (database.werknemers != null)
+                {
+                    foreach (var item in database.werknemers)
+                    {
+                        if (item.login_gegevens.email == login_Gegevens.email && item.login_gegevens.type == login_Gegevens.type)
+                        {
+                            return "This email and account type is already in use";
+                        }
+                    }
+                }
+                char[] pswChars = login_Gegevens.password.ToCharArray();
+
+                int punctFoundAmount = 0;
+                int digitFoundAmount = 0;
+
+                for (int i = 0; i < pswChars.Length; i++)
+                {
+                    if (char.IsPunctuation(pswChars[i])) punctFoundAmount++;
+                    if (char.IsDigit(pswChars[i])) digitFoundAmount++;
+                }
+
+                if (login_Gegevens.password.Length < 8 || punctFoundAmount < 1 || digitFoundAmount < 1)
+                {
+                    return "Password must contain at least 8 characters, 1 punctuation mark and 1 number.";
+                }
+
+                Werknemer werknemer = new Werknemer();
+                werknemer.ID = 0;
+                werknemer.lease_auto = 500.0;
+                werknemer.prestatiebeloning = 0.0;
+                werknemer.salaris = 3000.0;
+                werknemer.login_gegevens = login_Gegevens;
+                if (database.werknemers == null)
+                {
+                    database.werknemers = new List<Werknemer> { werknemer };
+                }
+                else
+                {
+                    database.werknemers.Add(werknemer);
+                }
+
+                io.Savedatabase(database);
+                return "Succes!";
             }
-
-            if (login_Gegevens.password.Length < 8 || punctFoundAmount < 1 || digitFoundAmount < 1)
-            {
-                return "Password must contain at least 8 characters, 1 punctuation mark and 1 number.";
-            }
-
-            if (database.login_gegevens == null)
-            {
-               database.login_gegevens = new List<Login_gegevens>{login_Gegevens};
-            }
-            else
-            {
-                database.login_gegevens.Add(login_Gegevens);
-            }            
-
-            io.Savedatabase(database);
-            return "Succes!";
+            return "Fail!";
         }
     }
 }

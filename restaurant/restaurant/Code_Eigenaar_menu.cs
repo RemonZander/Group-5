@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Text;
 
 namespace restaurant
@@ -56,7 +58,7 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        public void EditMeal(int ID, string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<int> ingredients, List<string> allergens, bool isDiner, bool isLunch, bool isOntbijt)
+        public void EditMeal(int ID, string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<string> ingredients, List<string> allergens, bool isDiner, bool isLunch, bool isOntbijt)
         {
             database = io.GetDatabase();
             List<Gerechten> gerechten = new List<Gerechten>(GetMeals());
@@ -69,7 +71,7 @@ namespace restaurant
                     gerechten[i].prijs = price;
                     gerechten[i].special = isSpecial;
                     gerechten[i].is_gearchiveerd = isArchived;
-                    gerechten[i].ingredienten = ingredients;
+                    gerechten[i].Ingredienten = ingredients;
                     gerechten[i].allergenen = allergens;
                     gerechten[i].diner = isDiner;
                     gerechten[i].lunch = isLunch;
@@ -81,7 +83,7 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        public void CreateMeal(string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<int> ingredients, List<string> allergens, bool isDiner, bool isLunch, bool isOntbijt)
+        public void CreateMeal(string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<string> ingredients, List<string> allergens, bool isDiner, bool isLunch, bool isOntbijt)
         {
             database = io.GetDatabase();
             List<Gerechten> gerechten = new List<Gerechten>(GetMeals());
@@ -93,7 +95,7 @@ namespace restaurant
             gerecht.prijs = price;
             gerecht.special = isSpecial;
             gerecht.is_gearchiveerd = isArchived;
-            gerecht.ingredienten = ingredients;
+            gerecht.Ingredienten = ingredients;
             gerecht.allergenen = allergens;
             gerecht.diner = isDiner;
             gerecht.lunch = isLunch;
@@ -124,7 +126,7 @@ namespace restaurant
             compareDate = compareDate.AddDays(dag);
             for (int i = 0; i < ingredients.Count; i++)
             {
-                if (ingredients[i].houdbaarheids_datum > compareDate || ingredients[i].houdbaarheids_datum < DateTime.Now)
+                if (DateTime.Now.AddDays(ingredients[i].dagenHoudbaar) > compareDate || DateTime.Now.AddDays(ingredients[i].dagenHoudbaar) < DateTime.Now)
                 {
                     ingredients[i] = new Ingredient();
                 }
@@ -138,7 +140,7 @@ namespace restaurant
             List<Ingredient> ingredients = new List<Ingredient>(GetIngredients());
             for (int i = 0; i < ingredients.Count; i++)
             {
-                if (ingredients[i].houdbaarheids_datum > DateTime.Now)
+                if (DateTime.Now.AddDays(ingredients[i].dagenHoudbaar) > DateTime.Now)
                 {
                     ingredients[i] = new Ingredient();
                 }
@@ -152,7 +154,7 @@ namespace restaurant
             database = io.GetDatabase();
             for (int i = 0; i < database.ingredienten.Count; i++)
             {
-                if (database.ingredienten[i].houdbaarheids_datum <= DateTime.Now)
+                if (DateTime.Now.AddDays(database.ingredienten[i].dagenHoudbaar) <= DateTime.Now)
                 {
                     database.ingredienten[i] = new Ingredient();
                 }
@@ -286,7 +288,7 @@ namespace restaurant
             }
             return false;
         }
-        
+
         public void MakeDishPopular(int id)
         {
             database = io.GetDatabase();
@@ -297,7 +299,7 @@ namespace restaurant
                 {
                     naam = database.menukaart.gerechten[dishIndex].naam,
                     ID = database.menukaart.gerechten[dishIndex].ID,
-                    ingredienten = database.menukaart.gerechten[dishIndex].ingredienten,
+                    Ingredienten = database.menukaart.gerechten[dishIndex].Ingredienten,
                     is_populair = true,
                     prijs = database.menukaart.gerechten[dishIndex].prijs,
                     special = database.menukaart.gerechten[dishIndex].special,
@@ -321,7 +323,7 @@ namespace restaurant
                 {
                     naam = meal.naam,
                     ID = meal.ID,
-                    ingredienten = meal.ingredienten,
+                    Ingredienten = meal.Ingredienten,
                     is_populair = meal.is_populair,
                     prijs = meal.prijs,
                     special = meal.special,
@@ -422,6 +424,20 @@ namespace restaurant
             database.ingredienten = database.ingredienten.Except(ingredients).ToList();
             io.Savedatabase(database);
         }
+
+        public bool DeleteWorker(Werknemer werknemer)
+        {
+            Database database = io.GetDatabase();
+            List<Werknemer> workers = database.werknemers;
+            int index = workers.FindIndex(u => u.ID == werknemer.ID);
+            if (index != -1)
+            {
+                workers.RemoveAt(index);
+                io.Savedatabase(database);
+                return true;
+            }
+            return false;
+        }
     }
 
     public class GetReservationsScreen : Screen
@@ -481,6 +497,11 @@ namespace restaurant
                                 Tuple.Create((- 4, -4, pos), "D5"),
                         },
                         new List<string> { "[3] Vorige dag             [4] Volgende dag             [5] Naar vandaag" });
+                    if (result.Item2 == 0)
+                    {
+                        LogoutWithMessage();
+                        return 0;
+                    }
                     if (result.Item2 > -1)
                     {
                         return result.Item2;
@@ -498,7 +519,6 @@ namespace restaurant
                             date = DateTime.Now.ToShortDateString();
                             break;
                     }
-                    //Console.Clear();
                     goto a;
                 }
                 List<string> boxes = new List<string>();
@@ -560,7 +580,6 @@ namespace restaurant
                 pages = MakePages(boxes, 3);
                 Console.Clear();
                 Console.WriteLine(GetGFLogo(true));
-
 
                 Console.WriteLine();
                 Console.WriteLine("Reserveringen van: " + date + (date == DateTime.Now.ToShortDateString() ? " (vandaag)" : ""));
@@ -643,21 +662,6 @@ namespace restaurant
                         onlyWithoutTables = !onlyWithoutTables;
                         break;
                     case -7:
-                        if (onlyWithoutTables)
-                        {
-                            foreach(var item in reserveringenWithoutTables[date])
-                            {
-                                Console.WriteLine(item.ID);
-                            }
-                        }
-                        else
-                        {
-                            foreach (var item in reserveringen[date])
-                            {
-                                Console.WriteLine(item.ID);
-                            }
-                        }
-                        Console.WriteLine(pos);
                         AddTableToReservationScreen addTable = new AddTableToReservationScreen();
                         if (onlyWithoutTables)
                         {
@@ -682,439 +686,479 @@ namespace restaurant
         }
         public override List<Screen> Update(List<Screen> screens)
         {
+            DoLogoutOnEveryScreen(screens);
             return screens;
         }
     }
 
-    //public class GetWorkersScreen : Screen
-    //{
-    //    public override int DoWork()
-    //    {
-    //        Console.WriteLine("Welcome");
-    //        int maxLength = 124;
-    //        double pos = 0;
-    //        List<string> pages = new List<string>();
-
-    //        var workers = io.GetEmployee().OrderBy(x => x.login_gegevens.klantgegevens.achternaam).ToList();
-    //        Console.WriteLine(workers.GetType());
-    //        int pageNum = 0;
-    //        do
-    //        {
-    //        a:
-    //            (int, int, double) result = (0, 0, 0.0);
-    //            pages = new List<string>();
-    //            List<List<string>> workerString = Makedubbelboxes(code_eigenaar.WorkersToString(workers));
-    //            if (workerString.Count == 0)
-    //            {
-    //                Console.Clear();
-    //                Console.WriteLine(GetGFLogo(true));
-    //                Console.WriteLine("Geen werknemers gevonden.");
-    //            }
-    //            List<string> boxes = new List<string>();
-    //            for (int i = 0; i < workerString.Count; i++)
-    //            {
-    //                if (i == workerString.Count - 1 && workerString[i][1].Length < 70)
-    //                {
-    //                    if (i == Convert.ToInt32(Math.Floor(pos / 2)))
-    //                    {
-    //                        if (i != 0 && i % 6 != 0)
-    //                        {
-    //                            boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 124, true, new List<string>{
-    //                                "[5] Medewerker verwijderen" + new string(' ', 60 - "[5] Medewerker verwijderen".Length),
-    //                                new string(' ', 60)}));
-    //                        }
-    //                        else
-    //                        {
-    //                            boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 60, true, new List<string>{
-    //                                "[5] Medewerker verwijderen" + new string(' ', 60 - "[5] Medewerker verwijderen".Length),
-    //                                new string(' ', 60)}));
-    //                        }
-    //                    }
-    //                    else
-    //                    {
-    //                        if (i != 0 && i % 6 != 0)
-    //                        {
-    //                            boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 124, true));
-    //                        }
-    //                        else
-    //                        {
-    //                            boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 60, true));
-    //                        }
-    //                    }
-    //                }
-    //                else
-    //                {
-    //                    if (i == Convert.ToInt32(Math.Floor(pos / 2)))
-    //                    {
-    //                        if (pos % 2 == 0 || pos == 0)
-    //                        {
-    //                            boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 124, true, new List<string>{
-    //                                "[4] Medewerker verwijderen" + new string(' ', 60 - "[4] Medewerker verwijderen".Length) + "##  " + new string(' ', 60),
-    //                                new string(' ', 60) + "##  " + new string(' ', 60) }));
-    //                        }
-    //                        else
-    //                        {
-    //                            boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 124, true, new List<string> {
-    //                                new string(' ', 60) + "##  " + "[4] Medewerker verwijderen" + new string(' ', 60 - "[4] Medewerker verwijderen".Length),
-    //                                new string(' ', 60) + "##  " + new string(' ', 60)}));
-    //                        }
-    //                    }
-    //                    else
-    //                    {
-    //                        boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 124, true));
-    //                    }
-    //                }
-    //            }
-    //            pages = MakePages(boxes, 3);
-
-    //            Console.Clear();
-    //            Console.WriteLine(GetGFLogo(true));
-
-
-    //            Console.WriteLine();
-    //            Console.WriteLine("Werknemerslijst");
-    //            Console.WriteLine($"Pagina {pageNum + 1} van de {pages.Count}:");
-    //            Console.WriteLine(pages[pageNum] + new string('#', maxLength + 6));
-    //            List<Tuple<(int, int, double), string>> tuples = new List<Tuple<(int, int, double), string>>();
-    //            //if there is a next page and a previous page
-    //            List<string> txt = new List<string>();
-    //            if (pages.Count > 0 && pageNum > 0 && pageNum < pages.Count - 1)
-    //            {
-    //                txt.Add("[1] Volgende pagina                                               [2] Vorige pagina");
-    //                tuples.Add(Tuple.Create((pageNum + 1, -1, (pageNum + 1) * 6.0), "D1"));
-    //                tuples.Add(Tuple.Create((pageNum - 1, -1, (pageNum - 1) * 6.0), "D2"));
-    //            }
-    //            //if there is only a next page
-    //            else if (pages.Count - 1 > 0 && pageNum < pages.Count - 1)
-    //            {
-    //                txt.Add("[1] Volgende pagina");
-    //                tuples.Add(Tuple.Create((pageNum + 1, -1, (pageNum + 1) * 6.0), "D1"));
-    //            }
-    //            //if there is only a previous page
-    //            else if (pages.Count - 1 > 0 && pageNum >= pages.Count - 1)
-    //            {
-    //                txt.Add("[2] Vorige pagina");
-    //                tuples.Add(Tuple.Create((pageNum - 1, -1, (pageNum - 1) * 6.0), "D2"));
-    //            }
-    //            txt.Add("[3] Medewerker toevoegen");
-    //            tuples.Add(Tuple.Create((-3, -3, pos), "D3"));
-    //            tuples.Add(Tuple.Create((-4, -4, pos), "D4"));
-    //            tuples.Add(Tuple.Create((-5, -5, pos), "D5"));
-    //            result = Nextpage(pageNum, pos, boxes.Count * 2 - 1, 16, tuples, txt);
-    //            if (result.Item2 > -1)
-    //            {
-    //                return result.Item2;
-    //            }
-    //            string newDate = DateTime.Now.ToShortDateString();
-
-    //            switch (result.Item1)
-    //            {
-    //                case -3:
-    //                    //toevoegen
-    //                    Console.WriteLine("-2");
-    //                    CreateWorker();
-    //                    break;
-    //                case -4:
-    //                    //Verwijderen
-    //                    DeleteWorker(workers[Convert.ToInt32(pos)]);
-    //                    break;
-    //            }
-    //            pageNum = 0;
-    //            pos = 0;
-    //            if (result.Item1 >= 0)
-    //            {
-    //                pos = result.Item3;
-    //                pageNum = result.Item1;
-    //            }
-    //        } while (true);
-    //        return 4;
-
-    //    }
-
-    //    private void DeleteWorker(Werknemer werknemer)
-    //    {
-    //        Database database = io.GetDatabase();
-    //        List<Werknemer> workers = database.werknemers;
-    //        if (workers.Remove(werknemer))
-    //            io.Savedatabase(database);
-    //    }
-
-    //    private void CreateWorker(Werker worker = null)
-    //    {
-    //        Console.Clear();
-    //        Console.WriteLine(GetGFLogo(true));
-    //        if (worker == null)
-    //            Console.WriteLine("Vul hieronder de gegevens van de medewerker in:" + "\n");
-    //        else
-    //        {
-    //            Console.WriteLine("Hier kunt u de gegevens van " + worker.login_gegevens.klantgegevens.voornaam + " " + worker.login_gegevens.klantgegevens.achternaam + "aanpassen:");
-    //        }
-    //        Console.WriteLine("E-mailadres:");
-    //        Console.WriteLine("");
-    //        List<string> steps = new();
-    //        int currentStep = 0;
-    //        bool RetryStep = false;
-
-    //        steps.Add("De voornaam: ");
-    //        steps.Add("De achternaam: ");
-    //        steps.Add("De geboortedatum genoteerd als dag-maand-jaar: ");
-    //        steps.Add("Hieronder vult u het adres in.\nDe woonplaats: ");
-    //        steps.Add("De postcode: ");
-    //        steps.Add("De straatnaam: ");
-    //        steps.Add("De huisnummer: ");
-    //        steps.Add("Hieronder vult u De login gegevens: \nHet e-mailadres: ");
-    //        steps.Add("Het wachtwoord voor het account: ");
-    //        steps.Add("Kloppen de bovenstaande gegevens?\n[1] Deze kloppen niet, breng me terug.\n[2] Ja deze kloppen.");
-
-    //        List<Login_gegevens> login_Gegevens = io.GetDatabase().login_gegevens;
-    //        Login_gegevens lg;
-    //        lg = new Login_gegevens()
-    //        {
-    //            type = "Gebruiker",
-    //            klantgegevens = new Klantgegevens()
-    //            {
-    //                klantnummer = login_Gegevens.Count == 0 ? 0 : login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1,
-    //                adres = new adres()
-    //                {
-    //                    land = "NL",
-    //                }
-    //            }
-    //        };
-
-    //        switch (currentStep)
-    //        {
-    //            case 0:
-    //                Console.WriteLine(steps[currentStep]);
-    //                result = AskForInput(0, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
-
-    //                if (result.Item1 == null)
-    //                {
-    //                    ResetOutput();
-    //                    return result.Item2;
-    //                }
-
-    //                if (result.Item3 != null) return ShowInvalidInput(result.Item3);
-
-    //                output.Add($"{steps[currentStep]}\n{result.Item1}");
-
-    //                lg.klantgegevens.voornaam = result.Item1;
-
-    //                currentStep++;
-    //                return 3;
-    //            case 1:
-    //                Console.WriteLine(steps[currentStep]);
-    //                result = AskForInput(0, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
-
-    //                if (result.Item1 == null)
-    //                {
-    //                    ResetOutput();
-    //                    return result.Item2;
-    //                }
-
-    //                if (result.Item3 != null) return ShowInvalidInput(result.Item3);
-
-    //                output.Add($"{steps[currentStep]}\n{result.Item1}");
-
-    //                lg.klantgegevens.achternaam = result.Item1;
-
-    //                currentStep++;
-    //                return 3;
-    //            case 2:
-    //                Console.WriteLine(steps[currentStep]);
-    //                DateTime resultDateTime = new DateTime();
-
-    //                result = AskForInput(
-    //                    0,
-    //                    c => char.IsDigit(c) || c == '/' || c == '-',
-    //                    input => DateTime.TryParseExact(input, new string[2] { "dd/MM/yyyy", "d/M/yyyy" }, new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime) && resultDateTime < DateTime.Now,
-    //                    ("Het formaat van de datum die u heeft ingevoerd klopt niet. Probeer het opnieuw.", "De datum die u hebt ingevoerd klopt niet, probeer het opnieuw.")
-    //                );
-
-    //                if (result.Item1 == null)
-    //                {
-    //                    ResetOutput();
-    //                    return result.Item2;
-    //                }
-
-    //                if (result.Item3 != null) return ShowInvalidInput(result.Item3);
-
-    //                output.Add($"{steps[currentStep]}\n{result.Item1}");
-
-    //                lg.klantgegevens.geb_datum = resultDateTime;
-
-    //                currentStep++;
-    //                return 3;
-    //            case 3:
-    //                Console.WriteLine(steps[currentStep]);
-    //                result = AskForInput(0, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
-
-    //                if (result.Item1 == null)
-    //                {
-    //                    ResetOutput();
-    //                    return result.Item2;
-    //                }
-
-    //                if (result.Item3 != null) return ShowInvalidInput(result.Item3);
-
-    //                output.Add($"{steps[currentStep]}\n{result.Item1}");
-
-    //                lg.klantgegevens.adres.woonplaats = result.Item1;
-
-    //                currentStep++;
-    //                return 3;
-    //            case 4:
-    //                Console.WriteLine(steps[currentStep]);
-    //                result = AskForInput(0, c => char.IsLetterOrDigit(c), null, (DigitsAndLettersOnlyMessage, null));
-
-    //                if (result.Item1 == null)
-    //                {
-    //                    ResetOutput();
-    //                    return result.Item2;
-    //                }
-
-    //                if (result.Item3 != null) return ShowInvalidInput(result.Item3);
-
-    //                output.Add($"{steps[currentStep]}\n{result.Item1}");
-
-    //                lg.klantgegevens.adres.postcode = result.Item1;
-
-    //                currentStep++;
-    //                return 3;
-    //            case 5:
-    //                Console.WriteLine(steps[currentStep]);
-    //                result = AskForInput(0, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
-
-    //                if (result.Item1 == null)
-    //                {
-    //                    ResetOutput();
-    //                    return result.Item2;
-    //                }
-
-    //                if (result.Item3 != null) return ShowInvalidInput(result.Item3);
-
-    //                output.Add($"{steps[currentStep]}\n{result.Item1}");
-
-    //                lg.klantgegevens.adres.straatnaam = result.Item1;
-
-    //                currentStep++;
-    //                return 3;
-    //            case 6:
-    //                Console.WriteLine(steps[currentStep]);
-    //                int possibleValue = -1;
-    //                result = AskForInput(0, c => char.IsDigit(c), input => int.TryParse(input, out possibleValue) && possibleValue > 0, (DigitsOnlyMessage, "De nummer die u heeft ingevoerd is te lang voor een gemiddeld huisnummer of het is 0"));
-
-    //                if (result.Item1 == null)
-    //                {
-    //                    ResetOutput();
-    //                    return result.Item2;
-    //                }
-
-    //                if (result.Item3 != null) return ShowInvalidInput(result.Item3);
-
-    //                output.Add($"{steps[currentStep]}\n{result.Item1}");
-
-    //                lg.klantgegevens.adres.huisnummer = possibleValue;
-
-    //                currentStep++;
-    //                return 3;
-    //            case 7:
-    //                Console.WriteLine(steps[currentStep]);
-    //                Regex regex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
-
-    //                result = AskForInput(0, null, input => regex.IsMatch(input), (null, "De email is niet juist er mist een @ of een ."));
-
-    //                if (result.Item1 == null)
-    //                {
-    //                    ResetOutput();
-    //                    return result.Item2;
-    //                }
-
-    //                if (result.Item3 != null) return ShowInvalidInput(result.Item3);
-
-    //                output.Add($"{steps[currentStep]}\n{result.Item1}");
-
-    //                lg.email = result.Item1;
-
-    //                if (RetryStep)
-    //                {
-    //                    currentStep = 9;
-    //                    RetryStep = false;
-    //                    return 3;
-    //                }
-
-    //                currentStep++;
-    //                return 3;
-    //            case 8:
-    //                Console.WriteLine(steps[currentStep]);
-    //                (string, int) otherResult = AskForInput(0);
-
-    //                if (otherResult.Item1 == null)
-    //                {
-    //                    ResetOutput();
-    //                    return otherResult.Item2;
-    //                }
-
-    //                output.Add($"{steps[currentStep]}\n{otherResult.Item1}");
-
-    //                lg.password = otherResult.Item1;
-
-    //                if (RetryStep)
-    //                {
-    //                    currentStep = 9;
-    //                    RetryStep = false;
-    //                    return 3;
-    //                }
-
-    //                currentStep++;
-    //                return 3;
-    //            case 9:
-    //                Console.WriteLine(steps[currentStep]);
-    //                result = AskForInput(0, c => char.IsDigit(c), input => Convert.ToInt32(input) == 1 || Convert.ToInt32(input) == 2, (DigitsOnlyMessage, InvalidInputMessage));
-
-    //                if (result.Item1 == null)
-    //                {
-    //                    ResetOutput();
-    //                    return result.Item2;
-    //                }
-
-    //                if (result.Item3 != null) return ShowInvalidInput(result.Item3);
-
-    //                if (result.Item1 == "1")
-    //                {
-    //                    ResetOutput();
-    //                    return 3;
-    //                }
-
-    //                if (code_login.Register(lg) == "Succes!")
-    //                {
-    //                    Console.WriteLine("\nU bent succesfull geregistreerd!");
-    //                    Console.WriteLine("Druk op een knop om naar het hoofdmenu te gaan");
-    //                    Console.ReadKey();
-    //                    return 0;
-    //                }
-    //                else if (code_login.Register(lg) == "This email and account type is already in use")
-    //                {
-    //                    Console.WriteLine("\nDit account bestaat al, druk op een knop om een ander email adres in te voeren.");
-    //                    Console.ReadKey();
-    //                    currentStep = 7;
-    //                    RetryStep = true;
-    //                    return 3;
-    //                }
-    //                else if (code_login.Register(lg) == "Password must contain at least 8 characters, 1 punctuation mark and 1 number.")
-    //                {
-    //                    Console.WriteLine("\nHet wachtwoord moet minimaal 8 tekens, 1 leesteken en 1 nummer bevatten. Druk op een knop om een ander wachtwoord in te voeren.");
-    //                    Console.ReadKey();
-    //                    currentStep = 8;
-    //                    RetryStep = true;
-    //                    return 3;
-    //                }
-    //                break;
-    //        }
-    //    }
-
-    //    public override List<Screen> Update(List<Screen> screens)
-    //    {
-    //        return screens;
-    //    }
-    ////}
+    public class GetWorkersScreen : Screen
+    {
+        int currentScreenID = 24;
+        public override int DoWork()
+        {
+            int maxLength = 124;
+            double pos = 0;
+            List<string> pages = new List<string>();
+            var workers = io.GetEmployee().OrderBy(x => x.login_gegevens.klantgegevens.voornaam).ToList();
+            int pageNum = 0;
+            do
+            {
+            a:
+                (int, int, double) result = (0, 0, 0.0);
+                pages = new List<string>();
+                List<List<string>> workerString = Makedubbelboxes(code_eigenaar.WorkersToString(workers));
+                if (workerString.Count == 0)
+                {
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(true));
+                    Console.WriteLine("Geen medewerkers gevonden.");
+                    Console.WriteLine("Maak een nieuwe medewerker door op [3] te drukken.");
+                    (string, int) ans = AskForInput(11);
+                    switch (ans.Item1)
+                    {
+                        case "3":
+                            //toevoegen
+                            return 23;
+                        default:
+                            Console.WriteLine(PressButtonToContinueMessage);
+                            Console.ReadKey();
+                            return 11;
+                    }
+                }
+                List<string> boxes = new List<string>();
+                for (int i = 0; i < workerString.Count; i++)
+                {
+                    if (i == workerString.Count - 1 && workerString[i][1].Length < 70)
+                    {
+                        if (i == Convert.ToInt32(Math.Floor(pos / 2)))
+                        {
+                            if (i != 0 && i % 6 != 0)
+                            {
+                                boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 124, true, new List<string>{
+                                        "[4] Medewerker verwijderen" + new string(' ', 60 - "[4] Medewerker verwijderen".Length),
+                                        new string(' ', 60)}));
+                            }
+                            else
+                            {
+                                boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 60, true, new List<string>{
+                                        "[4] Medewerker verwijderen" + new string(' ', 60 - "[4] Medewerker verwijderen".Length),
+                                        new string(' ', 60)}));
+                            }
+                        }
+                        else
+                        {
+                            if (i != 0 && i % 6 != 0)
+                            {
+                                boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 124, true));
+                            }
+                            else
+                            {
+                                boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 60, true));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (i == Convert.ToInt32(Math.Floor(pos / 2)))
+                        {
+                            if (pos % 2 == 0 || pos == 0)
+                            {
+                                boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 124, true, new List<string>{
+                                        "[4] Medewerker verwijderen" + new string(' ', 60 - "[4] Medewerker verwijderen".Length) + "##  " + new string(' ', 60),
+                                        new string(' ', 60) + "##  " + new string(' ', 60) }));
+                            }
+                            else
+                            {
+                                boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 124, true, new List<string> {
+                                        new string(' ', 60) + "##  " + "[4] Medewerker verwijderen" + new string(' ', 60 - "[4] Medewerker verwijderen".Length),
+                                        new string(' ', 60) + "##  " + new string(' ', 60)}));
+                            }
+                        }
+                        else
+                        {
+                            boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 124, true));
+                        }
+                    }
+                }
+                pages = MakePages(boxes, 3);
+
+                Console.Clear();
+                Console.WriteLine(GetGFLogo(true));
+
+
+                Console.WriteLine();
+                Console.WriteLine("Werknemerslijst");
+                Console.WriteLine($"Pagina {pageNum + 1} van de {pages.Count}:");
+                Console.WriteLine(pages[pageNum] + new string('#', maxLength + 6));
+                List<Tuple<(int, int, double), string>> tuples = new List<Tuple<(int, int, double), string>>();
+                //if there is a next page and a previous page
+                List<string> txt = new List<string>();
+                if (pages.Count > 0 && pageNum > 0 && pageNum < pages.Count - 1)
+                {
+                    txt.Add("[1] Volgende pagina                                               [2] Vorige pagina");
+                    tuples.Add(Tuple.Create((pageNum + 1, -1, (pageNum + 1) * 6.0), "D1"));
+                    tuples.Add(Tuple.Create((pageNum - 1, -1, (pageNum - 1) * 6.0), "D2"));
+                }
+                //if there is only a next page
+                else if (pages.Count - 1 > 0 && pageNum < pages.Count - 1)
+                {
+                    txt.Add("[1] Volgende pagina");
+                    tuples.Add(Tuple.Create((pageNum + 1, -1, (pageNum + 1) * 6.0), "D1"));
+                }
+                //if there is only a previous page
+                else if (pages.Count - 1 > 0 && pageNum >= pages.Count - 1)
+                {
+                    txt.Add("[2] Vorige pagina");
+                    tuples.Add(Tuple.Create((pageNum - 1, -1, (pageNum - 1) * 6.0), "D2"));
+                }
+                txt.Add("[3] Medewerker toevoegen");
+                tuples.Add(Tuple.Create((-3, -3, pos), "D3"));
+                tuples.Add(Tuple.Create((-4, -4, pos), "D4"));
+                tuples.Add(Tuple.Create((-5, -5, pos), "D5"));
+                result = Nextpage(pageNum, pos, boxes.Count * 2 - 1, 16, tuples, txt);
+                if (result.Item2 > -1)
+                {
+                    return result.Item2;
+                }
+                string newDate = DateTime.Now.ToShortDateString();
+
+                switch (result.Item1)
+                {
+                    case -3:
+                        //toevoegen
+                        return 23;
+                    case -4:
+                        //Verwijderen
+                        Code_Eigenaar_menu eigenaar_Menu = new Code_Eigenaar_menu();
+                        bool deleted = eigenaar_Menu.DeleteWorker(workers[Convert.ToInt32(pos)]);
+                        if (deleted)
+                        {
+                            Console.WriteLine("Medewerker is succesvol verwijderd!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Er is iets fout gegaan probeer het later opnieuw.");
+                        }
+                        Console.WriteLine(PressButtonToContinueMessage);
+                        Console.ReadKey();
+                        return currentScreenID;
+                }
+                pageNum = 0;
+                pos = 0;
+                if (result.Item1 >= 0)
+                {
+                    pos = result.Item3;
+                    pageNum = result.Item1;
+                }
+            } while (true);
+        }
+
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            return screens;
+        }
+    }
+    public class AddWorkerScreen : StepScreen
+    {
+        private Login_gegevens lg;
+
+        public AddWorkerScreen(Werknemer worker = null)
+        {
+            if (worker != null)
+            {
+                lg.email = worker.login_gegevens.email;
+                lg.klantgegevens = worker.login_gegevens.klantgegevens;
+                lg.password = worker.login_gegevens.password;
+                lg.type = worker.login_gegevens.type;
+            }
+            steps.Add("Uw voornaam: ");
+            steps.Add("Uw achternaam: ");
+            steps.Add("Uw geboortedatum genoteerd als dag-maand-jaar: ");
+            steps.Add("Hieronder vult u uw adres in. Dit is in verband met het bestellen van eten.\nUw woonplaats: ");
+            steps.Add("Uw postcode: ");
+            steps.Add("Uw straatnaam: ");
+            steps.Add("Uw huisnummer: ");
+            steps.Add("Hieronder vult u uw login gegevens: \nUw email adres: ");
+            steps.Add("Het wachtwoord voor uw account: ");
+            steps.Add("Kloppen de bovenstaande gegevens?\n[1] Deze kloppen niet, breng me terug.\n[2] ja deze kloppen.");
+
+            output.Add(GetGFLogo(true));
+            output.Add("Hier kunt u een account aanmaken voor een medewerker!");
+
+            List<Werknemer> werknemers = io.GetDatabase().werknemers;
+
+            if (werknemers == null)
+            {
+                werknemers = new List<Werknemer>();
+                io.GetDatabase().werknemers = werknemers;
+            }
+
+            lg = new Login_gegevens()
+            {
+                type = "Medewerker",
+                klantgegevens = new Klantgegevens()
+                {
+                    klantnummer = werknemers.Count == 0 ? 0 : werknemers[werknemers.Count - 1].login_gegevens.klantgegevens.klantnummer + 1,
+                    adres = new adres()
+                    {
+                        land = "NL",
+                    }
+                }
+            };
+        }
+
+        private void ResetOutput()
+        {
+            Reset();
+            output.Add(GetGFLogo(true));
+            output.Add("Hier kunt u een account aanmaken voor een medewerker!!");
+        }
+
+        public override int DoWork()
+        {
+            int currentScreen = 23;
+            int previousScreen = 24;
+            (string, int, string) result;
+
+            Console.WriteLine(string.Join("\n", output));
+
+            switch (currentStep)
+            {
+                case 0:
+                    Console.WriteLine(steps[currentStep]);
+                    result = AskForInput(previousScreen, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
+
+                    if (result.Item1 == null)
+                    {
+                        ResetOutput();
+                        return result.Item2;
+                    }
+
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                    output.Add($"{steps[currentStep]}\n{result.Item1}");
+
+                    lg.klantgegevens.voornaam = result.Item1;
+
+                    currentStep++;
+                    return currentScreen;
+                case 1:
+                    Console.WriteLine(steps[currentStep]);
+                    result = AskForInput(previousScreen, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
+
+                    if (result.Item1 == null)
+                    {
+                        ResetOutput();
+                        return result.Item2;
+                    }
+
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                    output.Add($"{steps[currentStep]}\n{result.Item1}");
+
+                    lg.klantgegevens.achternaam = result.Item1;
+
+                    currentStep++;
+                    return currentScreen;
+                case 2:
+                    Console.WriteLine(steps[currentStep]);
+                    DateTime resultDateTime = new DateTime();
+
+                    result = AskForInput(
+                        previousScreen,
+                        c => char.IsDigit(c) || c == '/' || c == '-',
+                        input => DateTime.TryParseExact(input, new string[2] { "dd/MM/yyyy", "d/M/yyyy" }, new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime) && resultDateTime < DateTime.Now,
+                        ("Het formaat van de datum die u heeft ingevoerd klopt niet. Probeer het opnieuw.", "De datum die u hebt ingevoerd klopt niet. Probeer het opnieuw.")
+                    );
+
+                    if (result.Item1 == null)
+                    {
+                        ResetOutput();
+                        return result.Item2;
+                    }
+
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                    output.Add($"{steps[currentStep]}\n{result.Item1}");
+
+                    lg.klantgegevens.geb_datum = resultDateTime;
+
+                    currentStep++;
+                    return currentScreen;
+                case 3:
+                    Console.WriteLine(steps[currentStep]);
+                    result = AskForInput(previousScreen, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
+
+                    if (result.Item1 == null)
+                    {
+                        ResetOutput();
+                        return result.Item2;
+                    }
+
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                    output.Add($"{steps[currentStep]}\n{result.Item1}");
+
+                    lg.klantgegevens.adres.woonplaats = result.Item1;
+
+                    currentStep++;
+                    return currentScreen;
+                case 4:
+                    Console.WriteLine(steps[currentStep]);
+                    result = AskForInput(previousScreen, c => char.IsLetterOrDigit(c), null, (DigitsAndLettersOnlyMessage, null));
+
+                    if (result.Item1 == null)
+                    {
+                        ResetOutput();
+                        return result.Item2;
+                    }
+
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                    output.Add($"{steps[currentStep]}\n{result.Item1}");
+
+                    lg.klantgegevens.adres.postcode = result.Item1;
+
+                    currentStep++;
+                    return currentScreen;
+                case 5:
+                    Console.WriteLine(steps[currentStep]);
+                    result = AskForInput(previousScreen, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
+
+                    if (result.Item1 == null)
+                    {
+                        ResetOutput();
+                        return result.Item2;
+                    }
+
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                    output.Add($"{steps[currentStep]}\n{result.Item1}");
+
+                    lg.klantgegevens.adres.straatnaam = result.Item1;
+
+                    currentStep++;
+                    return currentScreen;
+                case 6:
+                    Console.WriteLine(steps[currentStep]);
+                    int possibleValue = -1;
+                    result = AskForInput(previousScreen, c => char.IsDigit(c), input => int.TryParse(input, out possibleValue) && possibleValue > 0, (DigitsOnlyMessage, "De nummer die u heeft ingevoerd is te lang voor een gemiddeld huisnummer of het is 0"));
+
+                    if (result.Item1 == null)
+                    {
+                        ResetOutput();
+                        return result.Item2;
+                    }
+
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                    output.Add($"{steps[currentStep]}\n{result.Item1}");
+
+                    lg.klantgegevens.adres.huisnummer = possibleValue;
+
+                    currentStep++;
+                    return currentScreen;
+                case 7:
+                    Console.WriteLine(steps[currentStep]);
+                    Regex regex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+
+                    result = AskForInput(previousScreen, null, input => regex.IsMatch(input), (null, "Het e-mailadres is niet juist er mist een @ of een ."));
+
+                    if (result.Item1 == null)
+                    {
+                        ResetOutput();
+                        return result.Item2;
+                    }
+
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                    output.Add($"{steps[currentStep]}\n{result.Item1}");
+
+                    lg.email = result.Item1;
+
+                    if (RetryStep)
+                    {
+                        currentStep = 9;
+                        RetryStep = false;
+                        return currentScreen;
+                    }
+
+                    currentStep++;
+                    return currentScreen;
+                case 8:
+                    Console.WriteLine(steps[currentStep]);
+                    (string, int) otherResult = AskForInput(previousScreen);
+
+                    if (otherResult.Item1 == null)
+                    {
+                        ResetOutput();
+                        return otherResult.Item2;
+                    }
+
+                    output.Add($"{steps[currentStep]}\n{otherResult.Item1}");
+
+                    lg.password = otherResult.Item1;
+
+                    if (RetryStep)
+                    {
+                        currentStep = 9;
+                        RetryStep = false;
+                        return currentScreen;
+                    }
+
+                    currentStep++;
+                    return currentScreen;
+                case 9:
+                    Console.WriteLine(steps[currentStep]);
+                    result = AskForInput(previousScreen, c => char.IsDigit(c), input => Convert.ToInt32(input) == 1 || Convert.ToInt32(input) == 2, (DigitsOnlyMessage, InvalidInputMessage));
+
+                    if (result.Item1 == null)
+                    {
+                        ResetOutput();
+                        return result.Item2;
+                    }
+
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+
+                    if (result.Item1 == "1")
+                    {
+                        ResetOutput();
+                        return currentScreen;
+                    }
+
+                    if (code_login.Register(lg) == "Succes!")
+                    {
+                        Console.WriteLine("\nDe medewerker is succesvol aangemeld!");
+                        Console.WriteLine("Druk op een knop om naar het eigenaarsmenu te gaan");
+                        Console.ReadKey();
+                        return previousScreen;
+                    }
+                    else if (code_login.Register(lg) == "This email and account type is already in use")
+                    {
+                        Console.WriteLine("\nDit account bestaat al, druk op een knop om een ander e-mailadres in te voeren.");
+                        Console.ReadKey();
+                        currentStep = 7;
+                        RetryStep = true;
+                        return currentScreen;
+                    }
+                    else if (code_login.Register(lg) == "Password must contain at least 8 characters, 1 punctuation mark and 1 number.")
+                    {
+                        Console.WriteLine("\nHet wachtwoord moet minimaal 8 tekens, 1 leesteken en 1 nummer bevatten. Druk op een knop om een ander wachtwoord in te voeren.");
+                        Console.ReadKey();
+                        currentStep = 8;
+                        RetryStep = true;
+                        return currentScreen;
+                    }
+                    break;
+            }
+
+            return 11;
+        }
+
+        public override List<Screen> Update(List<Screen> screens)
+        {
+            DoLogoutOnEveryScreen(screens);
+            return screens;
+        }
+    }
 }
