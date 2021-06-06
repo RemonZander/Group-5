@@ -964,7 +964,7 @@ namespace restaurant
         {
             Reset();
             output.Add(GetGFLogo(true));
-            output.Add("Hier kunt u een account aanmaken voor een medewerker!!");
+            output.Add("Hier kunt u een account aanmaken voor een medewerker!");
         }
 
         public override int DoWork()
@@ -987,7 +987,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3, currentScreen);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1005,7 +1005,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3, currentScreen);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1030,7 +1030,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3, currentScreen);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1048,7 +1048,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3, currentScreen);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1066,7 +1066,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3, currentScreen);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1084,7 +1084,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3, currentScreen);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1103,7 +1103,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3, currentScreen);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1127,7 +1127,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3, currentScreen);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1175,7 +1175,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(result.Item3, currentScreen);
 
                     if (result.Item1 == "1")
                     {
@@ -1186,8 +1186,9 @@ namespace restaurant
                     if (code_login.Register(lg) == "Succes!")
                     {
                         Console.WriteLine("\nDe medewerker is succesvol aangemeld!");
-                        Console.WriteLine("Druk op een knop om naar het eigenaarsmenu te gaan");
+                        Console.WriteLine("Druk op een knop om naar de medewerkerslijst te gaan.");
                         Console.ReadKey();
+                        ResetOutput();
                         return previousScreen;
                     }
                     else if (code_login.Register(lg) == "This email and account type is already in use")
@@ -1209,7 +1210,7 @@ namespace restaurant
                     break;
             }
 
-            return 11;
+            return previousScreen;
         }
 
         public override List<Screen> Update(List<Screen> screens)
