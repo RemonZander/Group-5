@@ -276,6 +276,8 @@ namespace restaurant
         public void Make_menu()
         {
             database = io.GetDatabase();
+
+            database.ingredientenNamen = MakeIngredients();
             Menukaart menukaart = new Menukaart
             {
                 gerechten = Get_standard_dishes()
@@ -285,9 +287,92 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        private BlockingCollection<int> Maak_gerechten(string gerecht_naam, DateTime bestel_Datum, BlockingCollection<Ingredient> ingredient_temp)
+        private List<IngredientType> MakeIngredients()
         {
-            BlockingCollection<int> ingredienten_id = new BlockingCollection<int>();
+            List<IngredientType> ingredients = new List<IngredientType>();
+
+            ingredients.AddRange(new List<IngredientType>
+            {
+                new IngredientType
+                {
+                name = "Deeg",
+                prijs = 1,
+                dagenHoudbaar = 60,
+                },
+                new IngredientType
+                {
+                name = "Salami",
+                prijs = 0.80,
+                dagenHoudbaar = 30,
+                },
+                new IngredientType
+                {
+                name = "Tomaten saus",
+                prijs = 0.60,
+                dagenHoudbaar = 15,
+                },
+                new IngredientType
+                {
+                name = "Vanille vla",
+                prijs = 1.5,
+                dagenHoudbaar = 40,
+                },
+                new IngredientType
+                {
+                name = "Broodjes",
+                prijs = 0.10,
+                dagenHoudbaar = 10,
+                },
+                new IngredientType
+                {
+                name = "Vlees",
+                prijs = 0.85,
+                dagenHoudbaar = 12,
+                },
+                new IngredientType
+                {
+                name = "Sla",
+                prijs = 0.05,
+                dagenHoudbaar = 35,
+                },
+                new IngredientType
+                {
+                name = "Yoghurt",
+                prijs = 1.8,
+                dagenHoudbaar = 65,
+                },
+                new IngredientType
+                {
+                name = "Vanille ijs",
+                prijs = 1.85,
+                dagenHoudbaar = 25,
+                },
+                new IngredientType
+                {
+                name = "Frituur vet",
+                prijs = 0.10,
+                dagenHoudbaar = 300,
+                },
+                new IngredientType
+                {
+                name = "Aardappelen",
+                prijs = 0.15,
+                dagenHoudbaar = 100,
+                },
+                new IngredientType
+                {
+                name = "Friet saus",
+                prijs = 0.30,
+                dagenHoudbaar = 60,
+                },
+            });
+
+            return ingredients;
+        }
+
+        private BlockingCollection<string> Maak_gerechten(string gerecht_naam, DateTime bestel_Datum, BlockingCollection<Ingredient> ingredient_temp)
+        {
+            BlockingCollection<string> ingredienten_naam = new BlockingCollection<string>();
             if (database.ingredienten == null) database.ingredienten = new List<Ingredient>();
 
             if (gerecht_naam == "Pizza Salami")
@@ -298,11 +383,11 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Deeg",
                     prijs = 1,
-                    houdbaarheids_datum = bestel_Datum.AddDays(60)
+                    dagenHoudbaar = 60
                 };
 
                 ingredient_temp.Add(ingredient);
-                ingredienten_id.Add(ingredient.ID);
+                ingredienten_naam.Add(ingredient.name);
 
                 ingredient = new Ingredient
                 {
@@ -310,11 +395,11 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Salami",
                     prijs = 0.80,
-                    houdbaarheids_datum = bestel_Datum.AddDays(30)
+                    dagenHoudbaar = 30
                 };
 
                 ingredient_temp.Add(ingredient);
-                ingredienten_id.Add(ingredient.ID);
+                ingredienten_naam.Add(ingredient.name);
 
                 ingredient = new Ingredient
                 {
@@ -322,11 +407,11 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Tomaten saus",
                     prijs = 0.60,
-                    houdbaarheids_datum = bestel_Datum.AddDays(15)
+                    dagenHoudbaar = 15
                 };
 
                 ingredient_temp.Add(ingredient);
-                ingredienten_id.Add(ingredient.ID);
+                ingredienten_naam.Add(ingredient.name);
 
             }
             else if (gerecht_naam == "Vla")
@@ -337,11 +422,11 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Vanille vla",
                     prijs = 1.5,
-                    houdbaarheids_datum = bestel_Datum.AddDays(40)
+                    dagenHoudbaar = 40
                 };
 
                 ingredient_temp.Add(ingredient);
-                ingredienten_id.Add(ingredient.ID);
+                ingredienten_naam.Add(ingredient.name);
 
             }
             else if (gerecht_naam == "Hamburger")
@@ -352,11 +437,11 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Broodjes",
                     prijs = 0.10,
-                    houdbaarheids_datum = bestel_Datum.AddDays(10)
+                    dagenHoudbaar = 10
                 };
 
                 ingredient_temp.Add(ingredient);
-                ingredienten_id.Add(ingredient.ID);
+                ingredienten_naam.Add(ingredient.name);
 
                 ingredient = new Ingredient
                 {
@@ -364,11 +449,11 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Vlees",
                     prijs = 0.85,
-                    houdbaarheids_datum = bestel_Datum.AddDays(12)
+                    dagenHoudbaar = 12
                 };
 
                 ingredient_temp.Add(ingredient);
-                ingredienten_id.Add(ingredient.ID);
+                ingredienten_naam.Add(ingredient.name);
 
                 ingredient = new Ingredient
                 {
@@ -376,11 +461,11 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Sla",
                     prijs = 0.05,
-                    houdbaarheids_datum = bestel_Datum.AddDays(35)
+                    dagenHoudbaar = 35
                 };
 
                 ingredient_temp.Add(ingredient);
-                ingredienten_id.Add(ingredient.ID);
+                ingredienten_naam.Add(ingredient.name);
 
             }
             else if (gerecht_naam == "Yoghurt")
@@ -391,11 +476,11 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Yoghurt",
                     prijs = 1.8,
-                    houdbaarheids_datum = bestel_Datum.AddDays(65)
+                    dagenHoudbaar = 65
                 };
 
                 ingredient_temp.Add(ingredient);
-                ingredienten_id.Add(ingredient.ID);
+                ingredienten_naam.Add(ingredient.name);
 
             }
             else if (gerecht_naam == "IJs")
@@ -406,11 +491,11 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Vanille ijs",
                     prijs = 1.85,
-                    houdbaarheids_datum = bestel_Datum.AddDays(25)
+                    dagenHoudbaar = 25
                 };
 
                 ingredient_temp.Add(ingredient);
-                ingredienten_id.Add(ingredient.ID);
+                ingredienten_naam.Add(ingredient.name);
 
             }
             else if (gerecht_naam == "Patat")
@@ -421,11 +506,11 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Frituur vet",
                     prijs = 0.10,
-                    houdbaarheids_datum = bestel_Datum.AddDays(300)
+                    dagenHoudbaar = 300
                 };
 
                 ingredient_temp.Add(ingredient);
-                ingredienten_id.Add(ingredient.ID);
+                ingredienten_naam.Add(ingredient.name);
 
                 ingredient = new Ingredient
                 {
@@ -433,11 +518,11 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Aardappelen",
                     prijs = 0.15,
-                    houdbaarheids_datum = bestel_Datum.AddDays(100)
+                    dagenHoudbaar = 100
                 };
 
                 ingredient_temp.Add(ingredient);
-                ingredienten_id.Add(ingredient.ID);
+                ingredienten_naam.Add(ingredient.name);
 
                 ingredient = new Ingredient
                 {
@@ -445,14 +530,14 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Friet saus",
                     prijs = 0.30,
-                    houdbaarheids_datum = bestel_Datum.AddDays(60)
+                    dagenHoudbaar = 60
                 };
 
                 ingredient_temp.Add(ingredient);
-                ingredienten_id.Add(ingredient.ID);
+                ingredienten_naam.Add(ingredient.name);
             }
 
-            return ingredienten_id;
+            return ingredienten_naam;
         }
 
         //Deze functie is voor als je simpel een lijst van gerechten wilt zonder voorkeur
@@ -474,7 +559,7 @@ namespace restaurant
                             is_gearchiveerd = false,
                             special = true,
                             prijs = 15.0,
-                            ingredienten = Maak_gerechten("Pizza Salami", bestel_Datum, ingredient_temp).ToList(),
+                            Ingredienten = Maak_gerechten("Pizza Salami", bestel_Datum, ingredient_temp).ToList(),
                             diner = true
                         });
                         break;
@@ -487,7 +572,7 @@ namespace restaurant
                             is_gearchiveerd = false,
                             special = true,
                             prijs = 8.0,
-                            ingredienten = Maak_gerechten("Vla", bestel_Datum, ingredient_temp).ToList(),
+                            Ingredienten = Maak_gerechten("Vla", bestel_Datum, ingredient_temp).ToList(),
                             ontbijt = true,
                             diner = true
                         });
@@ -501,7 +586,7 @@ namespace restaurant
                             is_gearchiveerd = false,
                             special = false,
                             prijs = 13.0,
-                            ingredienten = Maak_gerechten("Hamburger", bestel_Datum, ingredient_temp).ToList(),
+                            Ingredienten = Maak_gerechten("Hamburger", bestel_Datum, ingredient_temp).ToList(),
                             lunch = true,
                             diner = true
                         });
@@ -515,7 +600,7 @@ namespace restaurant
                             is_gearchiveerd = true,
                             special = false,
                             prijs = 6.0,
-                            ingredienten = Maak_gerechten("Yoghurt", bestel_Datum, ingredient_temp).ToList()
+                            Ingredienten = Maak_gerechten("Yoghurt", bestel_Datum, ingredient_temp).ToList()
                         });
                         break;
                     case 4:
@@ -527,7 +612,7 @@ namespace restaurant
                             is_gearchiveerd = true,
                             special = false,
                             prijs = 9.5,
-                            ingredienten = Maak_gerechten("IJs", bestel_Datum, ingredient_temp).ToList(),
+                            Ingredienten = Maak_gerechten("IJs", bestel_Datum, ingredient_temp).ToList(),
                             diner = true
                         });
                         break;
@@ -540,7 +625,7 @@ namespace restaurant
                             is_gearchiveerd = false,
                             special = false,
                             prijs = 11.5,
-                            ingredienten = Maak_gerechten("Patat", bestel_Datum, ingredient_temp).ToList(),
+                            Ingredienten = Maak_gerechten("Patat", bestel_Datum, ingredient_temp).ToList(),
                             lunch = true,
                             diner = true
                         });
@@ -623,32 +708,6 @@ namespace restaurant
                 prijs = 11.5,
                 allergenen = new List<string>()
             });
-
-            return gerechten;
-        }
-
-        //Deze functie is voor als je een lijst van gerechten wilt met een voorkeur. Zorg wel dat iedere list die je doorgeeft dezelfde lengte heeft
-        public List<Gerechten> Make_dishes(List<string> names, List<bool> populair, List<bool> archived, List<bool> special, List<double> price)
-        {
-            if (populair.Count != names.Count || archived.Count != names.Count || special.Count != names.Count || price.Count != names.Count)
-            {
-                List<Gerechten> leeg = new List<Gerechten>();
-                return leeg;
-            }
-
-            List<Gerechten> gerechten = new List<Gerechten>();
-            for (int a = 0; a < names.Count; a++)
-            {
-                gerechten.Add(new Gerechten
-                {
-                    naam = names[a],
-                    ID = a,
-                    special = special[a],
-                    is_gearchiveerd = archived[a],
-                    is_populair = populair[a],
-                    prijs = price[a],
-                });
-            }
 
             return gerechten;
         }
@@ -937,7 +996,7 @@ namespace restaurant
             {
                 uitgaven.inboedel.Add(new Inboedel
                 {
-                    ID = a * 5,
+                    ID = (a - 1) * 5,
                     item_Naam = "Tafel nummer: " + a,
                     prijs = 50,
                     verzendkosten = 5,
@@ -948,7 +1007,7 @@ namespace restaurant
                 {
                     uitgaven.inboedel.Add(new Inboedel
                     {
-                        ID = a * 5 + b,
+                        ID = (a - 1) * 5 + b,
                         item_Naam = "Stoel",
                         prijs = 20,
                         verzendkosten = 3,
@@ -1989,6 +2048,7 @@ namespace restaurant
                             }
                         }
 
+                        int uneven = 0;
                         pages = MakePages(boxes, 3);
                         if (pages.Count == 0)
                         {
@@ -2003,6 +2063,7 @@ namespace restaurant
                         if (reviewstring[reviewstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
                         {
                             Console.WriteLine(pages[page] + new string('#', 56));
+                            uneven = 1;
                         }
                         else
                         {
@@ -2012,13 +2073,13 @@ namespace restaurant
                         (int, int, double) result = (0, 0, 0);
                         if (page < pages.Count - 1)
                         {
-                            result = Nextpage(page, pos, boxes.Count * 2 - 1, 10,
+                            result = Nextpage(page, pos, boxes.Count * 2 - (1 + uneven), 10,
                                 new List<Tuple<(int, int, double), string>> { Tuple.Create((page + 1, -1, (page + 1) * 6.0), "D1"), Tuple.Create((page, 10, pos), "D2"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
                                 new List<string> { "[1] Volgende pagina", "[2] Terug" });
                         }
                         else
                         {
-                            result = Nextpage(page, pos, boxes.Count * 2 - 1, 10,
+                            result = Nextpage(page, pos, boxes.Count * 2 - (1 + uneven), 10,
                                 new List<Tuple<(int, int, double), string>> { Tuple.Create((page, 10, pos), "D1"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
                                 new List<string> { "[1] Terug" });
                         }
@@ -2166,6 +2227,7 @@ namespace restaurant
                         }
                     }
 
+                    int uneven = 0;
                     pages = MakePages(boxes, 3);
 
                     Console.Clear();
@@ -2174,6 +2236,7 @@ namespace restaurant
                     if (reviewstring[reviewstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
                     {
                         Console.WriteLine(pages[page] + new string('#', 56));
+                        uneven = 1;
                     }
                     else
                     {
@@ -2183,13 +2246,13 @@ namespace restaurant
                     (int, int, double) result = (0, 0, 0);
                     if (page < pages.Count - 1)
                     {
-                        result = Nextpage(page, pos, boxes.Count * 2 - 1, 10,
+                        result = Nextpage(page, pos, boxes.Count * 2 - (1 + uneven), 10,
                             new List<Tuple<(int, int, double), string>> { Tuple.Create((page + 1, -1, (page + 1) * 6.0), "D1"), Tuple.Create((page, 10, pos), "D2"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
                             new List<string> { "[1] Volgende pagina", "[2] Terug" });
                     }
                     else
                     {
-                        result = Nextpage(page, pos, boxes.Count * 2 - 1, 10,
+                        result = Nextpage(page, pos, boxes.Count * 2 - (1 + uneven), 10,
                             new List<Tuple<(int, int, double), string>> { Tuple.Create((page, 10, pos), "D1"), Tuple.Create((-1, -1, pos), "D4"), Tuple.Create((-2, -2, pos), "D5") },
                             new List<string> { "[1] Terug" });
                     }
@@ -2906,7 +2969,9 @@ namespace restaurant
             Console.WriteLine("[1] Laat aantal ingredienten op naam zien");
             Console.WriteLine("[2] Laat alle ingredienten zien die bijna verlopen zijn");
             Console.WriteLine("[3] Laat alle ingredienten zien die verlopen zijn");
-            Console.WriteLine("[4] Ga terug naar eigenaar menu scherm");
+            Console.WriteLine("[4] Voeg ingredienten toe aan magazijn");
+            Console.WriteLine("[5] Voeg nieuwe ingredienten toe aan het systeem");
+            Console.WriteLine("[6] Ga terug naar eigenaar menu scherm");
 
             (string, int) input = AskForInput(14);
             if (input.Item2 != -1)
@@ -3055,6 +3120,105 @@ namespace restaurant
                 } while (true);
             }
             else if (input.Item1 == "4")
+            {
+
+
+                return 11;
+            }
+            else if (input.Item1 == "5")
+            {
+                List<string> ingredientNamen = io.ingredientNamen().Select(n => n.name).ToList();
+                IngredientType newIngredient = new IngredientType();
+
+                Console.Clear();
+                Console.WriteLine(GetGFLogo(true));
+                Console.WriteLine("Hier kunt u een nieuw ingredient aanmaken voor in het systeem. \nDit ingredient kunt u later toevoegen aan een nieuw gerecht die u maakt.\n");
+                Console.WriteLine("Vul hier de naam van het ingredient in:");
+
+                (string, int) result = ("", 0);
+                bool succes = false;
+                do
+                {
+                    result = AskForInput(11);
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+
+                    if (ingredientNamen.Contains(result.Item1))
+                    {
+                        Console.WriteLine("Deze naam bestaat al voor een ingredient.");
+                    }
+                    else if (!string.IsNullOrEmpty(result.Item1))
+                    {
+                        succes = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("U moet wel een naam invoeren");
+                    }
+
+                } while (!succes);
+
+                newIngredient.name = result.Item1;
+
+                Console.WriteLine("Voer hier de prijs in van het ingredient:");
+
+                succes = false;
+                do
+                {
+                    result = AskForInput(11);
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+
+                    if (!double.TryParse(result.Item1, out double test) || Convert.ToDouble(result.Item1) <= 0)
+                    {
+                        Console.WriteLine("Dit is geen geldige waarde. U kunt alleen (komma) getallen boven de 0 invoeren");
+                    }
+                    else if (!string.IsNullOrEmpty(result.Item1))
+                    {
+                        succes = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("U moet wel een bedrag invoeren");
+                    }
+
+                } while (!succes);
+
+                newIngredient.prijs = Convert.ToDouble(result.Item1);
+
+                succes = false;
+                do
+                {
+                    result = AskForInput(11);
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+
+                    if (!int.TryParse(result.Item1, out int test) || Convert.ToInt32(result.Item1) <= 0)
+                    {
+                        Console.WriteLine("Dit is geen geldige waarde. U kunt alleen (komma) getallen boven de 0 invoeren");
+                    }
+                    else if (!string.IsNullOrEmpty(result.Item1))
+                    {
+                        succes = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("U moet wel een bedrag invoeren");
+                    }
+
+                } while (!succes);
+
+                newIngredient.dagenHoudbaar = Convert.ToInt32(result.Item1);
+
+                return 11;
+            }
+            else if (input.Item1 == "6")
             {
                 return 11;
             }
@@ -3468,19 +3632,140 @@ namespace restaurant
             }
             else if (input.Item1 == "3")
             {
+                List<DateTime> dates = code_eigenaar.GetUitgavenWerknemers().OrderBy(d => d.Item2).Select(d => d.Item2).Distinct().ToList();
+                dates = dates.OrderBy(d => d).Distinct().ToList();
+                int months = ((DateTime.Now.Year - dates[0].Year) * 12) + DateTime.Now.Month - (dates[0].Month - 1);
+                List<(DateTime, double)> uitgaven = new List<(DateTime, double)>();
+                dates[0] = dates[0].AddDays(1 - dates[0].Day);
+                for (int a = 0; a < months; a++)
+                {
+                    uitgaven.Add((dates[0].AddMonths(a), code_eigenaar.GetUitgavenWerknemers(new DateTime(dates[0].Year, dates[0].Month, 1).AddMonths(a), new DateTime(dates[0].Year, dates[0].Month, 1).AddMonths(a + 1))));
+                }
+                double pos = 0;
+                int page = 0;
+                do
+                {
+                    List<string> expensesString = ExpensesToStringMonth(uitgaven, pos, "[3] Meer Detail");
+                    List<string> pages = MakePages(expensesString, 20);
 
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(true));
+                    Console.WriteLine($"Dit zijn uw uitgaven per maand op pagina {page + 1} van de {pages.Count}:");
+                    Console.WriteLine(new string('–', 59) + "\n" + "|Maand                      |Totaal                       |");
+                    Console.WriteLine(new string('–', 59) + "\n" + pages[page]);
+                    Console.WriteLine($"totale uitgaven : €{ Convert.ToInt32(uitgaven.Select(P => P.Item2).Sum())},00\n");
+
+                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, uitgaven.Count - 1, 11);
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+                    else if (result.Item1 == -1 && result.Item2 == -1)
+                    {
+                        /*                        DetailIncomeScreen detail = new DetailIncomeScreen(code_eigenaar.InkomstenPerItem(uitgaven[Convert.ToInt32(pos)].Item1, uitgaven[Convert.ToInt32(pos)].Item1.AddMonths(1)));
+                                                detail.DoWork();
+                                                page = 0;
+                                                pos = 0;*/
+                    }
+                    else
+                    {
+                        pos = result.Item3;
+                        page = result.Item1;
+                    }
+                } while (true);
             }
             else if (input.Item1 == "4")
             {
+                List<DateTime> dates = code_eigenaar.GetInboedel().OrderBy(d => d.Item2).Select(d => d.Item2).Distinct().ToList();
+                List <(Inboedel, DateTime)> inboedel = code_eigenaar.GetInboedel();
+                dates = dates.OrderBy(d => d).Distinct().ToList();
+                int months = ((DateTime.Now.Year - dates[0].Year) * 12) + DateTime.Now.Month - (dates[0].Month - 1);
+                List<(DateTime, double)> uitgaven = new List<(DateTime, double)>();
+                for (int a = 0; a < months; a++)
+                {
+                    uitgaven.Add((dates[0].AddMonths(a), code_eigenaar.GetInboedel(new DateTime(dates[0].Year, dates[0].Month, dates[0].Day).AddMonths(a), new DateTime(dates[0].Year, dates[0].Month, dates[0].Day).AddMonths(a + 1))));
+                }
 
+                double pos = 0;
+                int page = 0;
+                do
+                {
+                    List<string> expensesString = ExpensesToStringMonth(uitgaven, pos, "[3] Meer Detail");
+                    List<string> pages = MakePages(expensesString, 20);
+
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(true));
+                    Console.WriteLine($"Dit zijn uw uitgaven per maand op pagina {page + 1} van de {pages.Count}:");
+                    Console.WriteLine(new string('–', 59) + "\n" + "|maand                      |Totaal                       |");
+                    Console.WriteLine(new string('–', 59) + "\n" + pages[page]);
+                    Console.WriteLine($"totale uitgaven : €{ Convert.ToInt32(uitgaven.Select(P => P.Item2).Sum())},00\n");
+
+                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, uitgaven.Count - 1, 11);
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+                    else if (result.Item1 == -1 && result.Item2 == -1)
+                    {
+/*                        *//*                        DetailIncomeScreen detail = new DetailIncomeScreen(code_eigenaar.InkomstenPerItem(uitgaven[Convert.ToInt32(pos)].Item1, uitgaven[Convert.ToInt32(pos)].Item1.AddMonths(1)));
+                                                detail.DoWork();
+                                                page = 0;
+                                                pos = 0;*//**/
+                    }
+                    else
+                    {
+                        pos = result.Item3;
+                        page = result.Item1;
+                    }
+                } while (true);
             }
             else if (input.Item1 == "5")
             {
+                List<DateTime> dates = code_eigenaar.GetUitgavenIngredienten().OrderBy(d => d.bestel_datum).Select(d => d.bestel_datum).Distinct().ToList();
+                dates = dates.OrderBy(d => d).Distinct().ToList();
+                int months = ((DateTime.Now.Year - dates[0].Year) * 12) + DateTime.Now.Month - (dates[0].Month - 1);
+                List<(DateTime, double)> uitgaven = new List<(DateTime, double)>();
+                dates[0] = dates[0].AddDays(1 - dates[0].Day);
+                for (int a = 0; a < months; a++)
+                {
+                    uitgaven.Add((dates[0].AddMonths(a), code_eigenaar.GetUitgavenIngredienten(new DateTime(dates[0].Year, dates[0].Month, 1).AddMonths(a), new DateTime(dates[0].Year, dates[0].Month, 1).AddMonths(a + 1))));
+                }
+                double pos = 0;
+                int page = 0;
+                do
+                {
+                    List<string> expensesString = ExpensesToStringMonth(uitgaven, pos, "[3] Meer Detail");
+                    List<string> pages = MakePages(expensesString, 20);
 
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(true));
+                    Console.WriteLine($"Dit zijn uw uitgaven per maand op pagina {page + 1} van de {pages.Count}:");
+                    Console.WriteLine(new string('–', 59) + "\n" + "|Maand                      |Totaal                       |");
+                    Console.WriteLine(new string('–', 59) + "\n" + pages[page]);
+                    Console.WriteLine($"totale uitgaven : €{ Convert.ToInt32(uitgaven.Select(P => P.Item2).Sum())},00\n");
+
+                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, uitgaven.Count - 1, 11);
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+                    else if (result.Item1 == -1 && result.Item2 == -1)
+                    {
+                        /*                        DetailIncomeScreen detail = new DetailIncomeScreen(code_eigenaar.InkomstenPerItem(uitgaven[Convert.ToInt32(pos)].Item1, uitgaven[Convert.ToInt32(pos)].Item1.AddMonths(1)));
+                                                detail.DoWork();
+                                                page = 0;
+                                                pos = 0;*/
+                    }
+                    else
+                    {
+                        pos = result.Item3;
+                        page = result.Item1;
+                    }
+                } while (true);
             }
             else if (input.Item1 == "6")
             {
-
+                return 11;
             }
             else
             {
@@ -3489,9 +3774,6 @@ namespace restaurant
                 Console.ReadKey();
                 return 13;
             }
-
-
-            return 11;
         }
 
         public override List<Screen> Update(List<Screen> screens)

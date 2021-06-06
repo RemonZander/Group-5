@@ -47,5 +47,7 @@ namespace restaurant
         public Eigenaar eigenaar { get; set; }
 
         public List<Ingredient> ingredienten { get; set; }
+
+        public List<IngredientType> ingredientenNamen { get; set; }
     }
 }
