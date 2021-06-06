@@ -16,40 +16,41 @@ namespace restaurant
 
         public Code_Console()
         {
-            screens.Add(new StartScreen());
-            screens.Add(new GerechtenScreen());
-            screens.Add(new ReviewScreen());
-            screens.Add(new RegisterScreen());
-            screens.Add(new LoginScreen());
-            #region Klant
-            screens.Add(new ClientMenuScreen());
-            screens.Add(new MakeReservationScreen());
-            screens.Add(new MakeReviewScreen());
-            screens.Add(new ViewFeedbackScreen());
-            screens.Add(new MakeFeedbackScreen());
-            screens.Add(new ViewReviewScreen());
-            #endregion
-            #region Eigenaar
-            screens.Add(new OwnerMenuScreen());
-            screens.Add(new MakeMealScreen()); // Gerechten
-            screens.Add(new OwnerMenuScreen()); // Reservering
-            screens.Add(new IngredientsScreen());
-            screens.Add(new IncomeScreen()); // Inkomsten
-            #endregion
-            #region Medewerker
-            screens.Add(new EmployeeMenuScreen());
-            screens.Add(new GetReservationsScreen());
-            screens.Add(new AddTableToReservationScreen());
-            #endregion
-            #region Klant
-            screens.Add(new ViewReservationScreen());
-            #endregion
-            #region Medewerker
-            screens.Add(new EmployeeMenuScreen()); // EmployeeFeedbackScreen
-            #endregion
-            #region Eigenaar
-            screens.Add(new ViewMealsScreen()); // ViewMealsScreen
-            #endregion
+            screens.Add(new StartScreen()); // 0
+            screens.Add(new GerechtenScreen()); // 1
+            screens.Add(new ReviewScreen()); // 2
+            screens.Add(new RegisterScreen()); // 3
+            screens.Add(new LoginScreen()); // 4
+            // Klant
+            screens.Add(new ClientMenuScreen()); // 5
+            screens.Add(new MakeReservationScreen()); // 6
+            screens.Add(new MakeReviewScreen()); // 7
+            screens.Add(new ViewFeedbackScreen()); // 8
+            screens.Add(new MakeFeedbackScreen()); // 9
+            screens.Add(new ViewReviewScreen()); // 10
+
+            // Eigenaar
+            screens.Add(new OwnerMenuScreen()); // 11
+            screens.Add(new MakeMealScreen()); // 12
+            screens.Add(new ExpensesScreen()); // 13
+            screens.Add(new IngredientsScreen()); // 14
+            screens.Add(new IncomeScreen()); // 15
+
+            // Medewerker
+            screens.Add(new EmployeeMenuScreen()); // 16
+            screens.Add(new GetReservationsScreen()); // 17
+            screens.Add(new AddTableToReservationScreen()); // 18
+
+            // Klant
+            screens.Add(new ViewReservationScreen()); // 19
+
+            // Eigenaar
+            screens.Add(new EmployeeFeedbackScreen()); // 20
+            screens.Add(new ViewMealsScreen()); // 21
+
+            screens.Add(new PaymentScreen()); // 22
+            screens.Add(new AddWorkerScreen()); // 23
+            screens.Add(new GetWorkersScreen()); // 24
             currentScreen = 0;
         }
 
@@ -110,8 +111,8 @@ namespace restaurant
         protected const string DigitsAndLettersOnlyMessage = "Alleen maar letters of cijfers mogen ingevoerd worden!";
         protected const string InputEmptyMessage = "Vul wat in alsjeblieft.";
         protected const string InvalidInputMessage = "U moet wel een juiste keuze maken...";
-        protected const string PressButtonToContinueMessage = "Druk op een knop om verder te gaan...";
-        protected const string ControlsTutorial = "Gebruik de pijltjes toetsen om door de items in de lijst te gaan.";
+        protected const string PressButtonToContinueMessage = "Druk op een toets om verder te gaan.";
+        protected const string ControlsTutorial = "Gebruik de pijltjestoetsen om door de items in de vakjes te gaan.\nDe geselecteerde item heeft extra opties vergeleken met de rest.";
         protected const string ESCAPE_KEY = "ESCAPE";
         protected const string ENTER_KEY = "ENTER";
         protected const string BACKSPACE_KEY = "BACKSPACE";
@@ -184,7 +185,7 @@ namespace restaurant
         protected void LogoutWithMessage()
         {
             logoutUpdate = true;
-            Console.WriteLine("\nU bent nu uitgelogd.");
+            Console.WriteLine("\n\nU bent nu uitgelogd.");
             Console.WriteLine("Druk op een knop om verder te gaan.");
             Console.ReadKey();
         }
@@ -225,7 +226,9 @@ namespace restaurant
         /// <returns>True if the right key is pressed, false is not</returns>
         protected bool IsKeyPressed(ConsoleKeyInfo cki, string key) => cki.Key.ToString().ToUpper() == key.ToUpper();
 
-        protected (int, int, double) SetupPagination(List<List<string>> input, string aboveText, int screenIndex, List<string> pages, int pageNum, double pos, int maxLength, List<string> choices, bool standardBindings = true)
+        protected string ConvertToCurrency(double input) => input.ToString("C");
+
+        protected (int, int, double) SetupPagination(List<List<string>> input, string aboveText, int screenIndex, List<string> pages, int pageNum, double pos, int maxLength, List<string> choices, string customText = "")
         {
             List<List<string>> layout = Makedubbelboxes(input);
 
@@ -315,43 +318,40 @@ namespace restaurant
 
             pages = MakePages(boxes, 3);
 
-            if (standardBindings)
+            if (pages.Count > 1)
             {
-                if (pages.Count > 1)
+                if (pageNum == 0)
                 {
-                    if (pageNum == 0)
-                    {
-                        bindings = new List<Tuple<(int, int, double), string>> {
+                    bindings = new List<Tuple<(int, int, double), string>> {
                             Tuple.Create((pageNum + 1, -1, (pageNum + 1) * 6.0), ConsoleKey.D1.ToString()),
                             Tuple.Create((pageNum, screenIndex, pos), ConsoleKey.D2.ToString())
                         };
-                        nonBoxChoices = new List<string> { "[1] Volgende pagina", "[2] Terug" };
-                    }
-                    else if (pageNum > 0 && pageNum < pages.Count - 1)
-                    {
-                        bindings = new List<Tuple<(int, int, double), string>> {
+                    nonBoxChoices = new List<string> { "[1] Volgende pagina", "[2] Terug" };
+                }
+                else if (pageNum > 0 && pageNum < pages.Count - 1)
+                {
+                    bindings = new List<Tuple<(int, int, double), string>> {
                             Tuple.Create((pageNum + 1, -1, (pageNum + 1) * 6.0), ConsoleKey.D1.ToString()),
                             Tuple.Create((pageNum - 1, -1, (pageNum - 1) * 6.0), ConsoleKey.D2.ToString()),
                             Tuple.Create((pageNum, screenIndex, pos), ConsoleKey.D3.ToString())
                         };
-                        nonBoxChoices = new List<string> { "[1] Volgende pagina", "[2] Vorige pagina", "[3] Terug" };
-                    }
-                    else
-                    {
-                        bindings = new List<Tuple<(int, int, double), string>> {
-                            Tuple.Create((pageNum - 1, -1, (pageNum - 1) * 6.0), ConsoleKey.D1.ToString()),
-                            Tuple.Create((pageNum, screenIndex, pos), ConsoleKey.D2.ToString())
-                        };
-                        nonBoxChoices = new List<string> { "[1] Vorige pagina", "[2] Terug" };
-                    }
+                    nonBoxChoices = new List<string> { "[1] Volgende pagina", "[2] Vorige pagina", "[3] Terug" };
                 }
                 else
                 {
                     bindings = new List<Tuple<(int, int, double), string>> {
+                            Tuple.Create((pageNum - 1, -1, (pageNum - 1) * 6.0), ConsoleKey.D1.ToString()),
+                            Tuple.Create((pageNum, screenIndex, pos), ConsoleKey.D2.ToString())
+                        };
+                    nonBoxChoices = new List<string> { "[1] Vorige pagina", "[2] Terug" };
+                }
+            }
+            else
+            {
+                bindings = new List<Tuple<(int, int, double), string>> {
                         Tuple.Create((pageNum, screenIndex, pos), ConsoleKey.D1.ToString())
                     };
-                    nonBoxChoices = new List<string> { "[1] Terug" };
-                }
+                nonBoxChoices = new List<string> { "[1] Terug" };
             }
 
             for (int i = 0, j = 3, k = 0; i < choices.Count; i++)
@@ -368,7 +368,15 @@ namespace restaurant
             }
 
             Console.Clear();
-            Console.WriteLine(string.Format($"{aboveText}\n{ControlsTutorial}", GetGFLogo(true), pageNum + 1, pages.Count));
+
+            if (customText == "")
+            {
+                Console.WriteLine(string.Format($"{aboveText}\n{ControlsTutorial}", GetGFLogo(true), pageNum + 1, pages.Count));
+            }
+            else
+            {
+                Console.WriteLine(customText);
+            }
 
             if (layout[layout.Count - 1][1].Length < 70 && pageNum == pages.Count - 1)
             {
@@ -379,7 +387,7 @@ namespace restaurant
                 Console.WriteLine(pages[pageNum] + new string('#', maxLength + 6));
             }
 
-            return Nextpage(pageNum, pos, boxes.Count * 2 - 1, screenIndex, bindings, nonBoxChoices);
+            return Nextpage(pageNum, pos, boxes.Count * 2 - 1, screenIndex, bindings, nonBoxChoices); // fix als het oneven boxes moet het boxes.Count * 2 - 2
         }
 
         protected int GoBack(int screenIndex, bool canLogout = true)
@@ -455,6 +463,14 @@ namespace restaurant
         protected string convertBooleanString(bool boolean)
         {
             return boolean ? "Ja" : "Nee";
+        }
+
+        protected int InvalidChoice(int screenIndex, string invalidInputMessage = "", string pressButtonToContinueMessage = "")
+        {
+            Console.WriteLine(invalidInputMessage == "" ? "\n" + InvalidInputMessage : invalidInputMessage);
+            Console.WriteLine(pressButtonToContinueMessage == "" ? PressButtonToContinueMessage : pressButtonToContinueMessage);
+            Console.ReadKey();
+            return screenIndex;
         }
 
         protected (string, int) AskForInput(int screenIndex)
@@ -561,9 +577,9 @@ namespace restaurant
         {
             Console.WriteLine(GetGFLogo(false));
             Console.WriteLine("Kies een optie:");
-            Console.WriteLine("[1] Laat alle gerechten zien");
-            Console.WriteLine("[2] Laat alle reviews zien");
-            Console.WriteLine("[3] Registreer");
+            Console.WriteLine("[1] Menukaart bekijken");
+            Console.WriteLine("[2] Reviews bekijken");
+            Console.WriteLine("[3] Registreren");
             Console.WriteLine("[4] Login");
 
             (string, int, string) result = AskForInput(
@@ -671,80 +687,426 @@ namespace restaurant
 
     public class GerechtenScreen : Screen
     {
-        //max lengte van een gerecht naam is 25 tekens
-        private List<Gerechten> gerechten = new List<Gerechten>();
+        private int ScreenNum = 1;
+        private int MaxLength = 104;
+        private List<Gerechten> AllMeals = new List<Gerechten>();
         private List<string> gerechtenstring = new List<string>();
-        private string gerechtenbox;
+        private List<Gerechten> orderedMeals = new();
+        private List<Dranken> orderedDrinks = new();
 
         public GerechtenScreen()
         {
         }
 
-        private List<string> DishesToString()
+        private List<List<string>> MealsToString(List<Gerechten> meals)
         {
-            List<string> output = new List<string>();
-            output.Add("Naam:" + new string(' ', 25 - 5) + "Prijs:" + new string(' ', 4));
-            foreach (var gerecht in gerechten)
+            List<List<string>> output = new List<List<string>>();
+
+            for (int a = 0; a < meals.Count; a++)
             {
-                output.Add(gerecht.naam + new string(' ', 25 - gerecht.naam.Length) + gerecht.prijs + " euro" + new string(' ', 10 - (gerecht.prijs + " euro").Length));
+                string price = $"{meals[a].prijs} euro";
+
+                List<string> block = new List<string>();
+                block.Add(new string(' ', 50));
+                block.Add(new string(' ', 50));
+
+                block.Add("Naam: " + meals[a].naam + new string(' ', 50 - ("Naam: " + meals[a].naam).Length));
+                block.Add("Prijs: " + price + new string(' ', 50 - ("Prijs: " + price).Length));
+                block.Add("Is populair: " + convertBooleanString(meals[a].is_populair) + new string(' ', 50 - ("Is populair: " + convertBooleanString(meals[a].is_populair)).Length));
+                block.Add("Is speciaal: " + convertBooleanString(meals[a].special) + new string(' ', 50 - ("Is speciaal: " + convertBooleanString(meals[a].special)).Length));
+
+                block.Add(new string(' ', 50));
+                block.Add(new string(' ', 50));
+
+                output.Add(block);
             }
 
             return output;
         }
 
-        public override int DoWork()
+        private List<List<string>> DrinksToString(List<Dranken> drinks)
         {
-            gerechten = code_gebruiker.GetMenukaart();
+            List<List<string>> output = new List<List<string>>();
 
-            if (gerechten.Count > 0)
+            for (int a = 0; a < drinks.Count; a++)
             {
-                gerechtenstring = DishesToString();
-                gerechtenbox = BoxAroundText(gerechtenstring, "#", 2, 2, 35, false);
+                string price = $"{drinks[a].prijs} euro";
+
+                List<string> block = new List<string>();
+                block.Add(new string(' ', 50));
+                block.Add(new string(' ', 50));
+
+                block.Add("Naam: " + drinks[a].naam + new string(' ', 50 - ("Naam: " + drinks[a].naam).Length));
+                block.Add("Prijs: " + price + new string(' ', 50 - ("Prijs: " + price).Length));
+                block.Add("Bevat alcohol: " + convertBooleanString(drinks[a].heeftAlcohol) + new string(' ', 50 - ("Bevat alcohol: " + convertBooleanString(drinks[a].heeftAlcohol)).Length));
+
+                block.Add(new string(' ', 50));
+                block.Add(new string(' ', 50));
+
+                output.Add(block);
+            }
+
+            return output;
+        }
+
+        private double CalculateTotal()
+        {
+            double mealsTotal = 0;
+            double drinksTotal = 0;
+
+            if (orderedMeals.Count > 0)
+            {
+                orderedMeals.ForEach(meal =>
+                {
+                    mealsTotal += meal.prijs;
+                });
+            }
+
+            if (orderedDrinks.Count > 0)
+            {
+                orderedDrinks.ForEach(drink =>
+                {
+                    drinksTotal += drink.prijs;
+                });
+            }
+
+            return mealsTotal + drinksTotal;
+        }
+
+        private string OrderToString()
+        {
+            List<string> rows = new();
+            rows.Add("Maaltijden: ");
+
+            if (orderedMeals.Count > 0)
+            {
+                foreach (Gerechten meal in orderedMeals.Distinct().ToArray())
+                {
+                    rows.Add("Naam: " + meal.naam);
+                    rows.Add("Prijs: " + ConvertToCurrency(meal.prijs));
+                    rows.Add($"Aantal x{orderedMeals.Where(otherMeal => otherMeal.ID == meal.ID).Count()}");
+                    rows.Add("");
+                }
             }
             else
             {
-                return 0;
+                rows.Add("Geen maaltijden besteld");
             }
 
-            Console.WriteLine(GetGFLogo(false));
-            Console.WriteLine(gerechtenbox);
-            Console.WriteLine("[1] Ga terug");
+            rows.Add("");
+            rows.Add("Drankjes: ");
 
-            int screenIndex;
+            if (orderedDrinks.Count > 0)
+            {
+                foreach (Dranken drink in orderedDrinks.Distinct().ToArray())
+                {
+                    rows.Add("Naam: " + drink.naam);
+                    rows.Add("Prijs: " + ConvertToCurrency(drink.prijs));
+                    rows.Add($"Aantal x{orderedDrinks.Where(otherMeal => otherMeal.ID == drink.ID).Count()}");
+                    rows.Add("");
+                }
+            }
+            else
+            {
+                rows.Add("Geen drankjes besteld");
+            }
+
+            rows.Add("");
+            rows.Add($"Totaal: {ConvertToCurrency(CalculateTotal())}");
+
+            string output = "";
+            output += new string('#', 56) + "\n";
+            output += "#  " + new string(' ', 50) + "  #\n";
+            output += "#  " + new string(' ', 50) + "  #\n";
+
+            foreach (string row in rows)
+            {
+                output += "#  " + row + new string(' ', 50 - row.Length) + "  #\n";
+            }
+
+            output += "#  " + new string(' ', 50) + "  #\n";
+            output += "#  " + new string(' ', 50) + "  #\n";
+            output += new string('#', 56);
+            return output;
+        }
+
+        private void OrderDrink(Dranken drink)
+        {
+            orderedDrinks.Add(drink);
+        }
+
+        private void OrderMeal(Gerechten meal)
+        {
+            orderedMeals.Add(meal);
+        }
+
+        private (int, int, double) SetupPagination(List<List<string>> input, List<string> pages, int pageNum, double pos, int maxLength)
+        {
+            string text = $"{GetGFLogo(true)}\nWelkom bij het menukaart, hier kunt u alle gerechten bekijken.";
+
+            (int, int, double) result;
 
             if (ingelogd.type == "Gebruiker")
             {
-                screenIndex = 5;
+                result = SetupPagination(
+                    input,
+                    "",
+                    ScreenNum,
+                    pages,
+                    pageNum,
+                    pos,
+                    MaxLength,
+                    new List<string>() { "Bestel" },
+                    text + ControlsTutorial
+                );
+            }
+            else
+            {
+                result = SetupPagination(
+                    input,
+                    "",
+                    ScreenNum,
+                    pages,
+                    pageNum,
+                    pos,
+                    MaxLength,
+                    new List<string>(),
+                    text
+                );
+            }
+
+            return result;
+        }
+
+        private int GoBack()
+        {
+            if (ingelogd.type == "Gebruiker")
+            {
+                return 5;
             }
             else if (ingelogd.type == "Medewerker")
             {
-                screenIndex = 16;
+                return 16;
             }
             else if (ingelogd.type == "Eigenaar")
             {
-                screenIndex = 11;
+                return 11;
             }
             else
             {
-                screenIndex = 0;
-            }
-
-            string choice = Console.ReadLine();
-
-            if (choice == "1")
-            {
-                return screenIndex;
-            }
-            else if (choice == "0")
-            {
-                LogoutWithMessage();
                 return 0;
             }
+        }
+
+        public override int DoWork()
+        {
+            AllMeals = code_gebruiker.GetMenukaart();
+
+            if (AllMeals.Count > 0)
+            {
+                Console.WriteLine(GetGFLogo(true));
+                Console.WriteLine("Welkom bij het menukaart!");
+                Console.WriteLine("[1] Laat alle ontbijt gerechten zien.");
+                Console.WriteLine("[2] Laat alle lunch gerechten zien.");
+                Console.WriteLine("[3] Laat alle diner gerechten zien.");
+                Console.WriteLine("[4] Laat alle dranken zien");
+
+                if (ingelogd.type == "Gebruiker")
+                {
+                    Console.WriteLine("[5] Laat je volledige bestelling zien");
+                    Console.WriteLine("[6] Ga terug");
+                }
+                else
+                {
+                    Console.WriteLine("[5] Ga terug");
+                }
+
+                int possibleResult = -1;
+                var input = AskForInput(ScreenNum, null, input => int.TryParse(input, out possibleResult), (null, DigitsOnlyMessage));
+
+                if (input.Item3 != null)
+                {
+                    Console.WriteLine("\n" + input.Item3);
+                    Console.WriteLine(PressButtonToContinueMessage);
+                    Console.ReadKey();
+                    return ScreenNum;
+                }
+
+                if (input.Item2 != -1)
+                {
+                    return input.Item2;
+                }
+
+                if (ingelogd.type == "Gebruiker" && input.Item1 == "6" || ingelogd.type != "Gebruiker" && input.Item1 == "5")
+                {
+                    return GoBack();
+                }
+
+                if (input.Item1 == "0")
+                {
+                    LogoutWithMessage();
+                    return 0;
+                }
+
+                if (input.Item1 == "1")
+                {
+                    List<Gerechten> currentList = AllMeals.Where(meal => meal.ontbijt).ToList();
+
+                    if (currentList.Count <= 0)
+                    {
+                        return InvalidChoice(ScreenNum, "Er zijn geen ontbijt gerechten beschikbaar");
+                    }
+
+                    List<string> pages = new List<string>();
+                    int pageNum = 0;
+                    double pos = 0;
+
+                    do
+                    {
+                        (int, int, double) result;
+
+                        result = SetupPagination(MealsToString(currentList), pages, pageNum, pos, MaxLength);
+
+                        pos = result.Item3;
+
+                        if (result.Item2 != -1)
+                        {
+                            return result.Item2;
+                        }
+                        else if (ingelogd.type == "Gebruiker" && result.Item1 == -1 && result.Item2 == -1)
+                        {
+                            OrderMeal(currentList[Convert.ToInt32(pos)]);
+                            return ScreenNum;
+                        }
+
+                        pageNum = result.Item1;
+                    } while (true);
+                }
+                else if (input.Item1 == "2")
+                {
+                    List<Gerechten> currentList = AllMeals.Where(meal => meal.lunch).ToList();
+
+                    if (currentList.Count <= 0)
+                    {
+                        return InvalidChoice(ScreenNum, "Er zijn geen lunch gerechten beschikbaar");
+                    }
+
+                    List<string> pages = new List<string>();
+                    int pageNum = 0;
+                    double pos = 0;
+
+                    do
+                    {
+                        (int, int, double) result;
+
+                        result = SetupPagination(MealsToString(currentList), pages, pageNum, pos, MaxLength);
+
+                        pos = result.Item3;
+
+                        if (result.Item2 != -1)
+                        {
+                            return result.Item2;
+                        }
+                        else if (ingelogd.type == "Gebruiker" && result.Item1 == -1 && result.Item2 == -1)
+                        {
+                            OrderMeal(currentList[Convert.ToInt32(pos)]);
+                            return ScreenNum;
+                        }
+
+                        pageNum = result.Item1;
+                    } while (true);
+                }
+                else if (input.Item1 == "3")
+                {
+                    List<Gerechten> currentList = AllMeals.Where(meal => meal.diner).ToList();
+
+                    if (currentList.Count <= 0)
+                    {
+                        return InvalidChoice(ScreenNum, "Er zijn geen diner gerechten beschikbaar");
+                    }
+
+                    List<string> pages = new List<string>();
+                    int pageNum = 0;
+                    double pos = 0;
+
+                    do
+                    {
+                        (int, int, double) result;
+
+                        result = SetupPagination(MealsToString(currentList), pages, pageNum, pos, MaxLength);
+
+                        pos = result.Item3;
+
+                        if (result.Item2 != -1)
+                        {
+                            return result.Item2;
+                        }
+                        else if (ingelogd.type == "Gebruiker" && result.Item1 == -1 && result.Item2 == -1)
+                        {
+                            OrderMeal(currentList[Convert.ToInt32(pos)]);
+                            return ScreenNum;
+                        }
+
+                        pageNum = result.Item1;
+                    } while (true);
+                }
+                else if (input.Item1 == "4")
+                {
+                    List<Dranken> currentList = io.GetDatabase().menukaart.dranken;
+
+                    if (currentList == null || currentList.Count <= 0)
+                    {
+                        return InvalidChoice(ScreenNum, "Er zijn geen dranken beschikbaar");
+                    }
+
+                    List<string> pages = new List<string>();
+                    int pageNum = 0;
+                    double pos = 0;
+
+                    do
+                    {
+                        (int, int, double) result;
+
+                        result = SetupPagination(DrinksToString(currentList), pages, pageNum, pos, MaxLength);
+
+                        pos = result.Item3;
+
+                        if (result.Item2 != -1)
+                        {
+                            return result.Item2;
+                        }
+                        else if (ingelogd.type == "Gebruiker" && result.Item1 == -1 && result.Item2 == -1)
+                        {
+                            OrderDrink(currentList[Convert.ToInt32(pos)]);
+                            return ScreenNum;
+                        }
+
+                        pageNum = result.Item1;
+                    } while (true);
+                }
+                else if (ingelogd.type == "Gebruiker" && input.Item1 == "5")
+                {
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(true));
+                    Console.WriteLine("Dit is je bestelling.");
+                    Console.WriteLine(OrderToString());
+                    Console.WriteLine("[1] Ga terug");
+
+                    return GoBack(ScreenNum);
+                }
+                else
+                {
+                    return InvalidChoice(ScreenNum);
+                }
+            }
             else
             {
-                Console.WriteLine(InvalidInputMessage);
-                Console.ReadKey();
-                return 1;
+                Console.Clear();
+                Console.WriteLine(GetGFLogo(true));
+                Console.WriteLine("Er zijn geen gerechten aangemaakt.");
+                Console.WriteLine("[1] Ga terug");
+
+                return GoBack(ScreenNum);
             }
         }
 
@@ -849,12 +1211,12 @@ namespace restaurant
             steps.Add("Uw postcode: ");
             steps.Add("Uw straatnaam: ");
             steps.Add("Uw huisnummer: ");
-            steps.Add("Hieronder vult u uw login gegevens: \nUw email adres: ");
-            steps.Add("Het wachtwoord voor uw account: ");
-            steps.Add("Kloppen de bovenstaande gegevens?\n[1] Deze kloppen niet, breng me terug.\n[2] ja deze kloppen.");
+            steps.Add("\nHieronder vult u uw login gegevens:\nUw e-mailadres:");
+            steps.Add("Het wachtwoord voor uw account:");
+            steps.Add("\nKloppen de bovenstaande gegevens?\n[1] Deze kloppen niet, breng me terug.\n[2] Ja, deze kloppen.");
 
             output.Add(GetGFLogo(true));
-            output.Add("Hier kunt u een account aanmaken om o.a. reververingen te plaatsen voor GrandFusion!");
+            output.Add("Hier kunt u een account aanmaken om o.a. reserveringen te plaatsen voor GrandFusion!");
             
             List<Login_gegevens> login_Gegevens = io.GetDatabase().login_gegevens;
 
@@ -1033,6 +1395,11 @@ namespace restaurant
 
                     result = AskForInput(0, null, input => regex.IsMatch(input), (null, "De email is niet juist er mist een @ of een ."));
 
+                    if (result.Item1.Length > 30)
+                    {
+                        return InvalidChoice(3, "Je email moet niet langer zijn dan 30 karakters.");
+                    }
+
                     if (result.Item1 == null)
                     {
                         ResetOutput();
@@ -1097,14 +1464,14 @@ namespace restaurant
 
                     if (code_login.Register(lg) == "Succes!")
                     {
-                        Console.WriteLine("\nU bent succesfull geregistreerd!");
-                        Console.WriteLine("Druk op een knop om naar het hoofdmenu te gaan");
+                        Console.WriteLine("\nU bent succesvol geregistreerd!");
+                        Console.WriteLine("Druk op een toets om naar het hoofdmenu te gaan.");
                         Console.ReadKey();
                         return 0;
                     }
                     else if (code_login.Register(lg) == "This email and account type is already in use")
                     {
-                        Console.WriteLine("\nDit account bestaat al, druk op een knop om een ander email adres in te voeren.");
+                        Console.WriteLine("\nDit account bestaat al, druk op een knop om een ander e-mail adres in te voeren.");
                         Console.ReadKey();
                         currentStep = 7;
                         RetryStep = true;
@@ -1112,11 +1479,9 @@ namespace restaurant
                     }
                     else if (code_login.Register(lg) == "Password must contain at least 8 characters, 1 punctuation mark and 1 number.")
                     {
-                        Console.WriteLine("\nHet wachtwoord moet minimaal 8 tekens, 1 leesteken en 1 nummer bevatten. Druk op een knop om een ander wachtwoord in te voeren.");
-                        Console.ReadKey();
                         currentStep = 8;
                         RetryStep = true;
-                        return 3;
+                        return InvalidChoice(3, "\nHet wachtwoord moet minimaal 8 tekens bevatten, waaronder 1 leesteken en 1 nummer.", "Druk op een knop om een ander wachtwoord in te voeren.");
                     }
                     break;
             }
@@ -1137,7 +1502,7 @@ namespace restaurant
 
         public LoginScreen()
         {
-            steps.Add("Uw email: ");
+            steps.Add("Uw e-mail: ");
             steps.Add("Uw wachtwoord: ");
 
             output.Add(GetGFLogo(true));
@@ -1163,7 +1528,7 @@ namespace restaurant
                     Console.WriteLine(steps[currentStep]);
                     Regex regex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
 
-                    result = AskForInput(0, null, input => regex.IsMatch(input), (null, "De email is niet juist er mist een @ of een ."));
+                    result = AskForInput(0, null, input => regex.IsMatch(input), (null, "De e-mail is niet juist er mist een @ of een ."));
 
                     if (result.Item3 != null)
                     {
@@ -1224,7 +1589,7 @@ namespace restaurant
 
             if (ingelogd.type == "No account found")
             {
-                Console.WriteLine("Wachtwoord of email is niet juist, druk op een toets om opniew te proberen.");
+                Console.WriteLine("Wachtwoord of e-mail is niet juist, druk op een toets om opniew te proberen.");
                 Console.ReadKey();
                 return 4;
             }
@@ -1242,12 +1607,16 @@ namespace restaurant
                 Console.ReadKey();
                 return 11;
             }
-            else
+            else if (ingelogd.type == "Gebruiker")
             {
                 Console.WriteLine("U bent ingelogd!");
-                Console.WriteLine("Druk op een toets om naar het klanten menu te gaan.");
+                Console.WriteLine("Druk op een toets om naar het klantenmenu te gaan");
                 Console.ReadKey();
                 return 5;
+            }
+            else
+            {
+                throw new Exception("Hier hoor je niet te zijn");
             }
         }
 
@@ -1272,15 +1641,15 @@ namespace restaurant
         public override int DoWork()
         {
             Console.WriteLine(GetGFLogo(false));
-            Console.WriteLine("Welkom in het klanten menu.");
-            Console.WriteLine("[1] Laat alle gerechten zien");
-            Console.WriteLine("[2] Laat alle reviews zien");
-            Console.WriteLine("[3] Maak een reservering aan");
-            Console.WriteLine("[4] Maak een review aan");
-            Console.WriteLine("[5] Maak feedback aan");
-            Console.WriteLine("[6] Bekijk en bewerk uw eigen reserveringen");
-            Console.WriteLine("[7] Bekijk en bewerk uw eigen reviews");
-            Console.WriteLine("[8] Bekijk en bewerk uw eigen feedback");
+            Console.WriteLine("Welkom in het klantenmenu.");
+            Console.WriteLine("[1] Menukaart bekijken");
+            Console.WriteLine("[2] Reviews bekijken");
+            Console.WriteLine("[3] Reserveren");
+            Console.WriteLine("[4] Schrijf een review");
+            Console.WriteLine("[5] Schrijf een feedback");
+            Console.WriteLine("[6] Uw reserveringen (bekijken & bewerken)");
+            Console.WriteLine("[7] Uw reviews (bekijken & bewerken)");
+            Console.WriteLine("[8] Uw feedback (bekijken & bewerken)");
 
             int possibleValue = -1;
             int[] choices = new int[8] { 0, 1, 2, 3, 4, 5, 6, 7 };
@@ -1289,10 +1658,8 @@ namespace restaurant
                 0,
                 null,
                 input => int.TryParse(input, out possibleValue),
-                (null, InvalidInputMessage)
+                (null, DigitsOnlyMessage)
             );
-
-            if (result.Item2 != -1) return 5;
 
             if (result.Item3 != null)
             {
@@ -1300,6 +1667,10 @@ namespace restaurant
                 Console.ReadKey();
                 return 5;
             }
+
+            if (!choices.Contains(possibleValue)) return InvalidChoice(5);
+
+            if (result.Item2 != -1) return 5;
 
             switch (result.Item1)
             {
@@ -1451,7 +1822,7 @@ namespace restaurant
 
         date:
             topText();
-            Console.WriteLine("\n Type hier uw nieuwe datum in (formaat dag-maand-jaar): ");
+            Console.WriteLine("\nTyp hieronder de nieuwe datum in van uw reservering (genoteerd als dag-maand-jaar):");
             DateTime resultDateTime = new DateTime();
             result = AskForInput(
                 ClientMenuNum,
@@ -1487,7 +1858,7 @@ namespace restaurant
         amount:
             topText();
 
-            Console.WriteLine("Wat is het nieuwe aantal mensen?");
+            Console.WriteLine("Typ hieronder het nieuwe aantal personen in van de reservering:");
 
             int amount = -1;
             result = AskForInput(ClientMenuNum, null, input => int.TryParse(input, out amount), (null, DigitsOnlyMessage), false);
@@ -1519,7 +1890,7 @@ namespace restaurant
         tableByWindow:
             topText();
 
-            Console.WriteLine("Wilt u een tafel aan raamzijde? Type in ja of nee");
+            Console.WriteLine("Heeft u voorkeur voor een tafel aan het raam? Typ hieronder ja of nee.");
 
             bool windowSide = reservering.tafel_bij_raam;
 
@@ -1558,7 +1929,7 @@ namespace restaurant
 
             topText();
             int possibleInput = -1;
-            Console.WriteLine("Klopt alle informatie over de reservering?\n[1] Ja\n[2] Nee, doe het maar opnieuw");
+            Console.WriteLine("Klopt alle informatie over de reservering?\n[1] Ja\n[2] Nee, probeer het opnieuw");
 
             result = AskForInput(11, null, input => int.TryParse(input, out possibleInput) && (possibleInput == 1 || possibleInput == 2), (null, DigitsOnlyMessage));
 
@@ -1568,7 +1939,7 @@ namespace restaurant
 
                 code_gebruiker.OverwriteReservation(reservering, amount, resultDateTime, windowSide);
 
-                Console.WriteLine("\nReservering is aangepast.");
+                Console.WriteLine("\nDe reservering is succesvol aangepast.");
                 Console.WriteLine(PressButtonToContinueMessage);
                 Console.ReadKey();
 
@@ -1599,19 +1970,19 @@ namespace restaurant
             Console.Clear();
             Console.WriteLine(GetGFLogo(true));
             Console.WriteLine(MakeReservationBox(reservering) + "\n");
-            Console.WriteLine("Weet u zeker dat u deze reservering wilt afzeggen? Type in ja of nee");
+            Console.WriteLine("Weet u zeker dat u deze reservering wilt annuleren? Typ hieronder ja of nee.");
 
             return Confirmation(
                 ScreenNum,
                 () => {
                     code_gebruiker.DeleteReservations(reservering);
-                    Console.WriteLine("\nUw reservering is geannuleerd");
+                    Console.WriteLine("\n\nUw reservering is geannuleerd");
                     Console.WriteLine(PressButtonToContinueMessage);
                     Console.ReadKey();
                     return ScreenNum;
                 },
                 () => {
-                    Console.WriteLine("\nUw reservering is NIET geannuleerd");
+                    Console.WriteLine("\n\nUw reservering is NIET geannuleerd");
                     Console.WriteLine(PressButtonToContinueMessage);
                     Console.ReadKey();
                     return ScreenNum;
@@ -1630,20 +2001,20 @@ namespace restaurant
             if (allReservations.Count > 0)
             {
                 Console.WriteLine(GetGFLogo(true));
-                Console.WriteLine("Hier kunt u uw eigen reserveringen zien en bewerken.\nLET OP: Om reserveringen af te zeggen of te bewerken moet u de reserveringen pakken die NIET zijn gekoppeld aan een tafel.");
-                Console.WriteLine("[1] Laat al uw reserveringen in het verleden zien");
-                Console.WriteLine("[2] Laat al uw toekomstige reserveringen zien (Die NIET zijn gekoppeld aan een tafel)");
-                Console.WriteLine("[3] Laat al uw reserveringen zien vanaf een datum (genoteerd als 1-1-2000)");
-                Console.WriteLine("[4] Laat al uw toekomstige reserveringen zien (Die WEL zijn gekoppeld aan een tafel)");
-                Console.WriteLine("[5] Ga terug naar de klant menu scherm");
+                Console.WriteLine("Hier kunt u uw eigen reserveringen bekijken en bewerken.\nLET OP! U kunt alleen reserveringen die nog NIET aan een tafel zijn gekoppeld bewerken en/of annuleren.");
+                Console.WriteLine("[1] Reserveringen in het verleden");
+                Console.WriteLine("[2] Reserveringen in de toekomst (NIET gekoppeld aan een tafel)");
+                Console.WriteLine("[3] Reserveringen in de toekomst (WEL gekoppeld aan een tafel)");
+                Console.WriteLine("[4] Reserveringen vanaf een bepaalde datum (genoteerd als dag-maand-jaar)");
+                Console.WriteLine("[5] Ga terug naar het klantenmenu");
 
                 int possibleResult = -1;
-                var input = AskForInput(ClientMenuNum, null, input => int.TryParse(input, out possibleResult), (null, InvalidInputMessage));
+                var input = AskForInput(ClientMenuNum, null, input => int.TryParse(input, out possibleResult), (null, DigitsOnlyMessage));
 
                 if (input.Item3 != null)
                 {
                     Console.WriteLine(input.Item3);
-                    Console.WriteLine("Druk op een knop om door te gaan.");
+                    Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
                     Console.ReadKey();
                     return ScreenNum;
                 }
@@ -1691,7 +2062,7 @@ namespace restaurant
                             pageNum,
                             pos,
                             maxLength,
-                            new List<string>() { "Bekijk" }
+                            new List<string>() { "Bekijken" }
                         );
 
                         pos = result.Item3;
@@ -1741,7 +2112,7 @@ namespace restaurant
                             pageNum,
                             pos,
                             maxLength,
-                            new List<string>() { "Bewerk", "Afzeggen" }
+                            new List<string>() { "Bewerken", "Annuleren" }
                         );
 
                         pos = result.Item3;
@@ -1767,7 +2138,7 @@ namespace restaurant
                         pageNum = result.Item1;
                     } while (true);
                 }
-                else if (input.Item1 == "3")
+                else if (input.Item1 == "4")
                 {
                     List<string> pages = new List<string>();
                     int pageNum = 0;
@@ -1775,7 +2146,7 @@ namespace restaurant
 
                     DateTime resultDateTime = new DateTime();
 
-                    Console.WriteLine("\nType hier het datum in die u wilt gebruiken in het formaat dag-maand-jaar. De datum moet ook in het verleden zijn.");
+                    Console.WriteLine("\nTyp hieronder de datum (genoteerd als dag-maand-jaar).\nLET OP! De datum moet in het verleden zijn!");
 
                     (string, int, string) inputResult = AskForInput(
                         ScreenNum,
@@ -1790,7 +2161,7 @@ namespace restaurant
 
                             return isValid && resultDateTime < DateTime.Now;
                         },
-                        (null, "De datum klopt niet helemaal. Kijk of het formaat van de datum klopt en dat de datum in het verleden is.")
+                        (null, "\nU heeft een onjuiste datum ingevoerd.\nLet op het juiste formaat en of de datum in het verleden is.")
                     );
 
                     if (inputResult.Item3 != null)
@@ -1836,7 +2207,7 @@ namespace restaurant
                         }
                     } while (true);
                 } 
-                else if (input.Item1 == "4")
+                else if (input.Item1 == "3")
                 {
                     List<Reserveringen> reservations = futureReservations.Where(res => res.tafels.Count > 0).ToList();
 
@@ -1880,7 +2251,10 @@ namespace restaurant
                         pageNum = result.Item1;
                     } while (true);
                 }
-                return ScreenNum;
+                else
+                {
+                    return InvalidChoice(ScreenNum, "\nSorry, het lijkt erop dat u een onjuist antwoord hebt gegeven.", "Druk op een toets om het opnieuw te proberen.");
+                }
             }
             else
             {
@@ -1909,22 +2283,26 @@ namespace restaurant
         public override int DoWork()
         {
             Console.WriteLine(GetGFLogo(false));
-            Console.WriteLine("Welkom bij het eigenaars menu.");
-            Console.WriteLine("[1] Laat alle gerechten zien");
-            Console.WriteLine("[2] Laat alle reviews zien");
-            Console.WriteLine("[3] Maak een gerecht aan");
-            Console.WriteLine("[4] Bekijk, bewerk, archiveer en verwijder uw eigen gerechten");
-            Console.WriteLine("[5] Reservering");
-            Console.WriteLine("[6] Ingredienten");
-            Console.WriteLine("[7] Inkomsten");
+            Console.WriteLine("Welkom in het eigenaarsmenu.");
+            Console.WriteLine("[1] Menukaart bekijken");
+            Console.WriteLine("[2] Reviews bekijken");
+            Console.WriteLine("[3] Feedback bekijken");
+            Console.WriteLine("[4] Reserveringen bekijken");
+            Console.WriteLine("[5] Gerechten bekijken/bewerken/verwijderen/archiveren");
+            Console.WriteLine("[6] Nieuwe gerechten toevoegen");
+            Console.WriteLine("[7] Ingrediënten");
+            Console.WriteLine("[8] Inkomsten");
+            Console.WriteLine("[9] Voeg een werknemer toe");
+            Console.WriteLine("[10] Bewerk/Verwijder een werknemer");
 
             (string, int) result = AskForInput(0);
 
             if (result.Item2 != -1) return 11;
 
-            if (!(new string[8] { "0", "1", "2", "3", "4", "5", "6", "7" }).Contains(result.Item1))
+            if (!(new string[11] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }).Contains(result.Item1))
             {
                 Console.WriteLine(InvalidInputMessage);
+                Console.WriteLine(PressButtonToContinueMessage);
                 Console.ReadKey();
                 return 11;
             }
@@ -1940,15 +2318,21 @@ namespace restaurant
                     case 2:
                         return 2;
                     case 3:
-                        return 12;
+                        return 20;
                     case 4:
-                        return 21;
+                        return 19;
                     case 5:
-                        return 13;
+                        return 21;
                     case 6:
-                        return 14;
+                        return 12;
                     case 7:
-                        return 15;
+                        return 14;
+                    case 8:
+                        return 13;
+                    case 9:
+                        return 23;
+                    case 10:
+                        return 24;
                 }
             }
             return 11;
@@ -1977,11 +2361,11 @@ namespace restaurant
 
             steps.Add("Wat is de naam van het gerecht?");
             steps.Add("Wat is de prijs van het gerecht?");
-            steps.Add("Is het gerecht beschikbaar als ontbijt? Type in ja of nee.");
-            steps.Add("Is het gerecht beschikbaar als lunch? Type in ja of nee.");
-            steps.Add("Is het gerecht beschikbaar als avond eten? Type in ja of nee.");
-            steps.Add("Geef nu aan de allergenen van het gerecht, als u geen allergenen wilt aangeven of als u klaar bent laat type dan in klaar en klik op enter");
-            steps.Add("Klopt alle informatie over het gerecht?\n[1] Ja\n[2] Nee, doe het maar opnieuw");
+            steps.Add("Is het gerecht beschikbaar als ontbijt? Typ ja of nee.");
+            steps.Add("Is het gerecht beschikbaar als lunch? Typ ja of nee.");
+            steps.Add("Is het gerecht beschikbaar als avondeten? Typ ja of nee.");
+            steps.Add("Typ hieronder alle allergenen die het gerecht bevat (bijv. gluten, lactose, noten, pinda, vis, etc.).\nAls u klaar bent, typ dan 'klaar' op een nieuwe regel en druk op enter.");
+            steps.Add("\nKlopt alle informatie over het gerecht?\n[1] Ja\n[2] Nee, probeer het opnieuw");
         }
 
         private void ResetOutput()
@@ -2058,7 +2442,7 @@ namespace restaurant
                 case 2:
                     Console.WriteLine(steps[currentStep]);
 
-                    result = AskForInput(11, null, input => input.ToLower() == "ja" || input.ToLower() == "nee", (null, "Type in ja of nee alstublieft."));
+                    result = AskForInput(11, null, input => input.ToLower() == "ja" || input.ToLower() == "nee", (null, "Typ in ja of nee alstublieft."));
 
                     if (result.Item3 != null)
                     {
@@ -2083,7 +2467,7 @@ namespace restaurant
                 case 3:
                     Console.WriteLine(steps[currentStep]);
 
-                    result = AskForInput(11, null, input => input.ToLower() == "ja" || input.ToLower() == "nee", (null, "Type in ja of nee alstublieft."));
+                    result = AskForInput(11, null, input => input.ToLower() == "ja" || input.ToLower() == "nee", (null, "Typ in ja of nee alstublieft."));
 
                     if (result.Item3 != null)
                     {
@@ -2108,7 +2492,7 @@ namespace restaurant
                 case 4:
                     Console.WriteLine(steps[currentStep]);
 
-                    result = AskForInput(11, null, input => input.ToLower() == "ja" || input.ToLower() == "nee", (null, "Type in ja of nee alstublieft."));
+                    result = AskForInput(11, null, input => input.ToLower() == "ja" || input.ToLower() == "nee", (null, "Typ in ja of nee alstublieft."));
 
                     if (result.Item3 != null)
                     {
@@ -2133,7 +2517,7 @@ namespace restaurant
                 case 5:
                     Console.WriteLine(steps[currentStep]);
 
-                    if (!output.Contains("Lijst met allergenen:"))
+                    if (!output.Contains("\nLijst met allergenen:"))
                     {
                         output.Add("Lijst met allergenen:");
                     }
@@ -2172,7 +2556,7 @@ namespace restaurant
 
                     int possibleInput = -1;
 
-                    result = AskForInput(11, null, input => int.TryParse(input, out possibleInput) && (possibleInput == 1 || possibleInput == 2), (null, DigitsOnlyMessage));
+                    result = AskForInput(11, null, input => int.TryParse(input, out possibleInput), (null, DigitsOnlyMessage));
 
                     if (result.Item3 != null)
                     {
@@ -2182,6 +2566,8 @@ namespace restaurant
                         return 12;
                     }
 
+                    if (possibleInput == 1 || possibleInput == 2) return InvalidChoice(12);
+
                     if (result.Item2 != -1)
                     {
                         ResetOutput();
@@ -2190,12 +2576,12 @@ namespace restaurant
 
                     if (possibleInput == 1)
                     {
-                        List<int> ingredients = new();
+                        List<string> ingredients = new();
 
                         code_eigenaar.CreateMeal(name, false, price, false, false, ingredients, allergenes, isDiner, isLunch, isBreakfast);
 
-                        Console.WriteLine("\nGerecht is aangemaakt.");
-                        Console.WriteLine(PressButtonToContinueMessage);
+                        Console.WriteLine("\nGerecht is succesvol aangemaakt.");
+                        Console.WriteLine("Druk op een toets om terug te keren naar het eigenaarsmenu.");
                         Console.ReadKey();
 
                         ResetOutput();
@@ -2411,7 +2797,6 @@ namespace restaurant
             output += new string('#', 56);
             return output;
         }
-
 
         private int ReadMeal(Gerechten meal)
         {
@@ -2813,12 +3198,12 @@ namespace restaurant
             if (AllMeals.Count > 0)
             {
                 Console.WriteLine(GetGFLogo(true));
-                Console.WriteLine("Hier kunt u alle gerechten bekijken.");
-                Console.WriteLine("[1] Laat al uw gerechten zien");
-                Console.WriteLine("[2] Laat al uw gearchiveerde gerechten zien");
-                Console.WriteLine("[3] Laat al uw speciale gerechten zien");
-                Console.WriteLine("[4] Laat al uw populaire gerechten zien");
-                Console.WriteLine("[5] Laat al uw gerechten zien op basis van Ontbijt/Lunch/Diner");
+                Console.WriteLine("Hier kunt u alle gerechten filteren, waarna u ze kunt bekijken, bewerken, verwijderen en/of archiveren.");
+                Console.WriteLine("[1] Alle gerechten");
+                Console.WriteLine("[2] Populaire gerechten");
+                Console.WriteLine("[3] Speciale gerechten");
+                Console.WriteLine("[4] Gerechten (ontbijt/lunch/avondeten)");
+                Console.WriteLine("[5] Gearchiveerde gerechten");
                 Console.WriteLine("[6] Ga terug");
 
                 int possibleResult = -1;
@@ -2914,7 +3299,7 @@ namespace restaurant
                         pageNum = result.Item1;
                     } while (true);
                 }
-                else if (input.Item1 == "2")
+                else if (input.Item1 == "5")
                 {
                     List<Gerechten> currentList = ArchivedMeals;
 
@@ -3037,7 +3422,7 @@ namespace restaurant
                         pageNum = result.Item1;
                     } while (true);
                 }
-                else if (input.Item1 == "4")
+                else if (input.Item1 == "2")
                 {
                     List<Gerechten> currentList = PopulairMeals;
 
@@ -3099,7 +3484,7 @@ namespace restaurant
                         pageNum = result.Item1;
                     } while (true);
                 }
-                else if (input.Item1 == "5")
+                else if (input.Item1 == "4")
                 {
                     Console.WriteLine("\nOp welk type wilt u sorteren? Type in Ontbijt/Lunch/Diner");
 
@@ -3209,10 +3594,7 @@ namespace restaurant
                 }
                 else
                 {
-                    Console.WriteLine("\n" + InvalidInputMessage);
-                    Console.WriteLine(PressButtonToContinueMessage);
-                    Console.ReadKey();
-                    return ScreenNum;
+                    return InvalidChoice(ScreenNum);
                 }
             }
             else
