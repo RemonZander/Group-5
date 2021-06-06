@@ -402,7 +402,6 @@ namespace restaurant
 
         public List<List<string>> WorkersToString(List<Werknemer> werknemers)
         {
-            werknemers = werknemers.OrderBy(o => o.login_gegevens.klantgegevens.achternaam).ToList();
             List<List<string>> output = new List<List<string>>();
             for (int a = 0; a < werknemers.Count; a++)
             {
@@ -714,11 +713,10 @@ namespace restaurant
             int maxLength = 124;
             double pos = 0;
             List<string> pages = new List<string>();
-            var workers = io.GetEmployee().OrderBy(x => x.login_gegevens.klantgegevens.voornaam).ToList();
+            List<Werknemer> workers = io.GetEmployee().OrderBy(x => x.login_gegevens.klantgegevens.voornaam).ToList();
             int pageNum = 0;
             do
             {
-            a:
                 (int, int, double) result = (0, 0, 0.0);
                 pages = new List<string>();
                 List<List<string>> workerString = Makedubbelboxes(code_eigenaar.WorkersToString(workers));
@@ -730,6 +728,9 @@ namespace restaurant
                     (string, int) ans = AskForInput(11);
                     switch (ans.Item1)
                     {
+                        case "0":
+                            LogoutWithMessage();
+                            return 0;
                         default:
                             Console.WriteLine(PressButtonToContinueMessage);
                             Console.ReadKey();
@@ -746,13 +747,13 @@ namespace restaurant
                             if (i != 0 && i % 6 != 0)
                             {
                                 boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 124, true, new List<string>{
-                                        "[4] Medewerker verwijderen" + new string(' ', 60 - "[4] Medewerker verwijderen".Length),
+                                        "[3] Medewerker verwijderen" + new string(' ', 60 - "[3] Medewerker verwijderen".Length),
                                         new string(' ', 60)}));
                             }
                             else
                             {
                                 boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 60, true, new List<string>{
-                                        "[4] Medewerker verwijderen" + new string(' ', 60 - "[4] Medewerker verwijderen".Length),
+                                        "[3] Medewerker verwijderen" + new string(' ', 60 - "[3] Medewerker verwijderen".Length),
                                         new string(' ', 60)}));
                             }
                         }
@@ -775,13 +776,13 @@ namespace restaurant
                             if (pos % 2 == 0 || pos == 0)
                             {
                                 boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 124, true, new List<string>{
-                                        "[4] Medewerker verwijderen" + new string(' ', 60 - "[4] Medewerker verwijderen".Length) + "##  " + new string(' ', 60),
+                                        "[3] Medewerker verwijderen" + new string(' ', 60 - "[3] Medewerker verwijderen".Length) + "##  " + new string(' ', 60),
                                         new string(' ', 60) + "##  " + new string(' ', 60) }));
                             }
                             else
                             {
                                 boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 124, true, new List<string> {
-                                        new string(' ', 60) + "##  " + "[4] Medewerker verwijderen" + new string(' ', 60 - "[4] Medewerker verwijderen".Length),
+                                        new string(' ', 60) + "##  " + "[3] Medewerker verwijderen" + new string(' ', 60 - "[3] Medewerker verwijderen".Length),
                                         new string(' ', 60) + "##  " + new string(' ', 60)}));
                             }
                         }
@@ -831,11 +832,8 @@ namespace restaurant
                     txt.Add("[2] Vorige pagina");
                     tuples.Add(Tuple.Create((pageNum - 1, -1, (pageNum - 1) * 6.0), "D2"));
                 }
-                txt.Add("[3] Medewerker toevoegen");
                 tuples.Add(Tuple.Create((-3, -3, pos), "D3"));
-                tuples.Add(Tuple.Create((-4, -4, pos), "D4"));
-                tuples.Add(Tuple.Create((-5, -5, pos), "D5"));
-                result = Nextpage(pageNum, pos, boxes.Count * 2 - (1 + uneven), 16, tuples, txt);
+                result = Nextpage(pageNum, pos, boxes.Count * 2 - (1 + uneven), 11, tuples, txt);
                 if (result.Item2 > -1)
                 {
                     return result.Item2;
@@ -845,17 +843,11 @@ namespace restaurant
                 switch (result.Item1)
                 {
                     case -3:
-                        //toevoegen
-                        return 23;
-                    case -4:
                         //Verwijderen
                         Console.Clear();
-                        Console.WriteLine(GetGFLogo(true));
                         Code_Eigenaar_menu eigenaar_Menu = new Code_Eigenaar_menu();
 
-                        List<Werknemer> workerslist = new List<Werknemer>();
                         Werknemer worker = workers[Convert.ToInt32(pos)];
-                        Console.WriteLine("Weet u zeker dat u deze medewerker wilt verwijderen? Type in ja of nee");
                         Console.WriteLine(GetGFLogo(true));
                         Console.WriteLine(new string('#', 50));
                         Console.WriteLine("#" + new string(' ', 48) + "#");
@@ -866,6 +858,7 @@ namespace restaurant
                         Console.WriteLine("#" + new string(' ', 48) + "#");
                         Console.WriteLine("#" + new string(' ', 48) + "#");
                         Console.WriteLine(new string('#', 50) + "\n");
+                        Console.WriteLine("Weet u zeker dat u deze medewerker wilt verwijderen? Type in ja of nee");
                         return Confirmation(
                             currentScreenID,
                             () =>
@@ -904,6 +897,7 @@ namespace restaurant
 
         public override List<Screen> Update(List<Screen> screens)
         {
+            DoLogoutOnEveryScreen(screens);
             return screens;
         }
     }
@@ -920,16 +914,16 @@ namespace restaurant
                 lg.password = worker.login_gegevens.password;
                 lg.type = worker.login_gegevens.type;
             }
-            steps.Add("Uw voornaam: ");
-            steps.Add("Uw achternaam: ");
-            steps.Add("Uw geboortedatum genoteerd als dag-maand-jaar: ");
-            steps.Add("Hieronder vult u uw adres in. Dit is in verband met het bestellen van eten.\nUw woonplaats: ");
-            steps.Add("Uw postcode: ");
-            steps.Add("Uw straatnaam: ");
-            steps.Add("Uw huisnummer: ");
-            steps.Add("Hieronder vult u uw login gegevens: \nUw email adres: ");
-            steps.Add("Het wachtwoord voor uw account: ");
-            steps.Add("Kloppen de bovenstaande gegevens?\n[1] Deze kloppen niet, breng me terug.\n[2] ja deze kloppen.");
+            steps.Add("De voornaam: ");
+            steps.Add("De achternaam: ");
+            steps.Add("De geboortedatum genoteerd als dag-maand-jaar: ");
+            steps.Add("Hieronder vult u het adres in.\nDe woonplaats: ");
+            steps.Add("De postcode: ");
+            steps.Add("De straatnaam: ");
+            steps.Add("Het huisnummer: ");
+            steps.Add("Hieronder vult u de logingegevens in: \nHet e-mailadres: ");
+            steps.Add("Het wachtwoord voor het account: ");
+            steps.Add("Kloppen de bovenstaande gegevens?\n[1] Deze kloppen niet, breng me terug.\n[2] Ja, deze kloppen.");
 
             output.Add(GetGFLogo(true));
             output.Add("Hier kunt u een account aanmaken voor een medewerker!");
@@ -966,7 +960,7 @@ namespace restaurant
         public override int DoWork()
         {
             int currentScreen = 23;
-            int previousScreen = 24;
+            int previousScreen = 11;
             (string, int, string) result;
 
             Console.WriteLine(string.Join("\n", output));
@@ -1091,7 +1085,7 @@ namespace restaurant
                 case 6:
                     Console.WriteLine(steps[currentStep]);
                     int possibleValue = -1;
-                    result = AskForInput(previousScreen, c => char.IsDigit(c), input => int.TryParse(input, out possibleValue) && possibleValue > 0, (DigitsOnlyMessage, "De nummer die u heeft ingevoerd is te lang voor een gemiddeld huisnummer of het is 0"));
+                    result = AskForInput(previousScreen, c => char.IsDigit(c), input => int.TryParse(input, out possibleValue) && possibleValue > 0, (DigitsOnlyMessage, "Het nummer dat u heeft ingevoerd is te lang voor een gemiddeld huisnummer of het is 0"));
 
                     if (result.Item1 == null)
                     {
@@ -1112,10 +1106,6 @@ namespace restaurant
                     Regex regex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
 
                     result = AskForInput(previousScreen, null, input => regex.IsMatch(input), (null, "Het e-mailadres is niet juist er mist een @ of een ."));
-                    //if (result.Item1.Length > 30)
-                    //{
-                        
-                    //}
 
                     if (result.Item1 == null)
                     {
