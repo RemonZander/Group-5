@@ -563,6 +563,17 @@ namespace restaurant
             }
             return gerechten;
         }
+
+        /// <summary>
+        /// voor het verkrijgen van alle ingrediënten
+        /// </summary>
+        /// <returns>een list met alle ingrediënten</returns>
+        public List<IngredientType> ingredientNamen()
+        {
+            database = GetDatabase();
+
+            return database.ingredientenNamen;
+        }
         #endregion
 
         #region sorteren
