@@ -465,7 +465,7 @@ namespace restaurant
             return boolean ? "Ja" : "Nee";
         }
 
-        protected int InvalidChoice(int screenIndex, string invalidInputMessage = "", string pressButtonToContinueMessage = "")
+        protected int ShowInvalidInput(int screenIndex, string invalidInputMessage = "", string pressButtonToContinueMessage = "")
         {
             Console.WriteLine(invalidInputMessage == "" ? "\n" + InvalidInputMessage : invalidInputMessage);
             Console.WriteLine(pressButtonToContinueMessage == "" ? PressButtonToContinueMessage : pressButtonToContinueMessage);
@@ -555,14 +555,6 @@ namespace restaurant
         protected List<string> baseOutput = new();
         protected int currentStep = 0;
         protected bool RetryStep = false;
-
-        protected int ShowInvalidInput(string msg)
-        {
-            Console.WriteLine("\n" + msg);
-            Console.WriteLine("Druk op een knop om verder te gaan.");
-            Console.ReadKey();
-            return 3;
-        }
 
         protected void Reset()
         {
@@ -954,7 +946,7 @@ namespace restaurant
 
                     if (currentList.Count <= 0)
                     {
-                        return InvalidChoice(ScreenNum, "Er zijn geen ontbijt gerechten beschikbaar");
+                        return ShowInvalidInput(ScreenNum, "Er zijn geen ontbijt gerechten beschikbaar");
                     }
 
                     List<string> pages = new List<string>();
@@ -988,7 +980,7 @@ namespace restaurant
 
                     if (currentList.Count <= 0)
                     {
-                        return InvalidChoice(ScreenNum, "Er zijn geen lunch gerechten beschikbaar");
+                        return ShowInvalidInput(ScreenNum, "Er zijn geen lunch gerechten beschikbaar");
                     }
 
                     List<string> pages = new List<string>();
@@ -1022,7 +1014,7 @@ namespace restaurant
 
                     if (currentList.Count <= 0)
                     {
-                        return InvalidChoice(ScreenNum, "Er zijn geen diner gerechten beschikbaar");
+                        return ShowInvalidInput(ScreenNum, "Er zijn geen diner gerechten beschikbaar");
                     }
 
                     List<string> pages = new List<string>();
@@ -1056,7 +1048,7 @@ namespace restaurant
 
                     if (currentList == null || currentList.Count <= 0)
                     {
-                        return InvalidChoice(ScreenNum, "Er zijn geen dranken beschikbaar");
+                        return ShowInvalidInput(ScreenNum, "Er zijn geen dranken beschikbaar");
                     }
 
                     List<string> pages = new List<string>();
@@ -1096,7 +1088,7 @@ namespace restaurant
                 }
                 else
                 {
-                    return InvalidChoice(ScreenNum);
+                    return ShowInvalidInput(ScreenNum);
                 }
             }
             else
@@ -1265,7 +1257,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(3, result.Item3);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1283,7 +1275,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(3, result.Item3);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1308,7 +1300,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(3, result.Item3);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1326,7 +1318,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(3, result.Item3);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1344,7 +1336,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(3, result.Item3);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1362,7 +1354,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(3, result.Item3);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1381,7 +1373,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(3, result.Item3);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1397,7 +1389,7 @@ namespace restaurant
 
                     if (result.Item1.Length > 30)
                     {
-                        return InvalidChoice(3, "Je email moet niet langer zijn dan 30 karakters.");
+                        return ShowInvalidInput(3, "Je email moet niet langer zijn dan 30 karakters.");
                     }
 
                     if (result.Item1 == null)
@@ -1406,7 +1398,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(3, result.Item3);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1454,7 +1446,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(3, result.Item3);
 
                     if (result.Item1 == "1")
                     {
@@ -1481,7 +1473,7 @@ namespace restaurant
                     {
                         currentStep = 8;
                         RetryStep = true;
-                        return InvalidChoice(3, "\nHet wachtwoord moet minimaal 8 tekens bevatten, waaronder 1 leesteken en 1 nummer.", "Druk op een knop om een ander wachtwoord in te voeren.");
+                        return ShowInvalidInput(3, "\nHet wachtwoord moet minimaal 8 tekens bevatten, waaronder 1 leesteken en 1 nummer.", "Druk op een knop om een ander wachtwoord in te voeren.");
                     }
                     break;
             }
@@ -1668,7 +1660,7 @@ namespace restaurant
                 return 5;
             }
 
-            if (!choices.Contains(possibleValue)) return InvalidChoice(5);
+            if (!choices.Contains(possibleValue)) return ShowInvalidInput(5);
 
             if (result.Item2 != -1) return 5;
 
@@ -2253,7 +2245,7 @@ namespace restaurant
                 }
                 else
                 {
-                    return InvalidChoice(ScreenNum, "\nSorry, het lijkt erop dat u een onjuist antwoord hebt gegeven.", "Druk op een toets om het opnieuw te proberen.");
+                    return ShowInvalidInput(ScreenNum, "\nSorry, het lijkt erop dat u een onjuist antwoord hebt gegeven.", "Druk op een toets om het opnieuw te proberen.");
                 }
             }
             else
@@ -2566,7 +2558,7 @@ namespace restaurant
                         return 12;
                     }
 
-                    if (possibleInput == 1 || possibleInput == 2) return InvalidChoice(12);
+                    if (possibleInput == 1 || possibleInput == 2) return ShowInvalidInput(12);
 
                     if (result.Item2 != -1)
                     {
@@ -3261,7 +3253,7 @@ namespace restaurant
                             pageNum,
                             pos,
                             maxLength,
-                            new List<string>() { "Bekijk", "Bewerk", "Archiveer", "Verwijderen" }
+                            new List<string>() { "Bekijken", "Bewerk", "Archiveer", "Verwijderen" }
                         );
 
                         pos = result.Item3;
@@ -3327,7 +3319,7 @@ namespace restaurant
                             pageNum,
                             pos,
                             maxLength,
-                            new List<string>() { "Bekijk", "Bewerk", "Verwijderen" }
+                            new List<string>() { "Bekijken", "Bewerken", "Verwijderen" }
                         );
 
                         pos = result.Item3;
@@ -3388,7 +3380,7 @@ namespace restaurant
                             pageNum,
                             pos,
                             maxLength,
-                            new List<string>() { "Bekijk", "Bewerk", "Archiveer", "Verwijderen" }
+                            new List<string>() { "Bekijken", "Bewerken", "Archiveer", "Verwijderen" }
                         );
 
                         pos = result.Item3;
@@ -3450,7 +3442,7 @@ namespace restaurant
                             pageNum,
                             pos,
                             maxLength,
-                            new List<string>() { "Bekijk", "Bewerk", "Archiveer", "Verwijderen" }
+                            new List<string>() { "Bekijken", "Bewerken", "Archiveer", "Verwijderen" }
                         );
 
                         pos = result.Item3;
@@ -3558,7 +3550,7 @@ namespace restaurant
                             pageNum,
                             pos,
                             maxLength,
-                            new List<string>() { "Bekijk", "Bewerk", "Archiveer", "Verwijderen" }
+                            new List<string>() { "Bekijken", "Bewerken", "Archiveer", "Verwijderen" }
                         );
 
                         pos = result.Item3;
@@ -3594,7 +3586,7 @@ namespace restaurant
                 }
                 else
                 {
-                    return InvalidChoice(ScreenNum);
+                    return ShowInvalidInput(ScreenNum);
                 }
             }
             else
