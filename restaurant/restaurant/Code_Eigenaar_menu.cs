@@ -866,11 +866,11 @@ namespace restaurant
                                 bool deleted = eigenaar_Menu.DeleteWorker(workers[Convert.ToInt32(pos)]);
                                 if (deleted)
                                 {
-                                    Console.WriteLine("Medewerker is succesvol verwijderd!");
+                                    Console.WriteLine("\nDe medewerker is succesvol verwijderd!");
                                 }
                                 else
                                 {
-                                    Console.WriteLine("Er is iets fout gegaan probeer het later opnieuw.");
+                                    Console.WriteLine("\nEr is iets fout gegaan probeer het later opnieuw.");
                                 }
                                 Console.WriteLine(PressButtonToContinueMessage);
                                 Console.ReadKey();
@@ -878,7 +878,7 @@ namespace restaurant
                             },
                             () =>
                             {
-                                Console.WriteLine("\n De medewerker is NIET verwijderd.");
+                                Console.WriteLine("\nDe medewerker is NIET verwijderd.");
                                 Console.WriteLine(PressButtonToContinueMessage);
                                 Console.ReadKey();
                                 return currentScreenID;
@@ -1172,7 +1172,7 @@ namespace restaurant
                     if (code_login.Register(lg) == "Succes!")
                     {
                         Console.WriteLine("\nDe medewerker is succesvol aangemeld!");
-                        Console.WriteLine("Druk op een knop om naar de medewerkerslijst te gaan.");
+                        Console.WriteLine("Druk op een knop om terug naar het eigenaarsmenu te gaan.");
                         Console.ReadKey();
                         ResetOutput();
                         return previousScreen;
