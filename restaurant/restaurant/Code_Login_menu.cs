@@ -30,7 +30,7 @@ namespace restaurant
                     }
                 }
             }
-            else if (database.werknemers != null)
+            if (database.werknemers != null)
             {
                 foreach (var werknemer in database.werknemers)
                 {
@@ -40,7 +40,7 @@ namespace restaurant
                     }
                 }
             }
-            else if (database.eigenaar != null)
+            if (database.eigenaar != null)
             {
                 if (email == database.eigenaar.login_gegevens.email && password == database.eigenaar.login_gegevens.password)
                 {
