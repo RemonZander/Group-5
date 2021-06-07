@@ -383,7 +383,7 @@ namespace restaurant
                     ID = ingredient_temp.Count + 1,
                     name = "Deeg",
                     prijs = 1,
-                    dagenHoudbaar = 60
+                    dagenHoudbaar = 60,
                 };
 
                 ingredient_temp.Add(ingredient);
@@ -1188,6 +1188,16 @@ namespace restaurant
 
     public abstract partial class Screen
     {
+        /// <summary>
+        /// You use this function if you want to make 1 box
+        /// </summary>
+        /// <param name="input">This is the list of string wich are the lines where the box needs to made around</param>
+        /// <param name="sym">This is the symbole the box will be made from</param>
+        /// <param name="spacingside">This is the amount of spaces between the sides of the box and the lines</param>
+        /// <param name="spacingtop">This is the amount of lines that will be added before and after the lines</param>
+        /// <param name="maxlength">This is the max length of a line</param>
+        /// <param name="openbottom">If this is true the box will not have a bottom made from sym</param>
+        /// <returns>This function returns a string with is a box of sym around it</returns>
         protected string BoxAroundText(List<string> input, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom)
         {
             string output = new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
@@ -1213,6 +1223,16 @@ namespace restaurant
             return output += new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
         }
 
+        /// <summary>
+        /// you use this function if you want to make a list of boxes
+        /// </summary>
+        /// <param name="blocks">This is a list of list string where this is a list of list of lines</param>
+        /// <param name="sym">This is the symbole the box will be made from</param>
+        /// <param name="spacingside">This is the amount of spaces between the sides of the box and the lines</param>
+        /// <param name="spacingtop">This is the amount of lines that will be added before and after the lines</param>
+        /// <param name="maxlength">his is the max length of a line</param>
+        /// <param name="openbottom">If this is true the box will not have a bottom made from sym</param>
+        /// <returns>This function returns a list of boxes</returns>
         protected List<string> BoxAroundText(List<List<string>> blocks, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom)
         {
             List<string> output = new List<string>();
@@ -1245,6 +1265,17 @@ namespace restaurant
             return output;
         }
 
+        /// <summary>
+        /// You use this function if you want to make a  box with custom bottom text
+        /// </summary>
+        /// <param name="input">This is the list of string wich are the lines where the box needs to made around</param>
+        /// <param name="sym">This is the symbole the box will be made from</param>
+        /// <param name="spacingside">This is the amount of spaces between the sides of the box and the lines</param>
+        /// <param name="spacingtop">This is the amount of lines that will be added before and after the lines</param>
+        /// <param name="maxlength">his is the max length of a line</param>
+        /// <param name="openbottom">If this is true the box will not have a bottom made from sym</param>
+        /// <param name="bottomtext">This is a list of strings where this is an extra list of lines</param>
+        /// <returns>This function returns a list of strings with consists of a list of boxes with sym around it and has custom bottom text</returns>
         protected string BoxAroundText(List<string> input, string sym, int spacingside, int spacingtop, int maxlength, bool openbottom, List<string> bottomtext)
         {
             string output = new string(Convert.ToChar(sym), maxlength + 2 + spacingside * 2) + "\n";
@@ -1450,6 +1481,15 @@ namespace restaurant
             }
         }
 
+        /// <summary>
+        /// You use this function if you want to scroll in a table
+        /// </summary>
+        /// <param name="page">This is the index of the current page</param>
+        /// <param name="maxpage">This is the max amount of pages</param>
+        /// <param name="pos">This is the current position you have selected</param>
+        /// <param name="maxpos">This is the max position you can select</param>
+        /// <param name="screenIndex">This is the index you want to return to when you press esc</param>
+        /// <returns>The first int is the screenindex, the second int is the page number and the double is the position</returns>
         protected (int, int, double) NextpageTable(int page, int maxpage, double pos, double maxpos, int screenIndex)
         {
             if (page < maxpage)
@@ -1658,6 +1698,11 @@ namespace restaurant
             return output;
         }
 
+        /// <summary>
+        /// you use this function if you want to put 2 lists of lines together to make one big box
+        /// </summary>
+        /// <param name="input">This is the list of list string where this is a list of list lines</param>
+        /// <returns>This returns a list of list lines</returns>
         protected List<List<string>> Makedubbelboxes(List<List<string>> input)
         {
             List<List<string>> output = new List<List<string>>();
@@ -1682,6 +1727,11 @@ namespace restaurant
             return output;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="feedback"></param>
+        /// <returns></returns>
         protected List<List<string>> FeedbackToString(List<Feedback> feedback)
         {
             List<Werknemer> werknemers = new List<Werknemer>(io.GetEmployee());
@@ -2590,12 +2640,12 @@ namespace restaurant
                 Console.WriteLine("Hier kunt u een oude reservering kiezen, waarover u een review wilt schrijven.");
                 Console.WriteLine("U kunt één review schrijven per reservering.");
                 Console.WriteLine("\nU kunt kiezen uit één van de onderstaande reserveringen:");
-                Console.WriteLine(new string('–', 40) + "\n|ID     |Aantal mensen | Datum         |\n" + new string('–', 40));
+                Console.WriteLine(new string('–', 44) + "\n|ID     |Aantal mensen | Datum             |\n" + new string('–', 44));
 
                 //list met alle IDs van reserveringen die nog geen review hebben
                 for (int i = 0; i < reserveringen.Count; i++)
                 {
-                    Console.WriteLine("|" + reserveringen[i].ID + new string(' ', 7 - reserveringen[i].ID.ToString().Length) + "| " + reserveringen[i].aantal + new string(' ', 13 - reserveringen[i].aantal.ToString().Length) + "| " + reserveringen[i].datum.ToShortDateString() + " " + reserveringen[i].datum.ToShortTimeString() + "|\n" + new string('–', 40));
+                    Console.WriteLine("|" + reserveringen[i].ID + new string(' ', 7 - reserveringen[i].ID.ToString().Length) + "| " + reserveringen[i].aantal + new string(' ', 13 - reserveringen[i].aantal.ToString().Length) + "| " + reserveringen[i].datum.ToShortDateString() + " " + reserveringen[i].datum.ToShortTimeString() + new string(' ', 18 - (reserveringen[i].datum.ToShortDateString() + " " + reserveringen[i].datum.ToShortTimeString()).Length) + "|\n" + new string('–', 44));
                 }
                
                 Console.WriteLine("\nU kunt d.m.v. het invullen van een ID een reservering selecteren, waarover u een review wilt schrijven.");
@@ -3121,7 +3171,8 @@ namespace restaurant
             }
             else if (input.Item1 == "4")
             {
-
+                Console.Clear();
+                Console.WriteLine(GetGFLogo(true));
 
                 return 11;
             }
@@ -3149,20 +3200,24 @@ namespace restaurant
                     {
                         Console.WriteLine("Deze naam bestaat al voor een ingredient.");
                     }
-                    else if (!string.IsNullOrEmpty(result.Item1))
+                    else if (!string.IsNullOrEmpty(result.Item1) && result.Item1.Length <= 25)
                     {
                         succes = true;
                     }
-                    else
+                    else if (string.IsNullOrEmpty(result.Item1))
                     {
                         Console.WriteLine("U moet wel een naam invoeren");
+                    }
+                    else
+                    {
+                        Console.WriteLine("De naam van het ingredient mag niet langer zijn dan 25 tekens");
                     }
 
                 } while (!succes);
 
                 newIngredient.name = result.Item1;
 
-                Console.WriteLine("Voer hier de prijs in van het ingredient:");
+                Console.WriteLine("\nVoer hier de prijs in van het ingredient:");
 
                 succes = false;
                 do
@@ -3190,6 +3245,8 @@ namespace restaurant
 
                 newIngredient.prijs = Convert.ToDouble(result.Item1);
 
+                Console.WriteLine("\nVoer hieronder het aantal dagen dat dit ingredient houdbaar is:");
+
                 succes = false;
                 do
                 {
@@ -3201,7 +3258,7 @@ namespace restaurant
 
                     if (!int.TryParse(result.Item1, out int test) || Convert.ToInt32(result.Item1) <= 0)
                     {
-                        Console.WriteLine("Dit is geen geldige waarde. U kunt alleen (komma) getallen boven de 0 invoeren");
+                        Console.WriteLine("Dit is geen geldige waarde. U kunt alleen getallen boven de 0 invoeren");
                     }
                     else if (!string.IsNullOrEmpty(result.Item1))
                     {
@@ -3209,12 +3266,51 @@ namespace restaurant
                     }
                     else
                     {
-                        Console.WriteLine("U moet wel een bedrag invoeren");
+                        Console.WriteLine("U moet wel een aantal dagen invoeren");
                     }
 
                 } while (!succes);
 
                 newIngredient.dagenHoudbaar = Convert.ToInt32(result.Item1);
+
+                Console.Clear();
+                Console.WriteLine(GetGFLogo(true));
+                Console.WriteLine(new string('#', 31));
+                Console.WriteLine("#" + new string (' ', 29) + "#");
+                Console.WriteLine("#" + new string(' ', 29) + "#");
+                Console.WriteLine("#  " + newIngredient.name + new string(' ', 27 - newIngredient.name.Length) + "#");
+                Console.WriteLine("#  €" + newIngredient.prijs + new string(' ', 26 - newIngredient.prijs.ToString().Length) + "#");
+                Console.WriteLine("#  " + DateTime.Now.AddDays(newIngredient.dagenHoudbaar).ToShortDateString() + new string(' ', 27 - DateTime.Now.AddDays(newIngredient.dagenHoudbaar).ToShortDateString().Length) + "#");
+                Console.WriteLine("#" + new string(' ', 29) + "#");
+                Console.WriteLine("#" + new string(' ', 29) + "#");
+                Console.WriteLine(new string('#', 31) + "\n");
+
+                Console.WriteLine("Wilt u dit ingredient opslaan? ja | nee");
+                succes = false;
+                do
+                {
+                    result = AskForInput(11);
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+
+                    if (result.Item1 != "nee" && result.Item1 != "ja")
+                    {
+                        Console.WriteLine("U moet wel een geldige keuze maken. Deze zijn ja of nee");
+                    }
+                    else if (result.Item1 == "nee")
+                    {
+                        return 14;
+                    }
+                    else
+                    {
+
+                    }
+                } while (!succes);
+                
+
+                Console.ReadKey();
 
                 return 11;
             }

@@ -16,9 +16,5 @@ namespace restaurant
         public int klantnummer { get; set; }
 
         public DateTime geb_datum { get; set; }
-
-        //public Login_gegevens login_gegevens { get; set; }
-
-        public List<long> telefoonnummer { get; set; }
     }
 }

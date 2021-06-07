@@ -10,8 +10,5 @@ namespace restaurant
         public int ID { get; set; }
 
         public DateTime bestel_datum { get; set; }
-
-        [Obsolete("Gebruik dagenhoudbaar")]
-        public DateTime houdbaarheids_datum { get; set; }
     }
 }
