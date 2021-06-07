@@ -3171,8 +3171,85 @@ namespace restaurant
             }
             else if (input.Item1 == "4")
             {
+                List<Ingredient> ingredienten = code_eigenaar.GetIngredients();
+                List<IngredientType> ingredientNamen = io.ingredientNamen();
+                List<int> ids = new List<int>();
+
                 Console.Clear();
                 Console.WriteLine(GetGFLogo(true));
+                Console.WriteLine("Hier kunt u ingredienten toevoegen aan het magazijn.");
+                Console.WriteLine(new string('–', 47) + "\n|ID      | Ingredient               |prijs    |\n" + new string('–', 47));
+                for (int a = 0; a < ingredientNamen.Count; a++)
+                {
+                    ids.Add(a);
+                    Console.WriteLine("|" + a + new string(' ', 8 - a.ToString().Length) + "| " + ingredientNamen[a].name + new string(' ', 25 - ingredientNamen[a].name.Length) + "| " + ingredientNamen[a].prijs + new string(' ', 8 - ingredientNamen[a].prijs.ToString().Length) + "|\n" + new string('–', 47));
+                }
+                Console.WriteLine("Kies hier het id van het ingredient die u wilt toevoegen aan het magazijn.");
+
+                (string, int) result = ("", 0);
+                bool succes = false;
+                do
+                {
+                    result = AskForInput(14);
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+                    if (!int.TryParse(result.Item1, out int test))
+                    {
+                        Console.WriteLine("U moet wel een nummer invullen.");
+                    }
+                    else if (!ids.Contains(Convert.ToInt32(result.Item1)))
+                    {
+                        Console.WriteLine("Dit nummer staat niet in de lijst.");
+                    }
+                    else
+                    {
+                        succes = true;
+                    }
+
+                } while (!succes);
+
+                int pos = Convert.ToInt32(result.Item1);
+                Console.WriteLine("\nTyp het aantal ingredienten die u aan het magazijn wilt toevoegen.");
+
+                succes = false;
+                do
+                {
+                    result = AskForInput(14);
+                    if (result.Item2 != -1)
+                    {
+                        return result.Item2;
+                    }
+
+                    if (!int.TryParse(result.Item1, out int test))
+                    {
+                        Console.WriteLine("U moet wel een nummer invullen.");
+                    }
+                    else
+                    {
+                        succes = true;
+                    }
+                } while (!succes);
+
+                int lastid = ingredienten[ingredienten.Count - 1].ID;
+                List<Ingredient> ingredients = new List<Ingredient>();
+                for (int b = 0; b < Convert.ToInt32(result.Item1); b++)
+                {
+                    ingredients.Add(new Ingredient 
+                    { 
+                        ID = lastid + b,
+                        bestel_datum = DateTime.Now,
+                        dagenHoudbaar = ingredientNamen[pos].dagenHoudbaar,
+                        name = ingredientNamen[pos].name,
+                        prijs = ingredientNamen[pos].prijs
+
+                    });
+                }
+
+                code_eigenaar.SaveIngredients(ingredients);
+                Console.WriteLine("\nIngredienten toegevoegd. Druk op een toets om terug te gaan.");
+                Console.ReadKey();
 
                 return 11;
             }
@@ -3243,6 +3320,7 @@ namespace restaurant
 
                 } while (!succes);
 
+                result.Item1 = result.Item1.Replace('.', ',');
                 newIngredient.prijs = Convert.ToDouble(result.Item1);
 
                 Console.WriteLine("\nVoer hieronder het aantal dagen dat dit ingredient houdbaar is:");
@@ -3305,14 +3383,14 @@ namespace restaurant
                     }
                     else
                     {
-
+                        code_eigenaar.SaveIngredientName(newIngredient);
+                        Console.WriteLine("\nHet ingredient is opgeslagen. Druk op en toets om terug te gaan.");
+                        Console.ReadKey();
+                        return 14;
                     }
                 } while (!succes);
-                
 
-                Console.ReadKey();
-
-                return 11;
+                return 14;
             }
             else if (input.Item1 == "6")
             {

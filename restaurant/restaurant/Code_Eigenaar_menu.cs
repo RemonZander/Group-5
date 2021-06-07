@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Text;
+using System.Data;
 
 namespace restaurant
 {
@@ -170,6 +171,52 @@ namespace restaurant
                     break;
                 }
             }
+            io.Savedatabase(database);
+        }
+
+        public void SaveIngredientName(IngredientType ingredientType)
+        {
+            database = io.GetDatabase();
+            if (database.ingredientenNamen.Count == 0)
+            {
+                database.ingredientenNamen = new List<IngredientType> { ingredientType };
+            }
+            else
+            {
+                database.ingredientenNamen.Add(ingredientType);
+            }
+            io.Savedatabase(database);
+        }
+
+        public void SaveIngredients(List<Ingredient> ingredients)
+        {
+            database = io.GetDatabase();
+
+            if (database.ingredienten.Count == 0)
+            {
+                database.ingredienten = ingredients;
+            }
+            else
+            {
+                database.ingredienten.AddRange(ingredients);
+            }
+
+            io.Savedatabase(database);
+        }
+
+        public void SaveIngredients(Ingredient ingredient)
+        {
+            database = io.GetDatabase();
+
+            if (database.ingredienten.Count == 0)
+            {
+                database.ingredienten = new List<Ingredient> { ingredient };
+            }
+            else
+            {
+                database.ingredienten.Add(ingredient);
+            }
+
             io.Savedatabase(database);
         }
 
@@ -433,20 +480,6 @@ namespace restaurant
                 return true;
             }
             return false;
-        }
-
-        public void SaveIngredientName(IngredientType ingredientType)
-        {
-            database = io.GetDatabase();
-            if (database.ingredientenNamen.Count == 0)
-            {
-                database.ingredientenNamen = new List<IngredientType> { ingredientType };
-            }
-            else
-            {
-                database.ingredientenNamen.Add(ingredientType);
-            }
-            io.Savedatabase(database);
         }
     }
 
