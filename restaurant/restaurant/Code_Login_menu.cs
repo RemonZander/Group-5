@@ -12,10 +12,6 @@ namespace restaurant
         
         private Database database = new Database();
 
-        public Code_Login_menu()
-        {
-        }
-
         public void Debug()
         {
 
@@ -34,7 +30,6 @@ namespace restaurant
                     }
                 }
             }
-            
             if (database.werknemers != null)
             {
                 foreach (var werknemer in database.werknemers)
@@ -45,7 +40,6 @@ namespace restaurant
                     }
                 }
             }
-
             if (database.eigenaar != null)
             {
                 if (email == database.eigenaar.login_gegevens.email && password == database.eigenaar.login_gegevens.password)

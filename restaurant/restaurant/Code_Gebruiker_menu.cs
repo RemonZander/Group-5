@@ -1929,10 +1929,10 @@ namespace restaurant
                 Console.WriteLine("U kunt met het ID kiezen welke reservering u wilt betalen");
 
                 //met escape, return naar klantmenu
-                input = AskForInput(vorigscherm);
+                input = AskForInput(huidigscherm);
                 if (input.Item2 != -1)
                 {
-                    return vorigscherm;
+                    return huidigscherm;
                 }
 
                 //als input is 0, logout
@@ -1982,10 +1982,10 @@ namespace restaurant
                 Console.WriteLine("\n" + BestelBox(chosenReservering));
                 Console.WriteLine("\n" + betaalBox(chosenReservering));
                 Console.WriteLine("U kunt betalen door vier getallen in te voeren");
-                input = AskForInput(vorigscherm);
+                input = AskForInput(huidigscherm);
                 if (input.Item2 != -1)
                 {
-                    return vorigscherm;
+                    return huidigscherm;
                 }
 
                 //als input is 0, logout
