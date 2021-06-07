@@ -14,10 +14,6 @@ namespace restaurant
         IO io = new IO();
         Testing_class instance = new Testing_class();
 
-        public Code_Eigenaar_menu()
-        {
-        }
-
         public void Debug()
         {
 
