@@ -2463,7 +2463,7 @@ namespace restaurant
                     block.Add(new string(' ', 50));
                 }
 
-                block.Add("Rating: " + reviews[a].Rating + new string(' ', 50 - ("Rating: " + reviews[a].Rating).Length));
+                block.Add("Beoordeling: " + reviews[a].Rating + new string(' ', 50 - ("Beoordeling: " + reviews[a].Rating).Length));
                 if (!reviews[a].annomeme)
                 {
                     block.Add("Datum: " + reviews[a].datum + new string(' ', 50 - ("Datum: " + reviews[a].datum).Length));
@@ -2635,11 +2635,11 @@ namespace restaurant
             }
 
             Console.WriteLine(GetGFLogo(true));
-            Console.WriteLine("Hier kunt u uw eigen reviews zien en bewerken:");
-            Console.WriteLine("[1] Laat al uw reviews zien");
-            Console.WriteLine("[2] Laat al uw reviews zien vanaf een datum (genoteerd als 1-1-2000)");
-            Console.WriteLine("[3] Laat al uw reviews zien op beoordeling tussen de 1 en de 5");
-            Console.WriteLine("[4] Ga terug naar klant menu scherm");
+            Console.WriteLine("Hier kunt u uw eigen reviews bekijken en bewerken.");
+            Console.WriteLine("[1] Alle reviews");
+            Console.WriteLine("[2] Reviews vanaf een bepaalde datum (genoteerd als dag-maand-jaar)");
+            Console.WriteLine("[3] Reviews op beoordeling (1 t/m 5 - slechtst naar best)");
+            Console.WriteLine("[4] Ga terug naar het klantenmenu");
 
             (string, int) input = AskForInput(5);
             if (input.Item2 != -1)
@@ -2721,6 +2721,7 @@ namespace restaurant
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit zijn uw reviews op pagina {page + 1} van de {pages.Count}:");
+                    Console.WriteLine("Gebruik de pijltjestoetsen om te navigeren door de reviews.\nDe review met de tekst '[4] Bewerken en [5] Verwijderen' is de huidig geselecteerde review.");
                     if (reviewstring[reviewstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
                     {
                         Console.WriteLine(pages[page] + new string('#', 56));
@@ -2774,8 +2775,8 @@ namespace restaurant
                         else if (input.Item1 == "ja")
                         {
                             code_gebruiker.DeleteReview(reviews[Convert.ToInt32(pos)].ID, ingelogd.klantgegevens);
-                            Console.WriteLine("\n Review is verwijderd");
-                            Console.WriteLine("Druk op een knop om verder te gaan...");
+                            Console.WriteLine("\nReview is succesvol verwijderd.");
+                            Console.WriteLine("Druk op een toets om verder te gaan.");
                             Console.ReadKey();
                             return 10;
 
@@ -2787,7 +2788,7 @@ namespace restaurant
                         else
                         {
                             Console.WriteLine("\n U moet wel een jusite keuze maken");
-                            Console.WriteLine("Druk op een knop om verder te gaan...");
+                            Console.WriteLine("Druk op een toets om verder te gaan.");
                             Console.ReadKey();
                             return 10;
                         }
@@ -2797,7 +2798,7 @@ namespace restaurant
             }
             else if (input.Item1 == "2")
             {
-                Console.WriteLine("\n Vul hieronder de datum in vanaf wanneer u uw reviews wilt zien");
+                Console.WriteLine("\n Typ hieronder de datum(genoteerd als dag - maand - jaar).\nLET OP! De datum moet in het verleden zijn!");
                 (string, int) choice = AskForInput(10);              
                 if (choice.Item2 != -1)
                 {
@@ -2895,6 +2896,7 @@ namespace restaurant
                         Console.Clear();
                         Console.WriteLine(GetGFLogo(true));
                         Console.WriteLine($"Dit zijn uw reviews op pagina {page + 1} van de {pages.Count}:");
+                        Console.WriteLine("Gebruik de pijltjestoetsen om te navigeren door de reviews.\nDe review met de tekst '[4] Bewerken en [5] Verwijderen' is de huidig geselecteerde review.");
                         if (reviewstring[reviewstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
                         {
                             Console.WriteLine(pages[page] + new string('#', 56));
@@ -2948,8 +2950,8 @@ namespace restaurant
                             else if (input.Item1 == "ja")
                             {
                                 code_gebruiker.DeleteReview(reviews[Convert.ToInt32(pos)].ID, ingelogd.klantgegevens);
-                                Console.WriteLine("\n Review is verwijderd");
-                                Console.WriteLine("Druk op een knop om verder te gaan...");
+                                Console.WriteLine("\nReview is succesvol verwijderd.");
+                                Console.WriteLine("Druk op een toets om verder te gaan.");
                                 Console.ReadKey();
                                 return 10;
 
@@ -2961,7 +2963,7 @@ namespace restaurant
                             else
                             {
                                 Console.WriteLine("\n U moet wel een jusite keuze maken");
-                                Console.WriteLine("Druk op een knop om verder te gaan...");
+                                Console.WriteLine("Druk op een toets om verder te gaan.");
                                 Console.ReadKey();
                                 return 10;
                             }
@@ -2971,15 +2973,15 @@ namespace restaurant
                 }
                 catch
                 {
-                    Console.WriteLine("U moet wel een geldige datum invullen op deze manier: 1-1-2000");
-                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.WriteLine("\nU heeft een onjuiste datum ingevoerd.\nLet op het juiste formaat (dag-maand-jaar) en of de datum in het verleden is.");
+                    Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
                     Console.ReadKey();
                     return 10;
                 }
             }
             else if (input.Item1 == "3")
             {
-                Console.WriteLine("\n Vul hieronder de beoordeling in waarop u uw reviews wilt filteren.");
+                Console.WriteLine("\nTyp hieronder de beoordeling (1 t/m 5):");
                 (string, int) choice = AskForInput(10);
                 if (choice.Item2 != -1)
                 {
@@ -2988,8 +2990,8 @@ namespace restaurant
                 int page = 0;
                 if (choice.Item1 != "1" && choice.Item1 != "2" && choice.Item1 != "3" && choice.Item1 != "4" && choice.Item1 != "5")
                 {
-                    Console.WriteLine("\nU moet wel een geldige beoordeling invullen tussen de 1 en de 5.");
-                    Console.WriteLine("Druk op en knop om verder te gaan.");
+                    Console.WriteLine("\nU heeft een onjuiste beoordeling ingevoerd.\nLet op dat het een cijfer is tussen de 1 en de 5 (slechtst naar best).");
+                    Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
                     Console.ReadKey();
                     return 10;
                 }
@@ -3068,6 +3070,7 @@ namespace restaurant
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit zijn uw reviews op pagina {page + 1} van de {pages.Count}:");
+                    Console.WriteLine("Gebruik de pijltjestoetsen om te navigeren door de reviews.\nDe review met de tekst '[4] Bewerken en [5] Verwijderen' is de huidig geselecteerde review.");
                     if (reviewstring[reviewstring.Count - 1][1].Length < 70 && page == pages.Count - 1)
                     {
                         Console.WriteLine(pages[page] + new string('#', 56));
@@ -3121,8 +3124,8 @@ namespace restaurant
                         else if (input.Item1 == "ja")
                         {
                             code_gebruiker.DeleteReview(reviews[Convert.ToInt32(pos)].ID, ingelogd.klantgegevens);
-                            Console.WriteLine("\n Review is verwijderd");
-                            Console.WriteLine("Druk op een knop om verder te gaan...");
+                            Console.WriteLine("\nReview is succesvol verwijderd.");
+                            Console.WriteLine("Druk op een toets om verder te gaan.");
                             Console.ReadKey();
                             return 10;
 
@@ -3154,8 +3157,8 @@ namespace restaurant
             }
             else
             {
-                Console.WriteLine("U moet wel een juiste keuze maken...");
-                Console.WriteLine("Druk op en knop om verder te gaan.");
+                Console.WriteLine("U moet wel een juiste keuze maken.");
+                Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
                 Console.ReadKey();
                 return 10;
             }
@@ -3166,7 +3169,7 @@ namespace restaurant
             Review newreview = new Review();
             Console.Clear();
             Console.WriteLine(GetGFLogo(true));
-            Console.WriteLine("Hier kunt u een review bewerken:");
+            Console.WriteLine("Hier kunt u een review bewerken.");
             Console.WriteLine(reviewstr + "\n");
 
             Console.WriteLine("Wilt u deze review anoniem maken? ja | nee");
@@ -3200,14 +3203,14 @@ namespace restaurant
             else
             {
                 Console.WriteLine("\n U moet wel een jusite keuze maken");
-                Console.WriteLine("Druk op een knop om verder te gaan...");
+                Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
                 Console.ReadKey();
                 EditReview(reviewstr, review);
                 return 10;
             }
 
 
-            Console.WriteLine("\n Typ hier uw bericht: ");
+            Console.WriteLine("\nTyp hieronder uw bericht (max. 160 tekens):");
             input = AskForInput(10);
             if (input.Item2 != -1)
             {
@@ -3215,8 +3218,8 @@ namespace restaurant
             }
             else if (input.Item1.Length > 160)
             {
-                Console.WriteLine("\n Uw bericht mag niet langer zijn dan 160 tekens");
-                Console.WriteLine("Druk op een knop om verder te gaan...");
+                Console.WriteLine("\nUw bericht mag niet langer zijn dan 160 tekens.");
+                Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
                 Console.ReadKey();
                 EditReview(reviewstr, review);
                 return 10;
@@ -3224,7 +3227,7 @@ namespace restaurant
             else if (input.Item1.Length == 0)
             {
                 Console.WriteLine("\n u moet wel een bericht achterlaten");
-                Console.WriteLine("Druk op een knop om verder te gaan...");
+                Console.WriteLine("DDruk op een toets om het opnieuw te proberen.");
                 Console.ReadKey();
                 EditReview(reviewstr, review);
                 return 10;
@@ -3238,7 +3241,7 @@ namespace restaurant
             newreview.message = input.Item1;
 
         a:
-            Console.WriteLine("\n Typ hier uw rating: ");
+            Console.WriteLine("\nTyp hieronder uw beoordeling (1 t/m 5):");
             input = AskForInput(10);
             if (input.Item2 != -1)
             {
@@ -3246,8 +3249,8 @@ namespace restaurant
             }
             else if (!new List<string> { "1", "2", "3", "4", "5" }.Contains(input.Item1))
             {
-                Console.WriteLine($"\n {input.Item1} is geen geldige rating. U kunt 1 t/m 5 invullen.");
-                Console.WriteLine("Druk op een knop om verder te gaan...");
+                Console.WriteLine($"\n {input.Item1} is geen geldige beoordeling. U kunt 1 t/m 5 invullen (slechtst naar best).");
+                Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
                 Console.ReadKey();
                 goto a;
             }
@@ -3269,7 +3272,7 @@ namespace restaurant
                 Console.WriteLine("Achternaam: " + ingelogd.klantgegevens.achternaam);
             }
             Console.WriteLine("Bericht: " + newreview.message);
-            Console.WriteLine("Rating: " + newreview.Rating + "\n");
+            Console.WriteLine("Beoordeling: " + newreview.Rating + "\n");
 
             Console.WriteLine("Wilt u deze review bewerken en opslaan? ja | nee");
             input = AskForInput(10);
@@ -3287,8 +3290,8 @@ namespace restaurant
                 {
                     code_gebruiker.OverwriteReview(newreview.ID, newreview.Rating, newreview.message);
                 }
-                Console.WriteLine("\n Review is bijgewerkt");
-                Console.WriteLine("Druk op een knop om verder te gaan...");
+                Console.WriteLine("\nDe review is succesvol bijgewerkt.");
+                Console.WriteLine("Druk op een toets om verder te gaan.");
                 Console.ReadKey();
                 return 10;
             }
@@ -3305,7 +3308,7 @@ namespace restaurant
             else
             {
                 Console.WriteLine("\n U moet wel een jusite keuze maken");
-                Console.WriteLine("Druk op een knop om verder te gaan...");
+                Console.WriteLine("Druk op een toets om verder te gaan.");
                 Console.ReadKey();
                 goto b;
             }
@@ -3363,7 +3366,7 @@ namespace restaurant
                 output += "#  " + "Review: " + message + new string(' ', 50 - ("Review: " + message).Length) + "  #\n";
             }
 
-            output += "#  " + "Rating: " + review.Rating + new string(' ', 50 - ("Rating: " + review.Rating).Length) + "  #\n";
+            output += "#  " + "Beoordeling: " + review.Rating + new string(' ', 50 - ("Beoordeling: " + review.Rating).Length) + "  #\n";
             output += "#  " + "Datum: " + review.datum + new string(' ', 50 - ("Datum: " + review.datum).Length) + "  #\n";
             output += "#  " + new string(' ', 50) + "  #\n";
             output += "#  " + new string(' ', 50) + "  #\n";

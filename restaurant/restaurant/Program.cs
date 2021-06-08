@@ -55,7 +55,7 @@ namespace restaurant
             {
                 if (database.reserveringen[a].datum < DateTime.Now && database.reserveringen[a].tafels != null && database.reserveringen[a].gerechten_ID == null)
                 {
-                    List<Gerechten> gerechten = testing_Class.Make_dishes(database.reserveringen[a].aantal * 3, database.reserveringen[a].datum.AddMinutes(rnd.Next(10, 100)), ingredient_temp);
+                    List<Gerechten> gerechten = testing_Class.Make_dishes(database.reserveringen[a].aantal * 3, database.reserveringen[a].datum.AddMinutes(rnd.Next(10, 100)));
                     Reserveringen temp = database.reserveringen[a];
                     temp.gerechten_ID = gerechten.Select(g => g.ID).ToList();
                     database.reserveringen[a] = temp;
