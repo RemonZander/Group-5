@@ -901,12 +901,47 @@ namespace restaurant
 
             code_gebruiker.MakeCustomerReservation(now, ingelogd.klantgegevens.klantnummer, 1, false);
 
-            Reserveringen res = code_gebruiker.GetCustomerReservation(ingelogd.klantgegevens, true).Where(res => res.datum == now).Single();
+            Reserveringen res = code_gebruiker.GetCustomerReservation(ingelogd.klantgegevens, false).Where(res => res.datum == now).Single();
 
             res.gerechten_ID = orderedMeals.Select(meal => meal.ID).ToList();
             res.dranken_ID = orderedDrinks.Select(drink => drink.ID).ToList();
 
-            return ScreenNum;
+        payUpBitch:
+            Console.Clear();
+            Console.WriteLine(GetGFLogo(true));
+            Console.WriteLine("Hier ziet u uw volledige bestelling");
+            Console.WriteLine("\n" + BestelBox(res));
+            Console.WriteLine("\n" + BetaalBox(res));
+            Console.WriteLine("U kunt betalen door uw pin in te voeren");
+
+            (string, int) input = AskForInput(ScreenNum);
+            if (input.Item2 != -1)
+            {
+                return input.Item2;
+            }
+
+            //als input is 0, logout
+            if (input.Item1 == "0")
+            {
+                LogoutWithMessage();
+                return 0;
+            }
+
+            if (input.Item1.Length == 4 && int.TryParse(input.Item1, out _))
+            {
+                Console.WriteLine("\nBetaling was succesvol");
+                Console.WriteLine("Druk op een toets om terug te gaan naar het klantenmenu.");
+                io.ReserveringBetalen(res);
+                Console.ReadKey();
+                return ScreenNum;
+            }
+            else
+            {
+                Console.WriteLine("\nU moet wel vier getallen invoeren");
+                Console.WriteLine("Druk op een toets om opnieuw te proberen");
+                Console.ReadKey();
+                goto payUpBitch;
+            }
         }
 
         public override int DoWork()
@@ -935,7 +970,7 @@ namespace restaurant
             if (AllMeals.Count > 0)
             {
                 Console.WriteLine(GetGFLogo(true));
-                Console.WriteLine("Welkom bij het menukaart!");
+                Console.WriteLine("Welkom bij de menukaart! Voer een keuze in en druk op enter om het gewenste menukaart te zien.");
                 Console.WriteLine("[1] Ontbijt");
                 Console.WriteLine("[2] Lunch");
                 Console.WriteLine("[3] Diner");
