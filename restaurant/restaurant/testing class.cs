@@ -2643,7 +2643,7 @@ namespace restaurant
             return BoxAroundText(lines, "#", 2, 1, 60, false);
         }
 
-        protected string betaalBox(Reserveringen reservering)
+        protected string BetaalBox(Reserveringen reservering)
         {
             List<Gerechten> gerechten = io.GetGerechtenReservering(reservering);
             double totaalprijs = gerechten.Select(x => x.prijs).Sum();
