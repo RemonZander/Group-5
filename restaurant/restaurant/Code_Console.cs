@@ -44,8 +44,9 @@ namespace restaurant
             // Klant
             screens.Add(new ViewReservationScreen()); // 19
 
-            // Eigenaar
+            // Eigenaar | Medewerker
             screens.Add(new EmployeeFeedbackScreen()); // 20
+
             screens.Add(new ViewMealsScreen()); // 21
 
             screens.Add(new PaymentScreen()); // 22
@@ -3711,7 +3712,7 @@ namespace restaurant
                     {
                         (int, int, double) result = SetupPagination(
                             MealsToString(currentList),
-                            $"{GetGFLogo(true)}\n",
+                            $"{GetGFLogo(true)}Alle gerechten",
                             ScreenNum,
                             pages,
                             pageNum,
@@ -3763,7 +3764,7 @@ namespace restaurant
                     {
                         Console.Clear();
                         Console.WriteLine(GetGFLogo(true));
-                        Console.WriteLine("Er zijn geen gerechten aangemaakt.");
+                        Console.WriteLine("Er zijn geen gearchiveerde gerechten.");
                         Console.WriteLine("[1] Ga terug");
 
                         return GoBack(ScreenNum);
@@ -3777,7 +3778,7 @@ namespace restaurant
                     {
                         (int, int, double) result = SetupPagination(
                             MealsToString(currentList),
-                            $"{GetGFLogo(true)}\n",
+                            $"{GetGFLogo(true)}Alle gearchiveerde gerechten.",
                             ScreenNum,
                             pages,
                             pageNum,
@@ -3824,7 +3825,7 @@ namespace restaurant
                     {
                         Console.Clear();
                         Console.WriteLine(GetGFLogo(true));
-                        Console.WriteLine("Er zijn geen gerechten aangemaakt.");
+                        Console.WriteLine("Er zijn geen speciale gerechten.");
                         Console.WriteLine("[1] Ga terug");
 
                         return GoBack(ScreenNum);
@@ -3838,7 +3839,7 @@ namespace restaurant
                     {
                         (int, int, double) result = SetupPagination(
                             MealsToString(currentList),
-                            $"{GetGFLogo(true)}\n",
+                            $"{GetGFLogo(true)}Alle speciale gerechten.",
                             ScreenNum,
                             pages,
                             pageNum,
@@ -3886,7 +3887,7 @@ namespace restaurant
                     {
                         Console.Clear();
                         Console.WriteLine(GetGFLogo(true));
-                        Console.WriteLine("Er zijn geen gerechten aangemaakt.");
+                        Console.WriteLine("Er zijn geen populaire gerechten.");
                         Console.WriteLine("[1] Ga terug");
 
                         return GoBack(ScreenNum);
@@ -3900,7 +3901,7 @@ namespace restaurant
                     {
                         (int, int, double) result = SetupPagination(
                             MealsToString(currentList),
-                            $"{GetGFLogo(true)}\n",
+                            $"{GetGFLogo(true)}Alle populaire gerechten.",
                             ScreenNum,
                             pages,
                             pageNum,
@@ -3947,7 +3948,7 @@ namespace restaurant
                     var lastInput = AskForInput(
                         ScreenNum, 
                         c => char.IsLetter(c), 
-                        input => input.ToLower().Trim() == "ontbijt" || input.ToLower().Trim() == "lunch" || input.ToLower().Trim() == "diner",
+                        input => input.ToLower().Trim() == "ontbijt" || input.ToLower().Trim() == "lunch" || input.ToLower().Trim() == "diner" || input.ToLower().Trim() == "dessert",
                         (LettersOnlyMessage, InvalidInputMessage)
                     );
 
@@ -3989,12 +3990,17 @@ namespace restaurant
                         currentList = AllMeals.Where(meal => meal.diner).ToList();
                         selectedChoice = "diner";
                     }
+                    else if (lastInput.Item1 == "dessert")
+                    {
+                        currentList = AllMeals.Where(meal => meal.dessert).ToList();
+                        selectedChoice = "dessert";
+                    }
 
                     if (currentList.Count <= 0)
                     {
                         Console.Clear();
                         Console.WriteLine(GetGFLogo(true));
-                        Console.WriteLine($"Er zijn geen {selectedChoice} gerechten aangemaakt.");
+                        Console.WriteLine($"Er zijn geen {selectedChoice} gerechten.");
                         Console.WriteLine("[1] Ga terug");
 
                         return GoBack(ScreenNum);
@@ -4008,7 +4014,7 @@ namespace restaurant
                     {
                         (int, int, double) result = SetupPagination(
                             MealsToString(currentList),
-                            $"{GetGFLogo(true)}\n",
+                            $"{GetGFLogo(true)}Alle gerechten die behoren tot {selectedChoice}.",
                             ScreenNum,
                             pages,
                             pageNum,
@@ -4109,7 +4115,7 @@ namespace restaurant
                     {
                         Console.Clear();
                         Console.WriteLine(GetGFLogo(true));
-                        Console.WriteLine($"Er zijn geen populaire gerechten.");
+                        Console.WriteLine($"Er zijn geen gerechten.");
                         Console.WriteLine("[1] Ga terug");
 
                         return GoBack(ScreenNum);
@@ -4123,7 +4129,7 @@ namespace restaurant
                     {
                         (int, int, double) result = SetupPagination(
                             PopulairMealsToString(currentList, firstDate, secondDate),
-                            $"{GetGFLogo(true)}\n",
+                            $"{GetGFLogo(true)}Gerechten die zijn besteld tussen {firstDate} en {secondDate}",
                             ScreenNum,
                             pages,
                             pageNum,

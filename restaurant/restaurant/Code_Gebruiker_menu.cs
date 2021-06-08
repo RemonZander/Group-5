@@ -1208,8 +1208,8 @@ namespace restaurant
 
     class ViewFeedbackScreen : Screen
     {
-        private readonly int huidigscherm = 8;
-        private readonly int vorigscherm = 5;
+        private readonly int CurrentScreen = 8;
+        private int PreviousScreen = -1;
         
         public ViewFeedbackScreen()
         {
@@ -1217,6 +1217,19 @@ namespace restaurant
         }
         public override int DoWork()
         {
+            if (ingelogd.type == "Medewerker")
+            {
+                PreviousScreen = 16;
+            }
+            else if (ingelogd.type == "Eigenaar")
+            {
+                PreviousScreen = 11;
+            }
+            else
+            {
+                throw new Exception("YOU CANT BE HERE");
+            }
+
             List<Feedback> feedback = new List<Feedback>();
             feedback = io.GetFeedback(ingelogd.klantgegevens).OrderBy(s => s.datum).ToList();
             if (feedback.Count == 0)
@@ -1224,9 +1237,9 @@ namespace restaurant
                 Console.Clear();
                 Console.WriteLine(GFLogo);
                 Console.WriteLine("U heeft nog geen feedback");
-                Console.WriteLine("Druk op een toets om terug te gaan");
+                Console.WriteLine(PressButtonToContinueMessage);
                 Console.ReadKey();
-                return vorigscherm;
+                return PreviousScreen;
             }
 
             Console.WriteLine(GetGFLogo(true));
@@ -1236,7 +1249,7 @@ namespace restaurant
             Console.WriteLine("[3] Ga terug naar het klantenmenu");
 
             //als escape, ga terug naar scherm 5
-            (string, int) input = AskForInput(vorigscherm);
+            (string, int) input = AskForInput(PreviousScreen);
             if (input.Item2 != -1)
             {
                 return input.Item2;
@@ -1374,7 +1387,7 @@ namespace restaurant
                         else if (input.Item1 == "1")
                         {
                             code_gebruiker.DeleteFeedback(feedback[Convert.ToInt32(pos)].ID, ingelogd.klantgegevens);
-                            Console.WriteLine("\n Feedback is verwijderd");
+                            Console.WriteLine("\nFeedback is verwijderd");
                             Console.WriteLine("Druk op een knop om verder te gaan...");
                             Console.ReadKey();
                             return 5;
@@ -1386,8 +1399,8 @@ namespace restaurant
                         }
                         else
                         {
-                            Console.WriteLine("\n U moet wel een jusite keuze maken");
-                            Console.WriteLine("Druk op een knop om verder te gaan...");
+                            Console.WriteLine("\n" + InvalidInputMessage);
+                            Console.WriteLine(PressButtonToContinueMessage);
                             Console.ReadKey();
                             return 5;
                         }
@@ -1582,12 +1595,13 @@ namespace restaurant
             }
             else if (input.Item1 == "0")
             {
-                return LogoutSequence();
+                LogoutWithMessage();
+                return 0;
             }
             else
             {
-                Console.WriteLine("U moet wel een juiste keuze maken...");
-                Console.WriteLine("Druk op en knop om verder te gaan.");
+                Console.WriteLine(InvalidInputMessage);
+                Console.WriteLine(PressButtonToContinueMessage);
                 Console.ReadKey();
                 return 5;
             }
@@ -1609,7 +1623,7 @@ namespace restaurant
             Console.WriteLine("Type ja of nee.");
             
             //input, als escape - terug, als 0 - logout sequence
-            (string, int) input = AskForInput(huidigscherm);
+            (string, int) input = AskForInput(CurrentScreen);
             if (input.Item2 != -1)
             {
                 return input.Item2;
@@ -1648,7 +1662,7 @@ namespace restaurant
 
             #region Bericht
             Console.WriteLine("\n Uw feedback mag niet langer zijn dan 160 tekens.\nHieronder kunt u opnieuw feedback schrijven.");
-            input = AskForInput(huidigscherm);
+            input = AskForInput(CurrentScreen);
             if (input.Item2 != -1)
             {
                 return input.Item2;
@@ -1687,7 +1701,7 @@ namespace restaurant
             Console.WriteLine("Bericht: " + newfeedback.message);
 
             Console.WriteLine("\nWilt u deze feedback opslaan? ja | nee.");
-            input = AskForInput(huidigscherm);
+            input = AskForInput(CurrentScreen);
             if (input.Item2 != -1)
             {
                 return input.Item2;
