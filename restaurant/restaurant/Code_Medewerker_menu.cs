@@ -341,17 +341,17 @@ namespace restaurant
                     List<string> vakjes = new List<string>();
                     for (int i = 0; i < reserveringString.Count; i++)
                     {
-                        if (i == reserveringString.Count - 1 && reserveringString[i][1].Length < 70) //Checkt of er maar 1 alleeeeeeenig vakje is
+                        if (i == reserveringString.Count - 1 && reserveringString[i][1].Length < 70) //Checkt of het aantal vakjes oneven is & huidige locatie is laatste vakje
                         {
-                            if (i == Convert.ToInt32(Math.Floor(pos/2))) //Checkt of positie in de grid (omgezet naar int) gelijk is aan i
+                            if (i == Convert.ToInt32(Math.Floor(pos/2))) //Checkt of positie in de list reserveringString (omgezet naar int) gelijk is aan i
                             {
-                                if (i != 0 && i % 6 != 0)
+                                if (i != 0 && i % 6 != 0) //Rechterkant van de grid
                                 {
                                     vakjes.Add(BoxAroundText(reserveringString[i], "#", 2, 0, maxLength, true, new List<string>{
                                         "[6] Tafels koppelen" + new string(' ', 50 - "[6] Tafels koppelen".Length),
                                         new string(' ', 50)}));
                                 }
-                                else
+                                else //Linkerkant van de grid
                                 {
                                     vakjes.Add(BoxAroundText(reserveringString[i], "#", 2, 0, 50, true, new List<string>{
                                         "[6] Tafels koppelen" + new string(' ', 50 - "[6] Tafels koppelen".Length),
@@ -949,6 +949,7 @@ namespace restaurant
             output = output.OrderBy(d => d.Item1).ToList();
             return output;
         }
+
         #endregion
     }
 }
