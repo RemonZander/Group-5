@@ -80,7 +80,7 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        public void CreateMeal(string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<string> ingredients, List<string> allergens, bool isDiner, bool isLunch, bool isOntbijt)
+        public void CreateMeal(string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<string> ingredients, List<string> allergens, bool isDiner, bool isLunch, bool isOntbijt, bool isDessert)
         {
             database = io.GetDatabase();
             List<Gerechten> gerechten = new List<Gerechten>(GetMeals());
@@ -97,6 +97,7 @@ namespace restaurant
             gerecht.diner = isDiner;
             gerecht.lunch = isLunch;
             gerecht.ontbijt = isOntbijt;
+            gerecht.dessert = isDessert;
             gerechten.Add(gerecht);
             database.menukaart.gerechten = gerechten;
             io.Savedatabase(database);
