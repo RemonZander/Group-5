@@ -375,7 +375,7 @@ namespace restaurant
 
             Console.Clear();
 
-            Console.WriteLine(aboveText + GetPaginationMessage(pageNum + 1, pages.Count));
+            Console.WriteLine(aboveText + "\n" + GetPaginationMessage(pageNum + 1, pages.Count));
 
             int uneven = 0;
 
@@ -899,7 +899,7 @@ namespace restaurant
         {
             DateTime now = DateTime.Now;
 
-            code_gebruiker.MakeCustomerReservation(now, ingelogd.klantgegevens.klantnummer, 1, false);
+            code_gebruiker.MakeCustomerReservation(now, ingelogd.klantgegevens.klantnummer, -1, false);
 
             Reserveringen res = code_gebruiker.GetCustomerReservation(ingelogd.klantgegevens, false).Where(res => res.datum == now).Single();
 
@@ -2217,7 +2217,7 @@ namespace restaurant
                     {
                         (int, int, double) result = SetupPagination(
                             ReservationsToString(currentList),
-                            $"{GetGFLogo(true)}\n",
+                            $"{GetGFLogo(true)}Dit zijn uw reserveringen in het verleden.",
                             ScreenNum,
                             pages,
                             pageNum,
@@ -2267,7 +2267,7 @@ namespace restaurant
                     {
                         (int, int, double) result = SetupPagination(
                             ReservationsToString(currentList),
-                            $"{GetGFLogo(true)}\n",
+                            $"{GetGFLogo(true)}Dit zijn uw reserveringen in de toekomst.",
                             ScreenNum,
                             pages,
                             pageNum,
@@ -2347,7 +2347,7 @@ namespace restaurant
                     {
                         (int, int, double) result = SetupPagination(
                             ReservationsToString(reservations),
-                            $"{GetGFLogo(true)}\n",
+                            $"{GetGFLogo(true)}Dit zijn uw reserveringen voor {resultDateTime.ToShortDateString()}.",
                             ScreenNum,
                             pages,
                             pageNum,
