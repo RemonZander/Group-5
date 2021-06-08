@@ -1722,9 +1722,10 @@ namespace restaurant
             Console.WriteLine("[6] Uw reserveringen (bekijken & bewerken)");
             Console.WriteLine("[7] Uw reviews (bekijken & bewerken)");
             Console.WriteLine("[8] Uw feedback (bekijken & bewerken)");
+            Console.WriteLine("[9] Betalingen");
 
             int possibleValue = -1;
-            int[] choices = new int[9] { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+            int[] choices = new int[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
             (string, int, string) result = AskForInput(
                 0,
@@ -1765,6 +1766,8 @@ namespace restaurant
                     return 10;
                 case "8":
                     return 8;
+                case "9":
+                    return 22;
             }
 
 
@@ -3038,6 +3041,7 @@ namespace restaurant
                 Console.Clear();
                 Console.WriteLine(GetGFLogo(true));
                 Console.WriteLine(EditMealBoxWithDetail(meal));
+                Console.WriteLine("Als je een stuk van een gerecht niet wil aanpassen druk dan op enter.");
                 Console.WriteLine("");
             }
 
