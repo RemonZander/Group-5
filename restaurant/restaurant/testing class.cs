@@ -140,7 +140,7 @@ namespace restaurant
                 List<Gerechten> gerechten = new List<Gerechten>();
                 if (beschikbaar[pos].Item1.Date < DateTime.Now.Date.Date)
                 {
-                    gerechten = Make_dishes(aantal * 3, beschikbaar[pos].Item1, ingredient_temp);
+                    gerechten = Make_dishes(aantal * 3, beschikbaar[pos].Item1);
                     gerechten_ID = gerechten.Select(g => g.ID).ToList();
                 }
                 else
@@ -291,75 +291,321 @@ namespace restaurant
             {
                 new IngredientType
                 {
-                name = "Deeg",
+                name = "tomatensaus",
+                prijs = 1.2,
+                dagenHoudbaar = 30,
+                },
+                new IngredientType
+                {
+                name = "mozarella",
+                prijs = 1.6,
+                dagenHoudbaar = 40,
+                },
+                new IngredientType
+                {
+                name = "basilicum",
+                prijs = 0.3,
+                dagenHoudbaar = 40,
+                },
+                new IngredientType
+                {
+                name = "tonijn",
+                prijs = 2.6,
+                dagenHoudbaar = 20,
+                },
+                new IngredientType
+                {
+                name = "salami",
+                prijs = 2.2,
+                dagenHoudbaar = 35,
+                },
+                new IngredientType
+                {
+                name = "gorgonzola",
+                prijs = 1.7,
+                dagenHoudbaar = 55,
+                },
+                new IngredientType
+                {
+                name = "provolone",
+                prijs = 2.8,
+                dagenHoudbaar = 60,
+                },
+                new IngredientType
+                {
+                name = "parmezaanse kaas",
+                prijs = 2.9,
+                dagenHoudbaar = 80,
+                },
+                new IngredientType
+                {
+                name = "pittige salami",
+                prijs = 2.8,
+                dagenHoudbaar = 40,
+                },
+                new IngredientType
+                {
+                name = "rode peper",
+                prijs = 0.5,
+                dagenHoudbaar = 90,
+                },
+                new IngredientType
+                {
+                name = "cherrytomaatjes",
+                prijs = 1.8,
+                dagenHoudbaar = 30,
+                },
+                new IngredientType
+                {
+                name = "rode ui",
+                prijs = 0.3,
+                dagenHoudbaar = 100,
+                },
+                new IngredientType
+                {
+                name = "roomsaus",
+                prijs = 1.95,
+                dagenHoudbaar = 40,
+                },
+                new IngredientType
+                {
+                name = "champignons",
+                prijs = 3.0,
+                dagenHoudbaar = 60,
+                },
+                new IngredientType
+                {
+                name = "peterselie",
+                prijs = 0.6,
+                dagenHoudbaar = 80,
+                },
+                new IngredientType
+                {
+                name = "knoflook",
+                prijs = 0.2,
+                dagenHoudbaar = 120,
+                },
+                new IngredientType
+                {
+                name = "olijfolie",
+                prijs = 0.8,
+                dagenHoudbaar = 300,
+                },
+                new IngredientType
+                {
+                name = "rucola",
                 prijs = 1,
                 dagenHoudbaar = 60,
                 },
                 new IngredientType
                 {
-                name = "Salami",
-                prijs = 0.80,
-                dagenHoudbaar = 30,
+                name = "zongedroogde tomaat",
+                prijs = 2.4,
+                dagenHoudbaar = 70,
                 },
                 new IngredientType
                 {
-                name = "Tomaten saus",
-                prijs = 0.60,
-                dagenHoudbaar = 15,
+                name = "pijnboompitten",
+                prijs = 3.2,
+                dagenHoudbaar = 95,
                 },
                 new IngredientType
                 {
-                name = "Vanille vla",
-                prijs = 1.5,
+                name = "bolognesesaus",
+                prijs = 2.8,
                 dagenHoudbaar = 40,
                 },
                 new IngredientType
                 {
-                name = "Broodjes",
-                prijs = 0.10,
-                dagenHoudbaar = 10,
+                name = "rundergehakt",
+                prijs = 3.4,
+                dagenHoudbaar = 20,
                 },
                 new IngredientType
                 {
-                name = "Vlees",
-                prijs = 0.85,
-                dagenHoudbaar = 12,
+                name = "geitenkaas",
+                prijs = 2.1,
+                dagenHoudbaar = 30,
                 },
                 new IngredientType
                 {
-                name = "Sla",
-                prijs = 0.05,
-                dagenHoudbaar = 35,
-                },
-                new IngredientType
-                {
-                name = "Yoghurt",
+                name = "gevulde pasta",
                 prijs = 1.8,
-                dagenHoudbaar = 65,
+                dagenHoudbaar = 50,
                 },
                 new IngredientType
                 {
-                name = "Vanille ijs",
-                prijs = 1.85,
+                name = "bospaddenstoelen",
+                prijs = 2.2,
+                dagenHoudbaar = 50,
+                },
+                new IngredientType
+                {
+                name = "truffelsaus",
+                prijs = 3.8,
                 dagenHoudbaar = 25,
                 },
                 new IngredientType
                 {
-                name = "Frituur vet",
-                prijs = 0.10,
-                dagenHoudbaar = 300,
+                name = "mosselen",
+                prijs = 4.1,
+                dagenHoudbaar = 15,
                 },
                 new IngredientType
                 {
-                name = "Aardappelen",
-                prijs = 0.15,
-                dagenHoudbaar = 100,
+                name = "oestersaus",
+                prijs = 0.8,
+                dagenHoudbaar = 40,
                 },
                 new IngredientType
                 {
-                name = "Friet saus",
-                prijs = 0.30,
+                name = "oesters",
+                prijs = 8.4,
+                dagenHoudbaar = 10,
+                },
+                new IngredientType
+                {
+                name = "rijst",
+                prijs = 0.7,
+                dagenHoudbaar = 110,
+                },
+                new IngredientType
+                {
+                name = "zeewier",
+                prijs = 0.2,
+                dagenHoudbaar = 235,
+                },
+                new IngredientType
+                {
+                name = "zalm",
+                prijs = 3.9,
+                dagenHoudbaar = 25,
+                },
+                new IngredientType
+                {
+                name = "octopus",
+                prijs = 4.5,
+                dagenHoudbaar = 20,
+                },
+                new IngredientType
+                {
+                name = "garnaal",
+                prijs = 3.6,
+                dagenHoudbaar = 25,
+                },
+                new IngredientType
+                {
+                name = "krab",
+                prijs = 2.6,
+                dagenHoudbaar = 35,
+                },
+                new IngredientType
+                {
+                name = "komkommer",
+                prijs = 0.35,
+                dagenHoudbaar = 40,
+                },
+                new IngredientType
+                {
+                name = "biefstuk",
+                prijs = 3.2,
+                dagenHoudbaar = 25,
+                },
+                new IngredientType
+                {
+                name = "salami",
+                prijs = 2.2,
+                dagenHoudbaar = 35,
+                },
+                new IngredientType
+                {
+                name = "chèvre",
+                prijs = 1.8,
                 dagenHoudbaar = 60,
+                },
+                new IngredientType
+                {
+                name = "roombrie",
+                prijs = 2.7,
+                dagenHoudbaar = 70,
+                },
+                new IngredientType
+                {
+                name = "camembert",
+                prijs = 3.2,
+                dagenHoudbaar = 50,
+                },
+                new IngredientType
+                {
+                name = "Roquefort",
+                prijs = 3.1,
+                dagenHoudbaar = 55,
+                },
+                new IngredientType
+                {
+                name = "port salut",
+                prijs = 5.2,
+                dagenHoudbaar = 40,
+                },
+                new IngredientType
+                {
+                name = "pesto",
+                prijs = 1.2,
+                dagenHoudbaar = 35,
+                },
+                new IngredientType
+                {
+                name = "gekruide kip",
+                prijs = 4.6,
+                dagenHoudbaar = 30,
+                },
+                new IngredientType
+                {
+                name = "ui",
+                prijs = 0.2,
+                dagenHoudbaar = 130,
+                },
+                new IngredientType
+                {
+                name = "gemendge sla",
+                prijs = 1,
+                dagenHoudbaar = 50,
+                },
+                new IngredientType
+                {
+                name = "kipfilet",
+                prijs = 2,
+                dagenHoudbaar = 25,
+                },
+                new IngredientType
+                {
+                name = "croutons",
+                prijs = 1.5,
+                dagenHoudbaar = 75,
+                },
+                new IngredientType
+                {
+                name = "cesare dressing",
+                prijs = 0.95,
+                dagenHoudbaar = 90,
+                },
+                new IngredientType
+                {
+                name = "gerookte zalm",
+                prijs = 4,
+                dagenHoudbaar = 30,
+                },
+                new IngredientType
+                {
+                name = "dressing",
+                prijs = 2,
+                dagenHoudbaar = 95,
+                },
+                new IngredientType
+                {
+                name = "rundercarpaccio",
+                prijs = 1.1,
+                dagenHoudbaar = 30,
                 },
             });
 
@@ -537,96 +783,15 @@ namespace restaurant
         }
 
         //Deze functie is voor als je simpel een lijst van gerechten wilt zonder voorkeur
-        public List<Gerechten> Make_dishes(int amount, DateTime bestel_Datum, BlockingCollection<Ingredient> ingredient_temp)
+        public List<Gerechten> Make_dishes(int amount, DateTime bestel_Datum)
         {
             List<Gerechten> gerechten = new List<Gerechten>();
+            List<Gerechten> Dishes = Get_standard_dishes();
             Random rnd = new Random();
 
             for (int a = 0; a <= amount; a++)
             {
-                switch (rnd.Next(6))
-                {
-                    case 0:
-                        gerechten.Add(new Gerechten
-                        {
-                            ID = 0,
-                            naam = "Pizza Salami",
-                            is_populair = true,
-                            is_gearchiveerd = false,
-                            special = true,
-                            prijs = 15.0,
-                            Ingredienten = Maak_gerechten("Pizza Salami", bestel_Datum, ingredient_temp).ToList(),
-                            diner = true
-                        });
-                        break;
-                    case 1:
-                        gerechten.Add(new Gerechten
-                        {
-                            ID = 1,
-                            naam = "Vla",
-                            is_populair = false,
-                            is_gearchiveerd = false,
-                            special = true,
-                            prijs = 8.0,
-                            Ingredienten = Maak_gerechten("Vla", bestel_Datum, ingredient_temp).ToList(),
-                            ontbijt = true,
-                            diner = true
-                        });
-                        break;
-                    case 2:
-                        gerechten.Add(new Gerechten
-                        {
-                            ID = 2,
-                            naam = "Hamburger",
-                            is_populair = true,
-                            is_gearchiveerd = false,
-                            special = false,
-                            prijs = 13.0,
-                            Ingredienten = Maak_gerechten("Hamburger", bestel_Datum, ingredient_temp).ToList(),
-                            lunch = true,
-                            diner = true
-                        });
-                        break;
-                    case 3:
-                        gerechten.Add(new Gerechten
-                        {
-                            ID = 3,
-                            naam = "Yoghurt",
-                            is_populair = false,
-                            is_gearchiveerd = true,
-                            special = false,
-                            prijs = 6.0,
-                            Ingredienten = Maak_gerechten("Yoghurt", bestel_Datum, ingredient_temp).ToList()
-                        });
-                        break;
-                    case 4:
-                        gerechten.Add(new Gerechten
-                        {
-                            ID = 4,
-                            naam = "IJs",
-                            is_populair = false,
-                            is_gearchiveerd = true,
-                            special = false,
-                            prijs = 9.5,
-                            Ingredienten = Maak_gerechten("IJs", bestel_Datum, ingredient_temp).ToList(),
-                            diner = true
-                        });
-                        break;
-                    case 5:
-                        gerechten.Add(new Gerechten
-                        {
-                            ID = 5,
-                            naam = "Patat",
-                            is_populair = true,
-                            is_gearchiveerd = false,
-                            special = false,
-                            prijs = 11.5,
-                            Ingredienten = Maak_gerechten("Patat", bestel_Datum, ingredient_temp).ToList(),
-                            lunch = true,
-                            diner = true
-                        });
-                        break;
-                }
+                gerechten.Add(Dishes[rnd.Next(0, Dishes.Count)]);
             }
 
             return gerechten;
