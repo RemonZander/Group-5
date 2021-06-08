@@ -13,7 +13,6 @@ namespace restaurant
         private Database database = new Database();
 
         IO io = new IO();
-        Testing_class instance = new Testing_class();
 
         public void Debug()
         {
@@ -554,7 +553,6 @@ namespace restaurant
             return screens;
         }
     }
-
     public class GetWorkersScreen : Screen
     {
         int currentScreenID = 24;
