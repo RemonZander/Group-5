@@ -174,37 +174,6 @@ namespace restaurant
             database = io.GetDatabase();
             return database.feedback;
         }
-
-        public List<Feedback> GetFeedback(int werknemerID)
-        {
-            List<Feedback> feedback = new List<Feedback>(GetFeedback());
-            for (int i = 0; i < feedback.Count; i++)
-            {
-                if (feedback[i].recipient != werknemerID)
-                {
-                    feedback[i] = null;
-                }
-            }
-            feedback.RemoveAll(x => x == null);
-            return feedback;
-        }
-
-        public void DeleteFeedback(int feedbackID)
-        {
-            database = io.GetDatabase();
-            List<Feedback> feedback = new List<Feedback>(GetFeedback());
-            for (int i = 0; i < feedback.Count; i++)
-            {
-                if (feedback[i].ID == feedbackID)
-                {
-                    feedback[i] = null;
-                    break;
-                }
-            }
-            feedback.RemoveAll(x => x == null);
-            database.feedback = feedback;
-            io.Savedatabase(database);
-        }
         #endregion
 
         #region Review
