@@ -1896,22 +1896,21 @@ namespace restaurant
             {
                 Console.Clear();
                 Console.WriteLine(GFLogoWithLoginAndEscape);
-                Console.WriteLine("Hier ziet u alle Reserveringen die nog open staan voor betaling");
-                Console.WriteLine("Het formaat van deze weergave is:");
-                Console.WriteLine("ID  |  Datum");
+                Console.WriteLine("Hier ziet u alle Reserveringen die nog open staan voor betaling.");
+                Console.WriteLine(new string('–', 31) + "\n| ID   | Datum                |\n" + new string('–', 31));
 
                 for (int i = 0; i < reserveringen.Count; i++)
                 {
-                    Console.WriteLine(reserveringen[i].ID + "  |  " + reserveringen[i].datum);
+                    Console.WriteLine("| " + reserveringen[i].ID + new string(' ', 5 - reserveringen[i].ID.ToString().Length) + "| " + reserveringen[i].datum + new string(' ', 21 - reserveringen[i].datum.ToString().Length) + "|\n" + new string('–', 31));
                 }
 
-                Console.WriteLine("U kunt met het ID kiezen welke reservering u wilt betalen");
+                Console.WriteLine("U kunt met het ID kiezen welke reservering u wilt betalen.");
 
                 //met escape, return naar klantmenu
-                input = AskForInput(huidigscherm);
+                input = AskForInput(vorigscherm);
                 if (input.Item2 != -1)
                 {
-                    return huidigscherm;
+                    return input.Item2;
                 }
 
                 //als input is 0, logout
@@ -1957,14 +1956,14 @@ namespace restaurant
                 Console.Clear();
                 Console.WriteLine(GetGFLogo(true));
                 Console.WriteLine($"De reservering die u heeft gekozen heeft nummer: {chosenReservering.ID} en is van {chosenReservering.datum}");
-                Console.WriteLine("Hier ziet u wat er allemaal was besteld");
+                Console.WriteLine("Hier ziet u wat er allemaal was besteld:");
                 Console.WriteLine("\n" + BestelBox(chosenReservering));
                 Console.WriteLine("\n" + betaalBox(chosenReservering));
-                Console.WriteLine("U kunt betalen door vier getallen in te voeren");
-                input = AskForInput(huidigscherm);
+                Console.WriteLine("U kunt betalen door uw pin in te voeren");
+                input = AskForInput(vorigscherm);
                 if (input.Item2 != -1)
                 {
-                    return huidigscherm;
+                    return vorigscherm;
                 }
 
                 //als input is 0, logout
@@ -1991,33 +1990,6 @@ namespace restaurant
                     Console.ReadKey();
                 }
             }
-        }
-
-        private string BestelBox(Reserveringen reservering)
-        {
-            List<Gerechten> gerechten = io.GetGerechtenReservering(reservering);
-            List<string> namen = gerechten.Select(x => x.naam).Distinct().ToList();
-            List<int> nameAmount = new List<int>();
-            List<string> lines = new List<string>();
-            for (int i = 0; i < namen.Count; i++)
-            {
-                nameAmount.Add(gerechten.Count(x => x.naam == namen[i]));
-                lines.Add(nameAmount[i]+ "x  "+ namen[i] + new string(' ', 25-(nameAmount[i] + "X  " + namen[i]).Length) + " | Totaal: €" + (nameAmount[i]* gerechten.Where(x => x.naam == namen[i]).Select(x => x.prijs).FirstOrDefault())
-                    + new string(' ', 50 - (nameAmount[i] + "X  " + namen[i] + new string(' ', 25 - (nameAmount[i] + "X  " + namen[i]).Length) + " | Totaal: €" + (nameAmount[i] * gerechten.Where(x => x.naam == namen[i]).Select(x => x.prijs).FirstOrDefault())).Length));
-            }
-
-            return BoxAroundText(lines, "#", 2 ,1, 50, false);
-        }
-
-        private string betaalBox(Reserveringen reservering)
-        {
-            List<Gerechten> gerechten = io.GetGerechtenReservering(reservering);
-            double totaalprijs = gerechten.Select(x => x.prijs).Sum();
-
-            //zorgt ervoor dat je 2 getallen na de komma hebt
-            totaalprijs = Math.Round(totaalprijs, 2, MidpointRounding.AwayFromZero);
-            List<string> totaalStringList = new List<string> { "€"+Convert.ToString(totaalprijs) };
-            return BoxAroundText(totaalStringList, "#", 2, 1, Convert.ToString(totaalprijs).Length+1, false);
         }
 
         private int LogoutSequence()

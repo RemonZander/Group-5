@@ -2626,6 +2626,33 @@ namespace restaurant
 
             return output;
         }
+
+        protected string BestelBox(Reserveringen reservering)
+        {
+            List<Gerechten> gerechten = io.GetGerechtenReservering(reservering);
+            List<string> namen = gerechten.Select(x => x.naam).Distinct().ToList();
+            List<int> nameAmount = new List<int>();
+            List<string> lines = new List<string>();
+            for (int i = 0; i < namen.Count; i++)
+            {
+                nameAmount.Add(gerechten.Count(x => x.naam == namen[i]));
+                lines.Add(nameAmount[i] + "x  " + namen[i] + new string(' ', 35 - (nameAmount[i] + "X  " + namen[i]).Length) + " | Totaal: €" + (nameAmount[i] * gerechten.Where(x => x.naam == namen[i]).Select(x => x.prijs).FirstOrDefault())
+                    + new string(' ', 60 - (nameAmount[i] + "X  " + namen[i] + new string(' ', 35 - (nameAmount[i] + "X  " + namen[i]).Length) + " | Totaal: €" + (nameAmount[i] * gerechten.Where(x => x.naam == namen[i]).Select(x => x.prijs).FirstOrDefault())).Length));
+            }
+
+            return BoxAroundText(lines, "#", 2, 1, 60, false);
+        }
+
+        protected string betaalBox(Reserveringen reservering)
+        {
+            List<Gerechten> gerechten = io.GetGerechtenReservering(reservering);
+            double totaalprijs = gerechten.Select(x => x.prijs).Sum();
+
+            //zorgt ervoor dat je 2 getallen na de komma hebt
+            totaalprijs = Math.Round(totaalprijs, 2, MidpointRounding.AwayFromZero);
+            List<string> totaalStringList = new List<string> { "€" + Convert.ToString(totaalprijs) };
+            return BoxAroundText(totaalStringList, "#", 2, 1, Convert.ToString(totaalprijs).Length + 1, false);
+        }
     }
 
     public class ViewReviewScreen : Screen
