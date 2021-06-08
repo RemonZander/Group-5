@@ -887,7 +887,7 @@ namespace restaurant
 
     public partial class Code_Eigenaar_menu
     {
-        #region Inkomsten_en_Uitgaven
+        #region Uitgaven
 
         public List<Ingredient> GetUitgavenIngredienten() // Ingrediënten
         {
@@ -941,6 +941,9 @@ namespace restaurant
             return price;
         }
 
+        #endregion
+
+        #region Inboedel
         public List<(Inboedel, DateTime)> GetInboedel()
         {
             database = io.GetDatabase();
@@ -975,6 +978,10 @@ namespace restaurant
             }
             return output;
         }
+
+        #endregion
+
+        #region Inkomsten
 
         public double Inkomsten(DateTime beginDatum, DateTime eindDatum) // Mogelijkheid een bepaald tijdsspan in te voeren en daarvan de inkomsten te kunnen zien.
         {
