@@ -18,7 +18,7 @@ namespace restaurant
 
         #region Feedback
 
-        public List<Feedback> GetFeedbackMedewerker(Werknemer werknemer)
+        public List<Feedback> GetFeedbackMedewerker(Werknemer werknemer) // Haalt alle feedback gericht aan de medewerker op
         {
             database = io.GetDatabase();
             var feedbackMedewerker= new List<Feedback>();
@@ -37,7 +37,7 @@ namespace restaurant
 
         #region Reververingen
 
-        public List<Reserveringen> getReserveringen(DateTime datum) // Medewerker kan de reserveringen van de huidige dag zien
+        public List<Reserveringen> getReserveringen(DateTime datum) // Haalt alle reserveringen van een bepaalde datum op
         {
             database = io.GetDatabase();
             var reserveringenVandaag = new List<Reserveringen>();
@@ -56,12 +56,12 @@ namespace restaurant
 
         #region Tafels
 
-        public List<Tuple<DateTime, List<Tafels>>> getBeschikbareTafels(DateTime datum) // Medewerker kan zien welke tafels beschikbaar zijn op de huidige dag
+        public List<Tuple<DateTime, List<Tafels>>> getBeschikbareTafels(DateTime datum) // Haalt alle beschikbare tafels op een bepaalde datum op
         {
             return io.ReserveringBeschikbaarheid(datum);
         }
         
-        public List<Reserveringen> getReserveringenZonderTafel(DateTime datum) // Returns de reserveringen die nog niet zijn gekoppeld aan een tafel
+        public List<Reserveringen> getReserveringenZonderTafel(DateTime datum) // Haalt alle ongekoppelde reserveringen op een datum op
         {
             var reserveringen = getReserveringen(datum);
             var reserveringenZonderTafel = new List<Reserveringen>();
@@ -77,7 +77,7 @@ namespace restaurant
             return reserveringenZonderTafel;
         }
 
-        public List<Reserveringen> tijdBewerken(Reserveringen reservering, DateTime Datum) // Medewerker kan tijd van reservering aanpassen als er geen beschikbare tafels zijn
+        public List<Reserveringen> tijdBewerken(Reserveringen reservering, DateTime Datum) // Medewerker kan de tijd van reservering in het systeem aanpassen als er geen beschikbare tafels zijn
         {
             database = io.GetDatabase();
             for (int a = 0; a < database.reserveringen.Count; a++)
@@ -103,8 +103,8 @@ namespace restaurant
         }
 
 
-        public List<Reserveringen> tafelKoppelen(Reserveringen reservering, List<Tafels> tafels) // Medewerker moet de reserveringen kunnen koppelen aan een tafel
-        {
+        public List<Reserveringen> tafelKoppelen(Reserveringen reservering, List<Tafels> tafels) // Medewerker kan een ongekoppelde reservering koppelen aan tafel(s)
+            {
             database = io.GetDatabase();
             for (int a = 0; a < database.reserveringen.Count; a++)
             {
@@ -129,7 +129,6 @@ namespace restaurant
 
         #endregion
     }
-
 
     #region Screens
 
