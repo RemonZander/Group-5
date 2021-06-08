@@ -31,5 +31,7 @@ namespace restaurant
         public bool lunch { get; set; }
 
         public bool ontbijt { get; set; }
+
+        public bool dessert { get; set; }
     }
 }

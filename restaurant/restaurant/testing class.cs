@@ -17,11 +17,6 @@ namespace restaurant
         private readonly IO io = new IO();
         private List<Reserveringen> reserveringen_list = new List<Reserveringen>();
 
-        public Testing_class()
-        {
-
-        }
-
         public void Debug()
         {
             Make_menu();
@@ -280,7 +275,8 @@ namespace restaurant
             database.ingredientenNamen = MakeIngredients();
             Menukaart menukaart = new Menukaart
             {
-                gerechten = Get_standard_dishes()
+                gerechten = Get_standard_dishes(),
+                dranken = GetDranken()
             };
 
             database.menukaart = menukaart;
@@ -642,74 +638,698 @@ namespace restaurant
             gerechten.Add(new Gerechten
             {
                 ID = 0,
-                naam = "Pizza Salami",
-                is_populair = true,
+                naam = "Tiramisu",
+                is_populair = false,
                 is_gearchiveerd = false,
-                special = true,
-                prijs = 15.0,
-                allergenen = new List<string>()
+                special = false,
+                prijs = 5,
+                dessert = true
             });
             gerechten.Add(new Gerechten
             {
                 ID = 1,
-                naam = "Vla",
+                naam = "limoen-aarbei taart",
                 is_populair = false,
                 is_gearchiveerd = false,
-                special = true,
-                prijs = 8.0,
-                allergenen = new List<string>
-                {
-                    "lactose intolerantie"
-                }
+                special = false,
+                prijs = 5,
+                dessert = true
             });
             gerechten.Add(new Gerechten
             {
                 ID = 2,
-                naam = "Hamburger",
-                is_populair = true,
+                naam = "chocolade taart",
+                is_populair = false,
                 is_gearchiveerd = false,
                 special = false,
-                prijs = 13.0,
-                allergenen = new List<string>()
+                prijs = 5,
+                dessert = true
             });
             gerechten.Add(new Gerechten
             {
                 ID = 3,
-                naam = "Yoghurt",
+                naam = "pizza margerita",
                 is_populair = false,
-                is_gearchiveerd = true,
+                is_gearchiveerd = false,
                 special = false,
-                prijs = 6.0,
-                allergenen = new List<string>
+                prijs = 10,
+                diner = true,
+                Ingredienten = new List<string> 
                 {
-                    "lactose intolerantie"
+                    "tomatensaus",
+                    "mozarella",
+                    "basilicum"
                 }
             });
             gerechten.Add(new Gerechten
             {
                 ID = 4,
-                naam = "IJs",
+                naam = "pizza tonno",
                 is_populair = false,
-                is_gearchiveerd = true,
+                is_gearchiveerd = false,
                 special = false,
-                prijs = 9.5,
-                allergenen = new List<string>
+                prijs = 11.5,
+                diner = true,
+                Ingredienten = new List<string>
                 {
-                    "lactose intolerantie"
+                    "tomatensaus",
+                    "tonijn",
+                    "mozarella",
+                    "salami"
                 }
             });
             gerechten.Add(new Gerechten
             {
                 ID = 5,
-                naam = "Patat",
-                is_populair = true,
+                naam = "pizza quattro",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 10.5,
+                diner = true,
+                Ingredienten = new List<string>
+                {
+                    "mozarella",
+                    "gorgonzola",
+                    "provolone",
+                    "parmezaanse kaas"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 6,
+                naam = "spicy pizza",
+                is_populair = false,
                 is_gearchiveerd = false,
                 special = false,
                 prijs = 11.5,
-                allergenen = new List<string>()
+                diner = true,
+                Ingredienten = new List<string>
+                {
+                    "tomatensaus",
+                    "mozarella",
+                    "pittige salami",
+                    "rode pepers"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 7,
+                naam = "pasta sbinala",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 11.5,
+                diner = true,
+                Ingredienten = new List<string>
+                {
+                    "tomatensaus",
+                    "cherrytomaatjes",
+                    "rode ui",
+                    "rode peper"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 8,
+                naam = "pasta funghi",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 11,
+                diner = true,
+                Ingredienten = new List<string>
+                {
+                    "roomsaus",
+                    "champignons",
+                    "peterselie"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 9,
+                naam = "pasta bianca",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 9,
+                diner = true,
+                Ingredienten = new List<string>
+                {
+                    "knoflook",
+                    "peterselie",
+                    "rode peper",
+                    "olijfolie"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 10,
+                naam = "pasta pomodori",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 10.5,
+                diner = true,
+                Ingredienten = new List<string>
+                {
+                    "tomatensaus",
+                    "rucola",
+                    "zongedroogde tomaat",
+                    "pijnboompitten",
+                    "cherrytomaatjes",
+                    "parmezaanse kaas"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 11,
+                naam = "pasta bolognese",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 10.5,
+                diner = true,
+                Ingredienten = new List<string>
+                {
+                    "bolognesesaus",
+                    "rundergehakt",
+                    "parmezaanse kaas",
+                    "peterselie"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 12,
+                naam = "pasta quattro formaggi",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 11,
+                diner = true,
+                Ingredienten = new List<string>
+                {
+                    "roomsaus",
+                    "mozarella",
+                    "geitenkaas",
+                    "provolone",
+                    "gorgonzola",
+                    "pijnboompitten"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 13,
+                naam = "ravioli formioli",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 12.5,
+                diner = true,
+                Ingredienten = new List<string>
+                {
+                    "gevulde pasta",
+                    "bospaddenstoelen",
+                    "roomsaus",
+                    "truffelsaus",
+                    "champignons",
+                    "parmezaanse kaas"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 14,
+                naam = "mosselen",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 14,
+                diner = true,
+                Ingredienten = new List<string>
+                {
+                    "mosselen"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 15,
+                naam = "oesters",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 18,
+                diner = true,
+                Ingredienten = new List<string>
+                {
+                    "oestersaus",
+                    "oesters"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 16,
+                naam = "sushi plank",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 12.5,
+                diner = true,
+                Ingredienten = new List<string>
+                {
+                    "rijst",
+                    "zeewier",
+                    "zalm",
+                    "tonijn",
+                    "octopus",
+                    "garnaal",
+                    "krab",
+                    "komkommer"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 17,
+                naam = "sashimi",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 13.5,
+                diner = true,
+                Ingredienten = new List<string>
+                {
+                    "biefstuk",
+                    "zalm",
+                    "tonijn",
+                    "rucola",
+                    "rijst"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 18,
+                naam = "6x Tempura",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 12,
+                diner = true,
+                Ingredienten = new List<string>
+                {
+                    "garnalen"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 19,
+                naam = "croissant",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 2.5,
+                ontbijt = true,
+                lunch = true,
+                Ingredienten = new List<string>
+                {
+
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 20,
+                naam = "stokbrood kruidenboter",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 4,
+                ontbijt = true,
+                lunch = true,
+                Ingredienten = new List<string>
+                {
+
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 21,
+                naam = "stokbrood met kaasplank",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 7,
+                lunch = true,
+                Ingredienten = new List<string>
+                {
+                    "chèvre",
+                    "roombrie",
+                    "camembert",
+                    "Roquefort",
+                    "port salut"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 22,
+                naam = "panini mozarella",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 6,
+                lunch = true,
+                Ingredienten = new List<string>
+                {
+                    "mozarella",
+                    "cherrytomaat",
+                    "basilicum",
+                    "pesto"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 23,
+                naam = "panini pollo",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 7,
+                lunch = true,
+                Ingredienten = new List<string>
+                {
+                    "gekruide kip",
+                    "mozarella",
+                    "ui",
+                    "rucola",
+                    "pesto"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 24,
+                naam = "cesare",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 7.5,
+                lunch = true,
+                diner = true,
+                Ingredienten = new List<string>
+                {
+                    "rucola",
+                    "gemendge sla",
+                    "kipfilet",
+                    "croutons",
+                    "parmezaanse kaas",
+                    "cesare dressing"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 25,
+                naam = "Marinara",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 10,
+                lunch = true,
+                diner = true,
+                Ingredienten = new List<string>
+                {
+                    "gemendge sla",
+                    "tonijn",
+                    "gerookte zalm",
+                    "cherrytomaatjes",
+                    "rode ui",
+                    "dressing"
+                }
+            });
+            gerechten.Add(new Gerechten
+            {
+                ID = 26,
+                naam = "carpaccio",
+                is_populair = false,
+                is_gearchiveerd = false,
+                special = false,
+                prijs = 10.5,
+                lunch = true,
+                diner = true,
+                Ingredienten = new List<string>
+                {
+                    "rundercarpaccio",
+                    "rucola",
+                    "parmezaanse kaas",
+                    "pijnboompitten",
+                    "truffelsaus"
+                }
             });
 
             return gerechten;
+        }
+
+        public List<Dranken> GetDranken()
+        {
+            List<Dranken> dranken = new List<Dranken>();
+
+            dranken.Add(new Dranken
+            {
+                ID = 0,
+                naam = "water",
+                isGearchiveerd = false,
+                heeftAlcohol = false,
+                prijs = 2
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 1,
+                naam = "cola",
+                isGearchiveerd = false,
+                heeftAlcohol = false,
+                prijs = 3.5
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 2,
+                naam = "cola light",
+                isGearchiveerd = false,
+                heeftAlcohol = false,
+                prijs = 3.5
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 3,
+                naam = "cola zero",
+                isGearchiveerd = false,
+                heeftAlcohol = false,
+                prijs = 3.5
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 4,
+                naam = "chocomel",
+                isGearchiveerd = false,
+                heeftAlcohol = false,
+                prijs = 3.25
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 5,
+                naam = "fristi",
+                isGearchiveerd = false,
+                heeftAlcohol = false,
+                prijs = 3.25
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 6,
+                naam = "bitter lemon",
+                isGearchiveerd = false,
+                heeftAlcohol = false,
+                prijs = 3.25
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 7,
+                naam = "ice tea green",
+                isGearchiveerd = false,
+                heeftAlcohol = false,
+                prijs = 3.5
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 8,
+                naam = "jus d'orange",
+                isGearchiveerd = false,
+                heeftAlcohol = false,
+                prijs = 4
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 9,
+                naam = "bruisend water",
+                isGearchiveerd = false,
+                heeftAlcohol = false,
+                prijs = 2.5
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 10,
+                naam = "fanta",
+                isGearchiveerd = false,
+                heeftAlcohol = false,
+                prijs = 3.5
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 11,
+                naam = "warme chocolademelk",
+                isGearchiveerd = false,
+                heeftAlcohol = false,
+                prijs = 3.75
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 12,
+                naam = "cappuccino",
+                isGearchiveerd = false,
+                heeftAlcohol = false,
+                prijs = 3
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 13,
+                naam = "dubbele espresso",
+                isGearchiveerd = false,
+                heeftAlcohol = false,
+                prijs = 4.2
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 14,
+                naam = "koffie verkeerd",
+                isGearchiveerd = false,
+                heeftAlcohol = false,
+                prijs = 3
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 15,
+                naam = "bier",
+                isGearchiveerd = false,
+                heeftAlcohol = true,
+                prijs = 3.5
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 16,
+                naam = "saké",
+                isGearchiveerd = false,
+                heeftAlcohol = true,
+                prijs = 4
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 17,
+                naam = "rode wijn",
+                isGearchiveerd = false,
+                heeftAlcohol = true,
+                prijs = 3.75
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 18,
+                naam = "witte wijn",
+                isGearchiveerd = false,
+                heeftAlcohol = true,
+                prijs = 3.75
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 19,
+                naam = "rosé",
+                isGearchiveerd = false,
+                heeftAlcohol = true,
+                prijs = 3.75
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 20,
+                naam = "rum",
+                isGearchiveerd = false,
+                heeftAlcohol = true,
+                prijs = 3.75
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 21,
+                naam = "wodka",
+                isGearchiveerd = false,
+                heeftAlcohol = true,
+                prijs = 5
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 22,
+                naam = "jägermeister",
+                isGearchiveerd = false,
+                heeftAlcohol = true,
+                prijs = 4
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 23,
+                naam = "gin",
+                isGearchiveerd = false,
+                heeftAlcohol = true,
+                prijs = 5
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 24,
+                naam = "whisky",
+                isGearchiveerd = false,
+                heeftAlcohol = true,
+                prijs = 5.5
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 25,
+                naam = "cognac",
+                isGearchiveerd = false,
+                heeftAlcohol = true,
+                prijs = 5.5
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 26,
+                naam = "baileys",
+                isGearchiveerd = false,
+                heeftAlcohol = true,
+                prijs = 5.75
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 27,
+                naam = "grand marnier",
+                isGearchiveerd = false,
+                heeftAlcohol = true,
+                prijs = 6
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 28,
+                naam = "likor 43",
+                isGearchiveerd = false,
+                heeftAlcohol = true,
+                prijs = 6
+            });
+            dranken.Add(new Dranken
+            {
+                ID = 29,
+                naam = "Southern comfort",
+                isGearchiveerd = false,
+                heeftAlcohol = true,
+                prijs = 6
+            });
+
+            return dranken;
         }
 
         #endregion
@@ -3005,17 +3625,8 @@ namespace restaurant
 
         public override int DoWork()
         {
-            if (code_eigenaar.GetIngredients().Count == 0)
-            {
-                Console.WriteLine(GetGFLogo(true));
-                Console.WriteLine("u heeft geen ingredienten in uw magazijn.");
-                Console.WriteLine("Druk op een knop om terug te gaan.");
-                Console.ReadKey();
-                return 11;
-            }
-
             Console.WriteLine(GetGFLogo(true));
-            Console.WriteLine("Hier kunt u alle ingredienten zien die u nu heeft");
+            Console.WriteLine("Hier kunt u alle ingredienten zien die u nu heeft of nieuwe ingredienten aanmaken.");
             Console.WriteLine("[1] Laat aantal ingredienten op naam zien");
             Console.WriteLine("[2] Laat alle ingredienten zien die bijna verlopen zijn");
             Console.WriteLine("[3] Laat alle ingredienten zien die verlopen zijn");
@@ -3030,6 +3641,16 @@ namespace restaurant
             }
             if (input.Item1 == "1")
             {
+                if (code_eigenaar.GetIngredients().Count == 0)
+                {
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(true));
+                    Console.WriteLine("u heeft geen ingredienten in uw magazijn.");
+                    Console.WriteLine("Druk op een knop om terug te gaan.");
+                    Console.ReadKey();
+                    return 11;
+                }
+
                 List<Ingredient> ingredients = code_eigenaar.GetIngredients().OrderBy(i => i.name).ToList();
                 List<string> names = ingredients.Select(n => n.name).Distinct().ToList();
                 int page = 0;
@@ -3066,6 +3687,16 @@ namespace restaurant
             }
             else if (input.Item1 == "2")
             {
+                if (code_eigenaar.GetIngredients().Count == 0)
+                {
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(true));
+                    Console.WriteLine("u heeft geen ingredienten in uw magazijn.");
+                    Console.WriteLine("Druk op een knop om terug te gaan.");
+                    Console.ReadKey();
+                    return 11;
+                }
+
                 List<Ingredient> ingredients = code_eigenaar.GetAlmostExpiredIngredients(7);
                 List<string> names = ingredients.Select(n => n.name).Distinct().ToList();
 
@@ -3113,6 +3744,16 @@ namespace restaurant
             }
             else if (input.Item1 == "3")
             {
+                if (code_eigenaar.GetIngredients().Count == 0)
+                {
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(true));
+                    Console.WriteLine("u heeft geen ingredienten in uw magazijn.");
+                    Console.WriteLine("Druk op een knop om terug te gaan.");
+                    Console.ReadKey();
+                    return 11;
+                }
+
                 List<Ingredient> ingredients = code_eigenaar.GetExpiredIngredients();
                 List<string> names = ingredients.Select(n => n.name).Distinct().ToList();
                 if (ingredients.Count == 0)
@@ -3171,6 +3812,16 @@ namespace restaurant
             }
             else if (input.Item1 == "4")
             {
+                if (code_eigenaar.GetIngredients().Count == 0)
+                {
+                    Console.Clear();
+                    Console.WriteLine(GetGFLogo(true));
+                    Console.WriteLine("u heeft geen ingredienten in uw magazijn.");
+                    Console.WriteLine("Druk op een knop om terug te gaan.");
+                    Console.ReadKey();
+                    return 11;
+                }
+
                 List<Ingredient> ingredienten = code_eigenaar.GetIngredients();
                 List<IngredientType> ingredientNamen = io.ingredientNamen();
                 List<int> ids = new List<int>();

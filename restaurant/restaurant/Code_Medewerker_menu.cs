@@ -11,12 +11,6 @@ namespace restaurant
         private IO io = new IO();
 
         private Database database = new Database();
-
-        public Code_Medewerker_menu()
-        {
-            
-        }
-
         public void Debug()
         {
 

@@ -15,12 +15,6 @@ namespace restaurant
 
         public bool heeftAlcohol { get; set; }
 
-        public bool diner { get; set; }
-
-        public bool lunch { get; set; }
-
-        public bool ontbijt { get; set; }
-
         public double prijs { get; set; }
     }
 }
