@@ -2685,8 +2685,10 @@ namespace restaurant
 
         protected string BetaalBox(Reserveringen reservering)
         {
+            List<Dranken> dranken = io.GetDrankenReservering(reservering);
             List<Gerechten> gerechten = io.GetGerechtenReservering(reservering);
             double totaalprijs = gerechten.Select(x => x.prijs).Sum();
+            totaalprijs += dranken.Select(x => x.prijs).Sum();
 
             //zorgt ervoor dat je 2 getallen na de komma hebt
             totaalprijs = Math.Round(totaalprijs, 2, MidpointRounding.AwayFromZero);
