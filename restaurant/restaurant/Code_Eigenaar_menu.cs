@@ -55,31 +55,6 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        public void EditMeal(int ID, string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<string> ingredients, List<string> allergens, bool isDiner, bool isLunch, bool isOntbijt)
-        {
-            database = io.GetDatabase();
-            List<Gerechten> gerechten = new List<Gerechten>(GetMeals());
-            for (int i = 0; i < gerechten.Count; i++)
-            {
-                if (gerechten[i].ID == ID)
-                {
-                    gerechten[i].naam = name;
-                    gerechten[i].is_populair = isPopular;
-                    gerechten[i].prijs = price;
-                    gerechten[i].special = isSpecial;
-                    gerechten[i].is_gearchiveerd = isArchived;
-                    gerechten[i].Ingredienten = ingredients;
-                    gerechten[i].allergenen = allergens;
-                    gerechten[i].diner = isDiner;
-                    gerechten[i].lunch = isLunch;
-                    gerechten[i].ontbijt = isOntbijt;
-                    break;
-                }
-            }
-            database.menukaart.gerechten = gerechten;
-            io.Savedatabase(database);
-        }
-
         public void CreateMeal(string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<string> ingredients, List<string> allergens, bool isDiner, bool isLunch, bool isOntbijt, bool isDessert)
         {
             database = io.GetDatabase();
