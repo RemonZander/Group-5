@@ -1988,7 +1988,7 @@ namespace restaurant
             result = AskForInput(
                 ClientMenuNum,
                 c => char.IsDigit(c) || c == '/' || c == '-',
-                input => DateTime.TryParseExact(input, new string[2] { "dd/mm/yyyy", "d/m/yyyy" }, new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime),
+                input => DateTime.TryParseExact(input, new string[2] { "dd/MM/yyyy", "d/M/yyyy" }, new CultureInfo("nl-NL"), DateTimeStyles.None, out resultDateTime),
                 ("Het formaat van de datum die u heeft ingevoerd klopt niet. Gebruik de - teken of de / teken om de datum te onderscheiden.", "De datum die u hebt ingevoerd klopt niet, probeer het opnieuw.")
             );
 
@@ -3659,7 +3659,7 @@ namespace restaurant
                 Console.WriteLine("[3] Speciale gerechten");
                 Console.WriteLine("[4] Gerechten (ontbijt/lunch/avondeten/dessert)");
                 Console.WriteLine("[5] Gearchiveerde gerechten");
-                Console.WriteLine("[6] Populaire gerechten");
+                Console.WriteLine("[6] Aantal gerechten besteld tussen een bepaalde tijd");
                 Console.WriteLine("[7] Ga terug");
 
                 int possibleResult = -1;
@@ -4052,17 +4052,17 @@ namespace restaurant
                 {
                     bool DateInPast(DateTime date) => date < DateTime.Now;
 
-                    Console.WriteLine("\nSHIT TEMPLATE");
+                    Console.WriteLine("\nTyp hier uw datum in (dag-maand-jaar)");
 
                     DateTime firstDate = new DateTime();
                     DateTime secondDate = new DateTime();
 
-                    Console.WriteLine("\nDatum 1");
+                    Console.WriteLine("\nEerste datum");
 
                     var firstResult = AskForInput(
                         ScreenNum,
                         null,
-                        input => DateTime.TryParseExact(input, new string[2] { "dd/mm/yyyy", "d/m/yyyy" }, new CultureInfo("nl-NL"), DateTimeStyles.None, out firstDate),
+                        input => DateTime.TryParseExact(input, new string[2] { "dd/MM/yyyy", "d/M/yyyy" }, new CultureInfo("nl-NL"), DateTimeStyles.None, out firstDate),
                         (null, "Het lijkt erop dat u een onjuiste datum heeft ingevuld.\nLet op de notatie (dag-maand-jaar).")
                     );
 
@@ -4080,12 +4080,12 @@ namespace restaurant
                         return 0;
                     }
 
-                    Console.WriteLine("\nDatum 2");
+                    Console.WriteLine("\nTweede datum (moet later zijn dan de eerste datum)");
 
                     var secondResult = AskForInput(
                         ScreenNum,
                         null,
-                        input => DateTime.TryParseExact(input, new string[2] { "dd/mm/yyyy", "d/m/yyyy" }, new CultureInfo("nl-NL"), DateTimeStyles.None, out secondDate),
+                        input => DateTime.TryParseExact(input, new string[2] { "dd/MM/yyyy", "d/M/yyyy" }, new CultureInfo("nl-NL"), DateTimeStyles.None, out secondDate),
                         (null, "Het lijkt erop dat u een onjuiste datum heeft ingevuld.\nLet op de notatie (dag-maand-jaar).")
                     );
 
@@ -4103,7 +4103,7 @@ namespace restaurant
                         return 0;
                     }
 
-                    List<Tuple<Gerechten, int>> currentList = code_eigenaar.GetUserOrderInfo(firstDate, secondDate);
+                    List<Tuple<Gerechten, int>> currentList = code_eigenaar.GetUserOrderInfo(firstDate, secondDate).OrderByDescending(meal => meal.Item2).ToList();
 
                     if (currentList.Count <= 0)
                     {
