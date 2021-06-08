@@ -28,9 +28,6 @@ namespace restaurant
 
         public bool tafel_bij_raam { get; set; }
 
-        [Obsolete]
-        public bool isBezorging { get; set; }
-
         public bool isBetaald { get; set; }
     }
 }

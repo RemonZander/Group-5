@@ -228,7 +228,7 @@ namespace restaurant
 
         protected string ConvertToCurrency(double input) => input.ToString("C");
 
-        protected (int, int, double) SetupPagination(List<List<string>> input, string aboveText, int screenIndex, List<string> pages, int pageNum, double pos, int maxLength, List<string> choices, string customText = "")
+        protected (int, int, double) SetupPagination(List<List<string>> input, string aboveText, int screenIndex, List<string> pages, int pageNum, double pos, int maxLength, List<string> choices, string customText = "", bool showTutorial = true)
         {
             List<List<string>> layout = Makedubbelboxes(input);
 
@@ -371,7 +371,7 @@ namespace restaurant
 
             if (customText == "")
             {
-                Console.WriteLine(string.Format($"{aboveText}\n{ControlsTutorial}", GetGFLogo(true), pageNum + 1, pages.Count));
+                Console.WriteLine(string.Format($"{aboveText}\n{(showTutorial ? ControlsTutorial : "")}", GetGFLogo(true), pageNum + 1, pages.Count));
             }
             else
             {
@@ -387,7 +387,7 @@ namespace restaurant
                 Console.WriteLine(pages[pageNum] + new string('#', maxLength + 6));
             }
 
-            return Nextpage(pageNum, pos, boxes.Count * 2 - 1, screenIndex, bindings, nonBoxChoices); // fix als het oneven boxes moet het boxes.Count * 2 - 2
+            return Nextpage(pageNum, pos, boxes.Count * 2 - 1, screenIndex, bindings, nonBoxChoices);
         }
 
         protected int GoBack(int screenIndex, bool canLogout = true)
@@ -584,10 +584,7 @@ namespace restaurant
 
             if (result.Item3 != null)
             {
-                Console.WriteLine("\n" + result.Item3);
-                Console.WriteLine("Druk op een knop om verder te gaan.");
-                Console.ReadKey();
-                return result.Item2;
+                return ShowInvalidInput(0, "\n" + result.Item3);
             }
 
             switch (Convert.ToInt32(result.Item1))
@@ -1141,29 +1138,25 @@ namespace restaurant
 
             if (reviews.Count > 0)
             {
-                var reservationString = Makedubbelboxes(ReviewsToString(reviews));
-                var boxText = BoxAroundText(reservationString, "#", 2, 0, maxLength, true);
-                var pages = MakePages(boxText, 3);
+
+                List<string> pages = new();
                 int pageNum = 0;
+                double pos = 0;
 
                 do
                 {
-                    Console.Clear();
-                    Console.WriteLine(GetGFLogo(true));
-                    Console.WriteLine("Dit zijn alle reviews die zijn achtergelaten door onze klanten: \n");
-                    Console.WriteLine($"Dit zijn de reviews op pagina {pageNum + 1} van de {pages.Count}:");
-                    Console.WriteLine(pages[pageNum]);
-
-                    if (reservationString[reservationString.Count - 1][1].Length < 70 && pageNum == pages.Count - 1)
-                    {
-                        Console.WriteLine(pages[pageNum] + new string('#', (maxLength + 6) / 2));
-                    }
-                    else
-                    {
-                        Console.WriteLine(pages[pageNum] + new string('#', maxLength + 6));
-                    }
-
-                    var result = Nextpage(pageNum, pages.Count - 1, screenIndex);
+                    var result = SetupPagination(
+                        ReviewsToString(reviews),
+                        "{0}\nDit zijn alle reviews op pagina {1} van de {2}:",
+                        screenIndex,
+                        pages,
+                        pageNum,
+                        pos,
+                        maxLength,
+                        new List<string> { },
+                        "",
+                        false
+                    );
 
                     if (result.Item2 != -1)
                     {
@@ -1644,7 +1637,7 @@ namespace restaurant
             Console.WriteLine("[8] Uw feedback (bekijken & bewerken)");
 
             int possibleValue = -1;
-            int[] choices = new int[8] { 0, 1, 2, 3, 4, 5, 6, 7 };
+            int[] choices = new int[9] { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 
             (string, int, string) result = AskForInput(
                 0,
@@ -2638,6 +2631,41 @@ namespace restaurant
             return output;
         }
 
+        private List<List<string>> PopulairMealsToString(List<Tuple<Gerechten, int>> populairMeals, DateTime startDate, DateTime endDate)
+        {
+            List<List<string>> output = new List<List<string>>();
+
+            for (int a = 0; a < populairMeals.Count; a++)
+            {
+                Gerechten meal = populairMeals[a].Item1;
+                int amountOrdered = populairMeals[a].Item2;
+                string price = ConvertToCurrency(meal.prijs);
+                string template = $"Besteld tussen {startDate.ToShortDateString()} en {endDate.ToShortDateString()}: {amountOrdered}x";
+
+                List<string> block = new List<string>();
+                block.Add(new string(' ', 50));
+                block.Add(new string(' ', 50));
+
+                block.Add("Naam: " + meal.naam + new string(' ', 50 - ("Naam: " + meal.naam).Length));
+                block.Add("Prijs: " + price + new string(' ', 50 - ("Prijs: " + price).Length));
+                block.Add(template + new string(' ', 50 - template.Length));
+                block.Add("Is populair: " + convertBooleanString(meal.is_populair) + new string(' ', 50 - ("Is populair: " + convertBooleanString(meal.is_populair)).Length));
+                block.Add("Is speciaal: " + convertBooleanString(meal.special) + new string(' ', 50 - ("Is speciaal: " + convertBooleanString(meal.special)).Length));
+                block.Add("Is gearchiveerd: " + convertBooleanString(meal.is_gearchiveerd) + new string(' ', 50 - ("Is gearchiveerd: " + convertBooleanString(meal.is_gearchiveerd)).Length));
+                block.Add("Is ontbijt: " + convertBooleanString(meal.ontbijt) + new string(' ', 50 - ("Is ontbijt: " + convertBooleanString(meal.ontbijt)).Length));
+                block.Add("Is lunch: " + convertBooleanString(meal.lunch) + new string(' ', 50 - ("Is lunch: " + convertBooleanString(meal.lunch)).Length));
+                block.Add("Is hoofdmenu: " + convertBooleanString(meal.diner) + new string(' ', 50 - ("Is hoofdmenu: " + convertBooleanString(meal.diner)).Length));
+
+                block.Add(new string(' ', 50));
+                block.Add(new string(' ', 50));
+
+                output.Add(block);
+            }
+
+
+            return output;
+        }
+
         private string MealBox (Gerechten meal)
         {
             string output = "";
@@ -3196,10 +3224,11 @@ namespace restaurant
                 Console.WriteLine("[3] Speciale gerechten");
                 Console.WriteLine("[4] Gerechten (ontbijt/lunch/avondeten)");
                 Console.WriteLine("[5] Gearchiveerde gerechten");
-                Console.WriteLine("[6] Ga terug");
+                Console.WriteLine("[6] Populaire gerechten");
+                Console.WriteLine("[7] Ga terug");
 
                 int possibleResult = -1;
-                var input = AskForInput(ScreenNum, null, input => int.TryParse(input, out possibleResult), (null, InvalidInputMessage));
+                var input = AskForInput(OwnerMenuScreenNum, null, input => int.TryParse(input, out possibleResult), (null, InvalidInputMessage));
 
                 if (input.Item3 != null)
                 {
@@ -3214,7 +3243,7 @@ namespace restaurant
                     return input.Item2;
                 }
 
-                if (input.Item1 == "6")
+                if (input.Item1 == "7")
                 {
                     return OwnerMenuScreenNum;
                 }
@@ -3574,6 +3603,121 @@ namespace restaurant
                         else if (result.Item1 == -4 && result.Item2 == -4)
                         {
                             return DeleteMeal(currentList[Convert.ToInt32(pos)]);
+                        }
+
+                        if (result.Item2 != -1)
+                        {
+                            return result.Item2;
+                        }
+
+                        pageNum = result.Item1;
+                    } while (true);
+                }
+                else if (input.Item1 == "6")
+                {
+                    bool DateInPast(DateTime date) => date < DateTime.Now;
+
+                    Console.WriteLine("\nSHIT TEMPLATE");
+
+                    DateTime firstDate = new DateTime();
+                    DateTime secondDate = new DateTime();
+
+                    Console.WriteLine("\nDatum 1");
+
+                    var firstResult = AskForInput(
+                        ScreenNum,
+                        null,
+                        input => DateTime.TryParseExact(input, new string[2] { "dd/mm/yyyy", "d/m/yyyy" }, new CultureInfo("nl-NL"), DateTimeStyles.None, out firstDate),
+                        (null, "Het lijkt erop dat u een onjuiste datum heeft ingevuld.\nLet op de notatie (dag-maand-jaar).")
+                    );
+
+                    if (firstResult.Item3 != null) return ShowInvalidInput(ScreenNum);
+                    if (!DateInPast(firstDate)) return ShowInvalidInput(ScreenNum);
+
+                    if (firstResult.Item2 != -1)
+                    {
+                        return firstResult.Item2;
+                    }
+
+                    if (firstResult.Item1 == "0")
+                    {
+                        LogoutWithMessage();
+                        return 0;
+                    }
+
+                    Console.WriteLine("\nDatum 2");
+
+                    var secondResult = AskForInput(
+                        ScreenNum,
+                        null,
+                        input => DateTime.TryParseExact(input, new string[2] { "dd/mm/yyyy", "d/m/yyyy" }, new CultureInfo("nl-NL"), DateTimeStyles.None, out secondDate),
+                        (null, "Het lijkt erop dat u een onjuiste datum heeft ingevuld.\nLet op de notatie (dag-maand-jaar).")
+                    );
+
+                    if (secondResult.Item3 != null) return ShowInvalidInput(ScreenNum);
+                    if (!DateInPast(secondDate) && secondDate > firstDate) return ShowInvalidInput(ScreenNum);
+
+                    if (secondResult.Item2 != -1)
+                    {
+                        return secondResult.Item2;
+                    }
+
+                    if (secondResult.Item1 == "0")
+                    {
+                        LogoutWithMessage();
+                        return 0;
+                    }
+
+                    List<Tuple<Gerechten, int>> currentList = code_eigenaar.GetUserOrderInfo(firstDate, secondDate);
+
+                    if (currentList.Count <= 0)
+                    {
+                        Console.Clear();
+                        Console.WriteLine(GetGFLogo(true));
+                        Console.WriteLine($"Er zijn geen populaire gerechten.");
+                        Console.WriteLine("[1] Ga terug");
+
+                        return GoBack(ScreenNum);
+                    }
+
+                    List<string> pages = new List<string>();
+                    int pageNum = 0;
+                    double pos = 0;
+
+                    do
+                    {
+                        (int, int, double) result = SetupPagination(
+                            PopulairMealsToString(currentList, firstDate, secondDate),
+                            "",
+                            ScreenNum,
+                            pages,
+                            pageNum,
+                            pos,
+                            maxLength,
+                            new List<string>() { "Bekijken", "Bewerken", "Archiveer", "Verwijderen" }
+                        );
+
+                        pos = result.Item3;
+
+                        if (result.Item2 != -1 && result.Item2 != -2 && result.Item2 != -3)
+                        {
+                            return result.Item2;
+                        }
+                        else if (result.Item1 == -1 && result.Item2 == -1)
+                        {
+                            return ReadMeal(currentList[Convert.ToInt32(pos)].Item1);
+                        }
+                        else if (result.Item1 == -2 && result.Item2 == -2)
+                        {
+                            return UpdateMeal(currentList[Convert.ToInt32(pos)].Item1);
+                        }
+                        else if (result.Item1 == -3 && result.Item2 == -3)
+                        {
+                            return ArchiveMeal(currentList[Convert.ToInt32(pos)].Item1);
+                        }
+                        else if (result.Item1 == -4 && result.Item2 == -4)
+                        {
+                            return DeleteMeal(currentList[Convert.ToInt32(pos)].Item1);
                         }
 
                         if (result.Item2 != -1)

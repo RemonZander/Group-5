@@ -12,27 +12,6 @@ namespace restaurant
 
         public void Debug()
         {
-            if (database.menukaart == null)
-            {
-                database.menukaart = new Menukaart();
-                database.menukaart.gerechten = new List<Gerechten>();
-                database.menukaart.gerechten.AddRange(testClass.Get_standard_dishes());
-            }
-            else
-            {
-                database.menukaart.gerechten = testClass.Get_standard_dishes();
-            }
-            List<Gerechten> test = GetMenukaart(new List<string> { "lactose intolerantie" });
-
-            int num = 44532;
-            MakeCustomerReservation(DateTime.Now, num, 6, false);
-            num = 22367;
-            MakeCustomerReservation(new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day + 3), num, 2, true);
-        }
-
-        public Code_Gebruiker_menu()
-        {
-            
         }
 
         #region Account
@@ -1929,10 +1908,10 @@ namespace restaurant
                 Console.WriteLine("U kunt met het ID kiezen welke reservering u wilt betalen");
 
                 //met escape, return naar klantmenu
-                input = AskForInput(vorigscherm);
+                input = AskForInput(huidigscherm);
                 if (input.Item2 != -1)
                 {
-                    return vorigscherm;
+                    return huidigscherm;
                 }
 
                 //als input is 0, logout
@@ -1982,10 +1961,10 @@ namespace restaurant
                 Console.WriteLine("\n" + BestelBox(chosenReservering));
                 Console.WriteLine("\n" + betaalBox(chosenReservering));
                 Console.WriteLine("U kunt betalen door vier getallen in te voeren");
-                input = AskForInput(vorigscherm);
+                input = AskForInput(huidigscherm);
                 if (input.Item2 != -1)
                 {
-                    return vorigscherm;
+                    return huidigscherm;
                 }
 
                 //als input is 0, logout

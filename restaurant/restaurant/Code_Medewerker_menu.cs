@@ -11,12 +11,6 @@ namespace restaurant
         private IO io = new IO();
 
         private Database database = new Database();
-
-        public Code_Medewerker_menu()
-        {
-            
-        }
-
         public void Debug()
         {
 
@@ -141,15 +135,16 @@ namespace restaurant
 
     public class EmployeeMenuScreen : Screen
     {
+        private bool fromMedewerker;
         public override int DoWork()
         {
             Console.WriteLine(GetGFLogo(false));
             Console.WriteLine("Welkom in het medewerkersmenu.");
-            Console.WriteLine("[1] Reserveringen bekijken");
-            Console.WriteLine("[2] Tafels koppelen");
+            Console.WriteLine("[1] Menukaart");
+            Console.WriteLine("[2] Reviews bekijken");
             Console.WriteLine("[3] Feedback bekijken");
-            Console.WriteLine("[4] Menukaart");
-            Console.WriteLine("[5] Reviews bekijken");
+            Console.WriteLine("[4] Reserveringen bekijken");
+            Console.WriteLine("[5] Tafels koppelen");
 
             (string, int) antwoord = AskForInput(16);
             if (antwoord.Item2 != -1)
@@ -163,23 +158,24 @@ namespace restaurant
             }
             else if (antwoord.Item1 == "1")
             {
-                return 17;
+                return 1;
             }
             else if (antwoord.Item1 == "2")
             {
-                return 18;
+                return 2;
             }
             else if (antwoord.Item1 == "3")
             {
+                fromMedewerker = true;
                 return 20;
             }
             else if (antwoord.Item1 == "4")
             {
-                return 1;
+                return 17;
             }
             else if (antwoord.Item1 == "5")
             {
-                return 2;
+                return 18;
             }
             else
             {
@@ -193,6 +189,7 @@ namespace restaurant
 
         public override List<Screen> Update(List<Screen> screens)
         {
+            screens[20].fromMedewerker = true;
             DoLogoutOnEveryScreen(screens);
             return screens;
         }
@@ -224,16 +221,35 @@ namespace restaurant
             }
 
             int page = 0;
-            List<string> pages = MakePages(BoxAroundText(Makedubbelboxes(FeedbackToString(employeeFeedbackList)), "#", 2, 0, 104, true), 3);
+            int uneven = 0;
+            var employeeFeedbackString = Makedubbelboxes(FeedbackToString(employeeFeedbackList));
+            List<string> pages = MakePages(BoxAroundText(employeeFeedbackString, "#", 2, 0, 104, true), 3);
             do
             {
                 Console.Clear();
                 Console.WriteLine(GetGFLogo(true));
                 Console.WriteLine("Dit is alle feedback gericht aan u.");
                 Console.WriteLine($"Dit is de feedback op pagina {page + 1} van de {pages.Count}:");
-                Console.WriteLine(pages[page] + new string('#', 110));
+                if (employeeFeedbackString[employeeFeedbackString.Count - 1][1].Length < 70 && page == pages.Count - 1)
+                {
+                    Console.WriteLine(pages[page] + new string('#', 56));
+                    uneven = 1;
+                }
+                else
+                {
+                    Console.WriteLine(pages[page] + new string('#', 110));
+                }
 
-                var result = Nextpage(page, pages.Count - 1, 16);
+                (int, int) result = (0, 0);
+                if (fromMedewerker)
+                {
+                    result = Nextpage(page, pages.Count * 2 - (1 + uneven), 16);
+                }
+                else
+                {
+                    result = Nextpage(page, pages.Count * 2 - (1 + uneven), 11);
+                }
+                
 
                 if (result.Item2 != -1)
                 {
@@ -246,6 +262,7 @@ namespace restaurant
 
         public override List<Screen> Update(List<Screen> screens)
         {
+            screens[20].fromMedewerker = false;
             DoLogoutOnEveryScreen(screens);
             return screens;
         }
@@ -268,7 +285,6 @@ namespace restaurant
         
         public override int DoWork()
         {
-            Console.WriteLine(GetGFLogo(true));
             string datum = DateTime.Now.ToShortDateString();
             Dictionary<string, List<Reserveringen>> reserveringenZonderTafel = new Dictionary<string, List<Reserveringen>>();
             List<Tuple<DateTime, List<Tafels>>> beschikbareTafels = code_medewerker.getBeschikbareTafels(DateTime.Parse(datum));
@@ -393,6 +409,7 @@ namespace restaurant
                             }
                         }
                     }
+                    int uneven = 0;
                     pages = MakePages(vakjes, 3);
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
@@ -400,7 +417,17 @@ namespace restaurant
                     Console.WriteLine();
                     Console.WriteLine("Reserveringen van: " + datum + (datum == DateTime.Now.ToShortDateString() ? " (vandaag)" : ""));
                     Console.WriteLine("Pagina " + (pagNum + 1) + " van de " + (pages.Count) + ":");
-                    Console.WriteLine(pages[pagNum] + new string('#', maxLength + 6));
+                    if (reserveringString[reserveringString.Count - 1][1].Length < 70 && pagNum == pages.Count - 1)
+                    {
+                        Console.WriteLine(pages[pagNum] + new string('#', 56));
+                        uneven = 1;
+                    }
+                    else
+                    {
+                        Console.WriteLine(pages[pagNum] + new string('#', 110));
+                    }
+
+                    Console.WriteLine("Gebruik de pijltjestoetsen om te navigeren door de reserveringen.\nDe reservering met de tekst 'Tafels koppelen' is de huidig geselecteerde reservering.");
 
                     List<Tuple<(int, int, double), string>> nextPageFuncTuples = new List<Tuple<(int, int, double), string>>();
                     List<string> tekst = new List<string>();
@@ -431,7 +458,7 @@ namespace restaurant
                     nextPageFuncTuples.Add(Tuple.Create((-6, -6, pos), "NumPad6"));
                     tekst.Add("[3] Vorige dag             [4] Volgende dag             [5] Naar vandaag");
 
-                    nextPageFunc = Nextpage(pagNum, pos, vakjes.Count * 2 - 1, 16, nextPageFuncTuples, tekst);
+                    nextPageFunc = Nextpage(pagNum, pos, vakjes.Count * 2 - (1 + uneven), 16, nextPageFuncTuples, tekst);
                     if (nextPageFunc.Item2 > -1)
                     {
                         return nextPageFunc.Item2;
@@ -502,6 +529,7 @@ namespace restaurant
                 Console.WriteLine("| ID  |         Tijd         |  Is aan raam  |");
                 Console.WriteLine("----------------------------------------------");
 
+                (string, int) ans = ("", 0);
                 if (beschikbareTafelsOpTijdstip.Count == 0 || beschikbareTafelsOpTijdstip.Count < Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(reservering.aantal / 4.0))))
                 {
                     Console.WriteLine("Sorry, er zijn geen beschikbare tafels op het tijdstip van deze reservering.");
@@ -509,7 +537,7 @@ namespace restaurant
                     if (reservering.datum.Hour >= 21)
                     {
                         Console.WriteLine("[1] Een kwartier eerder");
-                        (string, int) ans = AskForInput(18);
+                        ans = AskForInput(18);
                         if (ans.Item2 != -1) //Escape
                         {
                             return ans.Item2;
@@ -528,7 +556,7 @@ namespace restaurant
                     else if (reservering.datum.Hour < 10 || reservering.datum.Hour == 10 && reservering.datum.Minute == 0)
                     {
                         Console.WriteLine("                                         [2] Een kwartier later");
-                        (string, int) ans = AskForInput(18);
+                        ans = AskForInput(18);
                         if (ans.Item2 != -1) //Escape
                         {
                             return ans.Item2;
@@ -547,12 +575,12 @@ namespace restaurant
                     else
                     {
                         Console.WriteLine("[1] Een kwartier eerder                  [2] Een kwartier later");
-                        (string, int) ans = AskForInput(18);
+                        ans = AskForInput(18);
                         if (ans.Item2 != -1) //Escape
                         {
                             return ans.Item2;
                         }
-                        if (ans.Item1 == "0") //Log uit
+                        else if (ans.Item1 == "0") //Log uit
                         {
                             logoutUpdate = true;
                             Logout();
@@ -568,8 +596,8 @@ namespace restaurant
                         }
                         else
                         {
-                            Console.WriteLine("U moet wel een juiste keuze maken...");
-                            Console.WriteLine("Druk op een knop om verder te gaan.");
+                            Console.WriteLine("U heeft een ongeldig antwoord gegeven.");
+                            Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
                             Console.ReadKey();
                             goto tafelkoppelen;
                         }
@@ -601,20 +629,31 @@ namespace restaurant
 
                     if ($"{beschikbareTafelsOpTijdstip[i].ID}".Length == 1)
                     {
-                        Console.WriteLine($"| {beschikbareTafelsOpTijdstip[i].ID}   |  {reservering.datum}  |      {isAanRaam}    |");
+                        Console.WriteLine($"| {beschikbareTafelsOpTijdstip[i].ID}   |  {reservering.datum}  |      {isAanRaam}     |");
                     }
                     else //|  Is aan raam  |
                     {
-                        Console.WriteLine($"| {beschikbareTafelsOpTijdstip[i].ID}  |  {reservering.datum}  |      {isAanRaam}    |");
+                        Console.WriteLine($"| {beschikbareTafelsOpTijdstip[i].ID}  |  {reservering.datum}  |      {isAanRaam}     |");
                     }
                 }
 
                 Console.WriteLine("----------------------------------------------");
                 Console.WriteLine("\nTyp hier het ID van de tafel die u wilt koppelen: ");
-                string antwoord = Console.ReadLine();
+                ans = AskForInput(18);
+                if (ans.Item2 != -1)
+                {
+                    return ans.Item2;
+                }
+                else if (ans.Item1 == "0")
+                {
+                    logoutUpdate = true;
+                    Logout();
+                    return 0;
+                }
+
                 for (int i = 0; i < beschikbareTafelsOpTijdstip.Count; i++)
                 {
-                    if (Convert.ToString(beschikbareTafelsOpTijdstip[i].ID) == antwoord)
+                    if (Convert.ToString(beschikbareTafelsOpTijdstip[i].ID) == ans.Item1)
                     {
                         tafelID += beschikbareTafelsOpTijdstip[i].ID + "  ";
                         tafels.Add(beschikbareTafelsOpTijdstip[i]);
@@ -634,14 +673,24 @@ namespace restaurant
                 Console.WriteLine("\nU heeft de volgende tafels gekoppeld aan reservering " + reservering.ID + ":  " + tafelID);
                 Console.WriteLine("Wilt u uw keuze bevestigen?");
                 Console.WriteLine("[1] Ja\n[2] Nee");
-                var antwoord = Console.ReadLine();
-                if (antwoord == "1")
+                (string, int) ans = AskForInput(18);
+                if (ans.Item2 != -1)
+                {
+                    return ans.Item2;
+                }
+                else if (ans.Item1 == "0")
+                {
+                    logoutUpdate = true;
+                    Logout();
+                    return 0;
+                }
+                else if (ans.Item1 == "1")
                 {
                     code_medewerker.tafelKoppelen(reservering, tafels);
                     Console.WriteLine("Uw keuze is succesvol opgeslagen in het systeem");
                     succes = true;
                 }
-                else if (antwoord == "2")
+                else if (ans.Item1 == "2")
                 {
                     Console.WriteLine("Druk op een toets om opniew tafels te koppelen aan reservering " + reservering.ID);
                     Console.ReadKey();
@@ -813,7 +862,7 @@ namespace restaurant
                 code_gebruiker.MakeCustomerReservation(dagtijd, account.klantnummer, int.Parse(aantalPersonen.Item1), tafelBijRaam);
 
                 Console.WriteLine("\nUw reservering wordt verwerkt.");
-                Console.WriteLine("Druk op een knop om terug te keren naar het klantenscherm.");
+                Console.WriteLine("Druk op een toets om terug te keren naar het klantenmenu.");
                 Console.ReadKey();
                 return 5;
             }
