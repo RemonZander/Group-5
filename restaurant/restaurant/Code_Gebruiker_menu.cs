@@ -1958,7 +1958,7 @@ namespace restaurant
                 Console.WriteLine($"De reservering die u heeft gekozen heeft nummer: {chosenReservering.ID} en is van {chosenReservering.datum}");
                 Console.WriteLine("Hier ziet u wat er allemaal was besteld:");
                 Console.WriteLine("\n" + BestelBox(chosenReservering));
-                Console.WriteLine("\n" + betaalBox(chosenReservering));
+                Console.WriteLine("\n" + BetaalBox(chosenReservering));
                 Console.WriteLine("U kunt betalen door uw pin in te voeren");
                 input = AskForInput(vorigscherm);
                 if (input.Item2 != -1)
