@@ -40,22 +40,6 @@ namespace restaurant
         {
             return io.ReserveringBeschikbaarheid(datum);
         }
-        
-        public List<Reserveringen> getReserveringenZonderTafel(DateTime datum) // Haalt alle ongekoppelde reserveringen op een datum op
-        {
-            var reserveringen = getReserveringen(datum);
-            var reserveringenZonderTafel = new List<Reserveringen>();
-
-            foreach (var reservering in reserveringen)
-            {
-                if (reservering.tafels.Count == 0)
-                {
-                    reserveringenZonderTafel.Add(reservering);
-                }
-            }
-
-            return reserveringenZonderTafel;
-        }
 
         public List<Reserveringen> tijdBewerken(Reserveringen reservering, DateTime Datum) // Medewerker kan de tijd van reservering in het systeem aanpassen als er geen beschikbare tafels zijn
         {
