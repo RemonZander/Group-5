@@ -1292,7 +1292,7 @@ namespace restaurant
                 {
                     var result = SetupPagination(
                         ReviewsToString(reviews),
-                        $"{GetGFLogo(true)}Hier zijn alle reviews die zijn achtergelaten.",
+                        $"{GetGFLogo(true)}Hier zijn alle reviews die zijn geschreven.",
                         screenIndex,
                         pages,
                         pageNum,
