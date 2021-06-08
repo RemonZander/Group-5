@@ -166,22 +166,6 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        public void SaveIngredients(Ingredient ingredient)
-        {
-            database = io.GetDatabase();
-
-            if (database.ingredienten.Count == 0)
-            {
-                database.ingredienten = new List<Ingredient> { ingredient };
-            }
-            else
-            {
-                database.ingredienten.Add(ingredient);
-            }
-
-            io.Savedatabase(database);
-        }
-
         #endregion
 
         #region Feedback
