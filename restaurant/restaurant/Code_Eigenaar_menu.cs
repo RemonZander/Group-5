@@ -13,7 +13,6 @@ namespace restaurant
         private Database database = new Database();
 
         IO io = new IO();
-        Testing_class instance = new Testing_class();
 
         public void Debug()
         {
@@ -55,31 +54,6 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        public void EditMeal(int ID, string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<string> ingredients, List<string> allergens, bool isDiner, bool isLunch, bool isOntbijt)
-        {
-            database = io.GetDatabase();
-            List<Gerechten> gerechten = new List<Gerechten>(GetMeals());
-            for (int i = 0; i < gerechten.Count; i++)
-            {
-                if (gerechten[i].ID == ID)
-                {
-                    gerechten[i].naam = name;
-                    gerechten[i].is_populair = isPopular;
-                    gerechten[i].prijs = price;
-                    gerechten[i].special = isSpecial;
-                    gerechten[i].is_gearchiveerd = isArchived;
-                    gerechten[i].Ingredienten = ingredients;
-                    gerechten[i].allergenen = allergens;
-                    gerechten[i].diner = isDiner;
-                    gerechten[i].lunch = isLunch;
-                    gerechten[i].ontbijt = isOntbijt;
-                    break;
-                }
-            }
-            database.menukaart.gerechten = gerechten;
-            io.Savedatabase(database);
-        }
-
         public void CreateMeal(string name, bool isPopular, double price, bool isSpecial, bool isArchived, List<string> ingredients, List<string> allergens, bool isDiner, bool isLunch, bool isOntbijt, bool isDessert)
         {
             database = io.GetDatabase();
@@ -107,6 +81,71 @@ namespace restaurant
         {
             database = io.GetDatabase();
             return database.menukaart.gerechten;
+        }
+        private bool IfDishExists(int id)
+        {
+            database = io.GetDatabase();
+            for (int i = 0; i < database.menukaart.gerechten.Count; i++)
+            {
+                if (database.menukaart.gerechten[i].ID == id)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void OverwriteMeal(Gerechten meal)
+        {
+            database = io.GetDatabase();
+            if (IfDishExists(meal.ID))
+            {
+                int dishIndex = database.menukaart.gerechten.FindIndex(x => x.ID == meal.ID);
+                database.menukaart.gerechten[dishIndex] = new Gerechten
+                {
+                    naam = meal.naam,
+                    ID = meal.ID,
+                    Ingredienten = meal.Ingredienten,
+                    is_populair = meal.is_populair,
+                    prijs = meal.prijs,
+                    special = meal.special,
+                    is_gearchiveerd = meal.is_gearchiveerd,
+                    allergenen = meal.allergenen,
+                    diner = meal.diner,
+                    lunch = meal.lunch,
+                    ontbijt = meal.ontbijt,
+                };
+                io.Savedatabase(database);
+            }
+        }
+        public List<Tuple<Gerechten, int>> GetUserOrderInfo(DateTime beginDate, DateTime endDate)
+        {
+            database = io.GetDatabase();
+            List<Tuple<Gerechten, int>> populaireGerechten = new List<Tuple<Gerechten, int>>();
+            //hier komt een loop waarbij populaire gerechten gevuld wordt met alle bestaande gerechten.
+            //als de reservering plaats heeft gevonden binnen de gestelde tijd.
+            for (int i = 0; i < database.menukaart.gerechten.Count; i++)
+            {
+                populaireGerechten.Add(Tuple.Create(database.menukaart.gerechten[i], 0));
+            }
+            foreach (var reservering in database.reserveringen)
+            {
+                if (reservering.datum.Date >= beginDate.Date && reservering.datum.Date <= endDate.Date)
+                {
+                    foreach (var gerechtID in reservering.gerechten_ID)
+                    {
+                        for (int i = 0; i < populaireGerechten.Count; i++)
+                        {
+                            if (populaireGerechten[i].Item1.ID == gerechtID)
+                            {
+                                populaireGerechten[i] = Tuple.Create(populaireGerechten[i].Item1, populaireGerechten[i].Item2 + 1);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return populaireGerechten;
         }
         #endregion
 
@@ -161,20 +200,6 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        public void DeleteIngredientById(int ID)
-        {
-            database = io.GetDatabase();
-            for (int i = 0; i < database.ingredienten.Count; i++)
-            {
-                if (database.ingredienten[i].ID == ID)
-                {
-                    database.ingredienten.RemoveAt(i);
-                    break;
-                }
-            }
-            io.Savedatabase(database);
-        }
-
         public void SaveIngredientName(IngredientType ingredientType)
         {
             database = io.GetDatabase();
@@ -204,212 +229,14 @@ namespace restaurant
 
             io.Savedatabase(database);
         }
-
-        public void SaveIngredients(Ingredient ingredient)
+        public void DeleteIngredients(List<Ingredient> ingredients)
         {
             database = io.GetDatabase();
-
-            if (database.ingredienten.Count == 0)
-            {
-                database.ingredienten = new List<Ingredient> { ingredient };
-            }
-            else
-            {
-                database.ingredienten.Add(ingredient);
-            }
-
+            database.ingredienten = database.ingredienten.Except(ingredients).ToList();
             io.Savedatabase(database);
         }
 
         #endregion
-
-        #region Feedback
-        public List<Feedback> GetFeedback()
-        {
-            database = io.GetDatabase();
-            return database.feedback;
-        }
-
-        public List<Feedback> GetFeedback(int werknemerID)
-        {
-            List<Feedback> feedback = new List<Feedback>(GetFeedback());
-            for (int i = 0; i < feedback.Count; i++)
-            {
-                if (feedback[i].recipient != werknemerID)
-                {
-                    feedback[i] = null;
-                }
-            }
-            feedback.RemoveAll(x => x == null);
-            return feedback;
-        }
-
-        public void DeleteFeedback(int feedbackID)
-        {
-            database = io.GetDatabase();
-            List<Feedback> feedback = new List<Feedback>(GetFeedback());
-            for (int i = 0; i < feedback.Count; i++)
-            {
-                if (feedback[i].ID == feedbackID)
-                {
-                    feedback[i] = null;
-                    break;
-                }
-            }
-            feedback.RemoveAll(x => x == null);
-            database.feedback = feedback;
-            io.Savedatabase(database);
-        }
-        #endregion
-
-        #region Review
-        public List<Review> GetReviews()
-        {
-            database = io.GetDatabase();
-            return database.reviews;
-        }
-
-        public List<Review> GetReviews(int rating)
-        {
-            List<Review> reviews = new List<Review>(GetReviews());
-            for (int i = 0; i < reviews.Count; i++)
-            {
-                if (reviews[i].Rating != rating)
-                {
-                    reviews[i] = null;
-                }
-            }
-            reviews.RemoveAll(x => x == null);
-            return reviews;
-        }
-
-        public List<Review> GetReviews(List<int> rating)
-        {
-            List<Review> reviews = new List<Review>(GetReviews());
-            for (int i = 0; i < reviews.Count; i++)
-            {
-                for (int j = 0; j < rating.Count; j++)
-                {
-                    if (reviews[i].Rating != rating[j])
-                    {
-                        reviews[i] = null;
-                        break;
-                    }
-                }
-            }
-            reviews.RemoveAll(x => x == null);
-            return reviews;
-        }
-
-        public void DeleteReview(int reviewID)
-        {
-            database = io.GetDatabase();
-            List<Review> reviews = new List<Review>(GetReviews());
-            for (int i = 0; i < reviews.Count; i++)
-            {
-                if (reviews[i].ID == reviewID)
-                {
-                    reviews[i] = null;
-                    break;
-                }
-            }
-            reviews.RemoveAll(x => x == null);
-            database.reviews = reviews;
-            io.Savedatabase(database);
-        }
-
-        #endregion
-
-        private bool IfDishExists(int id)
-        {
-            database = io.GetDatabase();
-            for (int i = 0; i < database.menukaart.gerechten.Count; i++)
-            {
-                if (database.menukaart.gerechten[i].ID == id)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public void MakeDishPopular(int id)
-        {
-            database = io.GetDatabase();
-            if (IfDishExists(id))
-            {
-                int dishIndex = database.menukaart.gerechten.FindIndex(x => x.ID == id);
-                database.menukaart.gerechten[dishIndex] = new Gerechten
-                {
-                    naam = database.menukaart.gerechten[dishIndex].naam,
-                    ID = database.menukaart.gerechten[dishIndex].ID,
-                    Ingredienten = database.menukaart.gerechten[dishIndex].Ingredienten,
-                    is_populair = true,
-                    prijs = database.menukaart.gerechten[dishIndex].prijs,
-                    special = database.menukaart.gerechten[dishIndex].special,
-                    is_gearchiveerd = database.menukaart.gerechten[dishIndex].is_gearchiveerd,
-                    allergenen = database.menukaart.gerechten[dishIndex].allergenen,
-                    diner = database.menukaart.gerechten[dishIndex].diner,
-                    lunch = database.menukaart.gerechten[dishIndex].lunch,
-                    ontbijt = database.menukaart.gerechten[dishIndex].ontbijt,
-                };
-                io.Savedatabase(database);
-            }
-        }
-
-        public void OverwriteMeal(Gerechten meal)
-        {
-            database = io.GetDatabase();
-            if (IfDishExists(meal.ID))
-            {
-                int dishIndex = database.menukaart.gerechten.FindIndex(x => x.ID == meal.ID);
-                database.menukaart.gerechten[dishIndex] = new Gerechten
-                {
-                    naam = meal.naam,
-                    ID = meal.ID,
-                    Ingredienten = meal.Ingredienten,
-                    is_populair = meal.is_populair,
-                    prijs = meal.prijs,
-                    special = meal.special,
-                    is_gearchiveerd = meal.is_gearchiveerd,
-                    allergenen = meal.allergenen,
-                    diner = meal.diner,
-                    lunch = meal.lunch,
-                    ontbijt = meal.ontbijt,
-                };
-                io.Savedatabase(database);
-            }
-        }
-
-        public List<Tuple<Gerechten, int>> GetUserOrderInfo(DateTime beginDate, DateTime endDate)
-        {
-            database = io.GetDatabase();
-            List<Tuple<Gerechten, int>> populaireGerechten = new List<Tuple<Gerechten, int>>();
-            //hier komt een loop waarbij populaire gerechten gevuld wordt met alle bestaande gerechten.
-            //als de reservering plaats heeft gevonden binnen de gestelde tijd.
-            for (int i = 0; i < database.menukaart.gerechten.Count; i++)
-            {
-                populaireGerechten.Add(Tuple.Create(database.menukaart.gerechten[i], 0));
-            }
-            foreach (var reservering in database.reserveringen)
-            {
-                if (reservering.datum.Date >= beginDate.Date && reservering.datum.Date <= endDate.Date)
-                {
-                    foreach (var gerechtID in reservering.gerechten_ID)
-                    {
-                        for (int i = 0; i < populaireGerechten.Count; i++)
-                        {
-                            if (populaireGerechten[i].Item1.ID == gerechtID)
-                            {
-                                populaireGerechten[i] = Tuple.Create(populaireGerechten[i].Item1, populaireGerechten[i].Item2 + 1);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            return populaireGerechten;
-        }
 
         public List<List<string>> ReserveringenToString(List<Reserveringen> reserveringen)
         {
@@ -459,14 +286,6 @@ namespace restaurant
                 output.Add(block);
             }
             return output;
-        }
-
-
-        public void DeleteIngredients(List<Ingredient> ingredients)
-        {
-            database = io.GetDatabase();
-            database.ingredienten = database.ingredienten.Except(ingredients).ToList();
-            io.Savedatabase(database);
         }
 
         public bool DeleteWorker(Werknemer werknemer)
@@ -734,7 +553,6 @@ namespace restaurant
             return screens;
         }
     }
-
     public class GetWorkersScreen : Screen
     {
         int currentScreenID = 24;

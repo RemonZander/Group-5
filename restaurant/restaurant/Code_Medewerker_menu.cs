@@ -16,25 +16,6 @@ namespace restaurant
 
         }
 
-        #region Feedback
-
-        public List<Feedback> GetFeedbackMedewerker(Werknemer werknemer) // Haalt alle feedback gericht aan de medewerker op
-        {
-            database = io.GetDatabase();
-            var feedbackMedewerker= new List<Feedback>();
-            foreach (var feedback in database.feedback)
-            {
-                if (feedback.recipient == werknemer.ID)
-                {
-                    feedbackMedewerker.Add(feedback);
-                }
-            }
-            return feedbackMedewerker;
-        }
-
-        #endregion
-
-
         #region Reververingen
 
         public List<Reserveringen> getReserveringen(DateTime datum) // Haalt alle reserveringen van een bepaalde datum op
@@ -53,29 +34,7 @@ namespace restaurant
 
         #endregion
 
-
         #region Tafels
-
-        public List<Tuple<DateTime, List<Tafels>>> getBeschikbareTafels(DateTime datum) // Haalt alle beschikbare tafels op een bepaalde datum op
-        {
-            return io.ReserveringBeschikbaarheid(datum);
-        }
-        
-        public List<Reserveringen> getReserveringenZonderTafel(DateTime datum) // Haalt alle ongekoppelde reserveringen op een datum op
-        {
-            var reserveringen = getReserveringen(datum);
-            var reserveringenZonderTafel = new List<Reserveringen>();
-
-            foreach (var reservering in reserveringen)
-            {
-                if (reservering.tafels.Count == 0)
-                {
-                    reserveringenZonderTafel.Add(reservering);
-                }
-            }
-
-            return reserveringenZonderTafel;
-        }
 
         public List<Reserveringen> tijdBewerken(Reserveringen reservering, DateTime Datum) // Medewerker kan de tijd van reservering in het systeem aanpassen als er geen beschikbare tafels zijn
         {
@@ -284,7 +243,8 @@ namespace restaurant
         {
             string datum = DateTime.Now.ToShortDateString();
             Dictionary<string, List<Reserveringen>> reserveringenZonderTafel = new Dictionary<string, List<Reserveringen>>();
-            List<Tuple<DateTime, List<Tafels>>> beschikbareTafels = code_medewerker.getBeschikbareTafels(DateTime.Parse(datum));
+            List<Tuple<DateTime, List<Tafels>>> beschikbareTafels = io.ReserveringBeschikbaarheid(DateTime.Parse(datum));
+            
 
             if (!vanGetReservationsScreen) //Als je niet vanaf het reserveringsscherm komt
             {
@@ -491,7 +451,7 @@ namespace restaurant
             tafelkoppelen:
             List<Tafels> tafels = new List<Tafels>();
             string tafelID = "";
-            List<Tuple<DateTime, List<Tafels>>> alleBeschikbareTafels = code_medewerker.getBeschikbareTafels(reservering.datum);
+            List<Tuple<DateTime, List<Tafels>>> alleBeschikbareTafels = io.ReserveringBeschikbaarheid(reservering.datum);
             List<Tafels> beschikbareTafelsOpTijdstip = new List<Tafels>();
 
             for (int i = 0; i < alleBeschikbareTafels.Count; i++)

@@ -14,24 +14,6 @@ namespace restaurant
         {
         }
 
-        #region Account
-        public void DeleteAccount(Klantgegevens klant)
-        {
-            Database database = io.GetDatabase();
-            if (database.login_gegevens != null)
-            {
-                for (int i = 0; i < database.login_gegevens.Count; i++)
-                {
-                    if (database.login_gegevens[i].klantgegevens != null && klant.klantnummer == database.login_gegevens[i].klantgegevens.klantnummer)
-                    {
-                        //database.login_gegevens[i].klantgegevens = new Klantgegevens();
-                        database.login_gegevens.RemoveAt(i);
-                    }
-                }
-            }
-        }
-        #endregion
-
         #region Reserveringen
         /// <summary>
         /// Voor het krijgen van de oude of nieuwe reserveringen van een klant
