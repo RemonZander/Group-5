@@ -2705,6 +2705,7 @@ namespace restaurant
             reviews = io.GetReviews(ingelogd.klantgegevens).OrderBy(s => s.datum).ToList();
             if (reviews.Count == 0)
             {
+                Console.WriteLine(GetGFLogo(false));
                 Console.WriteLine("U heeft nog geen reviews");
                 Console.WriteLine("druk op een knop om terug te gaan");
                 Console.ReadKey();
@@ -3470,6 +3471,7 @@ namespace restaurant
             List<Reserveringen> reviewdReservervations = new List<Reserveringen>();
             //lijst met alle reviews van een klant
             List<Review> klantReviews = new List<Review>(io.GetReviews(ingelogd.klantgegevens));
+            bool anoniem = false;
 
 
             //slaat alle reserveringen die al een review hebben op en except deze uit de lijst zodat je alleen niet reviewde reserveringen overhoudt
@@ -3486,13 +3488,10 @@ namespace restaurant
             }
             reserveringen = reserveringen.Except(reviewdReservervations).ToList();
 
-            //main logo
-            Console.WriteLine(GetGFLogo(true));
-
-
             //als er geen open reserveringen meer zijn voor review
             if (reserveringen.Count == 0)
             {
+                Console.WriteLine(GetGFLogo(true));
                 Console.WriteLine("Er zijn momenteel geen oude reserveringen waarover u een review kunt schrijven.");
                 Console.WriteLine("Druk op een toets om terug te gaan.");
                 Console.ReadKey();
@@ -3500,6 +3499,109 @@ namespace restaurant
                 return 5;
             }
 
+            //begin met een een clear screen hier
+            Console.Clear();
+            Console.WriteLine(GetGFLogo(true));
+            Console.WriteLine("Het is mogelijk om anoniem een review te schrijven, anoniem houdt in:");
+            Console.WriteLine("-> Uw naam wordt niet opgeslagen bij de review.");
+            Console.WriteLine("-> De review wordt niet gekoppeld aan deze reservering.");
+            Console.WriteLine("-> U kunt deze review niet bewerken en/of verwijderen.");
+            //Console.WriteLine("Kies [1] voor het maken voor een anonieme review, kies [2] voor het maken van een normale review.");
+            Console.WriteLine("[1] Anoniem");
+            Console.WriteLine("[2] Normaal");
+            Console.WriteLine("[3] Terug");
+            (string, int) choice = AskForInput(7);
+            if (choice.Item2 != -1)
+            {
+                return choice.Item2;
+            }
+            if (choice.Item1 == "1")
+            {
+                anoniem = true;
+            }
+            else if (choice.Item1 == "3")
+            {
+                return 5;
+            }
+            else if (choice.Item1 == "0")
+            {
+                logoutUpdate = true;
+                Logout();
+                return 0;
+            }
+
+ 
+
+            if (anoniem)
+            {
+                //anoniem Review, alleen rating en message
+                Console.WriteLine("\nOp een schaal van 1 t/m 5 (slechtst naar best), welke beoordeling zou u uw ervaring in het restaurant geven?");
+
+                choice = AskForInput(7);
+                if (choice.Item2 != -1)
+                {
+                    return choice.Item2;
+                }
+
+                List<string> possibleinput = new List<string> { "1", "2", "3", "4", "5"};
+
+                //check voor de rating
+                if (!possibleinput.Contains(choice.Item1) || !Int32.TryParse(choice.Item1,out int test2))
+                {
+                    Console.WriteLine("\nU heeft een incorrecte beoordeling ingevoerd.");
+                    Console.WriteLine("Druk op een toets om terug te gaan.");
+                    Console.ReadKey();
+
+                    //naar welk scherm gereturned moet worden als de input incorrect is
+                    return 7;
+                }
+
+                //zet rating naar een int, word later gebruikt
+                int Rating = Convert.ToInt32(choice.Item1);
+
+                Console.WriteLine("\nHieronder kunt u de inhoud van uw review schrijven (max. 160 tekens).");
+
+                bool succes2 = false;
+                string message2 = "";
+                do
+                {
+                    message2 = Console.ReadLine();
+
+                    if (message2.Length > 160)
+                    {
+                        Console.WriteLine("Uw review mag niet langer zijn dan 160 tekens.\nHieronder kunt u opnieuw een review schrijven.");
+                    }
+                    else
+                    {
+                        succes2 = true;
+                    }
+                } while (!succes2);
+                    
+
+                code_gebruiker.MakeReview(Rating, message2);
+                Console.WriteLine("Succesvol een review gemaakt.");
+                Console.WriteLine("Druk op een toets om terug te keren naar het klantenmenu.");
+                Console.ReadKey();
+
+                //return naar het vorige scherm pls
+                return 5;
+
+            }
+
+            //list met mogelijke inputs
+            List<string> possibleInput = new List<string> { "1", "2", "3" };
+
+            if (!possibleInput.Contains(choice.Item1) || !Int32.TryParse(choice.Item1, out int test))
+            {
+                Console.WriteLine("U moet wel een juiste keuze maken...");
+                Console.WriteLine("Druk op een toets om terug te gaan.");
+                Console.ReadKey();
+                //naar welk scherm gereturned moet worden als de input incorrect is
+                return 7;
+            }
+
+            Console.Clear();
+            Console.WriteLine(GetGFLogo(true));
             Console.WriteLine("Hier kunt u een oude reservering kiezen, waarover u een review wilt schrijven.");
             Console.WriteLine("U kunt één review schrijven per reservering.");
             Console.WriteLine("\nU kunt kiezen uit één van de onderstaande reserveringen:");
@@ -3510,10 +3612,10 @@ namespace restaurant
             {
                 Console.WriteLine("|" + reserveringen[i].ID + new string(' ', 7 - reserveringen[i].ID.ToString().Length) + "| " + reserveringen[i].aantal + new string(' ', 13 - reserveringen[i].aantal.ToString().Length) + "| " + reserveringen[i].datum.ToShortDateString() + " " + reserveringen[i].datum.ToShortTimeString() + new string(' ', 18 - (reserveringen[i].datum.ToShortDateString() + " " + reserveringen[i].datum.ToShortTimeString()).Length) + "|\n" + new string('–', 44));
             }
-               
+
             Console.WriteLine("\nU kunt d.m.v. het invullen van een ID een reservering selecteren, waarover u een review wilt schrijven.");
 
-            (string, int) choice = ("", -1);
+            choice = ("", -1);
             bool succes = false;
             do
             {
@@ -3554,156 +3656,49 @@ namespace restaurant
                 }
             }
 
+            //rating, message en klantgegevens/naam klant
+            Console.WriteLine("\nOp een schaal van 1 t/m 5 (slechtst naar best), welke beoordeling zou u uw ervaring in het restaurant geven?");
 
-            //begin met een een clear screen hier
-            Console.Clear();
-            Console.WriteLine(GetGFLogo(true));
-            Console.WriteLine("Het is mogelijk om anoniem een review te schrijven, anoniem houdt in:");
-            Console.WriteLine("-> Uw naam wordt niet opgeslagen bij de review.");
-            Console.WriteLine("-> De review wordt niet gekoppeld aan deze reservering.");
-            Console.WriteLine("-> U kunt deze review niet bewerken en/of verwijderen.");
-            //Console.WriteLine("Kies [1] voor het maken voor een anonieme review, kies [2] voor het maken van een normale review.");
-            Console.WriteLine("[1] Anoniem");
-            Console.WriteLine("[2] Normaal");
-            Console.WriteLine("[3] Terug");
             choice = AskForInput(7);
-            if (choice.Item2 != -1)
-            {
-                return choice.Item2;
-            }
 
-            //list met mogelijke inputs
-            List<string> possibleInput = new List<string> { "1", "2", "3"};
+            possibleInput = new List<string> { "1", "2", "3", "4", "5"};
 
-            if (!possibleInput.Contains(choice.Item1) || !Int32.TryParse(choice.Item1, out int test))
+            //check voor de rating
+            if (!possibleInput.Contains(choice.Item1) || !Int32.TryParse(choice.Item1, out test))
             {
-                Console.WriteLine("U moet wel een juiste keuze maken...");
-                Console.WriteLine("Druk op een toets om terug te gaan.");
+                Console.WriteLine("\nU heeft een incorrecte beoordeling ingevoerd.");
+                Console.WriteLine("Druk op een knop om terug te gaan.");
                 Console.ReadKey();
+
                 //naar welk scherm gereturned moet worden als de input incorrect is
                 return 7;
             }
 
-            //clear screen
-            Console.Clear();
-            Console.WriteLine(GetGFLogo(true));
+            //zet rating naar een int, word later gebruikt
+            int rating = Convert.ToInt32(choice.Item1);
 
+            Console.WriteLine("\nHieronder kunt u de inhoud van uw review schrijven (max. 160 tekens).");
 
-            if (choice.Item1 == "1")
+            succes = false;
+            string message = "";
+            do
             {
-                //anoniem Review, alleen rating en message
-                Console.WriteLine("Op een schaal van 1 t/m 5 (slechtst naar best), welke beoordeling zou u uw ervaring in het restaurant geven?");
+                message = Console.ReadLine();
 
-                choice = AskForInput(7);
-                if (choice.Item2 != -1)
+                if (message.Length > 160)
                 {
-                    return choice.Item2;
+                    Console.WriteLine("Uw review mag niet langer zijn dan 160 tekens.\nHieronder kunt u opnieuw een review schrijven.");
                 }
-
-                possibleInput = new List<string> { "1", "2", "3", "4", "5"};
-
-                //check voor de rating
-                if (!possibleInput.Contains(choice.Item1) || !Int32.TryParse(choice.Item1, out test))
+                else
                 {
-                    Console.WriteLine("\nU heeft een incorrecte beoordeling ingevoerd.");
-                    Console.WriteLine("Druk op een toets om terug te gaan.");
-                    Console.ReadKey();
-
-                    //naar welk scherm gereturned moet worden als de input incorrect is
-                    return 7;
+                    succes = true;
                 }
-
-                //zet rating naar een int, word later gebruikt
-                int rating = Convert.ToInt32(choice.Item1);
-
-                Console.WriteLine("\nHieronder kunt u de inhoud van uw review schrijven (max. 160 tekens).");
-
-                succes = false;
-                string message = "";
-                do
-                {
-                    message = Console.ReadLine();
-
-                    if (message.Length > 160)
-                    {
-                        Console.WriteLine("Uw review mag niet langer zijn dan 160 tekens.\nHieronder kunt u opnieuw een review schrijven.");
-                    }
-                    else
-                    {
-                        succes = true;
-                    }
-                } while (!succes);
-                    
-
-                code_gebruiker.MakeReview(rating, message);
-                Console.WriteLine("Succesvol een review gemaakt.");
-                Console.WriteLine("Druk op een toets om terug te keren naar het klantenmenu.");
-                Console.ReadKey();
-
-                //return naar het vorige scherm pls
-                return 5;
-
-            }
-            else if (choice.Item1 == "2")
-            {
-                //rating, message en klantgegevens/naam klant
-                Console.WriteLine("Op een schaal van 1 t/m 5 (slechtst naar best), welke beoordeling zou u uw ervaring in het restaurant geven?");
-
-                choice = AskForInput(7);
-
-                possibleInput = new List<string> { "1", "2", "3", "4", "5"};
-
-                //check voor de rating
-                if (!possibleInput.Contains(choice.Item1) || !Int32.TryParse(choice.Item1, out test))
-                {
-                    Console.WriteLine("\nU heeft een incorrecte beoordeling ingevoerd.");
-                    Console.WriteLine("Druk op een knop om terug te gaan.");
-                    Console.ReadKey();
-
-                    //naar welk scherm gereturned moet worden als de input incorrect is
-                    return 7;
-                }
-
-                //zet rating naar een int, word later gebruikt
-                int rating = Convert.ToInt32(choice.Item1);
-
-                Console.WriteLine("\nHieronder kunt u de inhoud van uw review schrijven (max. 160 tekens).");
-
-                succes = false;
-                string message = "";
-                do
-                {
-                    message = Console.ReadLine();
-
-                    if (message.Length > 160)
-                    {
-                        Console.WriteLine("Uw review mag niet langer zijn dan 160 tekens.\nHieronder kunt u opnieuw een review schrijven.");
-                    }
-                    else
-                    {
-                        succes = true;
-                    }
-                } while (!succes);
-                code_gebruiker.MakeReview(rating, ingelogd.klantgegevens, message, chosenReservation);
-                Console.WriteLine("\nSuccesvol een review aangemaakt.");
-                Console.WriteLine("Druk op een toets om terug te gaan.");
-                Console.ReadKey();
-                //return naar het vorige scherm pls
-                return 5;
-
-            }
-            else if (choice.Item1 == "3")
-            {
-                //return naar vorig scherm
-                return 5;
-            }
-            else if (choice.Item1 == "0")
-            {
-                logoutUpdate = true;
-                Logout();
-                return 0;
-            }
-
+            } while (!succes);
+            code_gebruiker.MakeReview(rating, ingelogd.klantgegevens, message, chosenReservation);
+            Console.WriteLine("\nSuccesvol een review aangemaakt.");
+            Console.WriteLine("Druk op een toets om terug te gaan.");
+            Console.ReadKey();
+            //return naar het vorige scherm pls
             return 5;
             
         }
@@ -4540,47 +4535,30 @@ namespace restaurant
 
     public class ExpensesScreen : Screen
     {
-        private List<string> ExpensesToStringMonth(List<(DateTime, double)> expenses, double pos, string optionMessage)
+        private List<string> ExpensesToStringMonth(List<(DateTime, double)> expenses, double pos)
         {
             List<string> output = new List<string>();
 
             for (int a = 0; a < expenses.Count; a++)
             {
-                if (pos == a)
-                {
-                    output.Add("| " + expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddMonths(1).ToShortDateString() + new string(' ', 25 - (expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddMonths(1).ToShortDateString()).Length) +
-                        " | " + "€" + Convert.ToInt32(expenses[a].Item2) + new string(' ', 12 - ("€" + Convert.ToInt32(expenses[a].Item2)).Length) + $" {optionMessage}|\n" +
-                        new string('–', 42 + optionMessage.Length + 2) + "\n");
-                }
-                else
-                {
-                    output.Add("| " + expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddMonths(1).ToShortDateString() + new string(' ', 25 - (expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddMonths(1).ToShortDateString()).Length) +
-                        " | " + "€" + Convert.ToInt32(expenses[a].Item2) + new string(' ', 12 - ("€" + Convert.ToInt32(expenses[a].Item2)).Length) + new string(' ', optionMessage.Length) + " |\n" +
-                        new string('–', 42 + optionMessage.Length + 2) + "\n");
-                }
+
+                output.Add("| " + expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddMonths(1).ToShortDateString() + new string(' ', 25 - (expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddMonths(1).ToShortDateString()).Length) +
+                    " | " + "€" + Convert.ToInt32(expenses[a].Item2) + new string(' ', 12 - ("€" + Convert.ToInt32(expenses[a].Item2)).Length) + " |\n" + new string('–', 44) + "\n");
+
             }
 
             return output;
         }
 
-        private List<string> IncomeToStringWeeks(List<(DateTime, double)> expenses, double pos, string optionMessage)
+        private List<string> ExpensesToStringWeeks(List<(DateTime, double)> expenses, double pos)
         {
             List<string> output = new List<string>();
 
             for (int a = 0; a < expenses.Count; a++)
             {
-                if (pos == a)
-                {
-                    output.Add("| " + expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddDays(7).ToShortDateString() + new string(' ', 25 - (expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddDays(7).ToShortDateString()).Length) +
-                        " | " + "€" + Convert.ToInt32(expenses[a].Item2) + new string(' ', 12 - ("€" + Convert.ToInt32(expenses[a].Item2)).Length) + $" {optionMessage}|\n" +
-                        new string('–', 42 + optionMessage.Length + 2) + "\n");
-                }
-                else
-                {
-                    output.Add("| " + expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddDays(7).ToShortDateString() + new string(' ', 25 - (expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddDays(7).ToShortDateString()).Length) +
-                        " | " + "€" + Convert.ToInt32(expenses[a].Item2) + new string(' ', 12 - ("€" + Convert.ToInt32(expenses[a].Item2)).Length) + new string(' ', optionMessage.Length) + " |\n" +
-                        new string('–', 42 + optionMessage.Length + 2) + "\n");
-                }
+                output.Add("| " + expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddDays(7).ToShortDateString() + new string(' ', 25 - (expenses[a].Item1.ToShortDateString() + " - " + expenses[a].Item1.AddDays(7).ToShortDateString()).Length) +
+                    " | " + "€" + Convert.ToInt32(expenses[a].Item2) + new string(' ', 12 - ("€" + Convert.ToInt32(expenses[a].Item2)).Length) + " |\n" +
+                    new string('–', 44) + "\n");
             }
 
             return output;
@@ -4621,27 +4599,23 @@ namespace restaurant
                 int page = 0;
                 do
                 {
-                    List<string> expensesString = ExpensesToStringMonth(uitgaven, pos, "[3] Meer Detail");
+                    List<string> expensesString = ExpensesToStringMonth(uitgaven, pos);
                     List<string> pages = MakePages(expensesString, 20);
 
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit zijn uw uitgaven per maand op pagina {page + 1} van de {pages.Count}:");
-                    Console.WriteLine(new string('–', 59) + "\n" + "|Maand                      |Totaal                       |");
-                    Console.WriteLine(new string('–', 59) + "\n" + pages[page]);
+                    Console.WriteLine(new string('–', 44) + "\n" + "|Maand                      |Totaal        |");
+                    Console.WriteLine(new string('–', 44) + "\n" + pages[page]);
                     Console.WriteLine($"totale uitgaven : €{ Convert.ToInt32(uitgaven.Select(P => P.Item2).Sum())},00\n");
                     
-                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, uitgaven.Count - 1, 11);
+                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, uitgaven.Count - 1, 13);
                     if (result.Item2 != -1)
                     {
                         return result.Item2;
                     }
                     else if (result.Item1 == -1 && result.Item2 == -1)
                     {
-/*                        DetailIncomeScreen detail = new DetailIncomeScreen(code_eigenaar.InkomstenPerItem(uitgaven[Convert.ToInt32(pos)].Item1, uitgaven[Convert.ToInt32(pos)].Item1.AddMonths(1)));
-                        detail.DoWork();
-                        page = 0;
-                        pos = 0;*/
                     }
                     else
                     {
@@ -4669,17 +4643,17 @@ namespace restaurant
                 int page = 0;
                 do
                 {
-                    List<string> expensesString = IncomeToStringWeeks(uitgaven, pos, "[3] Meer Detail");
+                    List<string> expensesString = ExpensesToStringWeeks(uitgaven, pos);
                     List<string> pages = MakePages(expensesString, 20);
 
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit zijn uw uitgaven per week op pagina {page + 1} van de {pages.Count}:");
-                    Console.WriteLine(new string('–', 59) + "\n" + "|Week                       |Totaal                       |");
-                    Console.WriteLine(new string('–', 59) + "\n" + pages[page]);
+                    Console.WriteLine(new string('–', 44) + "\n" + "|Week                       |Totaal        |");
+                    Console.WriteLine(new string('–', 44) + "\n" + pages[page]);
                     Console.WriteLine($"totale uitgaven : €{ Convert.ToInt32(uitgaven.Select(P => P.Item2).Sum())},00\n");
 
-                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, uitgaven.Count - 1, 11);
+                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, uitgaven.Count - 1, 13);
                     if (result.Item2 != -1)
                     {
                         return result.Item2;
@@ -4713,17 +4687,17 @@ namespace restaurant
                 int page = 0;
                 do
                 {
-                    List<string> expensesString = ExpensesToStringMonth(uitgaven, pos, "[3] Meer Detail");
+                    List<string> expensesString = ExpensesToStringMonth(uitgaven, pos);
                     List<string> pages = MakePages(expensesString, 20);
 
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit zijn uw uitgaven per maand op pagina {page + 1} van de {pages.Count}:");
-                    Console.WriteLine(new string('–', 59) + "\n" + "|Maand                      |Totaal                       |");
-                    Console.WriteLine(new string('–', 59) + "\n" + pages[page]);
+                    Console.WriteLine(new string('–', 44) + "\n" + "|Maand                      |Totaal        |");
+                    Console.WriteLine(new string('–', 44) + "\n" + pages[page]);
                     Console.WriteLine($"totale uitgaven : €{ Convert.ToInt32(uitgaven.Select(P => P.Item2).Sum())},00\n");
 
-                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, uitgaven.Count - 1, 11);
+                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, uitgaven.Count - 1, 13);
                     if (result.Item2 != -1)
                     {
                         return result.Item2;
@@ -4758,17 +4732,17 @@ namespace restaurant
                 int page = 0;
                 do
                 {
-                    List<string> expensesString = ExpensesToStringMonth(uitgaven, pos, "[3] Meer Detail");
+                    List<string> expensesString = ExpensesToStringMonth(uitgaven, pos);
                     List<string> pages = MakePages(expensesString, 20);
 
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit zijn uw uitgaven per maand op pagina {page + 1} van de {pages.Count}:");
-                    Console.WriteLine(new string('–', 59) + "\n" + "|maand                      |Totaal                       |");
-                    Console.WriteLine(new string('–', 59) + "\n" + pages[page]);
+                    Console.WriteLine(new string('–', 44) + "\n" + "|maand                      |Totaal        |");
+                    Console.WriteLine(new string('–', 44) + "\n" + pages[page]);
                     Console.WriteLine($"totale uitgaven : €{ Convert.ToInt32(uitgaven.Select(P => P.Item2).Sum())},00\n");
 
-                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, uitgaven.Count - 1, 11);
+                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, uitgaven.Count - 1, 13);
                     if (result.Item2 != -1)
                     {
                         return result.Item2;
@@ -4802,17 +4776,17 @@ namespace restaurant
                 int page = 0;
                 do
                 {
-                    List<string> expensesString = ExpensesToStringMonth(uitgaven, pos, "[3] Meer Detail");
+                    List<string> expensesString = ExpensesToStringMonth(uitgaven, pos);
                     List<string> pages = MakePages(expensesString, 20);
 
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
                     Console.WriteLine($"Dit zijn uw uitgaven per maand op pagina {page + 1} van de {pages.Count}:");
-                    Console.WriteLine(new string('–', 59) + "\n" + "|Maand                      |Totaal                       |");
-                    Console.WriteLine(new string('–', 59) + "\n" + pages[page]);
+                    Console.WriteLine(new string('–', 44) + "\n" + "|Maand                      |Totaal        |");
+                    Console.WriteLine(new string('–', 44) + "\n" + pages[page]);
                     Console.WriteLine($"totale uitgaven : €{ Convert.ToInt32(uitgaven.Select(P => P.Item2).Sum())},00\n");
 
-                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, uitgaven.Count - 1, 11);
+                    (int, int, double) result = NextpageTable(page, pages.Count - 1, pos, uitgaven.Count - 1, 13);
                     if (result.Item2 != -1)
                     {
                         return result.Item2;
