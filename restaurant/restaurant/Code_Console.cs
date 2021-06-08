@@ -208,23 +208,6 @@ namespace restaurant
             }
         }
 
-        private static bool IsInputEmpty(string input) => input == "";
-
-        private bool ValidateInput(string input, Func<char, bool> conditionPerChar)
-        {
-            char[] charsOfInput = input.ToCharArray();
-
-            for (int i = 0; i < charsOfInput.Length; i++)
-            {
-                if (charsOfInput[i] == ' ') continue;
-                if (!conditionPerChar(charsOfInput[i])) return false;
-            }
-
-            return true;
-        }
-
-        private bool ValidateInput(string input, Func<string, bool> conditionInput) => conditionInput(input);
-
         /// <summary>
         /// Returns true if the key with the specified keycode is pressed.
         /// </summary>
@@ -513,6 +496,23 @@ namespace restaurant
             // -1 means no interruptions has been found while asking for input
             return (string.Join(null, output), -1);
         }
+
+        private static bool IsInputEmpty(string input) => input == "";
+
+        private bool ValidateInput(string input, Func<char, bool> conditionPerChar)
+        {
+            char[] charsOfInput = input.ToCharArray();
+
+            for (int i = 0; i < charsOfInput.Length; i++)
+            {
+                if (charsOfInput[i] == ' ') continue;
+                if (!conditionPerChar(charsOfInput[i])) return false;
+            }
+
+            return true;
+        }
+
+        private bool ValidateInput(string input, Func<string, bool> conditionInput) => conditionInput(input);
 
         /// <summary>
         /// With this method you can ask the user for input and add a condition based on what type of characters are allowed in the input.
@@ -1292,7 +1292,7 @@ namespace restaurant
                 {
                     var result = SetupPagination(
                         ReviewsToString(reviews),
-                        $"{GetGFLogo(true)}\n",
+                        $"{GetGFLogo(true)}Hier zijn alle reviews die zijn achtergelaten.",
                         screenIndex,
                         pages,
                         pageNum,
