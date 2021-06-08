@@ -1973,6 +1973,8 @@ namespace restaurant
 
     public abstract partial class Screen
     {
+        public bool fromMedewerker = false;
+
         /// <summary>
         /// You use this function if you want to make 1 box
         /// </summary>

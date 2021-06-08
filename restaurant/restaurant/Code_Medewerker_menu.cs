@@ -135,6 +135,7 @@ namespace restaurant
 
     public class EmployeeMenuScreen : Screen
     {
+        private bool fromMedewerker;
         public override int DoWork()
         {
             Console.WriteLine(GetGFLogo(false));
@@ -165,6 +166,7 @@ namespace restaurant
             }
             else if (antwoord.Item1 == "3")
             {
+                fromMedewerker = true;
                 return 20;
             }
             else if (antwoord.Item1 == "4")
@@ -187,6 +189,7 @@ namespace restaurant
 
         public override List<Screen> Update(List<Screen> screens)
         {
+            screens[20].fromMedewerker = true;
             DoLogoutOnEveryScreen(screens);
             return screens;
         }
@@ -218,16 +221,35 @@ namespace restaurant
             }
 
             int page = 0;
-            List<string> pages = MakePages(BoxAroundText(Makedubbelboxes(FeedbackToString(employeeFeedbackList)), "#", 2, 0, 104, true), 3);
+            int uneven = 0;
+            var employeeFeedbackString = Makedubbelboxes(FeedbackToString(employeeFeedbackList));
+            List<string> pages = MakePages(BoxAroundText(employeeFeedbackString, "#", 2, 0, 104, true), 3);
             do
             {
                 Console.Clear();
                 Console.WriteLine(GetGFLogo(true));
                 Console.WriteLine("Dit is alle feedback gericht aan u.");
                 Console.WriteLine($"Dit is de feedback op pagina {page + 1} van de {pages.Count}:");
-                Console.WriteLine(pages[page] + new string('#', 110));
+                if (employeeFeedbackString[employeeFeedbackString.Count - 1][1].Length < 70 && page == pages.Count - 1)
+                {
+                    Console.WriteLine(pages[page] + new string('#', 56));
+                    uneven = 1;
+                }
+                else
+                {
+                    Console.WriteLine(pages[page] + new string('#', 110));
+                }
 
-                var result = Nextpage(page, pages.Count - 1, 16);
+                (int, int) result = (0, 0);
+                if (fromMedewerker)
+                {
+                    result = Nextpage(page, pages.Count * 2 - (1 + uneven), 16);
+                }
+                else
+                {
+                    result = Nextpage(page, pages.Count * 2 - (1 + uneven), 11);
+                }
+                
 
                 if (result.Item2 != -1)
                 {
@@ -240,6 +262,7 @@ namespace restaurant
 
         public override List<Screen> Update(List<Screen> screens)
         {
+            screens[20].fromMedewerker = false;
             DoLogoutOnEveryScreen(screens);
             return screens;
         }
@@ -386,6 +409,7 @@ namespace restaurant
                             }
                         }
                     }
+                    int uneven = 0;
                     pages = MakePages(vakjes, 3);
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
@@ -393,7 +417,16 @@ namespace restaurant
                     Console.WriteLine();
                     Console.WriteLine("Reserveringen van: " + datum + (datum == DateTime.Now.ToShortDateString() ? " (vandaag)" : ""));
                     Console.WriteLine("Pagina " + (pagNum + 1) + " van de " + (pages.Count) + ":");
-                    Console.WriteLine(pages[pagNum] + new string('#', maxLength + 6));
+                    if (reserveringString[reserveringString.Count - 1][1].Length < 70 && pagNum == pages.Count - 1)
+                    {
+                        Console.WriteLine(pages[pagNum] + new string('#', 56));
+                        uneven = 1;
+                    }
+                    else
+                    {
+                        Console.WriteLine(pages[pagNum] + new string('#', 110));
+                    }
+
                     Console.WriteLine("Gebruik de pijltjestoetsen om te navigeren door de reserveringen.\nDe reservering met de tekst 'Tafels koppelen' is de huidig geselecteerde reservering.");
 
                     List<Tuple<(int, int, double), string>> nextPageFuncTuples = new List<Tuple<(int, int, double), string>>();
@@ -425,7 +458,7 @@ namespace restaurant
                     nextPageFuncTuples.Add(Tuple.Create((-6, -6, pos), "NumPad6"));
                     tekst.Add("[3] Vorige dag             [4] Volgende dag             [5] Naar vandaag");
 
-                    nextPageFunc = Nextpage(pagNum, pos, vakjes.Count * 2 - 1, 16, nextPageFuncTuples, tekst);
+                    nextPageFunc = Nextpage(pagNum, pos, vakjes.Count * 2 - (1 + uneven), 16, nextPageFuncTuples, tekst);
                     if (nextPageFunc.Item2 > -1)
                     {
                         return nextPageFunc.Item2;
@@ -596,11 +629,11 @@ namespace restaurant
 
                     if ($"{beschikbareTafelsOpTijdstip[i].ID}".Length == 1)
                     {
-                        Console.WriteLine($"| {beschikbareTafelsOpTijdstip[i].ID}   |  {reservering.datum}  |      {isAanRaam}    |");
+                        Console.WriteLine($"| {beschikbareTafelsOpTijdstip[i].ID}   |  {reservering.datum}  |      {isAanRaam}     |");
                     }
                     else //|  Is aan raam  |
                     {
-                        Console.WriteLine($"| {beschikbareTafelsOpTijdstip[i].ID}  |  {reservering.datum}  |      {isAanRaam}    |");
+                        Console.WriteLine($"| {beschikbareTafelsOpTijdstip[i].ID}  |  {reservering.datum}  |      {isAanRaam}     |");
                     }
                 }
 
