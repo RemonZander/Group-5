@@ -1276,7 +1276,7 @@ namespace restaurant
                             if (a == Convert.ToInt32(Math.Floor(pos / 2)))
                             {
                                 //for making the boxes around the text together with adding the bottom text
-                                if (a != 0 && a % 6 != 0)
+                                if (a != 0 && a % 3 != 0)
                                 {
                                     boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true, new List<string>{
                                     "[3] Bewerken" + new string(' ', 50 - "[3] Bewerken".Length),
@@ -1293,7 +1293,7 @@ namespace restaurant
                             }
                             else
                             {
-                                if (a != 0 && a % 6 != 0)
+                                if (a != 0 && a % 3 != 0)
                                 {
                                     boxes.Add(BoxAroundText(feedbackstring[a], "#", 2, 0, 104, true));
                                 }

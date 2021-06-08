@@ -572,7 +572,7 @@ namespace restaurant
                     {
                         if (i == Convert.ToInt32(Math.Floor(pos / 2)))
                         {
-                            if (i != 0 && i % 6 != 0)
+                            if (i != 0 && i % 3 != 0)
                             {
                                 boxes.Add(BoxAroundText(reservationString[i], "#", 2, 0, 104, true, new List<string>{
                                     "[7] Tafels koppelen" + new string(' ', 50 - "[7] Tafels koppelen".Length),
@@ -587,7 +587,7 @@ namespace restaurant
                         }
                         else
                         {
-                            if (i != 0 && i % 6 != 0)
+                            if (i != 0 && i % 3 != 0)
                             {
                                 boxes.Add(BoxAroundText(reservationString[i], "#", 2, 0, 104, true));
                             }
@@ -774,7 +774,7 @@ namespace restaurant
                     {
                         if (i == Convert.ToInt32(Math.Floor(pos / 2)))
                         {
-                            if (i != 0 && i % 6 != 0)
+                            if (i != 0 && i % 3 != 0)
                             {
                                 boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 124, true, new List<string>{
                                         "[3] Medewerker verwijderen" + new string(' ', 60 - "[3] Medewerker verwijderen".Length),
@@ -789,7 +789,7 @@ namespace restaurant
                         }
                         else
                         {
-                            if (i != 0 && i % 6 != 0)
+                            if (i != 0 && i % 3 != 0)
                             {
                                 boxes.Add(BoxAroundText(workerString[i], "#", 2, 0, 124, true));
                             }

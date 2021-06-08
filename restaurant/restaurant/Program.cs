@@ -63,7 +63,7 @@ namespace restaurant
                         tries++;
                         gerechten = testing_Class.Make_dishes(database.reserveringen[a].aantal * 3);
                         neededIngredients = gerechten.Select(g => g.Ingredienten).Distinct().ToList();
-                        
+
                         foreach (var ingredientenList in neededIngredients)
                         {
                             List<string> ingredietNamen = ingredienten.Select(i => i.name).Distinct().ToList();
@@ -81,7 +81,7 @@ namespace restaurant
                             }
                         }
                     } while (tries < 10);
-                    
+
                     if (gerechten.Count == 0)
                     {
                         database.reserveringen[a] = new Reserveringen();
@@ -93,8 +93,8 @@ namespace restaurant
                     temp.gerechten_ID = gerechten.Select(g => g.ID).ToList();
                     database.reserveringen[a] = temp;
 
-                    Review review = new Review 
-                    { 
+                    Review review = new Review
+                    {
                         ID = 0,
                         klantnummer = database.reserveringen[a].klantnummer,
                         reservering_ID = database.reserveringen[a].ID,
@@ -157,7 +157,7 @@ namespace restaurant
                         database.feedback.Add(feedback);
                     }
                 }
-                else if (database.reserveringen[a].datum < DateTime.Now && database.reserveringen[a].tafels.Count == 0 && database.reserveringen[a].gerechten_ID.Count == 0)
+                else if (database.reserveringen[a].datum < DateTime.Now && (database.reserveringen[a].tafels == null || database.reserveringen[a].tafels.Count == 0) && (database.reserveringen[a].gerechten_ID == null || database.reserveringen[a].gerechten_ID.Count == 0))
                 {
                     database.reserveringen[a] = new Reserveringen();
                 }

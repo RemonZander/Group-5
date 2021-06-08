@@ -359,7 +359,7 @@ namespace restaurant
                         {
                             if (i == Convert.ToInt32(Math.Floor(pos/2))) //Checkt of positie in de list reserveringString (omgezet naar int) gelijk is aan i
                             {
-                                if (i != 0 && i % 6 != 0) //Rechterkant van de grid
+                                if (i != 0 && i % 3 != 0) //Rechterkant van de grid
                                 {
                                     vakjes.Add(BoxAroundText(reserveringString[i], "#", 2, 0, maxLength, true, new List<string>{
                                         "[6] Tafels koppelen" + new string(' ', 50 - "[6] Tafels koppelen".Length),
@@ -374,7 +374,7 @@ namespace restaurant
                             }
                             else
                             {
-                                if (i != 0 && i % 6 != 0)
+                                if (i != 0 && i % 3 != 0)
                                 {
                                     vakjes.Add(BoxAroundText(reserveringString[i], "#", 2, 0, maxLength, true));
                                 }

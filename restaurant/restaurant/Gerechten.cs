@@ -11,9 +11,6 @@ namespace restaurant
 
         public int ID { get; set; }
 
-        [Obsolete("Gebruik de List<string> aub")]
-        public List<int> ingredienten { get; set; }
-
         public List<string> Ingredienten { get; set; }
 
         public bool is_populair { get; set; }

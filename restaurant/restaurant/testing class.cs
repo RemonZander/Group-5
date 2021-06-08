@@ -2670,7 +2670,7 @@ namespace restaurant
                         {
                             if (a == Convert.ToInt32(Math.Floor(pos / 2)))
                             {
-                                if (a != 0 && a % 6 != 0)
+                                if (a != 0 && a % 3 != 0)
                                 {
                                 boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true, new List<string>{
                                     "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
@@ -2687,7 +2687,7 @@ namespace restaurant
                             }
                             else
                             {
-                                if (a != 0 && a %6 != 0)
+                                if (a != 0 && a % 3 != 0)
                                 {
                                     boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true));
                                 }
@@ -2838,7 +2838,7 @@ namespace restaurant
                             {
                                 if (a == Convert.ToInt32(Math.Floor(pos / 2)))
                                 {
-                                    if (a != 0 && a % 6 != 0)
+                                    if (a != 0 && a % 3 != 0)
                                     {
                                         boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true, new List<string>{
                                     "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
@@ -2855,7 +2855,7 @@ namespace restaurant
                                 }
                                 else
                                 {
-                                    if (a != 0 && a % 6 != 0)
+                                    if (a != 0 && a % 3 != 0)
                                     {
                                         boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true));
                                     }
@@ -3018,7 +3018,7 @@ namespace restaurant
                         {
                             if (a == Convert.ToInt32(Math.Floor(pos / 2)))
                             {
-                                if (a != 0 && a % 6 != 0)
+                                if (a != 0 && a % 3 != 0)
                                 {
                                     boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true, new List<string>{
                                     "[4] Bewerken" + new string(' ', 50 - "[4] Bewerken".Length),
@@ -3035,7 +3035,7 @@ namespace restaurant
                             }
                             else
                             {
-                                if (a != 0 && a % 6 != 0)
+                                if (a != 0 && a % 3 != 0)
                                 {
                                     boxes.Add(BoxAroundText(reviewstring[a], "#", 2, 0, 104, true));
                                 }
