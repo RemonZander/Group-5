@@ -136,20 +136,6 @@ namespace restaurant
             io.Savedatabase(database);
         }
 
-        public void DeleteIngredientById(int ID)
-        {
-            database = io.GetDatabase();
-            for (int i = 0; i < database.ingredienten.Count; i++)
-            {
-                if (database.ingredienten[i].ID == ID)
-                {
-                    database.ingredienten.RemoveAt(i);
-                    break;
-                }
-            }
-            io.Savedatabase(database);
-        }
-
         public void SaveIngredientName(IngredientType ingredientType)
         {
             database = io.GetDatabase();
