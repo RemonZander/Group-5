@@ -805,8 +805,8 @@ namespace restaurant
                 }
                 else
                 {
-                    Console.WriteLine("\nU moet wel een juiste keuze maken...");
-                    Console.WriteLine("Druk op een knop om verder te gaan.");
+                    Console.WriteLine("\nU moet wel een juiste keuze maken.");
+                    Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
                     Console.ReadKey();
                 }
             } while (!succes);
