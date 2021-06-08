@@ -1885,6 +1885,7 @@ namespace restaurant
                 Console.WriteLine(GFLogoWithLogin);
                 Console.WriteLine("Er staat niks open voor betaling");
                 Console.WriteLine("Druk op een toets om terug te gaan");
+                Console.ReadKey();
                 return vorigscherm;
             }
             

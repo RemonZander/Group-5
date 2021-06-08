@@ -128,11 +128,16 @@ namespace restaurant
                 }
 
                 List<int> gerechten_ID = new List<int>();
+                List<int> dranken_ID = new List<int>();
                 List<Gerechten> gerechten = new List<Gerechten>();
+                List<Dranken> dranken = new List<Dranken>();
                 if (beschikbaar[pos].Item1.Date < DateTime.Now.Date.Date)
                 {
                     gerechten = Make_dishes(aantal * 3);
                     gerechten_ID = gerechten.Select(g => g.ID).ToList();
+
+                    dranken = Make_dranken(aantal * 4);
+                    dranken_ID = dranken.Select(d => d.ID).ToList();
                 }
                 else
                 {
@@ -147,6 +152,8 @@ namespace restaurant
                     klantnummer = database.login_gegevens[rnd.Next(database.login_gegevens.Count)].klantgegevens.klantnummer,
                     gerechten_ID = gerechten_ID,
                     aantal = aantal,
+                    dranken_ID = dranken_ID,
+                    isBetaald = beschikbaar[pos].Item1.Date < DateTime.Now.Date.Date
                 });
             }
         }
@@ -786,6 +793,20 @@ namespace restaurant
             }
 
             return gerechten;
+        }
+
+        public List<Dranken> Make_dranken(int amount)
+        {
+            List<Dranken> Dranken = new List<Dranken>();
+            List<Dranken> StandardDranken = GetDranken();
+            Random rnd = new Random();
+
+            for (int a = 0; a <= amount; a++)
+            {
+                Dranken.Add(StandardDranken[rnd.Next(0, StandardDranken.Count)]);
+            }
+
+            return Dranken;
         }
 
         public List<Gerechten> Get_standard_dishes()
@@ -2629,15 +2650,34 @@ namespace restaurant
 
         protected string BestelBox(Reserveringen reservering)
         {
+            List<Dranken> dranken = io.GetDrankenReservering(reservering);
             List<Gerechten> gerechten = io.GetGerechtenReservering(reservering);
             List<string> namen = gerechten.Select(x => x.naam).Distinct().ToList();
+            namen.AddRange(dranken.Select(x => x.naam).Distinct().ToList());
             List<int> nameAmount = new List<int>();
             List<string> lines = new List<string>();
             for (int i = 0; i < namen.Count; i++)
             {
-                nameAmount.Add(gerechten.Count(x => x.naam == namen[i]));
-                lines.Add(nameAmount[i] + "x  " + namen[i] + new string(' ', 35 - (nameAmount[i] + "X  " + namen[i]).Length) + " | Totaal: €" + (nameAmount[i] * gerechten.Where(x => x.naam == namen[i]).Select(x => x.prijs).FirstOrDefault())
-                    + new string(' ', 60 - (nameAmount[i] + "X  " + namen[i] + new string(' ', 35 - (nameAmount[i] + "X  " + namen[i]).Length) + " | Totaal: €" + (nameAmount[i] * gerechten.Where(x => x.naam == namen[i]).Select(x => x.prijs).FirstOrDefault())).Length));
+                if (i < gerechten.Select(x => x.naam).Distinct().ToList().Count)
+                {
+                    nameAmount.Add(gerechten.Count(x => x.naam == namen[i]));
+                }
+                else
+                {
+                    nameAmount.Add(dranken.Count(x => x.naam == namen[i]));
+                }
+
+                if (i < gerechten.Select(x => x.naam).Distinct().ToList().Count)
+                {
+                    lines.Add(nameAmount[i] + "x  " + namen[i] + new string(' ', 35 - (nameAmount[i] + "X  " + namen[i]).Length) + " | Totaal: €" + (nameAmount[i] * gerechten.Where(x => x.naam == namen[i]).Select(x => x.prijs).FirstOrDefault())
+                        + new string(' ', 60 - (nameAmount[i] + "X  " + namen[i] + new string(' ', 35 - (nameAmount[i] + "X  " + namen[i]).Length) + " | Totaal: €" + (nameAmount[i] * gerechten.Where(x => x.naam == namen[i]).Select(x => x.prijs).FirstOrDefault())).Length));
+                }
+                else
+                {
+                    lines.Add(nameAmount[i] + "x  " + namen[i] + new string(' ', 35 - (nameAmount[i] + "X  " + namen[i]).Length) + " | Totaal: €" + (nameAmount[i] * dranken.Where(x => x.naam == namen[i]).Select(x => x.prijs).FirstOrDefault())
+                        + new string(' ', 60 - (nameAmount[i] + "X  " + namen[i] + new string(' ', 35 - (nameAmount[i] + "X  " + namen[i]).Length) + " | Totaal: €" + (nameAmount[i] * dranken.Where(x => x.naam == namen[i]).Select(x => x.prijs).FirstOrDefault())).Length));
+                }
+
             }
 
             return BoxAroundText(lines, "#", 2, 1, 60, false);

@@ -625,6 +625,29 @@ namespace restaurant
             return gerechten;
         }
 
+        public List<Dranken> GetDrankenReservering(Reserveringen reservering)
+        {
+            if (reservering.gerechten_ID == null || reservering.gerechten_ID.Count == 0)
+            {
+                return new List<Dranken>();
+            }
+            database = GetDatabase();
+
+            List<Dranken> dranken = new List<Dranken>();
+            //voor alle gerechten van de reservering, voor alle gerechten op de menukaart, als matched, voeg deze toe aan de lijst
+            for (int i = 0; i < reservering.dranken_ID.Count; i++)
+            {
+                for (int j = 0; j < database.menukaart.dranken.Count; j++)
+                {
+                    if (reservering.dranken_ID[i] == database.menukaart.dranken[j].ID)
+                    {
+                        dranken.Add(database.menukaart.dranken[j]);
+                    }
+                }
+            }
+            return dranken;
+        }
+
         /// <summary>
         /// voor het verkrijgen van alle ingrediënten
         /// </summary>

@@ -503,10 +503,10 @@ namespace restaurant
             for (int i = 0; i < dates.Count; i++)
             {
                 reserveringen.Add(dates[i], reserveringenList.Where(d => d.datum.ToShortDateString() == dates[i]).OrderBy(x => x.datum).ToList());
-                reserveringenWithoutTables.Add(dates[i], reserveringenList.Where(t => t.tafels.Count == 0 && t.datum.ToShortDateString() == dates[i]).OrderBy(x => x.datum).ToList());
+                reserveringenWithoutTables.Add(dates[i], reserveringenList.Where(t => (t.tafels == null || t.tafels.Count == 0) && t.datum.ToShortDateString() == dates[i]).OrderBy(x => x.datum).ToList());
 
             }
-            //var pages = MakePages(boxText, 3);
+
             int pageNum = 0;
             bool onlyWithoutTables = false;
             do

@@ -294,7 +294,7 @@ namespace restaurant
                 
                 for(int i = 0; i < datums.Count; i++)
                 {
-                    reserveringenZonderTafel.Add(datums[i], reserveringLijst.Where(R => R.tafels.Count == 0 && R.datum.ToShortDateString() == datums[i]).ToList()); //Kijkt of aantal tafels bij reservering == 0, en datum == datum van de reservering
+                    reserveringenZonderTafel.Add(datums[i], reserveringLijst.Where(R => (R.tafels == null || R.tafels.Count == 0) && R.datum.ToShortDateString() == datums[i]).ToList()); //Kijkt of aantal tafels bij reservering == 0, en datum == datum van de reservering
                 }
 
                 int maxLength = 104; //Max aantal karakters per lijn
@@ -524,7 +524,7 @@ namespace restaurant
 
                 // Laat alle beschikbare tafels zien => ID | tijd | is aan raam
                 Console.WriteLine("\n----------------------------------------------");
-                Console.WriteLine("| ID  |         Tijd         |  Is aan raam  |");
+                Console.WriteLine("| ID  |         Tijd        |  Is aan raam   |");
                 Console.WriteLine("----------------------------------------------");
 
                 (string, int) ans = ("", 0);
@@ -782,88 +782,99 @@ namespace restaurant
                 Console.ReadKey();
                 return 6;
             }
-            else
+            succes = false;
+            do
             {
-                succes = false;
-                do
+                Console.WriteLine("\nVoor hoeveel personen wilt u reserveren?");
+                try
                 {
-                    Console.WriteLine("\nVoor hoeveel personen wilt u reserveren?");
-                    try
+                    aantalPersonen = AskForInput(5);
+                    if (aantalPersonen.Item2 != -1)
                     {
-                        aantalPersonen = AskForInput(5);
-                        if (aantalPersonen.Item2 != -1)
-                        {
-                            return aantalPersonen.Item2;
-                        }
-                        int.Parse(aantalPersonen.Item1);
-                        if (int.Parse(aantalPersonen.Item1) > 0 && int.Parse(aantalPersonen.Item1) <= 400)
-                        {
-                            succes = true;
-                        }
-                        else
-                        {
-                            Console.WriteLine("\nU heeft een ongeldig antwoord gegeven voor het aantal personen waarvoor u wilt reserveren.");
-                            Console.WriteLine("Het aantal personen moet worden aangegeven door middel van een cijfer (1 t/m 400)");
-                            Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
-                            Console.ReadKey();
-                        }
+                        return aantalPersonen.Item2;
                     }
-                    catch
+                    int.Parse(aantalPersonen.Item1);
+                    if (int.Parse(aantalPersonen.Item1) > 0 && int.Parse(aantalPersonen.Item1) <= 400)
+                    {
+                        succes = true;
+                    }
+                    else
                     {
                         Console.WriteLine("\nU heeft een ongeldig antwoord gegeven voor het aantal personen waarvoor u wilt reserveren.");
                         Console.WriteLine("Het aantal personen moet worden aangegeven door middel van een cijfer (1 t/m 400)");
                         Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
                         Console.ReadKey();
                     }
-                } while (!succes);
-
-                //check of de gekozen tijd en datum beschikbaar zijn
-                var minimaalAantalTafels = (int)(int.Parse(aantalPersonen.Item1) / 4.0);
-                var beschikbareTafels = io.ReserveringBeschikbaarheid(dagtijd);
-                if (beschikbareTafels == null || beschikbareTafels[0].Item2.Count < minimaalAantalTafels)
+                }
+                catch
                 {
-                    Console.WriteLine("\nSorry, het lijkt erop dat er geen tafels beschikbaar zijn op uw gekozen datum en tijdstip.");
+                    Console.WriteLine("\nU heeft een ongeldig antwoord gegeven voor het aantal personen waarvoor u wilt reserveren.");
+                    Console.WriteLine("Het aantal personen moet worden aangegeven door middel van een cijfer (1 t/m 400)");
                     Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
                     Console.ReadKey();
-                    return 6;
+                }
+            } while (!succes);
+
+            //check of de gekozen tijd en datum beschikbaar zijn
+            var minimaalAantalTafels = (int)(int.Parse(aantalPersonen.Item1) / 4.0);
+            var beschikbareTafels = io.ReserveringBeschikbaarheid(dagtijd);
+            if (beschikbareTafels == null || beschikbareTafels[0].Item2.Count < minimaalAantalTafels)
+            {
+                Console.WriteLine("\nSorry, het lijkt erop dat er geen tafels beschikbaar zijn op uw gekozen datum en tijdstip.");
+                Console.WriteLine("Druk op een toets om het opnieuw te proberen.");
+                Console.ReadKey();
+                return 6;
+            }
+            succes = false;
+            do
+            {
+                Console.WriteLine("\nHeeft u nog voorkeur voor een tafel aan het raam?\n[1] Ja\n[2] Nee");
+                (string, int) antwoord = AskForInput(5);
+                if (antwoord.Item2 != -1)
+                {
+                    return antwoord.Item2;
+                }
+                if (antwoord.Item1 == "1")
+                {
+                    tafelBijRaam = true;
+                    succes = true;
+                }
+                else if (antwoord.Item1 == "2")
+                {
+                    tafelBijRaam = false;
+                    succes = true;
                 }
                 else
                 {
-                    succes = false;
-                    do
-                    {
-                        Console.WriteLine("\nHeeft u nog voorkeur voor een tafel aan het raam?\n[1] Ja\n[2] Nee");
-                        (string, int) antwoord = AskForInput(5);
-                        if (antwoord.Item2 != -1)
-                        {
-                            return antwoord.Item2;
-                        }
-                        if (antwoord.Item1 == "1")
-                        {
-                            tafelBijRaam = true;
-                            succes = true;
-                        }
-                        else if (antwoord.Item1 == "2")
-                        {
-                            tafelBijRaam = false;
-                            succes = true;
-                        }
-                        else
-                        {
-                            Console.WriteLine("\nU moet wel een juiste keuze maken...");
-                            Console.WriteLine("Druk op een knop om verder te gaan.");
-                            Console.ReadKey();
-                        }
-                    } while (!succes);
+                    Console.WriteLine("\nU moet wel een juiste keuze maken...");
+                    Console.WriteLine("Druk op een knop om verder te gaan.");
+                    Console.ReadKey();
                 }
+            } while (!succes);
 
-                code_gebruiker.MakeCustomerReservation(dagtijd, account.klantnummer, int.Parse(aantalPersonen.Item1), tafelBijRaam);
-
-                Console.WriteLine("\nUw reservering wordt verwerkt.");
-                Console.WriteLine("Druk op een toets om terug te keren naar het klantenmenu.");
-                Console.ReadKey();
-                return 5;
+            if (dagtijd.Minute >=0 && dagtijd.Minute <= 14)
+            {
+                dagtijd = dagtijd.AddMinutes(-dagtijd.Minute);
             }
+            else if (dagtijd.Minute >= 16 && dagtijd.Minute <= 29)
+            {
+                dagtijd = dagtijd.AddMinutes(- (dagtijd.Minute - 15));
+            }
+            else if (dagtijd.Minute >= 31 && dagtijd.Minute <= 44)
+            {
+                dagtijd = dagtijd.AddMinutes(-(dagtijd.Minute - 30));
+            }
+            else if (dagtijd.Minute >= 46 && dagtijd.Minute <= 59)
+            {
+                dagtijd = dagtijd.AddMinutes(-(dagtijd.Minute - 45));
+            }
+            code_gebruiker.MakeCustomerReservation(dagtijd, account.klantnummer, int.Parse(aantalPersonen.Item1), tafelBijRaam);
+
+            Console.WriteLine("\nUw reservering wordt verwerkt.");
+            Console.WriteLine("Druk op een toets om terug te keren naar het klantenmenu.");
+            Console.ReadKey();
+            return 5;
+            
         }
 
         public override List<Screen> Update(List<Screen> screens)

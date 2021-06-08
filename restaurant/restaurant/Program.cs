@@ -88,9 +88,11 @@ namespace restaurant
                         continue;
                     }
 
+                    List<Dranken> dranken = testing_Class.Make_dranken(database.reserveringen[a].aantal * 4);
                     database.ingredienten = ingredienten;
                     Reserveringen temp = database.reserveringen[a];
                     temp.gerechten_ID = gerechten.Select(g => g.ID).ToList();
+                    temp.dranken_ID = dranken.Select(d => d.ID).ToList();
                     database.reserveringen[a] = temp;
 
                     Review review = new Review
