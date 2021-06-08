@@ -102,7 +102,6 @@ namespace restaurant
             return database.reserveringen;
         }
 
-
         public List<Reserveringen> tafelKoppelen(Reserveringen reservering, List<Tafels> tafels) // Medewerker kan een ongekoppelde reservering koppelen aan tafel(s)
             {
             database = io.GetDatabase();
