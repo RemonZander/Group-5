@@ -26,6 +26,8 @@ namespace restaurant
         //Bij het afhalen van eten (of laten brengen) is deze lijst gevult
         public List<int> gerechten_ID { get; set; }
 
+        public List<int> dranken_ID { get; set; }
+
         public bool tafel_bij_raam { get; set; }
 
         public bool isBetaald { get; set; }

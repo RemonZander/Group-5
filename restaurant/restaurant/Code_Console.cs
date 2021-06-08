@@ -83,28 +83,32 @@ namespace restaurant
 | |  \/_ __ __ _ _ __   __| | | |_ _   _ ___ _  ___  _ __  
 | | __| '__/ _` | '_ \ / _` | |  _| | | / __| |/ _ \| '_ \ 
 | |_\ \ | | (_| | | | | (_| | | | | |_| \__ \ | (_) | | | |
- \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|";
+ \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|
+";
 
         protected const string GFLogoWithEscape = @" _____                     _  ______         _         
 |  __ \                   | | |  ___|       (_)                      Druk op de esc knop om een scherm terug te gaan.
 | |  \/_ __ __ _ _ __   __| | | |_ _   _ ___ _  ___  _ __  
 | | __| '__/ _` | '_ \ / _` | |  _| | | / __| |/ _ \| '_ \ 
 | |_\ \ | | (_| | | | | (_| | | | | |_| \__ \ | (_) | | | |
- \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|";
+ \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|
+";
 
         protected const string GFLogoWithLogin = @" _____                     _  ______         _         
 |  __ \                   | | |  ___|       (_)                       U bent nu ingelogd als {0}
 | |  \/_ __ __ _ _ __   __| | | |_ _   _ ___ _  ___  _ __             [0] Log uit
 | | __| '__/ _` | '_ \ / _` | |  _| | | / __| |/ _ \| '_ \ 
 | |_\ \ | | (_| | | | | (_| | | | | |_| \__ \ | (_) | | | |    
- \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|";
+ \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|
+";
 
         protected const string GFLogoWithLoginAndEscape = @" _____                     _  ______         _         
 |  __ \                   | | |  ___|       (_)                       U bent nu ingelogd als {0}
 | |  \/_ __ __ _ _ __   __| | | |_ _   _ ___ _  ___  _ __             [0] Log uit
 | | __| '__/ _` | '_ \ / _` | |  _| | | / __| |/ _ \| '_ \ 
 | |_\ \ | | (_| | | | | (_| | | | | |_| \__ \ | (_) | | | |           Druk op de esc knop om een scherm terug te gaan.
- \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|";
+ \____/_|  \__,_|_| |_|\__,_| \_|  \__,_|___/_|\___/|_| |_|
+";
 
         protected const string DigitsOnlyMessage = "Alleen maar cijfers mogen ingevoerd worden!";
         protected const string LettersOnlyMessage = "Alleen maar letters mogen ingevoerd worden!";
@@ -112,7 +116,7 @@ namespace restaurant
         protected const string InputEmptyMessage = "Vul wat in alsjeblieft.";
         protected const string InvalidInputMessage = "U moet wel een juiste keuze maken...";
         protected const string PressButtonToContinueMessage = "Druk op een toets om verder te gaan.";
-        protected const string ControlsTutorial = "Gebruik de pijltjestoetsen om door de items in de vakjes te gaan.\nDe geselecteerde item heeft extra opties vergeleken met de rest.";
+        protected const string ControlsTutorial = "Gebruik de pijltjestoetsen om door de items in de vakjes te gaan.\nHet geselecteerde item heeft extra opties vergeleken met de rest.";
         protected const string ESCAPE_KEY = "ESCAPE";
         protected const string ENTER_KEY = "ENTER";
         protected const string BACKSPACE_KEY = "BACKSPACE";
@@ -396,16 +400,16 @@ namespace restaurant
 
             (string, int, string) userInput = AskForInput(screenIndex, null, input => check(input), (null, DigitsOnlyMessage));
 
-            if (userInput.Item2 != -1)
-            {
-                return userInput.Item2;
-            }
-
             if (userInput.Item3 != null)
             {
                 Console.WriteLine(userInput.Item3);
                 Console.WriteLine(PressButtonToContinueMessage);
                 return screenIndex;
+            }
+
+            if (userInput.Item2 != -1)
+            {
+                return userInput.Item2;
             }
 
             if (userInputResult == 1)
@@ -415,8 +419,7 @@ namespace restaurant
 
             if (canLogout && userInputResult == 0)
             {
-                logoutUpdate = true;
-                Logout();
+                LogoutWithMessage();
                 return 0;
             }
 
@@ -892,6 +895,20 @@ namespace restaurant
             }
         }
 
+        private int OrderPayment()
+        {
+            DateTime now = DateTime.Now;
+
+            code_gebruiker.MakeCustomerReservation(now, ingelogd.klantgegevens.klantnummer, 1, false);
+
+            Reserveringen res = code_gebruiker.GetCustomerReservation(ingelogd.klantgegevens, true).Where(res => res.datum == now).Single();
+
+            res.gerechten_ID = orderedMeals.Select(meal => meal.ID).ToList();
+            res.dranken_ID = orderedDrinks.Select(drink => drink.ID).ToList();
+
+            return ScreenNum;
+        }
+
         public override int DoWork()
         {
             AllMeals = code_gebruiker.GetMenukaart();
@@ -1141,8 +1158,40 @@ namespace restaurant
                     Console.WriteLine("Dit is je bestelling.");
                     Console.WriteLine(OrderToString());
                     Console.WriteLine("[1] Ga terug");
+                    Console.WriteLine("[2] Bestelling afronden");
 
-                    return GoBack(ScreenNum);
+                    int userInputResult = -1;
+                    (string, int, string) userInput = AskForInput(screenIndex, null, input => int.TryParse(input, out userInputResult), (null, DigitsOnlyMessage));
+
+                    if (userInput.Item3 != null)
+                    {
+                        Console.WriteLine(userInput.Item3);
+                        Console.WriteLine(PressButtonToContinueMessage);
+                        return screenIndex;
+                    }
+
+                    if (userInput.Item2 != -1)
+                    {
+                        return userInput.Item2;
+                    }
+
+                    if (userInputResult == 0)
+                    {
+                        LogoutWithMessage();
+                        return 0;
+                    } 
+                    else if (userInputResult == 1)
+                    {
+                        return screenIndex;
+                    }
+                    else if (userInputResult == 2)
+                    {
+                        return OrderPayment();
+                    }
+                    else
+                    {
+                        return ShowInvalidInput(screenIndex);
+                    }
                 }
                 else
                 {
