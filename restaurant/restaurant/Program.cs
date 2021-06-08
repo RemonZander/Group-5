@@ -48,14 +48,47 @@ namespace restaurant
             Testing_class testing_Class = new Testing_class();
             Database database = io.GetDatabase();
             Random rnd = new Random();
-            BlockingCollection<Ingredient> ingredient_temp = new BlockingCollection<Ingredient>();
 
             if (database.reserveringen == null) return;
             for (int a = 0; a < database.reserveringen.Count; a++)
             {
                 if (database.reserveringen[a].datum < DateTime.Now && database.reserveringen[a].tafels != null && database.reserveringen[a].gerechten_ID == null)
                 {
-                    List<Gerechten> gerechten = testing_Class.Make_dishes(database.reserveringen[a].aantal * 3, database.reserveringen[a].datum.AddMinutes(rnd.Next(10, 100)));
+                    int tries = 0;
+                    List<Gerechten> gerechten = new List<Gerechten>();
+                    List<Ingredient> ingredienten = new List<Ingredient>(database.ingredienten);
+                    List<List<string>> neededIngredients = new List<List<string>>();
+                    do
+                    {
+                        tries++;
+                        gerechten = testing_Class.Make_dishes(database.reserveringen[a].aantal * 3);
+                        neededIngredients = gerechten.Select(g => g.Ingredienten).Distinct().ToList();
+                        
+                        foreach (var ingredientenList in neededIngredients)
+                        {
+                            List<string> ingredietNamen = ingredienten.Select(i => i.name).Distinct().ToList();
+                            if (ingredientenList != null && !ingredietNamen.Any(item => ingredientenList.Contains(item)))
+                            {
+                                break;
+                            }
+                            else if (ingredientenList != null)
+                            {
+                                foreach (var ingredient in ingredientenList)
+                                {
+                                    int index = ingredienten.IndexOf(ingredienten.Where(i => i.name == ingredient).FirstOrDefault());
+                                    ingredienten[index] = new Ingredient();
+                                }
+                            }
+                        }
+                    } while (tries < 10);
+                    
+                    if (gerechten.Count == 0)
+                    {
+                        database.reserveringen[a] = new Reserveringen();
+                        continue;
+                    }
+
+                    database.ingredienten = ingredienten;
                     Reserveringen temp = database.reserveringen[a];
                     temp.gerechten_ID = gerechten.Select(g => g.ID).ToList();
                     database.reserveringen[a] = temp;
@@ -124,16 +157,12 @@ namespace restaurant
                         database.feedback.Add(feedback);
                     }
                 }
-                else if (database.reserveringen[a].datum < DateTime.Now && database.reserveringen[a].tafels == null && database.reserveringen[a].gerechten_ID == null)
+                else if (database.reserveringen[a].datum < DateTime.Now && database.reserveringen[a].tafels.Count == 0 && database.reserveringen[a].gerechten_ID.Count == 0)
                 {
                     database.reserveringen[a] = new Reserveringen();
                 }
             }
 
-            if (ingredient_temp.Count != 0)
-            {
-                database.ingredienten.AddRange(ingredient_temp);
-            } 
             io.Savedatabase(database);
         }
     }

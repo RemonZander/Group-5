@@ -25,10 +25,41 @@ namespace restaurant
                 FileSystem.CreateDirectory(@"..\database\");
             }
 
+            string output = JsonConvert.SerializeObject(database.eigenaar, Formatting.Indented);
+            File.WriteAllText(@"..\database\eigenaar.Json", output);
 
-            string output = JsonConvert.SerializeObject(database, Formatting.Indented);
-            // @ neemt tekst letterlijk, geen \n bijv.
-            File.WriteAllText(@"..\database\database.Json", output);
+            output = JsonConvert.SerializeObject(database.feedback, Formatting.Indented);
+            File.WriteAllText(@"..\database\feedback.Json", output);
+
+            output = JsonConvert.SerializeObject(database.ingredienten, Formatting.Indented);
+            File.WriteAllText(@"..\database\ingredienten.Json", output);
+
+            output = JsonConvert.SerializeObject(database.ingredientenNamen, Formatting.Indented);
+            File.WriteAllText(@"..\database\ingredientenNamen.Json", output);
+
+            output = JsonConvert.SerializeObject(database.inkomsten, Formatting.Indented);
+            File.WriteAllText(@"..\database\inkomsten.Json", output);
+
+            output = JsonConvert.SerializeObject(database.login_gegevens, Formatting.Indented);
+            File.WriteAllText(@"..\database\klantgegevens.Json", output);
+
+            output = JsonConvert.SerializeObject(database.menukaart, Formatting.Indented);
+            File.WriteAllText(@"..\database\menukaart.Json", output);
+
+            output = JsonConvert.SerializeObject(database.reserveringen, Formatting.Indented);
+            File.WriteAllText(@"..\database\reserveringen.Json", output);
+
+            output = JsonConvert.SerializeObject(database.reviews, Formatting.Indented);
+            File.WriteAllText(@"..\database\reviews.Json", output);
+
+            output = JsonConvert.SerializeObject(database.tafels, Formatting.Indented);
+            File.WriteAllText(@"..\database\tafels.Json", output);
+
+            output = JsonConvert.SerializeObject(database.uitgaven, Formatting.Indented);
+            File.WriteAllText(@"..\database\uitgaven.Json", output);
+
+            output = JsonConvert.SerializeObject(database.werknemers, Formatting.Indented);
+            File.WriteAllText(@"..\database\werknemers.Json", output);
         }
         
         /// <summary>
@@ -39,11 +70,41 @@ namespace restaurant
         {
             Database database = new Database();
 
-            if (!File.Exists(@"..\database\database.Json")) return database;
-            string output = File.ReadAllText(@"..\database\database.Json");
-            database = JsonConvert.DeserializeObject<Database>(output);
+            if (!File.Exists(@"..\database\reserveringen.Json")) return database;
+            string output = File.ReadAllText(@"..\database\eigenaar.Json");
+            database.eigenaar = JsonConvert.DeserializeObject<Eigenaar>(output);
 
-            List<Tafels> temp = new List<Tafels>();
+            output = File.ReadAllText(@"..\database\feedback.Json");
+            database.feedback = JsonConvert.DeserializeObject<List<Feedback>>(output);
+
+            output = File.ReadAllText(@"..\database\ingredienten.Json");
+            database.ingredienten = JsonConvert.DeserializeObject<List<Ingredient>>(output);
+
+            output = File.ReadAllText(@"..\database\ingredientenNamen.Json");
+            database.ingredientenNamen = JsonConvert.DeserializeObject<List<IngredientType>>(output);
+
+            output = File.ReadAllText(@"..\database\inkomsten.Json");
+            database.inkomsten = JsonConvert.DeserializeObject<Inkomsten>(output);
+
+            output = File.ReadAllText(@"..\database\klantgegevens.Json");
+            database.login_gegevens = JsonConvert.DeserializeObject<List<Login_gegevens>>(output);
+
+            output = File.ReadAllText(@"..\database\menukaart.Json");
+            database.menukaart = JsonConvert.DeserializeObject<Menukaart>(output);
+
+            output = File.ReadAllText(@"..\database\reserveringen.Json");
+            database.reserveringen = JsonConvert.DeserializeObject<List<Reserveringen>>(output);
+
+            output = File.ReadAllText(@"..\database\reviews.Json");
+            database.reviews = JsonConvert.DeserializeObject<List<Review>>(output);
+
+            output = File.ReadAllText(@"..\database\uitgaven.Json");
+            database.uitgaven = JsonConvert.DeserializeObject<Uitgaven>(output);
+
+            output = File.ReadAllText(@"..\database\werknemers.Json");
+            database.werknemers = JsonConvert.DeserializeObject<List<Werknemer>>(output);
+
+/*            List<Tafels> temp = new List<Tafels>();
             for (int i = 1; i <= 20; i++)
             {
                 Tafels tafel = new Tafels
@@ -56,7 +117,7 @@ namespace restaurant
 
                 temp.Add(tafel);
             }
-            database.tafels = temp;
+            database.tafels = temp;*/
             
             return database;
         }

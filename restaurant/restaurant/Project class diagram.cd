@@ -16,13 +16,7 @@
   </Class>
   <Class Name="restaurant.Code_Login_menu">
     <Position X="9.75" Y="18.75" Width="1.5" />
-    <AssociationLine Name="database" Type="restaurant.Database" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="10.5" Y="20.882" />
-        <Point X="10.5" Y="21.247" />
-        <Point X="25.812" Y="21.247" />
-        <Point X="25.812" Y="19.103" />
-      </Path>
+    <AssociationLine Name="database" Type="restaurant.Database">
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="0.322" Y="2.433" />
       </MemberNameLabel>
@@ -38,7 +32,7 @@
   <Class Name="restaurant.Code_Eigenaar_menu">
     <Position X="14.25" Y="25.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>CEDAAEIAIAAIgKBAiAACQAIAgARAAGAEAAAAAFgAABM=</HashCode>
+      <HashCode>CEDAAEIAIAAIgKBAiAACQAIAgARAAGAEAABAAFgAABM=</HashCode>
       <FileName>Code_Eigenaar_menu.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -85,8 +79,8 @@
     <AssociationLine Name="uitgaven" Type="restaurant.Uitgaven" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="26.938" Y="19.103" />
-        <Point X="26.938" Y="21.3" />
-        <Point X="29.25" Y="21.3" />
+        <Point X="26.938" Y="21.456" />
+        <Point X="29.25" Y="21.456" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="0.432" Y="0.138" />
@@ -332,14 +326,14 @@
   <Class Name="restaurant.Testing_class">
     <Position X="10.5" Y="24.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>ABBCAAAQQAAMAIBQACAARABIAgAAAAAABIgCAQAgAAA=</HashCode>
+      <HashCode>ABBCAAAQQAAMAIBQACAARAhIAgAAAAAABIgCAQAgAAA=</HashCode>
       <FileName>testing class.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="restaurant.Gerechten">
     <Position X="38.75" Y="11.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>IAAAAIAAAAAAgAAAAAAAAAAiCAQAAgAAAAAAZAAAAAQ=</HashCode>
+      <HashCode>IAAAAIAAAAAAgAAAAAAAAAAiCAQAAgCAAAAAZAAAAAQ=</HashCode>
       <FileName>Gerechten.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -370,7 +364,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAQAAAAAAASBYAWQyIIB4AZBIAAAUAFAuGgGAAhCACQ=</HashCode>
+      <HashCode>AAQAAAAAAASBYAWQyIIB4CZBIAAAUAFAqGgGAAhCACQ=</HashCode>
       <FileName>Code_Console.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -383,7 +377,7 @@
   <Class Name="restaurant.Dranken">
     <Position X="36.5" Y="13.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAACAgAAAAAAAAAAgAAQAAAAAAAAARAAAABQ=</HashCode>
+      <HashCode>AAAAAAAAAACAgAAAAAAAAAAgAAQAAAAAAAAAAAAAABA=</HashCode>
       <FileName>Dranken.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -503,7 +497,7 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAACQCABAAAAAAAAAAACAAIAAAAAAAAAAACAAA=</HashCode>
+      <HashCode>AAAAAAAACQAABAAAAAAAAAAACAAIAAAAAAAAAAACAAA=</HashCode>
       <FileName>Code_Console.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -597,7 +591,7 @@
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAACAAAAAAQAAAAAQAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAACAAAAAAQAAAAAQAAAgAAAAAAAAAAAAA=</HashCode>
       <FileName>Uitgaven.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>

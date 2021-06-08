@@ -135,7 +135,6 @@ namespace restaurant
 
     public class EmployeeMenuScreen : Screen
     {
-        private bool fromMedewerker;
         public override int DoWork()
         {
             Console.WriteLine(GetGFLogo(false));
@@ -658,7 +657,7 @@ namespace restaurant
                         tafelID += beschikbareTafelsOpTijdstip[i].ID + "  ";
                         tafels.Add(beschikbareTafelsOpTijdstip[i]);
                         beschikbareTafelsOpTijdstip.Remove(beschikbareTafelsOpTijdstip[i]);
-                        Console.WriteLine("Tafel succesvol gekozen, klik op een toets om verder te gaan.");
+                        Console.WriteLine("\nTafel succesvol gekozen, klik op een toets om verder te gaan.");
                         Console.ReadKey();
                         break;
                     }

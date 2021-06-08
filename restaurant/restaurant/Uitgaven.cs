@@ -12,5 +12,7 @@ namespace restaurant
         public List<Tuple<double, DateTime>> eigenaar { get; set; }
 
         public List<Tuple<int, DateTime>> werknemer { get; set; }
+
+        public List<(DateTime, string, double)> ingredienten { get; set; }
     }
 }
