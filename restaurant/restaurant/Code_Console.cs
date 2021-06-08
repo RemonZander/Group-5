@@ -121,6 +121,8 @@ namespace restaurant
         protected const string LEFT_ARROW = "LEFTARROW";
         protected const string RIGHT_ARROW = "RIGHTARROW";
 
+        protected string GetPaginationMessage(int currentPageNum, int totalPageNum) => $"U bevindt zich op pagina {currentPageNum} van de {totalPageNum}.";
+
         /// <summary>
         /// Returns a variant of the GFLogo string based on wether the user is logged in or not.
         /// </summary>
@@ -228,7 +230,7 @@ namespace restaurant
 
         protected string ConvertToCurrency(double input) => input.ToString("C");
 
-        protected (int, int, double) SetupPagination(List<List<string>> input, string aboveText, int screenIndex, List<string> pages, int pageNum, double pos, int maxLength, List<string> choices, string customText = "", bool showTutorial = true)
+        protected (int, int, double) SetupPagination(List<List<string>> input, string aboveText, int screenIndex, List<string> pages, int pageNum, double pos, int maxLength, List<string> choices, bool showTutorial = true)
         {
             List<List<string>> layout = Makedubbelboxes(input);
 
@@ -258,7 +260,7 @@ namespace restaurant
 
                         modifiedChoices.Add(new string(' ', 50));
 
-                        if (a != 0 && a % 6 != 0)
+                        if (a != 0 && a % 3 != 0)
                         {
                             boxes.Add(BoxAroundText(layout[a], "#", 2, 0, 104, true, modifiedChoices));
                         }
@@ -269,7 +271,7 @@ namespace restaurant
                     }
                     else
                     {
-                        if (a != 0 && a % 6 != 0)
+                        if (a != 0 && a % 3 != 0)
                         {
                             boxes.Add(BoxAroundText(layout[a], "#", 2, 0, 104, true));
                         }
@@ -369,25 +371,21 @@ namespace restaurant
 
             Console.Clear();
 
-            if (customText == "")
-            {
-                Console.WriteLine(string.Format($"{aboveText}\n{(showTutorial ? ControlsTutorial : "")}", GetGFLogo(true), pageNum + 1, pages.Count));
-            }
-            else
-            {
-                Console.WriteLine(customText);
-            }
+            Console.WriteLine(aboveText + GetPaginationMessage(pageNum + 1, pages.Count));
+
+            int uneven = 0;
 
             if (layout[layout.Count - 1][1].Length < 70 && pageNum == pages.Count - 1)
             {
                 Console.WriteLine(pages[pageNum] + new string('#', (maxLength + 6) / 2));
+                uneven = 1;
             }
             else
             {
                 Console.WriteLine(pages[pageNum] + new string('#', maxLength + 6));
             }
 
-            return Nextpage(pageNum, pos, boxes.Count * 2 - 1, screenIndex, bindings, nonBoxChoices);
+            return Nextpage(pageNum, pos, boxes.Count * 2 - (1 + uneven), screenIndex, bindings, nonBoxChoices);
         }
 
         protected int GoBack(int screenIndex, bool canLogout = true)
@@ -561,6 +559,17 @@ namespace restaurant
             output.Clear();
             currentStep = 0;
         }
+
+        protected void ShowOutput()
+        {
+            Console.WriteLine(string.Join("\n", output));
+        }
+
+        protected void UpdateOutput()
+        {
+            Console.Clear();
+            ShowOutput();
+        }
     }
 
     public class StartScreen : Screen
@@ -568,7 +577,7 @@ namespace restaurant
         public override int DoWork()
         {
             Console.WriteLine(GetGFLogo(false));
-            Console.WriteLine("Kies een optie:");
+            Console.WriteLine("Kies een optie. Om een optie te kiezen typ de nummer in van de optie die je wilt kiezen:");
             Console.WriteLine("[1] Menukaart bekijken");
             Console.WriteLine("[2] Reviews bekijken");
             Console.WriteLine("[3] Registreren");
@@ -829,38 +838,34 @@ namespace restaurant
             orderedMeals.Add(meal);
         }
 
-        private (int, int, double) SetupPagination(List<List<string>> input, List<string> pages, int pageNum, double pos, int maxLength)
+        private (int, int, double) SetupPagination(string text, List<List<string>> input, List<string> pages, int pageNum, double pos, int maxLength)
         {
-            string text = $"{GetGFLogo(true)}\nWelkom bij het menukaart, hier kunt u alle gerechten bekijken.";
-
             (int, int, double) result;
 
             if (ingelogd.type == "Gebruiker")
             {
                 result = SetupPagination(
                     input,
-                    "",
+                    text,
                     ScreenNum,
                     pages,
                     pageNum,
                     pos,
                     MaxLength,
-                    new List<string>() { "Bestel" },
-                    text + ControlsTutorial
+                    new List<string>() { "Bestel" }
                 );
             }
             else
             {
                 result = SetupPagination(
                     input,
-                    "",
+                    text,
                     ScreenNum,
                     pages,
                     pageNum,
                     pos,
                     MaxLength,
-                    new List<string>(),
-                    text
+                    new List<string>()
                 );
             }
 
@@ -914,19 +919,20 @@ namespace restaurant
             {
                 Console.WriteLine(GetGFLogo(true));
                 Console.WriteLine("Welkom bij het menukaart!");
-                Console.WriteLine("[1] Laat alle ontbijt gerechten zien.");
-                Console.WriteLine("[2] Laat alle lunch gerechten zien.");
-                Console.WriteLine("[3] Laat alle diner gerechten zien.");
-                Console.WriteLine("[4] Laat alle dranken zien");
+                Console.WriteLine("[1] Ontbijt");
+                Console.WriteLine("[2] Lunch");
+                Console.WriteLine("[3] Diner");
+                Console.WriteLine("[4] Dranken");
+                Console.WriteLine("[5] Dessert");
 
                 if (ingelogd.type == "Gebruiker")
                 {
-                    Console.WriteLine("[5] Laat je volledige bestelling zien");
-                    Console.WriteLine("[6] Ga terug");
+                    Console.WriteLine("[6] Laat je volledige bestelling zien");
+                    Console.WriteLine("[7] Ga terug");
                 }
                 else
                 {
-                    Console.WriteLine("[5] Ga terug");
+                    Console.WriteLine("[6] Ga terug");
                 }
 
                 int possibleResult = -1;
@@ -945,7 +951,7 @@ namespace restaurant
                     return input.Item2;
                 }
 
-                if (ingelogd.type == "Gebruiker" && input.Item1 == "6" || ingelogd.type != "Gebruiker" && input.Item1 == "5")
+                if (ingelogd.type == "Gebruiker" && input.Item1 == "7" || ingelogd.type != "Gebruiker" && input.Item1 == "6")
                 {
                     return GoBack();
                 }
@@ -955,6 +961,8 @@ namespace restaurant
                     LogoutWithMessage();
                     return 0;
                 }
+
+                string text = GetGFLogo(true) + "\nWelkom bij de {0}kaart, hier kunt u alle {1} bekijken.";
 
                 if (input.Item1 == "1")
                 {
@@ -973,7 +981,7 @@ namespace restaurant
                     {
                         (int, int, double) result;
 
-                        result = SetupPagination(MealsToString(currentList), pages, pageNum, pos, MaxLength);
+                        result = SetupPagination(string.Format(text, "ontbijt", "ontbijt gerechten"), MealsToString(currentList), pages, pageNum, pos, MaxLength);
 
                         pos = result.Item3;
 
@@ -1007,7 +1015,7 @@ namespace restaurant
                     {
                         (int, int, double) result;
 
-                        result = SetupPagination(MealsToString(currentList), pages, pageNum, pos, MaxLength);
+                        result = SetupPagination(string.Format(text, "lunch", "lunch gerechten"), MealsToString(currentList), pages, pageNum, pos, MaxLength);
 
                         pos = result.Item3;
 
@@ -1041,7 +1049,7 @@ namespace restaurant
                     {
                         (int, int, double) result;
 
-                        result = SetupPagination(MealsToString(currentList), pages, pageNum, pos, MaxLength);
+                        result = SetupPagination(string.Format(text, "diner", "diner gerechten"), MealsToString(currentList), pages, pageNum, pos, MaxLength);
 
                         pos = result.Item3;
 
@@ -1075,7 +1083,7 @@ namespace restaurant
                     {
                         (int, int, double) result;
 
-                        result = SetupPagination(DrinksToString(currentList), pages, pageNum, pos, MaxLength);
+                        result = SetupPagination(string.Format(text, "dranken", "dranken"), DrinksToString(currentList), pages, pageNum, pos, MaxLength);
 
                         pos = result.Item3;
 
@@ -1092,7 +1100,41 @@ namespace restaurant
                         pageNum = result.Item1;
                     } while (true);
                 }
-                else if (ingelogd.type == "Gebruiker" && input.Item1 == "5")
+                else if (input.Item1 == "5")
+                {
+                    List<Gerechten> currentList = AllMeals.Where(meal => meal.dessert).ToList();
+
+                    if (currentList == null || currentList.Count <= 0)
+                    {
+                        return ShowInvalidInput(ScreenNum, "Er zijn geen desserts beschikbaar");
+                    }
+
+                    List<string> pages = new List<string>();
+                    int pageNum = 0;
+                    double pos = 0;
+
+                    do
+                    {
+                        (int, int, double) result;
+
+                        result = SetupPagination(string.Format(text, "dessert", "dessert gerechten"), MealsToString(currentList), pages, pageNum, pos, MaxLength);
+
+                        pos = result.Item3;
+
+                        if (result.Item2 != -1)
+                        {
+                            return result.Item2;
+                        }
+                        else if (ingelogd.type == "Gebruiker" && result.Item1 == -1 && result.Item2 == -1)
+                        {
+                            OrderMeal(currentList[Convert.ToInt32(pos)]);
+                            return ScreenNum;
+                        }
+
+                        pageNum = result.Item1;
+                    } while (true);
+                }
+                else if (ingelogd.type == "Gebruiker" && input.Item1 == "6")
                 {
                     Console.Clear();
                     Console.WriteLine(GetGFLogo(true));
@@ -1166,14 +1208,13 @@ namespace restaurant
                 {
                     var result = SetupPagination(
                         ReviewsToString(reviews),
-                        "{0}\nDit zijn alle reviews op pagina {1} van de {2}:",
+                        $"{GetGFLogo(true)}\n",
                         screenIndex,
                         pages,
                         pageNum,
                         pos,
                         maxLength,
                         new List<string> { },
-                        "",
                         false
                     );
 
@@ -1216,7 +1257,7 @@ namespace restaurant
             steps.Add("Uw straatnaam: ");
             steps.Add("Uw huisnummer: ");
             steps.Add("\nHieronder vult u uw login gegevens:\nUw e-mailadres:");
-            steps.Add("Het wachtwoord voor uw account:");
+            steps.Add("Het wachtwoord voor uw account. Het wachtwoord moet minimaal 8 tekens bevatten, waaronder 1 leesteken en 1 nummer.");
             steps.Add("\nKloppen de bovenstaande gegevens?\n[1] Deze kloppen niet, breng me terug.\n[2] Ja, deze kloppen.");
 
             output.Add(GetGFLogo(true));
@@ -1249,6 +1290,21 @@ namespace restaurant
             Reset();
             output.Add(GetGFLogo(true));
             output.Add("Hier kunt u een account aanmaken om o.a. reververingen te plaatsen voor GrandFusion!");
+
+            List<Login_gegevens> login_Gegevens = io.GetDatabase().login_gegevens;
+
+            lg = new Login_gegevens()
+            {
+                type = "Gebruiker",
+                klantgegevens = new Klantgegevens()
+                {
+                    klantnummer = login_Gegevens.Count == 0 ? 0 : login_Gegevens[login_Gegevens.Count - 1].klantgegevens.klantnummer + 1,
+                    adres = new adres()
+                    {
+                        land = "NL",
+                    }
+                }
+            };
         }
 
         public override int DoWork()
@@ -1394,6 +1450,12 @@ namespace restaurant
                     currentStep++;
                     return 3;
                 case 7:
+                    if (RetryStep)
+                    {
+                        output.Remove($"{steps[currentStep]}\n{lg.email}");
+                        UpdateOutput();
+                    }
+
                     Console.WriteLine(steps[currentStep]);
                     Regex regex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
 
@@ -1410,7 +1472,7 @@ namespace restaurant
                         return result.Item2;
                     }
 
-                    if (result.Item3 != null) return ShowInvalidInput(3, result.Item3);
+                    if (result.Item3 != null) return ShowInvalidInput(3, "\n" + result.Item3);
 
                     output.Add($"{steps[currentStep]}\n{result.Item1}");
 
@@ -1426,6 +1488,12 @@ namespace restaurant
                     currentStep++;
                     return 3;
                 case 8:
+                    if (RetryStep)
+                    {
+                        output.Remove($"{steps[currentStep]}\n{lg.password}");
+                        UpdateOutput();
+                    }
+
                     Console.WriteLine(steps[currentStep]);
                     (string, int) otherResult = AskForInput(0);
 
@@ -1785,6 +1853,7 @@ namespace restaurant
             output += "#  " + "Datum: " + reservering.datum + new string(' ', 50 - ("Datum: " + reservering.datum).Length) + "  #\n";
             output += "#  " + "Aantal: " + reservering.aantal + new string(' ', 50 - ("Aantal: " + reservering.aantal).Length) + "  #\n";
             output += "#  " + "Tafel bij raam: " + windowSide + new string(' ', 50 - ("Tafel bij raam: " + windowSide).Length) + "  #\n";
+            output += "#  " + new string(' ', 50) + "  #\n";
             output += "#  " + "Gerechten lijst: " + new string(' ', 50 - "Gerechten lijst: ".Length) + "  #\n";
 
             foreach (int id in reservering.gerechten_ID.Distinct().ToArray())
@@ -2007,7 +2076,7 @@ namespace restaurant
             {
                 Console.WriteLine(GetGFLogo(true));
                 Console.WriteLine("Hier kunt u uw eigen reserveringen bekijken en bewerken.\nLET OP! U kunt alleen reserveringen die nog NIET aan een tafel zijn gekoppeld bewerken en/of annuleren.");
-                Console.WriteLine("[1] Reserveringen in het verleden");
+                Console.WriteLine("[1] Reserveringen uit het verleden");
                 Console.WriteLine("[2] Reserveringen in de toekomst (NIET gekoppeld aan een tafel)");
                 Console.WriteLine("[3] Reserveringen in de toekomst (WEL gekoppeld aan een tafel)");
                 Console.WriteLine("[4] Reserveringen vanaf een bepaalde datum (genoteerd als dag-maand-jaar)");
@@ -2061,7 +2130,7 @@ namespace restaurant
                     {
                         (int, int, double) result = SetupPagination(
                             ReservationsToString(currentList),
-                            "{0}\nDit zijn al uw reserveringen op pagina {1} van de {2}:",
+                            $"{GetGFLogo(true)}\n",
                             ScreenNum,
                             pages,
                             pageNum,
@@ -2111,7 +2180,7 @@ namespace restaurant
                     {
                         (int, int, double) result = SetupPagination(
                             ReservationsToString(currentList),
-                            "{0}\nDit zijn al uw reserveringen op pagina {1} van de {2}:",
+                            $"{GetGFLogo(true)}\n",
                             ScreenNum,
                             pages,
                             pageNum,
@@ -2191,7 +2260,7 @@ namespace restaurant
                     {
                         (int, int, double) result = SetupPagination(
                             ReservationsToString(reservations),
-                            "{0}\nDit zijn al uw reserveringen op pagina {1} van de {2}:",
+                            $"{GetGFLogo(true)}\n",
                             ScreenNum,
                             pages,
                             pageNum,
@@ -2295,8 +2364,8 @@ namespace restaurant
             Console.WriteLine("[4] Gerechten bekijken/bewerken/verwijderen/archiveren");
             Console.WriteLine("[5] Nieuwe gerechten toevoegen");
             Console.WriteLine("[6] Ingrediënten");
-            Console.WriteLine("[7] Uitgaven");
-            Console.WriteLine("[8] Inkomsten");
+            Console.WriteLine("[7] Inkomsten");
+            Console.WriteLine("[8] Uitgaven");
             Console.WriteLine("[9] Voeg een werknemer toe");
             Console.WriteLine("[10] Bewerk/Verwijder een werknemer");
 
@@ -2331,9 +2400,9 @@ namespace restaurant
                     case 6:
                         return 14;
                     case 7:
-                        return 13;
-                    case 8:
                         return 15;
+                    case 8:
+                        return 13;
                     case 9:
                         return 23;
                     case 10:
@@ -2387,17 +2456,6 @@ namespace restaurant
             Reset();
             output.Add(GetGFLogo(true));
             output.Add("Hier kunt u een gerecht aanmaken:\n");
-        }
-
-        private void ShowOutput()
-        {
-            Console.WriteLine(string.Join("\n", output));
-        }
-
-        private void UpdateOutput()
-        {
-            Console.Clear();
-            Console.WriteLine(string.Join("\n", output));
         }
 
         public override int DoWork()
@@ -2746,10 +2804,6 @@ namespace restaurant
         private List<Gerechten> SpecialMeals;
         private List<Gerechten> PopulairMeals;
 
-        public ViewMealsScreen()
-        {
-        }
-
         private List<List<string>> MealsToString(List<Gerechten> meals)
         {
             List<List<string>> output = new List<List<string>>();
@@ -2766,7 +2820,8 @@ namespace restaurant
                 block.Add("Is gearchiveerd: " + convertBooleanString(meals[a].is_gearchiveerd) + new string(' ', 50 - ("Is gearchiveerd: " + convertBooleanString(meals[a].is_gearchiveerd)).Length));
                 block.Add("Is ontbijt: " + convertBooleanString(meals[a].ontbijt) + new string(' ', 50 - ("Is ontbijt: " + convertBooleanString(meals[a].ontbijt)).Length));
                 block.Add("Is lunch: " + convertBooleanString(meals[a].lunch) + new string(' ', 50 - ("Is lunch: " + convertBooleanString(meals[a].lunch)).Length));
-                block.Add("Is hoofdmenu: " + convertBooleanString(meals[a].diner) + new string(' ', 50 - ("Is hoofdmenu: " + convertBooleanString(meals[a].diner)).Length));
+                block.Add("Is diner: " + convertBooleanString(meals[a].diner) + new string(' ', 50 - ("Is diner: " + convertBooleanString(meals[a].diner)).Length));
+                block.Add("Is dessert: " + convertBooleanString(meals[a].dessert) + new string(' ', 50 - ("Is dessert: " + convertBooleanString(meals[a].dessert)).Length));
 
                 block.Add(new string(' ', 50));
                 block.Add(new string(' ', 50));
@@ -2801,7 +2856,8 @@ namespace restaurant
                 block.Add("Is gearchiveerd: " + convertBooleanString(meal.is_gearchiveerd) + new string(' ', 50 - ("Is gearchiveerd: " + convertBooleanString(meal.is_gearchiveerd)).Length));
                 block.Add("Is ontbijt: " + convertBooleanString(meal.ontbijt) + new string(' ', 50 - ("Is ontbijt: " + convertBooleanString(meal.ontbijt)).Length));
                 block.Add("Is lunch: " + convertBooleanString(meal.lunch) + new string(' ', 50 - ("Is lunch: " + convertBooleanString(meal.lunch)).Length));
-                block.Add("Is hoofdmenu: " + convertBooleanString(meal.diner) + new string(' ', 50 - ("Is hoofdmenu: " + convertBooleanString(meal.diner)).Length));
+                block.Add("Is diner: " + convertBooleanString(meal.diner) + new string(' ', 50 - ("Is diner: " + convertBooleanString(meal.diner)).Length));
+                block.Add("Is dessert: " + convertBooleanString(meal.dessert) + new string(' ', 50 - ("Is dessert: " + convertBooleanString(meal.dessert)).Length));
 
                 block.Add(new string(' ', 50));
                 block.Add(new string(' ', 50));
@@ -3277,7 +3333,7 @@ namespace restaurant
             {
                 topText();
 
-                Console.WriteLine("Geef nu aan de allergenen van het gerecht, als u geen allergenen wilt aangeven of als u klaar bent type dan in klaar en klik op enter.\n Als u een allergeen wilt verwijderen typ dan de naam in van de allergeen.");
+                Console.WriteLine("Geef nu aan de allergenen van het gerecht, als u geen allergenen wilt aangeven of als u klaar bent, typ dan in klaar en druk op enter\n Als u een allergeen wilt verwijderen typ dan de naam in van de allergeen.");
 
                 result = AskForInput(ScreenNum, c => char.IsLetter(c), null, (LettersOnlyMessage, null));
 
@@ -3338,7 +3394,7 @@ namespace restaurant
 
                 Console.WriteLine("");
 
-                Console.WriteLine("Geef nu aan de ingredienten van het gerecht, als u geen ingredienten wilt aangeven of als u klaar bent type dan in klaar en klik op enter.\nOm een ingredient te verwijderen selecteer de nummer van het ingredient en typ in 0 als aantal.");
+                Console.WriteLine("Geef nu aan de ingredienten van het gerecht, als u ingredienten allergenen wilt aangeven of als u klaar bent, typ dan in klaar en druk op enter.\nOm een ingredient toe te voegen typ de nummer in van de ingredient.\nOm een ingredient te verwijderen selecteer de nummer van het ingredient die in het gerecht zit en typ in 0 als aantal.");
 
                 Console.WriteLine("");
 
@@ -3450,8 +3506,8 @@ namespace restaurant
             Console.Clear();
             Console.WriteLine(GetGFLogo(true));
             Console.WriteLine(MealBoxWithDetail(meal));
-            Console.WriteLine("Dit is het geselecteerde gerecht dat u wilt archiveren.");
-            Console.WriteLine("Weet u zeker dat u deze gerecht wilt archiveren? ja | nee");
+            Console.WriteLine("Hierboven ziet u het huidig geselecteerde gerecht.");
+            Console.WriteLine("Weet u zeker dat u dit gerecht wilt archiveren? Typ in ja of nee");
 
             return Confirmation(
                 ScreenNum,
@@ -3476,8 +3532,8 @@ namespace restaurant
             Console.Clear();
             Console.WriteLine(GetGFLogo(true));
             Console.WriteLine(MealBoxWithDetail(meal));
-            Console.WriteLine("Dit is het geselecteerde gerecht dat u wilt verwijderen.");
-            Console.WriteLine("Weet u zeker dat u deze gerecht wilt verwijderen? ja | nee");
+            Console.WriteLine("Hierboven ziet u het huidig geselecteerde gerecht.");
+            Console.WriteLine("Weet u zeker dat u dit gerecht wilt verwijderen? Type in ja of nee");
 
             return Confirmation(
                 ScreenNum, 
@@ -3567,7 +3623,7 @@ namespace restaurant
                     {
                         (int, int, double) result = SetupPagination(
                             MealsToString(currentList),
-                            "{0}\nDit zijn al uw gerechten op pagina {1} van de {2}:",
+                            $"{GetGFLogo(true)}\n",
                             ScreenNum,
                             pages,
                             pageNum,
@@ -3633,7 +3689,7 @@ namespace restaurant
                     {
                         (int, int, double) result = SetupPagination(
                             MealsToString(currentList),
-                            "{0}\nDit zijn al uw gearchiveerde gerechten op pagina {1} van de {2}:",
+                            $"{GetGFLogo(true)}\n",
                             ScreenNum,
                             pages,
                             pageNum,
@@ -3694,7 +3750,7 @@ namespace restaurant
                     {
                         (int, int, double) result = SetupPagination(
                             MealsToString(currentList),
-                            "{0}\nDit zijn al uw speciale gerechten op pagina {1} van de {2}:",
+                            $"{GetGFLogo(true)}\n",
                             ScreenNum,
                             pages,
                             pageNum,
@@ -3756,7 +3812,7 @@ namespace restaurant
                     {
                         (int, int, double) result = SetupPagination(
                             MealsToString(currentList),
-                            "{0}\nDit zijn al uw speciale gerechten op pagina {1} van de {2}:",
+                            $"{GetGFLogo(true)}\n",
                             ScreenNum,
                             pages,
                             pageNum,
@@ -3798,7 +3854,7 @@ namespace restaurant
                 }
                 else if (input.Item1 == "4")
                 {
-                    Console.WriteLine("\nOp welk type wilt u sorteren? Type in Ontbijt/Lunch/Diner");
+                    Console.WriteLine("\nOp welk type wilt u sorteren? Typ 'ontbijt', 'lunch', 'diner' of 'dessert'.");
 
                     var lastInput = AskForInput(
                         ScreenNum, 
@@ -3864,13 +3920,13 @@ namespace restaurant
                     {
                         (int, int, double) result = SetupPagination(
                             MealsToString(currentList),
-                            "{0}\nDit zijn al uw gerechten op pagina {1} van de {2} gesorteerd op " + selectedChoice + ":",
+                            $"{GetGFLogo(true)}\n",
                             ScreenNum,
                             pages,
                             pageNum,
                             pos,
                             maxLength,
-                            new List<string>() { "Bekijken", "Bewerken", "Archiveer", "Verwijderen" }
+                            new List<string>() { "Bekijken", "Bewerken", "Verwijderen", "Archiveren" }
                         );
 
                         pos = result.Item3;
@@ -3887,11 +3943,11 @@ namespace restaurant
                         {
                             return UpdateMeal(currentList[Convert.ToInt32(pos)]);
                         }
-                        else if (result.Item1 == -3 && result.Item2 == -3)
+                        else if (result.Item1 == -4 && result.Item2 == -4)
                         {
                             return ArchiveMeal(currentList[Convert.ToInt32(pos)]);
                         }
-                        else if (result.Item1 == -4 && result.Item2 == -4)
+                        else if (result.Item1 == -3 && result.Item2 == -3)
                         {
                             return DeleteMeal(currentList[Convert.ToInt32(pos)]);
                         }
@@ -3979,7 +4035,7 @@ namespace restaurant
                     {
                         (int, int, double) result = SetupPagination(
                             PopulairMealsToString(currentList, firstDate, secondDate),
-                            "",
+                            $"{GetGFLogo(true)}\n",
                             ScreenNum,
                             pages,
                             pageNum,

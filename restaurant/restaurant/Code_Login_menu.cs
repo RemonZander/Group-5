@@ -62,7 +62,14 @@ namespace restaurant
             {
                 if (database.login_gegevens != null)
                 {
-                    foreach (var item in database.login_gegevens)
+                    List<Login_gegevens> allData = Enumerable.Concat(
+                        database.login_gegevens, 
+                        database.werknemers.Select(x => x.login_gegevens).ToList()
+                    ).ToList();
+
+                    allData.Add(database.eigenaar.login_gegevens);
+
+                    foreach (var item in allData)
                     {
                         if (item.email == login_Gegevens.email && item.type == login_Gegevens.type)
                         {
