@@ -36,11 +36,6 @@ namespace restaurant
 
         #region Tafels
 
-        public List<Tuple<DateTime, List<Tafels>>> getBeschikbareTafels(DateTime datum) // Haalt alle beschikbare tafels op een bepaalde datum op
-        {
-            return io.ReserveringBeschikbaarheid(datum);
-        }
-
         public List<Reserveringen> tijdBewerken(Reserveringen reservering, DateTime Datum) // Medewerker kan de tijd van reservering in het systeem aanpassen als er geen beschikbare tafels zijn
         {
             database = io.GetDatabase();
@@ -248,7 +243,8 @@ namespace restaurant
         {
             string datum = DateTime.Now.ToShortDateString();
             Dictionary<string, List<Reserveringen>> reserveringenZonderTafel = new Dictionary<string, List<Reserveringen>>();
-            List<Tuple<DateTime, List<Tafels>>> beschikbareTafels = code_medewerker.getBeschikbareTafels(DateTime.Parse(datum));
+            List<Tuple<DateTime, List<Tafels>>> beschikbareTafels = io.ReserveringBeschikbaarheid(DateTime.Parse(datum));
+            
 
             if (!vanGetReservationsScreen) //Als je niet vanaf het reserveringsscherm komt
             {
@@ -455,7 +451,7 @@ namespace restaurant
             tafelkoppelen:
             List<Tafels> tafels = new List<Tafels>();
             string tafelID = "";
-            List<Tuple<DateTime, List<Tafels>>> alleBeschikbareTafels = code_medewerker.getBeschikbareTafels(reservering.datum);
+            List<Tuple<DateTime, List<Tafels>>> alleBeschikbareTafels = io.ReserveringBeschikbaarheid(reservering.datum);
             List<Tafels> beschikbareTafelsOpTijdstip = new List<Tafels>();
 
             for (int i = 0; i < alleBeschikbareTafels.Count; i++)
