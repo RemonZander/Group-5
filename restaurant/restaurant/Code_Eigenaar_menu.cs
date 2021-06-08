@@ -333,30 +333,6 @@ namespace restaurant
             return false;
         }
 
-        public void MakeDishPopular(int id)
-        {
-            database = io.GetDatabase();
-            if (IfDishExists(id))
-            {
-                int dishIndex = database.menukaart.gerechten.FindIndex(x => x.ID == id);
-                database.menukaart.gerechten[dishIndex] = new Gerechten
-                {
-                    naam = database.menukaart.gerechten[dishIndex].naam,
-                    ID = database.menukaart.gerechten[dishIndex].ID,
-                    Ingredienten = database.menukaart.gerechten[dishIndex].Ingredienten,
-                    is_populair = true,
-                    prijs = database.menukaart.gerechten[dishIndex].prijs,
-                    special = database.menukaart.gerechten[dishIndex].special,
-                    is_gearchiveerd = database.menukaart.gerechten[dishIndex].is_gearchiveerd,
-                    allergenen = database.menukaart.gerechten[dishIndex].allergenen,
-                    diner = database.menukaart.gerechten[dishIndex].diner,
-                    lunch = database.menukaart.gerechten[dishIndex].lunch,
-                    ontbijt = database.menukaart.gerechten[dishIndex].ontbijt,
-                };
-                io.Savedatabase(database);
-            }
-        }
-
         public void OverwriteMeal(Gerechten meal)
         {
             database = io.GetDatabase();
