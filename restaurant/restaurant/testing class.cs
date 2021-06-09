@@ -21,7 +21,7 @@ namespace restaurant
         {
             Make_menu();
             Fill_Userdata(10);
-            Fill_reservations_threading(24, 500, 5, 7, 1, 30);
+            Fill_reservations_threading(24, 500, 6, 7, 1, 30);
             Maak_werknemer(10);
             Make_reviews();
             Make_feedback();
