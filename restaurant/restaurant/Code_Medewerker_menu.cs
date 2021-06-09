@@ -153,12 +153,27 @@ namespace restaurant
 
     public class EmployeeFeedbackScreen : Screen
     {
+        private int PreviousScreen = -1;
+
         public override int DoWork()
         {
             var database = io.GetDatabase();
             Console.WriteLine(GetGFLogo(true));
             List<Feedback> feedbackList = io.GetFeedback();
             List<Feedback> employeeFeedbackList = new List<Feedback>();
+
+            if (ingelogd.type == "Medewerker")
+            {
+                PreviousScreen = 16;
+            }
+            else if (ingelogd.type == "Eigenaar")
+            {
+                PreviousScreen = 11;
+            }
+            else
+            {
+                throw new Exception("YOU CANT BE HERE");
+            }
 
             for (int i = 0; i < feedbackList.Count; i++)
             {
@@ -171,9 +186,19 @@ namespace restaurant
             if (employeeFeedbackList.Count == 0)
             {
                 Console.WriteLine("U heeft nog geen feedback.");
-                Console.WriteLine("Druk op een toets om terug te keren naar het medewerkersmenu.");
+
+                if (ingelogd.type == "Medewerker")
+                {
+                    Console.WriteLine("Druk op een toets om terug te keren naar het medewerkersmenu.");
+                }
+                else
+                {
+                    Console.WriteLine("Druk op een toets om terug te keren naar het eigenaarsmenu.");
+
+                }
+
                 Console.ReadKey();
-                return 16;
+                return PreviousScreen;
             }
 
             int page = 0;

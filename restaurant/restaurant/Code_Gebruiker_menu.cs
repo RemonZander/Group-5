@@ -1209,7 +1209,7 @@ namespace restaurant
     class ViewFeedbackScreen : Screen
     {
         private readonly int CurrentScreen = 8;
-        private int PreviousScreen = -1;
+        private int PreviousScreen = 5;
         
         public ViewFeedbackScreen()
         {
@@ -1217,19 +1217,6 @@ namespace restaurant
         }
         public override int DoWork()
         {
-            if (ingelogd.type == "Medewerker")
-            {
-                PreviousScreen = 16;
-            }
-            else if (ingelogd.type == "Eigenaar")
-            {
-                PreviousScreen = 11;
-            }
-            else
-            {
-                throw new Exception("YOU CANT BE HERE");
-            }
-
             List<Feedback> feedback = new List<Feedback>();
             feedback = io.GetFeedback(ingelogd.klantgegevens).OrderBy(s => s.datum).ToList();
             if (feedback.Count == 0)

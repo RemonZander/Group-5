@@ -1009,10 +1009,13 @@ namespace restaurant
                     return GoBack();
                 }
 
-                if (input.Item1 == "0")
+                if (ingelogd.type == "Gebruiker" || ingelogd.type == "Medewerker" || ingelogd.type == "Eigenaar")
                 {
-                    LogoutWithMessage();
-                    return 0;
+                    if (input.Item1 == "0")
+                    {
+                        LogoutWithMessage();
+                        return 0;
+                    }
                 }
 
                 string text = GetGFLogo(true) + "\nWelkom bij de {0}kaart, hier kunt u alle {1} bekijken.";
